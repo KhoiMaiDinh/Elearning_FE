@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
 export default {
-    darkMode: ["class"],
-    content: [
+  darkMode: ["class"],
+  content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -49,6 +49,16 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -56,6 +66,26 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		}
+  	},
+  	colors: {
+  		majorelleBlue: '#545AE8',
+  		majorelleBlue50: 'rgba(86, 91, 221, 0.5)',
+  		majorelleBlue70: 'rgba(86, 91, 221, 0.7)',
+  		lightSilver: '#d9d9d9',
+  		champagne: '#F0F2CB',
+  		Sunglow: '#FFCD29',
+  		teaGreen: '#C3FFCA',
+  		vividMalachite: '#13CD2F',
+  		pinkLace: '#F3DEEF',
+  		deepPink: '#FC1996',
+  		darkSilver: '#736C6C',
+  		cosmicCobalt: '#2F327D',
+  		chineseBlack: 'rgba(13, 15, 28, 0.1)',
+  		gray: '#BBBBBB',
+  		goGreen: '#14AE5C',
+  		white: '#ffffff',
+  		black: '#000000',
+  		redPigment: '#FF2929'
   	}
   },
   plugins: [require("tailwindcss-animate")],
