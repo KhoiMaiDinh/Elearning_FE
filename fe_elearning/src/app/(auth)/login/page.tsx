@@ -95,7 +95,7 @@ const Page = () => {
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center bg-[url(/images/img_background.png)] bg-cover bg-center bg-no-repeat p-6">
-      <div className="flex h-2/3 w-5/6 items-center mx-12 lg:ml-auto lg:w-1/3">
+      <div className="flex h-5/6 w-5/6 lg:h-2/3 md:h-2/3 sm:h-5/6  items-center mx-12 lg:ml-auto lg:w-1/3 md:bg-majorelleBlue20 lg:bg-white sm:bg-majorelleBlue20 bg-majorelleBlue20 rounded-lg">
         {/* Form nằm bên phải */}
         <div className="flex w-full flex-col items-center gap-6 rounded-lg p-8 ">
           {/* Header */}
@@ -116,7 +116,7 @@ const Page = () => {
           <div className="flex justify-center gap-6 bg-majorelleBlue50 rounded-full w-fit p-2">
             <Button
               onClick={() => handleButtonClick("login")}
-              className={`w-36 rounded-full  ${
+              className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full  ${
                 activeButton === "login"
                   ? "bg-majorelleBlue text-white hover:bg-majorelleBlue "
                   : "bg-trnsp text-majorelleBlue hover:bg-majorelleBlue70 hover:text-white"
@@ -128,7 +128,7 @@ const Page = () => {
             {/* Nút Đăng ký */}
             <Button
               onClick={() => handleButtonClick("signup")}
-              className={`w-36 rounded-full  ${
+              className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full  ${
                 activeButton === "signup"
                   ? "bg-majorelleBlue text-white hover:bg-majorelleBlue "
                   : "bg-trnsp text-majorelleBlue hover:bg-majorelleBlue70 hover:text-white"
@@ -139,7 +139,7 @@ const Page = () => {
           </div>
 
           {/* Mô tả */}
-          <p className="text-center text-sm text-lightSilver">
+          <p className="text-center text-sm text-black50 lg:text-lightSilver md:text-black50 sm:text-black50 ">
             {activeButton === "login" ? "Đăng nhập" : "Đăng ký"} để khám phá
             tiềm năng của chính bạn!
           </p>
@@ -160,9 +160,7 @@ const Page = () => {
           {/* Divider */}
           <div className="relative flex w-full items-center">
             <div className="h-px w-full bg-gray-300" />
-            <span className="mx-4 bg-white px-2 text-sm text-gray-500">
-              HOẶC
-            </span>
+            <span className="mx-4 px-2 text-sm text-black50">HOẶC</span>
             <div className="h-px w-full bg-gray-300" />
           </div>
 

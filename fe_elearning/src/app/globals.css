@@ -88,15 +88,6 @@ body {
   }
 }
 
-.sidebar-close {
-  position: absolute;
-  top: 0;
-  left: -500px;
-  z-index: 100;
-  animation: closeMenu 0.1s ease-in;
-  -webkit-animation: closeMenu 0.1s ease-in;
-}
-
 @keyframes closeMenu {
   0% {
     left: 0px;
@@ -105,7 +96,7 @@ body {
     left: -500px;
   }
 }
-
+/* 
 @media screen and (min-width: 426px) {
   .sidebar-open {
     position: fixed;
@@ -150,7 +141,7 @@ body {
       width: 70%;
     }
   }
-}
+} */
 
 @layer base {
   :root {
