@@ -1,24 +1,21 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import CourseBlock from "@/components/block/course-block";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import CoursesBlock from "@/components/block/courses-block";
+import LecturersBlock from "@/components/block/lecturers-block";
 
 export default function Page() {
   return (
-    <div className="w-full h-full">
-      <CourseBlock />
+    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite">
+      <div className="w-full h-full flex flex-row gap-3">
+        <LecturersBlock />
+        <LecturersBlock />
+      </div>
+      <div className="w-full h-full flex flex-row gap-3">
+        <CoursesBlock />
+        <CoursesBlock />
+      </div>
+      <div className="w-full h-full flex flex-row gap-3">
+        <CoursesBlock />
+        <CoursesBlock />
+      </div>
     </div>
   );
 }
