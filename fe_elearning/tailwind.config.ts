@@ -88,6 +88,8 @@ export default {
       white: "#ffffff",
       black: "#000000",
       black50: "rgba(0,0,0,0.5)",
+      black70: "rgba(0,0,0,0.7)",
+
       redPigment: "#FF2929",
       AntiFlashWhite: "#EFF1F4",
       seoulPurple: "#851291",
