@@ -1,6 +1,8 @@
 "use client";
 import BenefitsBar from "@/components/profile-lecture/benefitsBar";
 import NotRegisteredLecture from "@/components/profile-lecture/notRegisteredLecture";
+import RegisteredLecture from "@/components/profile-lecture/registeredLecture";
+import RegisterLecture from "@/components/profile-lecture/registerLecture";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 
@@ -36,7 +38,10 @@ const Page = () => {
           Giảng viên
         </Button>
       </div>
-      {activeButton === "Giảng viên" && <NotRegisteredLecture />}
+      {/* {activeButton === "Giảng viên" && <NotRegisteredLecture />} */}
+      {activeButton === "Giảng viên" && <RegisteredLecture />}
+
+      {}
     </div>
   );
 };

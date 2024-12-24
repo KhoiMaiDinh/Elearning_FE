@@ -11,6 +11,7 @@ type textAreaRegisterLecture = {
   className?: string;
   onChange?: (e: React.FormEvent<HTMLTextAreaElement>) => void;
   error?: string;
+  disabled?: boolean;
 };
 const TextAreaRegisterLecture: React.FC<textAreaRegisterLecture> = ({
   labelText,
@@ -21,6 +22,7 @@ const TextAreaRegisterLecture: React.FC<textAreaRegisterLecture> = ({
   value,
   className,
   error,
+  disabled,
 }) => {
   return (
     <div
@@ -32,6 +34,7 @@ const TextAreaRegisterLecture: React.FC<textAreaRegisterLecture> = ({
         id={name}
         value={value}
         onChange={onChange}
+        disabled={disabled}
       />
       {error && (
         <div className="text-[12px] font-sans font-normal text-redPigment">

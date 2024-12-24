@@ -11,6 +11,7 @@ type inputRegisterLecture = {
   value?: any;
   className?: string;
   error?: string;
+  disabled?: boolean;
 };
 const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
   labelText,
@@ -21,6 +22,7 @@ const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
   value,
   className,
   error,
+  disabled,
 }) => {
   return (
     <div
@@ -36,6 +38,7 @@ const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
         value={value}
         className={className}
         multiple
+        disabled={disabled}
       />
       {error && (
         <div className="text-[12px] font-sans font-normal text-redPigment">
