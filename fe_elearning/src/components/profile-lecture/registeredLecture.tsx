@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ProfileLecture from "./profileLecture";
 import CourseLecture from "./courseLecture";
+import StatisticLecture from "./statisticLecture";
 
 const RegisteredLecture = () => {
   const [active, setActive] = useState("Hồ sơ");
@@ -10,11 +11,13 @@ const RegisteredLecture = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="w-full flex flex-row lg:text-[16px] md:text-[16px] text-[12px] font-sans font-medium text-black sm:text-[12px] lg:items-start md:items-start items-center ">
+      <div className="w-full flex flex-row lg:text-[16px] md:text-[16px] text-[12px] font-sans font-medium text-black dark:text-AntiFlashWhite sm:text-[12px] lg:items-start md:items-start items-center ">
         <div
           onClick={() => handleButtonClick("Hồ sơ")}
           className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Hồ sơ" ? "bg-white" : "text-black50 bg-none"
+            active === "Hồ sơ"
+              ? "bg-white dark:bg-black50"
+              : "text-black50 bg-none dark:text-darkSilver"
           }`}
         >
           <text>Hồ sơ</text>
@@ -22,7 +25,9 @@ const RegisteredLecture = () => {
         <div
           onClick={() => handleButtonClick("Khóa học")}
           className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Khóa học" ? "bg-white" : "text-black50 bg-none"
+            active === "Khóa học"
+              ? "bg-white dark:bg-black50"
+              : "text-black50 bg-none dark:text-darkSilver"
           }`}
         >
           <text>Khóa học</text>
@@ -30,7 +35,9 @@ const RegisteredLecture = () => {
         <div
           onClick={() => handleButtonClick("Thống kê")}
           className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Thống kê" ? "bg-white" : "text-black50 bg-none"
+            active === "Thống kê"
+              ? "bg-white dark:bg-black50"
+              : "text-black50 bg-none dark:text-darkSilver"
           }`}
         >
           <text>Thống kê</text>
@@ -40,7 +47,7 @@ const RegisteredLecture = () => {
       <div className="w-full flex items-center ">
         {active === "Hồ sơ" && <ProfileLecture />}
         {active === "Khóa học" && <CourseLecture />}
-        {/* {active === "Thống kê" && <Thongke />} */}
+        {active === "Thống kê" && <StatisticLecture />}
       </div>
     </div>
   );

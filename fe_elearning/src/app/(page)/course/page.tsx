@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
-import FilterBlock from "../filter/filter-block";
+import CoursesBlock from "@/components/block/courses-block";
+import FilterBlock from "@/components/filter/filter-block";
 import courseBlock from "@/types/coursesBlockType";
-import CoursesBlock from "../block/courses-block";
+import React, { useEffect } from "react";
 
 const dataCourse = [
   {
@@ -80,13 +80,13 @@ const dataCourse = [
     priceFinal: 750000, // Giá sau giảm
   },
 ];
-const CourseLecture = () => {
+const Page = () => {
   useEffect(() => {
     // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-black50 font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">
+    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
       <FilterBlock />
       <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
         {dataCourse.map((course: courseBlock, index: number) => (
@@ -109,4 +109,4 @@ const CourseLecture = () => {
   );
 };
 
-export default CourseLecture;
+export default Page;

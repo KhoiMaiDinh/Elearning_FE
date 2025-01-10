@@ -63,9 +63,9 @@ const NotRegisteredLecture = () => {
       )}
 
       {register && (
-        <div className="w-full  shadow-md h-full rounded-lg bg-white p-2">
+        <div className="w-full  shadow-md h-full rounded-lg bg-white p-2 dark:bg-eerieBlack">
           <div className="w-full flex flex-col items-center justify-center ">
-            <text className="font-sans font-bold text-[24px] text-black flex-wrap text-center">
+            <text className="font-sans font-bold text-[24px] text-black dark:text-AntiFlashWhite flex-wrap text-center">
               Hồ sơ
             </text>
           </div>

@@ -23,7 +23,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
 }) => {
   return (
     <div className="w-full h-full  rounded-2xl hover:pt-0 pt-1 ">
-      <div className="w-full h-56 bg-white rounded-2xl p-3 shadow-md border border-lightSilver hover:shadow-xl hover:mt-0 hover:cursor-pointer ">
+      <div className="w-full h-56 bg-white dark:bg-black50 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md dark:shadow-majorelleBlue20  border border-lightSilver hover:shadow-xl hover:mt-0 hover:cursor-pointer ">
         <div className="w-full flex flex-row gap-4 items-center  mb-4">
           <div className="w-16 h-16 rounded-lg overflow-hidden ">
             <img
@@ -32,23 +32,23 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
               alt="avatar"
             />
           </div>
-          <div className="flex flex-col items-start gap-2 text-black">
+          <div className="flex flex-col items-start gap-2 text-black dark:text-AntiFlashWhite">
             <div className="w-16 h-6 bg-champagne rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
-              <Star color="#FFCD29" fill="#FFCD29" size={16} />
-              <text className="text-Sunglow text-[16px] font-sans font-bold ">
+              <Star color="#FFCD29" fill="#FFCD29" size={12} />
+              <text className="text-Sunglow text-[10px] font-sans font-bold ">
                 {rating}
               </text>
             </div>
             <div className="w-full flex flex-col ">
               <span className="text-[14px] font-semibold">{name}</span>
-              <span className="text-[8px] font-light text-darkSilver">
+              <span className="text-[8px] font-light text-darkSilver dark:text-lightSilver">
                 Chuyên môn: {major}
               </span>
             </div>
           </div>
         </div>
         <div className="w-full h-1/3 flex flex-col">
-          <text className="text-darkSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
+          <text className="text-darkSilver dark:text-lightSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
             {description}
           </text>
         </div>

@@ -70,10 +70,10 @@ const RegisterLecture = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full h-full gap-2 flex flex-col"
+      className="w-full h-full gap-2 flex flex-col "
     >
-      <div className="bg-white w-full h-full shadow-md rounded-lg p-3 border">
-        <p className="text-[16px] font-sans font-medium text-black">
+      <div className="bg-white dark:bg-eerieBlack w-full h-full shadow-md rounded-lg p-3 border">
+        <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin cá nhân
         </p>
         <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
@@ -143,8 +143,8 @@ const RegisterLecture = () => {
         </div>
       </div>
 
-      <div className="bg-white w-full h-full  shadow-md rounded-lg  p-3 border">
-        <text className="text-[16px] font-sans font-medium text-black">
+      <div className="bg-white dark:bg-eerieBlack w-full h-full  shadow-md rounded-lg  p-3 border">
+        <text className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin chuyên môn
         </text>
         <div className=" grid  w-full h-full p-3 gap-3">
@@ -185,8 +185,8 @@ const RegisterLecture = () => {
         </div>
       </div>
 
-      <div className="bg-white w-full h-full  shadow-md rounded-lg  p-3 border">
-        <text className="text-[16px] font-sans font-medium text-black">
+      <div className="bg-white dark:bg-eerieBlack w-full h-full  shadow-md rounded-lg  p-3 border">
+        <text className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin tài khoản
         </text>
         <div className=" grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
@@ -229,7 +229,7 @@ const RegisterLecture = () => {
       <div className="w-full h-full items-center justify-center flex p-4">
         <Button
           type="submit"
-          className="w-32 bg-majorelleBlue text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+          className="w-32 bg-majorelleBlue  dark:shadow-majorelleBlue50 dark:shadow-md text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
         >
           Gửi xét duyệt
         </Button>

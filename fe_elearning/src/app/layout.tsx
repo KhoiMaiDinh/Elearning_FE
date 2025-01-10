@@ -4,7 +4,7 @@ import store from "@/constants/store";
 // import { Suspense } from 'react'
 import { Provider } from "react-redux";
 import { metadata } from "./metadata";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Inter } from "next/font/google"; // Import font từ next/font
 
 // import { PersistGate } from 'redux-persist/integration/react'
@@ -19,6 +19,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    // Scroll to top when the component mounts or route changes
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <html lang="en">
       <head>

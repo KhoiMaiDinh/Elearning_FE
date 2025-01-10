@@ -33,8 +33,8 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   priceFinal,
 }) => {
   return (
-    <div className="w-full h-full  rounded-2xl hover:pt-0 ">
-      <div className="w-full h-full bg-white rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer">
+    <div className="w-full h-full  rounded-2xl hover:pt-0 pt-1  ">
+      <div className="w-full h-full bg-white dark:bg-black50 dark:shadow-majorelleBlue20 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer">
         {/* Ảnh lớn hơn */}
         <div className="w-full h-24 rounded-lg overflow-hidden">
           <img
@@ -72,7 +72,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
 
         {/* Giới hạn mô tả 3 dòng */}
         <div className="w-full flex flex-col items-start justify-start h-14">
-          <text className="text-darkSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
+          <text className="text-darkSilver dark:text-lightSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
             {description}
           </text>
         </div>
@@ -98,15 +98,17 @@ const CoursesBlock: React.FC<coursesBlock> = ({
             {status === "Chưa đăng ký" && (
               <div className="flex flex-col gap-0.5">
                 <text className="text-darkSilver line-through">{price}đ</text>
-                <text className="text-black">{priceFinal} đ</text>
+                <text className="text-black dark:text-AntiFlashWhite">
+                  {priceFinal} đ
+                </text>
               </div>
             )}
             {status === "Đang học" && (
               <div className="w-3/5 flex flex-row gap-0.5 items-center self-center">
                 <Progress
                   value={progress}
-                  className="w-4/5  "
-                  color="#ffffff"
+                  className="w-4/5"
+                  color="#ff0000"
                 ></Progress>
                 <text className="font-sans font-normal text-[10px]">
                   {progress}%
@@ -115,7 +117,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
             )}
           </div>
 
-          <Button className="bg-black w-fit px-3 h-fit rounded-xl text-white text-[10px] font-sans font-medium shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300">
+          <Button className="bg-black dark:border-AntiFlashWhite dark:border-solid dark:border dark:hover:text-eerieBlack w-fit px-3 h-fit rounded-xl text-white text-[10px] font-sans font-medium shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300">
             Xem chi tiết
           </Button>
         </div>

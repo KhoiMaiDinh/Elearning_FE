@@ -96,6 +96,8 @@ export default {
       seoulPurple20: "rgba(133, 18, 145,0.2)",
       beautyGreen: "#66A586",
       beautyGreen20: "rgba(102, 165, 134, 0.2)",
+
+      eerieBlack: "#18181B",
     },
   },
   plugins: [require("tailwindcss-animate")],

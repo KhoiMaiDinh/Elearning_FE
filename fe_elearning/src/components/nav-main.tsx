@@ -17,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 
 export function NavMain({
   items,
@@ -32,6 +33,7 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const router = useRouter();
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
@@ -42,6 +44,7 @@ export function NavMain({
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible"
+            onClick={() => item.url && router.push(item.url)}
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
@@ -53,19 +56,22 @@ export function NavMain({
                   )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+              {item.items && (
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          onClick={() => router.push(subItem.url)}
+                        >
                           <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              )}
             </SidebarMenuItem>
           </Collapsible>
         ))}

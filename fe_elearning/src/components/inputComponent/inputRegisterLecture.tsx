@@ -26,7 +26,7 @@ const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
 }) => {
   return (
     <div
-      className={` w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70`}
+      className={` w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
       <Label htmlFor="email">{labelText}</Label>
       <Input

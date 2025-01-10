@@ -1,7 +1,9 @@
+"use client";
 import CoursesBlock from "@/components/block/courses-block";
 import LecturersBlock from "@/components/block/lecturers-block";
 import courseBlock from "@/types/coursesBlockType";
 import lectureBlock from "@/types/lecturesBlockType";
+import { useEffect } from "react";
 
 const dataLecture: lectureBlock[] = [
   {
@@ -114,8 +116,8 @@ const dataCourse = [
       "Học cách phân tích dữ liệu và trực quan hóa với Python. Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
 
     name: "Lê Thị B",
-    status: "Chưa đăng ký",
-    progress: 100, // Đã hoàn thành khóa học
+    status: "Đang học",
+    progress: 50, // Đã hoàn thành khóa học
     price: 700000,
     priceFinal: 700000, // Không giảm giá
   },
@@ -164,8 +166,12 @@ const dataCourse = [
   },
 ];
 export default function Page() {
+  useEffect(() => {
+    // Scroll to top when the component mounts or route changes
+    window.scrollTo(0, 0);
+  }, []);
   return (
-    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite font-sans font-medium text-majorelleBlue pb-52 overflow-auto">
+    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack dark:text-AntiFlashWhite font-sans font-medium text-majorelleBlue  overflow-auto">
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row items-center justify-between">
           <text className="text-[20px]">Top giảng viên tại E-Learning</text>

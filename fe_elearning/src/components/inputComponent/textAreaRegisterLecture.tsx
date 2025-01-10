@@ -26,7 +26,7 @@ const TextAreaRegisterLecture: React.FC<textAreaRegisterLecture> = ({
 }) => {
   return (
     <div
-      className={`grid w-full gap-1.5 ${className} font-sans font-normal text-black70`}
+      className={`grid w-full gap-1.5 ${className} font-sans font-normal text-black70 dark:text-AntiFlashWhite`}
     >
       <Label htmlFor={name}>{labelText}</Label>
       <Textarea
