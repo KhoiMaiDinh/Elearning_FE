@@ -32,6 +32,13 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   price,
   priceFinal,
 }) => {
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
     <div className="w-full h-full  rounded-2xl hover:pt-0 pt-1  ">
       <div className="w-full h-full bg-white dark:bg-black50 dark:shadow-majorelleBlue20 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer">
@@ -45,18 +52,18 @@ const CoursesBlock: React.FC<coursesBlock> = ({
         </div>
 
         <div className="w-full flex h-1/6 flex-row justify-between items-center">
-          <div className="w-16 h-6 bg-champagne rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-16 h-6 bg-champagne dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
             <Star color="#FFCD29" fill="#FFCD29" size={12} />
             <text className="text-Sunglow text-[10px] font-sans font-medium">
               {rating}
             </text>
           </div>
-          <div className="w-24 h-6 bg-teaGreen rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-24 h-6 bg-teaGreen dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
             <text className="text-goGreen text-[10px] font-sans font-medium">
               {level}
             </text>
           </div>
-          <div className="w-16 h-6 bg-majorelleBlue20 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-16 h-6 bg-majorelleBlue20 dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
             <Users color="#545ae8" size={20} />
             <text className="text-majorelleBlue text-[10px] font-sans font-medium">
               {numberStudent && numberStudent > 1000
@@ -97,9 +104,11 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           <div className="flex">
             {status === "Chưa đăng ký" && (
               <div className="flex flex-col gap-0.5">
-                <text className="text-darkSilver line-through">{price}đ</text>
+                <text className="text-darkSilver line-through">
+                  {formatPrice(Number(price))}đ
+                </text>
                 <text className="text-black dark:text-AntiFlashWhite">
-                  {priceFinal} đ
+                  {formatPrice(Number(priceFinal))} đ
                 </text>
               </div>
             )}

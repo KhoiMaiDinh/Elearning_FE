@@ -33,7 +33,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
             />
           </div>
           <div className="flex flex-col items-start gap-2 text-black dark:text-AntiFlashWhite">
-            <div className="w-16 h-6 bg-champagne rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+            <div className="w-16 h-6 bg-champagne dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
               <Star color="#FFCD29" fill="#FFCD29" size={12} />
               <text className="text-Sunglow text-[10px] font-sans font-bold ">
                 {rating}
