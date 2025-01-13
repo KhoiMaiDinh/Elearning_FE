@@ -105,10 +105,10 @@ const CoursesBlock: React.FC<coursesBlock> = ({
             {status === "Chưa đăng ký" && (
               <div className="flex flex-col gap-0.5">
                 <text className="text-darkSilver line-through">
-                  {formatPrice(Number(price))}đ
+                  {formatPrice(Number(price))}
                 </text>
                 <text className="text-black dark:text-AntiFlashWhite">
-                  {formatPrice(Number(priceFinal))} đ
+                  {formatPrice(Number(priceFinal))}
                 </text>
               </div>
             )}

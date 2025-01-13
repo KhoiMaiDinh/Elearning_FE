@@ -1,5 +1,6 @@
 import { Star, Users } from "lucide-react";
 import React from "react";
+import CourseMain from "./courseMain";
 
 type infoCourse = {
   title: string;
@@ -33,7 +34,7 @@ const InfoCourse: React.FC<infoCourse> = ({
           <img
             src={"/images/avatar.jpg"}
             alt="Khóa học"
-            className="w-full h-auto rounded-md "
+            className="w-full h-auto rounded-md z-1"
           />
           <div className="bg-black absolute inset-0  bg-opacity-30"></div>
         </div>
@@ -89,7 +90,9 @@ const InfoCourse: React.FC<infoCourse> = ({
           {`${"11"} chương - ${"132"} bài học - thời lượng ${"1 giờ 15 phút"}`}
         </text>
 
-        <div className=" flex flex-col"></div>
+        <div className=" flex flex-col">
+          <CourseMain />
+        </div>
       </div>
     </div>
   );

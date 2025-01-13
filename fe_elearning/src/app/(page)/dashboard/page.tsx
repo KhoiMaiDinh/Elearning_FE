@@ -1,8 +1,18 @@
 "use client";
 import CoursesBlock from "@/components/block/courses-block";
+import InfoDashboard from "@/components/block/infoDashboard";
 import LecturersBlock from "@/components/block/lecturers-block";
+import { Button } from "@/components/ui/button";
 import courseBlock from "@/types/coursesBlockType";
 import lectureBlock from "@/types/lecturesBlockType";
+import {
+  BookCheck,
+  Film,
+  GraduationCap,
+  Headset,
+  IdCard,
+  UsersRound,
+} from "lucide-react";
 import { useEffect } from "react";
 
 const dataLecture: lectureBlock[] = [
@@ -172,6 +182,85 @@ export default function Page() {
   }, []);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack dark:text-AntiFlashWhite font-sans font-medium text-majorelleBlue  overflow-auto">
+      <div className="flex flex-col w-full  gap-4">
+        {/* Ảnh nền */}
+        <div
+          className={`bg-cover bg-center gap-2 bg-no-repeat w-full lg:h-[500px] md:h-[450px] h-[400px] rounded-md overflow-hidden`}
+          style={{ backgroundImage: `url(${"/images/slide_1.png"})` }}
+        >
+          <div className=" flex flex-col justify-center gap-2 items-center h-full md:w-2/5 md:text-left px-4 text-majorelleBlue font-sans text-center z-20">
+            <h1 className="lg:text-[38px] md:text-[24px] text-[20px] font-bold ">
+              Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi
+            </h1>
+            <p className="mt-2 lg:text-[16px] md:text-[14px] text-[12px] text-black70">
+              Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm; Mô
+              hình học tập đa dạng & định hướng kết quả đầu ra, tích hợp công
+              nghệ tiên tiến.
+            </p>
+
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+              <Button className="flex font-medium font-sans text-[16px] p-8 bg-majorelleBlue70 text-white hover:bg-black hover:shadow-majorelleBlue shadow-md">
+                Tìm khóa học
+              </Button>
+              <div className="flex flex-row gap-2 items-center justify-center">
+                <Headset size={32} className="text-majorelleBlue  font-bold" />
+                <div className="flex flex-col font-sans font-medium text-[16px]">
+                  <span className="text-majorelleBlue70">Hotline LH</span>
+                  <span className="text-majorelleBlue font-bold hover:text-[20px] transition-transform duration-300 ease-in-out hover:cursor-pointer">
+                    1900 1008
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Nội dung nằm trên lớp phủ */}
+
+        <div className="flex flex-col items-center justify-center gap-4">
+          <text className="font-sans font-bold text-[28px]">
+            Giới thiệu chung
+          </text>
+          <text className="font-sans font-medium text-[16px] text-darkSilver text-center md:w-1/2 w-4/5">
+            Các khóa học của chúng tôi đều được xây dựng kết hợp giữa lý thuyết
+            nền tảng và tính ứng dụng thực tế. Đội ngũ tư vấn và giảng viên là
+            chuyên gia nhiều năm kinh nghiệm trong lĩnh vực đào tạo và tư vấn.
+            Ngoài các khóa đào tạo cho cá nhân, doanh nghiệp trên nền tảng
+            offline và online, triển khai hệ thống cho doanh nghiệp. Đào tạo và
+            cung cấp nhân sự chất lượng cao đến các doanh nghiệp có nhu cầu. Mục
+            tiêu của trung tâm là mang lại những dịch vụ có giá trị thực tiễn
+            đến doanh nghiệp.
+          </text>
+          <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-4 items-center justify-center">
+            <InfoDashboard
+              number={10}
+              title={"Giảng viên"}
+              Icon={IdCard}
+              color="#1568DF"
+            />
+            <InfoDashboard
+              number={2000}
+              title={"Bài học"}
+              Icon={BookCheck}
+              color="#219653"
+            />
+            <InfoDashboard
+              number={1000}
+              title={"Sinh viên"}
+              Icon={GraduationCap}
+              color="#9B51DF"
+            />
+            <InfoDashboard
+              number={10}
+              title={"Video"}
+              Icon={Film}
+              color="#FF2E2E"
+            />
+          </div>
+        </div>
+      </div>
+      <hr className="py-4" />
+
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row items-center justify-between">
           <text className="text-[20px]">Top giảng viên tại E-Learning</text>

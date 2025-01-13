@@ -11,7 +11,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full h-11/12 flex items-center justify-between  top-0 sticky bg-white dark:bg-eerieBlack transition-colors">
+    <div className="z-50 w-full h-11/12 flex items-center justify-between  top-0 sticky bg-white dark:bg-eerieBlack transition-colors">
       {/* Nội dung Header */}
       <h1 className="text-[16px] lg:text-[32px] md:text-[24px] font-bold lg:ml-4 ml-0 dark:text-white">
         My E-Learning

@@ -5,9 +5,11 @@ import {
   Gauge,
   IconNode,
   Infinity,
+  PlayCircle,
   TableOfContents,
 } from "lucide-react";
 import IconWithText from "./iconWithText";
+import PieChartProgress from "../chart/pieChartProgress";
 
 type infoBlockCourse = {
   isRegistered: boolean;
@@ -30,26 +32,51 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   };
 
   return (
-    <div className="flex flex-col lg:w-80 md:w-72 w-full items-center justify-center gap-2">
+    <div className="flex flex-col lg:w-80 md:w-72 w-full items-center justify-center gap-2 md:gap-4 ">
       {isRegistered && (
         <div className="flex flex-col w-full">
           <div className="flex w-full items-center justify-center">
-            <text className="font-sans font-medium ">Tiến độ</text>
+            <text className="font-sans font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
+              Tiến độ
+            </text>
           </div>
+          <PieChartProgress />
         </div>
       )}
       {!isRegistered && (
-        <div className="flex flex-col items-center justify-center">
-          <img />
-          <text className="flex flex-col font-sans font-medium text-black70 dark:text-AntiFlashWhite ">
+        <div className="flex flex-col items-center justify-center rounded-md overflow-hidden">
+          <div className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden">
+            <img
+              src="/images/avatar.jpg"
+              alt="Học thử"
+              className="w-full  relative transition-transform duration-300 ease-in-out group-hover:scale-105"
+            />
+            <div className="absolute top-0 w-full h-full bg-black50 flex flex-col justify-between items-center p-4">
+              {/* Icon ở giữa */}
+              <div className="flex-grow flex justify-center items-center">
+                <PlayCircle
+                  size={32}
+                  fill="#000000"
+                  color="#ffffff"
+                  className=""
+                />
+              </div>
+
+              {/* Chữ ở dưới cùng */}
+              <text className="text-AntiFlashWhite text-[16px] font-sans font-medium">
+                Học thử miễn phí
+              </text>
+            </div>
+          </div>
+          <text className="flex flex-col text-[20px] font-sans font-bold text-black dark:text-AntiFlashWhite ">
             {formatPrice(Number(price))}
           </text>
         </div>
       )}
 
       <div className="flex flex-col ">
-        <Button className="bg-majorelleBlue w-fit items-center justify-center text-[20px] px-8 rounded-full py-2 font-sans font-bold text-white dark:bg-AntiFlashWhite dark:text-black">
-          {isRegistered ? "Tiếp tục" : "Học ngay"}
+        <Button className="bg-majorelleBlue w-fit items-center justify-center text-[20px] px-8 rounded-full py-2 font-sans font-bold text-white dark:bg-AntiFlashWhite dark:text-black hover:shadow-md dark:hover:shadow-majorelleBlue dark:hover:text-majorelleBlue">
+          {isRegistered ? "Tiếp tục" : "Đăng ký"}
         </Button>
       </div>
 

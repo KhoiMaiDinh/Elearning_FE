@@ -105,7 +105,7 @@ const Page = () => {
 
       <div className="w-full lg:w-1/4 md:w-1/3">
         <InfoBlockCourse
-          isRegistered={false}
+          isRegistered={true}
           price={dataCourseDetails.price}
           level={dataCourseDetails.level}
         />
