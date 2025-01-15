@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { metadata } from "./metadata";
 import { Suspense, useEffect } from "react";
 import { Inter } from "next/font/google"; // Import font từ next/font
+import { appWithTranslation } from "next-i18next";
 
 // import { PersistGate } from 'redux-persist/integration/react'
 
@@ -14,11 +15,7 @@ const inter = Inter({
   weight: ["100", "200", "400", "500", "700", "900"], // Các trọng số bạn muốn sử dụng
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const RootLayout = ({ children }: any) => {
   useEffect(() => {
     // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
@@ -39,4 +36,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default appWithTranslation(RootLayout);

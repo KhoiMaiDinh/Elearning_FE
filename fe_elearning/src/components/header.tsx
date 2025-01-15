@@ -1,7 +1,9 @@
+"use client";
 import React from "react";
 import { Button } from "./ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import LanguageSwitcher from "./languageSwitcher";
 
 const Header = () => {
   const { theme, setTheme } = useTheme(); // Sử dụng hook từ `next-themes`
@@ -17,6 +19,7 @@ const Header = () => {
         My E-Learning
       </h1>
       <div className="lg:mr-4 mr-0 flex items-center space-x-4">
+        <LanguageSwitcher />
         <div>
           <button
             className="outline-none p-2 rounded-full bg-gray-200 dark:bg-eerieBlack hover:bg-lightSilver dark:hover:bg-black50 transition-colors"
