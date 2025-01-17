@@ -73,7 +73,7 @@ const data = {
     },
     {
       title: "Cài đặt",
-      url: "#",
+      url: "/setting",
       icon: Settings2,
     },
   ],

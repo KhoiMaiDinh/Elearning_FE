@@ -89,7 +89,7 @@ export function NavUser({
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/billing")}>
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
