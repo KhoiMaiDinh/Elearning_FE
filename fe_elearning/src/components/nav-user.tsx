@@ -38,6 +38,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+
+  const handleLogOut = () => {
+    router.push("/login");
+    localStorage.setItem("access_token", "");
+    localStorage.setItem("refresh_token", "");
+    localStorage.setItem("expires_at", ""); // Thời gian hết hạn
+  };
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -99,7 +106,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleLogOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>
