@@ -40,8 +40,8 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   };
 
   return (
-    <div className="w-full h-full  rounded-2xl hover:pt-0 pt-1  ">
-      <div className="w-full h-full bg-white dark:bg-black50 dark:shadow-majorelleBlue20 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer">
+    <div className="w-full h-full text-white  rounded-2xl hover:pt-0 pt-1  ">
+      <div className="w-full h-full bg-custom-gradient-light dark:bg-custom-gradient-dark bg-opacity-90 dark:bg-opacity-100 shadow-majorelleBlue20 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer text-black70">
         {/* Ảnh lớn hơn */}
         <div className="w-full h-24 rounded-lg overflow-hidden">
           <img
@@ -52,20 +52,20 @@ const CoursesBlock: React.FC<coursesBlock> = ({
         </div>
 
         <div className="w-full flex h-1/6 flex-row justify-between items-center">
-          <div className="w-16 h-6 bg-champagne dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-16 h-6 dark:bg-black50 bg-champagne rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
             <Star color="#FFCD29" fill="#FFCD29" size={12} />
             <text className="text-Sunglow text-[10px] font-sans font-medium">
               {rating}
             </text>
           </div>
-          <div className="w-24 h-6 bg-teaGreen dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-24 h-6  dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white bg-teaGreen">
             <text className="text-goGreen text-[10px] font-sans font-medium">
               {level}
             </text>
           </div>
-          <div className="w-16 h-6 bg-majorelleBlue20 dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
+          <div className="w-16 h-6 dark:bg-black50 bg-AntiFlashWhite rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
             <Users color="#545ae8" size={20} />
-            <text className="text-majorelleBlue text-[10px] font-sans font-medium">
+            <text className=" text-[10px] font-sans font-medium">
               {numberStudent && numberStudent > 1000
                 ? `${numberStudent / 1000}k+`
                 : `${numberStudent}+`}
@@ -79,7 +79,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
 
         {/* Giới hạn mô tả 3 dòng */}
         <div className="w-full flex flex-col items-start justify-start h-14">
-          <text className="text-darkSilver dark:text-lightSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
+          <text className="dark:text-lightSilver text-darkSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
             {description}
           </text>
         </div>
@@ -94,7 +94,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           </div>
 
           <div className="w-full flex flex-col">
-            <span className="text-[12px] font-semibold text-darkSilver">
+            <span className="text-[12px] font-semibold dark:text-lightSilver text-darkSilver">
               {name}
             </span>
           </div>
@@ -107,7 +107,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
                 <text className="text-darkSilver line-through">
                   {formatPrice(Number(price))}
                 </text>
-                <text className="text-black dark:text-AntiFlashWhite">
+                <text className=" dark:text-AntiFlashWhite text-black70">
                   {formatPrice(Number(priceFinal))}
                 </text>
               </div>
@@ -126,7 +126,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
             )}
           </div>
 
-          <Button className="bg-black dark:border-AntiFlashWhite dark:border-solid dark:border dark:hover:text-eerieBlack w-fit px-3 h-fit rounded-xl text-white text-[10px] font-sans font-medium shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300">
+          <Button className="bg-black border-AntiFlashWhite border-solid border  w-fit px-3 h-fit rounded-xl text-white text-[10px] font-sans font-medium shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300">
             Xem chi tiết
           </Button>
         </div>

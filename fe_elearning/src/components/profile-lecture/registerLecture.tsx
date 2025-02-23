@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   useForm,
   Controller,
@@ -29,12 +29,18 @@ const schema = yup.object().shape({
   expertise: yup.string().required("Lĩnh vực chuyên môn không được để trống"),
   experience: yup.string().required("Mô tả kinh nghiệm không được để trống"),
   certificate: yup
-    .mixed<File[]>()
+    .mixed<FileList>()
     .test(
       "fileRequired",
-      "Vui lòng tải lên chứng chỉ/bằng cấp",
-      (value) => Array.isArray(value) && value.length > 0
+      "Vui lòng tải lên ít nhất 1 chứng chỉ/bằng cấp",
+      (value) => value && value.length > 0
+    )
+    .test(
+      "fileLimit",
+      "Chỉ được tải lên tối đa 5 file",
+      (value) => value && value.length <= 5
     ),
+
   bankAccount: yup.string().required("Số tài khoản không được để trống"),
   bankName: yup.string().required("Ngân hàng không được để trống"),
   accountHolder: yup.string().required("Tên chủ tài khoản không được để trống"),
@@ -61,6 +67,23 @@ const RegisterLecture = () => {
       accountHolder: "",
     },
   });
+
+  // State để lưu danh sách file đã chọn
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  console.log("🚀 ~ RegisterLecture ~ selectedFiles:", selectedFiles);
+
+  // Hàm xử lý khi chọn file
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    onChange: (files: FileList) => void
+  ) => {
+    const files = event.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setSelectedFiles(fileArray);
+      onChange(files);
+    }
+  };
 
   const onSubmit = (data: FieldValues) => {
     console.log("Form data:", data);
@@ -173,13 +196,28 @@ const RegisterLecture = () => {
           <Controller
             name="certificate"
             control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Chứng chỉ/bằng cấp"
-                type="file"
-                error={errors.certificate?.message} // Hiển thị lỗi nếu có
-              />
+            render={({ field: { onChange, ...field } }) => (
+              <div className="flex flex-col gap-2">
+                <InputRegisterLecture
+                  {...field}
+                  labelText="Chứng chỉ/bằng cấp"
+                  type="file"
+                  onChange={(e) => handleFileChange(e, onChange)}
+                  error={errors.certificate?.message}
+                />
+                {selectedFiles.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm font-medium">File đã chọn:</p>
+                    <ul className="list-disc pl-5 text-sm">
+                      {selectedFiles.map((file, index) => (
+                        <li key={index}>
+                          {file.name} - {file.type || "Không xác định"}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             )}
           />
         </div>

@@ -2,8 +2,10 @@ import axiosInstance from "./axios";
 const APILoginEmail = async (data: any) => {
   try {
     const response = await axiosInstance.post("/auth/email/login", data);
-
-    return { data: response.data, status: response.status };
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error("Error during login email:", err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm

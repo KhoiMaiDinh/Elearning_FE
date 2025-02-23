@@ -167,7 +167,17 @@ body {
   }
 }
 
+/* Override --sidebar-background với màu cụ thể */
+:root {
+  --sidebar-background: #eff1f4; /* Màu nền light mode */
+}
+
+.dark {
+  --sidebar-background: #18181b; /* Màu nền dark mode */
+}
+
 /* 
+
 ---break--- */
 
 @layer base {

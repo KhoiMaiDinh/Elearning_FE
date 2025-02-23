@@ -17,7 +17,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+import Loader from "@/components/loading/loader";
+const regexPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 const baseSchema = {
   email: Yup.string()
@@ -78,8 +79,10 @@ const Page = () => {
   const [alertDescription, setAlertDescription] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleClearData = () => {
+    setLoading(false);
     setValue("email", "");
     setValue("password", "");
     setValue("confirmPassword", "");
@@ -109,6 +112,7 @@ const Page = () => {
   };
 
   const handleLogin = async (data: any) => {
+    setLoading(true);
     const response = await APILoginEmail(data);
     if (response?.status === 200) {
       localStorage.setItem("access_token", response?.data?.access_token);
@@ -121,17 +125,20 @@ const Page = () => {
       setTimeout(() => {
         setShowAlertSuccess(false);
       }, 3000);
-      router.push("/dashboard");
+      router.push("/");
+      setLoading(false);
     } else {
       setAlertDescription("Đăng nhập thất bại");
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
+      setLoading(false);
     }
   };
 
   const handleSignup = async (data: any) => {
+    setLoading(true);
     const response = await APIRegisterEmail(data);
     if (response?.status === 201) {
       setAlertDescription("Đăng ký thành công");
@@ -149,6 +156,7 @@ const Page = () => {
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
+      setLoading(false);
     }
   };
 
@@ -417,7 +425,13 @@ const Page = () => {
               type="submit"
               className="mt-5 mb-2.5 bg-[#151717] text-white text-[15px] font-medium rounded-[10px] h-[50px] w-full cursor-pointer hover:bg-[#252727] self-end"
             >
-              {activeButton === "login" ? "Đăng nhập" : "Đăng ký"}
+              {loading ? (
+                <Loader />
+              ) : activeButton === "login" ? (
+                "Đăng nhập"
+              ) : (
+                "Đăng ký"
+              )}
             </button>
 
             {/* Sign Up Link */}

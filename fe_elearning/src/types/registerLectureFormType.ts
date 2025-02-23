@@ -1,4 +1,5 @@
-export type RegisterLectureForm = {
+// @/types/registerLectureFormType.ts
+export interface RegisterLectureForm {
   fullName: string;
   dob: string;
   email: string;
@@ -6,8 +7,8 @@ export type RegisterLectureForm = {
   address: string;
   expertise: string;
   experience: string;
-  certificate?: File[];
+  certificate?: FileList; // Change this to FileList | undefined
   bankAccount: string;
   bankName: string;
   accountHolder: string;
-};
+}

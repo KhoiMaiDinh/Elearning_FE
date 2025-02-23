@@ -26,6 +26,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 
 // This is sample data.
 const data = {
@@ -46,20 +48,6 @@ const data = {
       url: "/dashboard",
       icon: LayoutDashboard,
       isActive: true,
-      // items: [
-      //   {
-      //     title: "History",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Starred",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Settings",
-      //     url: "#",
-      //   },
-      // ],
     },
     {
       title: "Khóa học",
@@ -70,11 +58,6 @@ const data = {
       title: "Giảng viên",
       url: "/lecture",
       icon: IdCard,
-    },
-    {
-      title: "Cài đặt",
-      url: "/setting",
-      icon: Settings2,
     },
   ],
   projects: [
@@ -97,18 +80,38 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
+  // Lọc navMain để chỉ thêm mục "Cài đặt" nếu có userInfo
+  const filteredNavMain = userInfo.id
+    ? [
+        ...data.navMain,
+        {
+          title: "Cài đặt",
+          url: "/setting",
+          icon: Settings2,
+        },
+      ]
+    : data.navMain;
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="bg-AntiFlashWhite dark:bg-eerieBlack"
+    >
       <SidebarHeader>
         <WebName teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      {userInfo.id && (
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+      )}
       <SidebarRail />
     </Sidebar>
   );

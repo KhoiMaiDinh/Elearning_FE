@@ -43,7 +43,7 @@ export default function RootLayout({
 
             <SidebarInset className="bg-AntiFlashWhite dark:bg-eerieBlack">
               <div className="relative bg-AntiFlashWhite dark:bg-eerieBlack">
-                <header className="z-50 flex h-16 top-0 sticky bg-white dark:bg-eerieBlack shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 w-full ">
+                <header className="z-50 flex h-16 top-0 sticky bg-AntiFlashWhite dark:bg-eerieBlack shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 w-full ">
                   {" "}
                   <div className="flex items-center gap-2 px-4 w-full ">
                     <SidebarTrigger className="bg-majorelleBlue70" />
