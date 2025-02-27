@@ -5,11 +5,12 @@ export interface Roles {
 
 export interface UserType {
   username: string;
-  avatar?: string;
+  profile_image: string;
   id?: string;
-  email?: string;
+  email: string;
   createdAt?: string;
-
+  first_name: string;
+  last_name: string;
   roles?: Roles[];
   phone_number?: string;
 }

@@ -1,43 +1,68 @@
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import React from "react";
+import { Label } from "@/components/ui/label";
+import ReactQuill from "react-quill-new"; // Sử dụng react-quill-new thay vì react-quill
+import "react-quill-new/dist/quill.snow.css"; // Import CSS của react-quill-new
+import { Delta } from "quill";
 
-type textAreaRegisterLecture = {
+type TextAreaRegisterLectureProps = {
   labelText: string;
-  type?: string;
   name?: string;
   placeholder?: string;
   value?: string;
   className?: string;
-  onChange?: (e: React.FormEvent<HTMLTextAreaElement>) => void;
+  onChange?: (value: string) => void;
   error?: string;
   disabled?: boolean;
 };
-const TextAreaRegisterLecture: React.FC<textAreaRegisterLecture> = ({
+
+const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
   labelText,
-  type,
-  onChange,
   name,
   placeholder,
   value,
   className,
+  onChange,
   error,
   disabled,
 }) => {
   return (
     <div
-      className={`grid w-full gap-1.5 ${className} font-sans font-normal text-black70 dark:text-AntiFlashWhite`}
+      className={`flex flex-col h-auto  w-full gap-1.5 ${className} font-sans font-normal text-black70 dark:text-AntiFlashWhite`}
     >
       <Label htmlFor={name}>{labelText}</Label>
-      <Textarea
-        placeholder={placeholder}
-        id={name}
+      <ReactQuill
+        // theme="snow"
         value={value}
-        onChange={onChange}
-        disabled={disabled}
+        onChange={(content) => onChange?.(content)}
+        placeholder={placeholder}
+        readOnly={disabled}
+        modules={{
+          toolbar: [
+            [{ header: "1" }, { header: "2" }, { font: [] }],
+            [{ size: [] }],
+            ["bold", "italic", "underline", "strike", "blockquote"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["link", "image"],
+            ["clean"],
+          ],
+        }}
+        formats={[
+          "header",
+          "font",
+          "size",
+          "bold",
+          "italic",
+          "underline",
+          "strike",
+          "blockquote",
+          "list",
+          "bullet",
+          "link",
+          "image",
+        ]}
       />
       {error && (
-        <div className="text-[12px] font-sans font-normal text-redPigment">
+        <div className="mt-10 text-[12px] font-sans font-normal text-redPigment">
           {error}
         </div>
       )}

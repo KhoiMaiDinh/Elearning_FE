@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -7,42 +8,35 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
-interface AlertOptionProps {
+interface ConfirmDeleteDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  title?: string;
+  description?: string;
 }
 
-const AlertOption: React.FC<AlertOptionProps> = ({
+export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   isOpen,
   onOpenChange,
   onConfirm,
+  title = "Xác nhận xóa",
+  description = "Bạn có chắc chắn muốn xóa phần này không? Hành động này không thể hoàn tác.",
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="bg-FloralWhite font-sans">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
-          <AlertDialogDescription>
-            Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa không?
-          </AlertDialogDescription>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>
-            Hủy
-          </AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-PersianRed text-White"
-            onClick={() => onConfirm()}
-          >
-            Xóa
-          </AlertDialogAction>
+          <AlertDialogCancel>Hủy</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Xóa</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 };
-
-export default AlertOption;

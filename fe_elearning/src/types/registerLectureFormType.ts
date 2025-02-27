@@ -1,13 +1,12 @@
-// @/types/registerLectureFormType.ts
 export interface RegisterLectureForm {
   fullName: string;
   dob: string;
   email: string;
-  phone: string;
+  bio: string;
   address: string;
   expertise: string;
   experience: string;
-  certificate?: FileList; // Change this to FileList | undefined
+  certificate: string[]; // Đổi thành string[] để lưu tên file
   bankAccount: string;
   bankName: string;
   accountHolder: string;

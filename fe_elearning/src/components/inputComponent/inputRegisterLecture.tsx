@@ -1,19 +1,23 @@
+// @/components/inputComponent/inputRegisterLecture.tsx
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React from "react";
 
-type inputRegisterLecture = {
+type InputRegisterLectureProps = {
   labelText: string;
   type?: string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   placeholder?: string;
-  value?: any;
+  value?: any; // Có thể là string hoặc string[]
   className?: string;
   error?: string;
   disabled?: boolean;
+  multiple?: boolean;
+  accept?: string;
 };
-const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
+
+const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
   labelText,
   type,
   onChange,
@@ -23,22 +27,25 @@ const InputRegisterLecture: React.FC<inputRegisterLecture> = ({
   className,
   error,
   disabled,
+  multiple,
+  accept,
 }) => {
   return (
     <div
-      className={` w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
+      className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
-      <Label htmlFor="email">{labelText}</Label>
+      <Label htmlFor={name}>{labelText}</Label>
       <Input
         type={type}
         id={name}
         name={name}
         placeholder={placeholder}
+        // Không truyền value nếu type="file"
+        {...(type !== "file" && { value })}
         onChange={onChange}
-        value={value}
-        className={className}
-        multiple
         disabled={disabled}
+        multiple={multiple}
+        accept={accept}
       />
       {error && (
         <div className="text-[12px] font-sans font-normal text-redPigment">

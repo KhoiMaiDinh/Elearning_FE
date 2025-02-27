@@ -56,7 +56,7 @@ const NotRegisteredLecture = () => {
           <div className="w-full  flex flex-col gap-3 items-center justify-center p-4">
             {dataBenefit &&
               dataBenefit.map((item, index) => (
-                <BenefitsBar description={item.description} />
+                <BenefitsBar key={index} description={item.description} />
               ))}
           </div>
         </div>

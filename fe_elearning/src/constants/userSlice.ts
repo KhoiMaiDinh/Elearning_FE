@@ -5,11 +5,13 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   userInfo: {
     username: "",
-    avatar: "",
+    profile_image: "",
     id: "",
     roles: <Roles[]>{},
     email: "",
     createdAt: "",
+    first_name: "",
+    last_name: "",
   },
 };
 

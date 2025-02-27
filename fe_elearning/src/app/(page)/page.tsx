@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import AOS from "aos";
+import SplitText from "@/components/text/splitText";
+import FadeContent from "@/components/animations/fadeContent";
+import Aurora from "@/components/animations/background-aurora";
 
 const dataLecture: lectureBlock[] = [
   {
@@ -180,102 +183,125 @@ const dataCourse = [
   },
 ];
 export default function Page() {
-  useEffect(() => {
-    AOS.init({
-      duration: 500, // Thời gian animation (mặc định là 1000ms)
-      once: true, // Chỉ chạy animation một lần khi cuộn đến
-    });
-  }, []);
-
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack dark:text-AntiFlashWhite font-sans font-medium text-majorelleBlue overflow-auto">
       <div className="flex flex-col w-full gap-4">
         {/* Ảnh nền với animation fade-up */}
         <div
-          data-aos="fade-up"
           className="bg-contain md:bg-right bg-center gap-2 bg-no-repeat w-full lg:h-[500px] md:h-[450px] h-[400px] rounded-md overflow-hidden"
           style={{ backgroundImage: `url(${"/images/dashboard_bg.png"})` }}
         >
           <div className="flex flex-col justify-center w-3/5 gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-white md:text-majorelleBlue font-sans text-center z-20">
-            <h1 className="lg:text-[38px] md:text-[24px] text-[20px] font-bold">
-              Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi
-            </h1>
-            <p className="mt-2 lg:text-[16px] md:text-[14px] text-[12px] md:text-black70 dark:text-white text-white">
-              Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm; Mô
+            <SplitText
+              text="Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi"
+              className="lg:text-[38px] md:text-[24px] text-[20px] font-bold"
+              delay={15}
+              animationFrom={{ opacity: 0, transform: "translate3d(0,50px,0)" }}
+              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+              threshold={0.2}
+              rootMargin="-50px"
+            />
+            <SplitText
+              text=" Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm; Mô
               hình học tập đa dạng & định hướng kết quả đầu ra, tích hợp công
-              nghệ tiên tiến.
-            </p>
+              nghệ tiên tiến."
+              className="mt-2 lg:text-[16px] md:text-[14px] text-[12px] md:text-black70 dark:text-white text-white"
+              delay={10}
+              animationFrom={{ opacity: 0, transform: "translate3d(0,50px,0)" }}
+              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+              threshold={0.2}
+              rootMargin="-50px"
+            />
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
-              <button className="button transform transition hover:scale-110 duration-300 ease-in-out">
-                Tìm khóa học
-                <ArrowRightCircle className="icon" color="#fff" />
-              </button>
-              <div className="flex flex-row gap-2 items-center justify-center">
-                <Headset size={32} className="text-majorelleBlue font-bold" />
-                <div className="flex flex-col font-sans font-medium text-[16px]">
-                  <span className="text-majorelleBlue70">Hotline LH</span>
-                  <span className="text-majorelleBlue font-bold">
-                    1900 1008
-                  </span>
+            <div className="w-full">
+              <FadeContent
+                blur={true}
+                duration={100}
+                easing="ease-out"
+                initialOpacity={0}
+                className="flex flex-col md:flex-row gap-4 items-center justify-center"
+              >
+                <button className="button transform transition hover:scale-110 duration-300 ease-in-out">
+                  Tìm khóa học
+                  <ArrowRightCircle className="icon" color="#fff" />
+                </button>
+                <div className="flex flex-row gap-2 items-center justify-center">
+                  <Headset size={32} className="text-majorelleBlue font-bold" />
+                  <div className="flex flex-col font-sans font-medium text-[16px]">
+                    <span className="text-majorelleBlue70">Hotline LH</span>
+                    <span className="text-majorelleBlue font-bold">
+                      1900 1008
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </FadeContent>
             </div>
           </div>
         </div>
 
         {/* Nội dung nằm trên lớp phủ với animation flip-down */}
-        <div
-          data-aos="flip-down"
+        <FadeContent
+          blur={true}
+          duration={100}
+          easing="ease-out"
+          initialOpacity={0}
           className="flex flex-col items-center justify-center gap-4"
         >
-          <text className="font-sans font-bold text-[28px] text-gray-900 dark:text-AntiFlashWhite">
-            Giới thiệu chung
-          </text>
-          <text className="font-sans font-medium text-[16px] text-darkSilver text-center md:w-1/2 w-4/5">
-            Các khóa học của chúng tôi đều được xây dựng kết hợp giữa lý thuyết
-            nền tảng và tính ứng dụng thực tế. Đội ngũ tư vấn và giảng viên là
-            chuyên gia nhiều năm kinh nghiệm trong lĩnh vực đào tạo và tư vấn.
-            Ngoài các khóa đào tạo cho cá nhân, doanh nghiệp trên nền tảng
-            offline và online, triển khai hệ thống cho doanh nghiệp. Đào tạo và
-            cung cấp nhân sự chất lượng cao đến các doanh nghiệp có nhu cầu. Mục
-            tiêu của trung tâm là mang lại những dịch vụ có giá trị thực tiễn
-            đến doanh nghiệp.
-          </text>
-          <div
-            data-aos="fade-up"
-            className="grid grid-cols-2 md:grid-cols-4 w-full gap-4 items-center justify-center"
-          >
-            <InfoDashboard
-              number={10}
-              title={"Giảng viên"}
-              Icon={IdCard}
-              color="#1568DF"
-            />
-            <InfoDashboard
-              number={2000}
-              title={"Bài học"}
-              Icon={BookCheck}
-              color="#219653"
-            />
-            <InfoDashboard
-              number={1000}
-              title={"Sinh viên"}
-              Icon={GraduationCap}
-              color="#9B51DF"
-            />
-            <InfoDashboard
-              number={10}
-              title={"Video"}
-              Icon={Film}
-              color="#FF2E2E"
-            />
+          <div className="flex flex-col items-center justify-center gap-4">
+            <text className="font-sans font-bold text-[28px] text-gray-900 dark:text-AntiFlashWhite">
+              Giới thiệu chung
+            </text>
+            <text className="font-sans font-medium text-[16px] text-darkSilver text-center md:w-1/2 w-4/5">
+              Các khóa học của chúng tôi đều được xây dựng kết hợp giữa lý
+              thuyết nền tảng và tính ứng dụng thực tế. Đội ngũ tư vấn và giảng
+              viên là chuyên gia nhiều năm kinh nghiệm trong lĩnh vực đào tạo và
+              tư vấn. Ngoài các khóa đào tạo cho cá nhân, doanh nghiệp trên nền
+              tảng offline và online, triển khai hệ thống cho doanh nghiệp. Đào
+              tạo và cung cấp nhân sự chất lượng cao đến các doanh nghiệp có nhu
+              cầu. Mục tiêu của trung tâm là mang lại những dịch vụ có giá trị
+              thực tiễn đến doanh nghiệp.
+            </text>
+
+            <div className="w-full">
+              <FadeContent
+                blur={true}
+                duration={100}
+                easing="ease-out"
+                className="grid grid-cols-2 md:grid-cols-4 w-full gap-4 items-center justify-center"
+                initialOpacity={0}
+              >
+                <InfoDashboard
+                  number={10}
+                  title={"Giảng viên"}
+                  Icon={IdCard}
+                  color="#1568DF"
+                />
+                <InfoDashboard
+                  number={2000}
+                  title={"Bài học"}
+                  Icon={BookCheck}
+                  color="#219653"
+                />
+                <InfoDashboard
+                  number={100}
+                  title={"Sinh viên"}
+                  Icon={GraduationCap}
+                  color="#9B51DF"
+                />
+                <InfoDashboard
+                  number={10}
+                  title={"Video"}
+                  Icon={Film}
+                  color="#FF2E2E"
+                />
+              </FadeContent>
+            </div>
           </div>
-        </div>
+        </FadeContent>
       </div>
       <hr className="py-4" />
 
-      <div data-aos="fade-up" className="w-full flex flex-col gap-2">
+      <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row items-center justify-between">
           <text className="text-[20px] text-gray-900 dark:text-AntiFlashWhite">
             Top giảng viên tại E-Learning
@@ -286,17 +312,25 @@ export default function Page() {
         </div>
         <div className="w-full h-full px-6 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2">
           {dataLecture.map((lecture: lectureBlock, index: number) => (
-            <div data-aos="fade-up" key={index}>
-              <LecturersBlock
-                avatar={lecture.avatar}
-                name={lecture.name}
-                rating={lecture.rating}
-                major={lecture.major}
-                numberCourse={lecture.numberCourse}
-                numberStudent={lecture.numberStudent}
-                description={lecture.description}
-              />
-            </div>
+            <FadeContent
+              blur={true}
+              duration={100}
+              easing="ease-out"
+              initialOpacity={0}
+            >
+              {/* Anything placed inside this container will be fade into view */}
+              <div key={index}>
+                <LecturersBlock
+                  avatar={lecture.avatar}
+                  name={lecture.name}
+                  rating={lecture.rating}
+                  major={lecture.major}
+                  numberCourse={lecture.numberCourse}
+                  numberStudent={lecture.numberStudent}
+                  description={lecture.description}
+                />
+              </div>
+            </FadeContent>
           ))}
         </div>
       </div>
@@ -312,21 +346,28 @@ export default function Page() {
         </div>
         <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2">
           {dataCourse.map((course: courseBlock, index: number) => (
-            <div data-aos="fade-up" key={index}>
-              <CoursesBlock
-                avatar={course.avatar}
-                name={course.name}
-                rating={course.rating}
-                title={course.title}
-                level={course.level}
-                numberStudent={course.numberStudent}
-                description={course.description}
-                progress={course.progress}
-                price={course.price}
-                priceFinal={course.priceFinal}
-                status={course.status}
-              />
-            </div>
+            <FadeContent
+              blur={true}
+              duration={100}
+              easing="ease-out"
+              initialOpacity={0}
+            >
+              <div key={index}>
+                <CoursesBlock
+                  avatar={course.avatar}
+                  name={course.name}
+                  rating={course.rating}
+                  title={course.title}
+                  level={course.level}
+                  numberStudent={course.numberStudent}
+                  description={course.description}
+                  progress={course.progress}
+                  price={course.price}
+                  priceFinal={course.priceFinal}
+                  status={course.status}
+                />
+              </div>
+            </FadeContent>
           ))}
         </div>
       </div>

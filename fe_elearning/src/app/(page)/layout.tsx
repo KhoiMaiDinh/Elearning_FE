@@ -15,6 +15,7 @@ import Header from "@/components/header";
 import { Separator } from "@radix-ui/react-separator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTheme } from "next-themes";
+import Aurora from "@/components/animations/background-aurora";
 
 export default function RootLayout({
   children,

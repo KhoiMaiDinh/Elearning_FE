@@ -1,4 +1,4 @@
-// @/types/courseFormType.ts
+// @/types/courseType.ts
 export interface Lesson {
   lesson_title: string;
   lesson_content: string;
@@ -8,7 +8,7 @@ export interface Lesson {
 
 export interface Section {
   section_title: string;
-  content: Lesson[]; // Đảm bảo content luôn là mảng
+  content: Lesson[];
   section_video: string;
   section_description: string;
   section_resources: string[];
@@ -16,11 +16,11 @@ export interface Section {
 
 export interface CourseForm {
   title: string;
-  rating: number;
-  enrolled_students: number;
   level: string;
   price: number;
-  lecture: string;
   short_description: string;
-  course: Section[]; // course luôn là mảng
+  course: Section[];
+  rating?: number;
+  enrolled_students?: number;
+  lecture?: string;
 }

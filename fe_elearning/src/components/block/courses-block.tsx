@@ -58,8 +58,8 @@ const CoursesBlock: React.FC<coursesBlock> = ({
               {rating}
             </text>
           </div>
-          <div className="w-24 h-6  dark:bg-black50 rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white bg-teaGreen">
-            <text className="text-goGreen text-[10px] font-sans font-medium">
+          <div className="w-24 h-6  dark:bg-black50 rounded-full flex  gap-1 px-3 py-1 items-center justify-center border border-white bg-teaGreen">
+            <text className="text-goGreen text-center text-[10px] font-sans font-medium">
               {level}
             </text>
           </div>

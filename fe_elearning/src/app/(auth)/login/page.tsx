@@ -113,21 +113,30 @@ const Page = () => {
 
   const handleLogin = async (data: any) => {
     setLoading(true);
-    const response = await APILoginEmail(data);
-    if (response?.status === 200) {
-      localStorage.setItem("access_token", response?.data?.access_token);
-      localStorage.setItem("refresh_token", response?.data?.refresh_token);
-      localStorage.setItem("expires_at", response?.data?.exp_token); // Thời gian hết hạn
+    try {
+      const response = await APILoginEmail(data);
+      if (response?.status === 200) {
+        localStorage.setItem("access_token", response?.data?.access_token);
+        localStorage.setItem("refresh_token", response?.data?.refresh_token);
+        localStorage.setItem("expires_at", response?.data?.exp_token); // Thời gian hết hạn
 
-      setAlertDescription("Đăng nhập thành công");
-      setShowAlertSuccess(true);
+        setAlertDescription("Đăng nhập thành công");
+        setShowAlertSuccess(true);
 
-      setTimeout(() => {
-        setShowAlertSuccess(false);
-      }, 3000);
-      router.push("/");
-      setLoading(false);
-    } else {
+        setTimeout(() => {
+          setShowAlertSuccess(false);
+        }, 3000);
+        router.push("/");
+        setLoading(false);
+      } else {
+        setAlertDescription("Đăng nhập thất bại");
+        setShowAlertError(true);
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
+        setLoading(false);
+      }
+    } catch (err) {
       setAlertDescription("Đăng nhập thất bại");
       setShowAlertError(true);
       setTimeout(() => {
@@ -177,9 +186,9 @@ const Page = () => {
     const response = await APIRegisterGoogle(data);
   };
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center bg-[url(/images/img_background.png)] bg-cover bg-center bg-no-repeat p-6">
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-[url(/images/img_background.png)] bg-cover bg-center bg-no-repeat p-0 lg:p-6">
       {" "}
-      <div className="flex h-5/6 w-5/6 lg:h-2/3 md:h-2/3 sm:h-5/6  items-center mx-12 lg:ml-auto lg:w-1/3 md:bg-majorelleBlue20 lg:bg-white sm:bg-majorelleBlue20 bg-majorelleBlue20 rounded-lg">
+      <div className="flex h-full w-full lg:h-2/3 md:h-full sm:h-full  items-center mx-12 lg:ml-auto lg:w-1/3  lg:bg-white bg-white/50 p-5 rounded-lg">
         {" "}
         {/* Form nằm bên phải */}
         <div className="flex w-full flex-col items-center gap-6 rounded-lg p-8 ">
@@ -226,7 +235,7 @@ const Page = () => {
           {/* Mô tả */}
           {/* Divider */}
           <form
-            className="flex flex-col gap-2.5 bg-white  w-[450px] rounded-[20px] font-sans"
+            className="flex flex-col gap-2.5 bg-white md:p-4 p-10 md:w-[450px] w-[350px] rounded-[20px] font-sans"
             onSubmit={handleSubmit(onSubmit)}
           >
             {/* ten */}
