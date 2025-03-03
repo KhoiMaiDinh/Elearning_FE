@@ -1,7 +1,14 @@
 "use client";
-import React from "react";
-import { BookOpen, Star, Users } from "lucide-react";
-import { Button } from "../ui/button";
+// components/TeacherCard.tsx
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Star, Users, BookOpen } from "lucide-react";
 import { useTheme } from "next-themes";
 
 type lecturersBlock = {
@@ -24,55 +31,58 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
 }) => {
   const { theme } = useTheme();
   return (
-    <div className="w-full h-full  rounded-2xl hover:pt-0 pt-1 ">
-      <div className="w-full h-56 bg-custom-gradient-light dark:bg-custom-gradient-dark text-black70 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md shadow-majorelleBlue20  border border-lightSilver hover:shadow-xl hover:mt-0 hover:cursor-pointer ">
-        <div className="w-full flex flex-row gap-4 items-center  mb-4">
-          <div className="w-16 h-16 rounded-lg overflow-hidden ">
-            <img
-              className="object-cover w-full h-full"
-              src={avatar}
-              alt="avatar"
-            />
-          </div>
-          <div className="flex flex-col items-start gap-2 dark:text-AntiFlashWhite text-black70">
-            <div className="w-16 h-6 dark:bg-black50 bg-champagne  rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
-              <Star color="#FFCD29" fill="#FFCD29" size={12} />
-              <text className="text-Sunglow text-[10px] font-sans font-bold ">
-                {rating}
-              </text>
+    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+      <CardHeader className="flex flex-col items-center gap-4">
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={avatar} alt={name} />
+          <AvatarFallback>
+            {name
+              ?.split(" ")
+              .map((n) => n[0])
+              .join("") || "GV"}
+          </AvatarFallback>
+        </Avatar>
+        <div className="text-center">
+          <h3 className="font-semibold text-lg">{name || "Giảng viên"}</h3>
+          <Badge
+            variant="secondary"
+            className="mt-1 bg-pinkLace dark:text-black"
+          >
+            {major || "Chưa xác định"}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm text-muted-foreground text-center line-clamp-3">
+          {description || "Chưa có mô tả"}
+        </p>
+        <div className="flex justify-around text-sm">
+          {rating && (
+            <div className="flex items-center gap-1">
+              <Star className="w-4 h-4 text-Sunglow" />
+              <span>{rating.toFixed(1)}</span>
             </div>
-            <div className="w-full flex flex-col ">
-              <span className="text-[14px] font-semibold">{name}</span>
-              <span className="text-[8px] font-sans font-medium dark:text-lightSilver text-darkSilver">
-                Chuyên môn: {major}
-              </span>
+          )}
+          {numberCourse && (
+            <div className="flex items-center gap-1">
+              <BookOpen className="w-4 h-4" />
+              <span>{numberCourse} khóa</span>
             </div>
-          </div>
+          )}
+          {numberStudent && (
+            <div className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              <span>{numberStudent}</span>
+            </div>
+          )}
         </div>
-        <div className="w-full h-1/3 flex flex-col">
-          <text className="dark:text-lightSilver text-darkSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
-            {description}
-          </text>
-        </div>
-
-        <div className="w-full flex flex-col">
-          <div className="w-full flex flex-row dark:text-lightSilver text-darkSilver font-sans font-medium text-[10px] items-center gap-3">
-            <BookOpen
-              color={`${theme === "light" ? "#736c6c" : "#d9d9d9"}`}
-              size={12}
-            />
-            <text>{numberCourse} khóa học</text>
-          </div>
-          <div className="w-full flex flex-row dark:text-lightSilver text-darkSilver font-sans font-medium text-[10px] items-center gap-3">
-            <Users
-              color={`${theme === "light" ? "#736c6c" : "#d9d9d9"}`}
-              size={12}
-            />
-            <text>{numberStudent}+ học viên</text>
-          </div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter className="justify-center">
+        <Badge variant="outline" className="cursor-pointer">
+          Xem chi tiết
+        </Badge>
+      </CardFooter>
+    </Card>
   );
 };
 

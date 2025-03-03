@@ -182,7 +182,7 @@ const UploadCourse: React.FC = () => {
             name="short_description"
             control={control}
             render={({ field }) => (
-              <TextAreaRegisterLecture
+              <InputRegisterLecture
                 {...field}
                 labelText="Mô tả ngắn"
                 error={errors.short_description?.message}

@@ -1,8 +1,15 @@
 "use client";
 import React from "react";
-import { BookOpen, Star, Users } from "lucide-react";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
+
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Star, Users, BookOpen } from "lucide-react";
 
 type coursesBlock = {
   coverPhoto?: string;
@@ -40,98 +47,86 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   };
 
   return (
-    <div className="w-full h-full text-white  rounded-2xl hover:pt-0 pt-1  ">
-      <div className="w-full h-full bg-custom-gradient-light dark:bg-custom-gradient-dark bg-opacity-90 dark:bg-opacity-100 shadow-majorelleBlue20 dark:text-AntiFlashWhite rounded-2xl p-3 shadow-md border border-lightSilver gap-1 flex flex-col hover:shadow-lg hover:mt-0 hover:cursor-pointer text-black70">
-        {/* Ảnh lớn hơn */}
-        <div className="w-full h-24 rounded-lg overflow-hidden">
+    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+      <CardHeader className="p-0">
+        <div className="relative h-40 w-full">
           <img
-            className="object-cover w-full h-full"
-            src={coverPhoto}
-            alt="avatar"
+            src={coverPhoto || "/placeholder-course.jpg"}
+            alt={title}
+            className="w-full h-full object-cover rounded-t-lg"
           />
+          {status && (
+            <Badge className="absolute top-2 right-2" variant="secondary">
+              {status}
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={avatar} />
+            <AvatarFallback>{name?.[0]}</AvatarFallback>
+          </Avatar>
+          <span className="text-sm text-muted-foreground">{name}</span>
         </div>
 
-        <div className="w-full flex h-1/6 flex-row justify-between items-center">
-          <div className="w-16 h-6 dark:bg-black50 bg-champagne rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
-            <Star color="#FFCD29" fill="#FFCD29" size={12} />
-            <text className="text-Sunglow text-[10px] font-sans font-medium">
-              {rating}
-            </text>
-          </div>
-          <div className="w-24 h-6  dark:bg-black50 rounded-full flex  gap-1 px-3 py-1 items-center justify-center border border-white bg-teaGreen">
-            <text className="text-goGreen text-center text-[10px] font-sans font-medium">
+        <h3 className="font-semibold line-clamp-2">{title}</h3>
+
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {description}
+        </p>
+
+        <div className="flex items-center gap-4 text-sm">
+          {rating && (
+            <div className="flex items-center gap-1">
+              <Star className="w-4 h-4 text-Sunglow" />
+              <span>{rating.toFixed(1)}</span>
+            </div>
+          )}
+          {numberStudent && (
+            <div className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              <span>{numberStudent}</span>
+            </div>
+          )}
+          {level && (
+            <Badge variant="outline" className="bg-teaGreen dark:text-black">
               {level}
-            </text>
-          </div>
-          <div className="w-16 h-6 dark:bg-black50 bg-AntiFlashWhite rounded-full flex flex-row gap-1 px-3 py-1 items-center justify-center border border-white">
-            <Users color="#545ae8" size={20} />
-            <text className=" text-[10px] font-sans font-medium">
-              {numberStudent && numberStudent > 1000
-                ? `${numberStudent / 1000}k+`
-                : `${numberStudent}+`}
-            </text>
-          </div>
+            </Badge>
+          )}
         </div>
 
-        <div className="w-full flex flex-col ">
-          <span className="text-[14px] font-semibold text-left">{title}</span>
-        </div>
-
-        {/* Giới hạn mô tả 3 dòng */}
-        <div className="w-full flex flex-col items-start justify-start h-14">
-          <text className="dark:text-lightSilver text-darkSilver font-sans font-normal text-[12px] leading-tight line-clamp-3">
-            {description}
-          </text>
-        </div>
-
-        <div className="w-full flex flex-row gap-4 items-center">
-          <div className="w-8 h-7 rounded-md overflow-hidden">
-            <img
-              className="object-cover w-full h-full"
-              src={avatar}
-              alt="avatar"
-            />
-          </div>
-
-          <div className="w-full flex flex-col">
-            <span className="text-[12px] font-semibold dark:text-lightSilver text-darkSilver">
-              {name}
+        {progress !== undefined && (
+          <div className="space-y-1">
+            <div className="w-full bg-darkSilver rounded-full h-2">
+              <div
+                className="bg-vividMalachite h-2 rounded-full"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {progress}% hoàn thành
             </span>
           </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex justify-between items-center">
+        <div className="space-x-2">
+          {price && (
+            <span className="text-muted-foreground line-through">
+              {formatPrice(price)}
+            </span>
+          )}
+          {priceFinal && (
+            <span className="font-semibold text-primary">
+              {formatPrice(priceFinal)}
+            </span>
+          )}
         </div>
-
-        <div className="w-full flex flex-row justify-between items-end font-sans font-medium text-[12px]">
-          <div className="flex">
-            {status === "Chưa đăng ký" && (
-              <div className="flex flex-col gap-0.5">
-                <text className="text-darkSilver line-through">
-                  {formatPrice(Number(price))}
-                </text>
-                <text className=" dark:text-AntiFlashWhite text-black70">
-                  {formatPrice(Number(priceFinal))}
-                </text>
-              </div>
-            )}
-            {status === "Đang học" && (
-              <div className="w-3/5 flex flex-row gap-0.5 items-center self-center">
-                <Progress
-                  value={progress}
-                  className="w-4/5"
-                  color="#ff0000"
-                ></Progress>
-                <text className="font-sans font-normal text-[10px]">
-                  {progress}%
-                </text>
-              </div>
-            )}
-          </div>
-
-          <Button className="bg-black border-AntiFlashWhite border-solid border  w-fit px-3 h-fit rounded-xl text-white text-[10px] font-sans font-medium shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300">
-            Xem chi tiết
-          </Button>
-        </div>
-      </div>
-    </div>
+        <Badge variant="outline">Xem chi tiết</Badge>
+      </CardFooter>
+    </Card>
   );
 };
 

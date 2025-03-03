@@ -122,14 +122,13 @@ export default {
       beautyGreen20: "rgba(102, 165, 134, 0.2)",
       eerieBlack: "#18181B",
       richBlack: "#070C2A",
-
       russianViolet: "#2D1E4A",
       persianIndigo: "#371D73",
       yankeesBlue: "#152A43",
     },
     backgroundImage: {
       "custom-gradient-dark":
-        "linear-gradient(to bottom right,  #1E293B, #334155)",
+        "linear-gradient(to bottom right, #1E293B, #334155)",
       "custom-gradient-light":
         "linear-gradient(to bottom right, #E5E7EB, #F3F4F6)",
     },

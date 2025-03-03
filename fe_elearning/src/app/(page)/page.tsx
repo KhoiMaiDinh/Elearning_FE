@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ArrowRightCircle,
   BookCheck,
+  ChevronRight,
   Film,
   GraduationCap,
   Headset,
@@ -21,6 +22,7 @@ import AOS from "aos";
 import SplitText from "@/components/text/splitText";
 import FadeContent from "@/components/animations/fadeContent";
 import Aurora from "@/components/animations/background-aurora";
+import { useRouter } from "next/navigation";
 
 const dataLecture: lectureBlock[] = [
   {
@@ -183,194 +185,361 @@ const dataCourse = [
   },
 ];
 export default function Page() {
+  const router = useRouter();
   return (
-    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack dark:text-AntiFlashWhite font-sans font-medium text-majorelleBlue overflow-auto">
-      <div className="flex flex-col w-full gap-4">
-        {/* Ảnh nền với animation fade-up */}
+    // <div className="w-full min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans overflow-x-hidden">
+    //   {/* Hero Section với gradient overlay */}
+    //   <section className="relative w-full h-[600px] bg-gradient-to-r from-indigo-600 to-purple-600">
+    //     <div className="absolute inset-0 bg-black/40 z-10" />
+    //     <div
+    //       className="absolute inset-0 bg-cover bg-center"
+    //       style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
+    //     />
+    //     <div className="relative z-20 container mx-auto h-full flex items-center">
+    //       <div className="max-w-2xl space-y-6 text-white">
+    //         <SplitText
+    //           text="Khám phá kỹ năng mới từ những chuyên gia hàng đầu"
+    //           className="text-4xl md:text-5xl font-bold leading-tight"
+    //           delay={15}
+    //           animationFrom={{ opacity: 0, transform: "translateY(50px)" }}
+    //           animationTo={{ opacity: 1, transform: "translateY(0px)" }}
+    //         />
+    //         <SplitText
+    //           text="Học tập linh hoạt với các khóa học chất lượng cao, được thiết kế bởi đội ngũ giảng viên giàu kinh nghiệm."
+    //           className="text-lg md:text-xl text-gray-200"
+    //           delay={10}
+    //           animationFrom={{ opacity: 0, transform: "translateY(50px)" }}
+    //           animationTo={{ opacity: 1, transform: "translateY(0px)" }}
+    //         />
+    //         <div className="flex items-center gap-4">
+    //           <Button
+    //             className="bg-white text-indigo-600 hover:bg-indigo-100 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
+    //             onClick={() => router.push("/courses")}
+    //           >
+    //             Tìm khóa học
+    //             <ArrowRight className="ml-2 w-5 h-5" />
+    //           </Button>
+    //           <div className="flex items-center gap-2 text-white">
+    //             <Headset className="w-6 h-6" />
+    //             <div>
+    //               <p className="text-sm opacity-80">Hotline</p>
+    //               <p className="font-bold">1900 1008</p>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </section>
+
+    //   {/* Stats Section */}
+    //   <section className="container mx-auto py-16">
+    //     <div
+    //       className="grid grid-cols-1 md:grid-cols-4 gap-6"
+    //       data-aos="fade-up"
+    //     >
+    // <InfoDashboard
+    //   number={10}
+    //   title={"Giảng viên"}
+    //   Icon={IdCard}
+    //   color="#1568DF"
+    // />
+    // <InfoDashboard
+    //   number={2000}
+    //   title={"Bài học"}
+    //   Icon={BookCheck}
+    //   color="#219653"
+    // />
+    // <InfoDashboard
+    //   number={100}
+    //   title={"Sinh viên"}
+    //   Icon={GraduationCap}
+    //   color="#9B51DF"
+    // />
+    // <InfoDashboard
+    //   number={10}
+    //   title={"Video"}
+    //   Icon={Film}
+    //   color="#FF2E2E"
+    // />
+    //     </div>
+    //   </section>
+
+    //   {/* About Section */}
+    //   <section className="bg-white dark:bg-gray-800 py-16">
+    //     <div className="container mx-auto text-center" data-aos="fade-up">
+    //       <h2 className="text-3xl md:text-4xl font-bold mb-6">Về chúng tôi</h2>
+    //       <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+    //         Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành, được
+    //         thiết kế bởi đội ngũ chuyên gia hàng đầu. Mục tiêu là mang lại giá
+    //         trị thực tiễn cho học viên và doanh nghiệp thông qua giáo dục chất
+    //         lượng cao.
+    //       </p>
+    //     </div>
+    //   </section>
+
+    //   {/* Lecturers Section */}
+    //   <section className="container mx-auto py-16">
+    //     <div className="flex items-center justify-between mb-8">
+    //       <h2 className="text-3xl font-bold">Giảng viên tiêu biểu</h2>
+    //       <Button
+    //         variant="link"
+    //         className="text-indigo-600 hover:text-indigo-800"
+    //         onClick={() => router.push("/lecturers")}
+    //       >
+    //         Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+    //       </Button>
+    //     </div>
+    //     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    //       {dataLecture.slice(0, 4).map((lecture, index) => (
+    //         <FadeContent
+    //           key={index}
+    //           blur={true}
+    //           duration={100}
+    //           easing="ease-out"
+    //           initialOpacity={0}
+    //           className="transform transition-all hover:-translate-y-2"
+    //         >
+    //           <LecturersBlock {...lecture} />
+    //         </FadeContent>
+    //       ))}
+    //     </div>
+    //   </section>
+
+    //   {/* Courses Section */}
+    //   <section className="bg-gray-100 dark:bg-gray-800 py-16">
+    //     <div className="container mx-auto">
+    //       <div className="flex items-center justify-between mb-8">
+    //         <h2 className="text-3xl font-bold">Khóa học nổi bật</h2>
+    //         <Button
+    //           variant="link"
+    //           className="text-indigo-600 hover:text-indigo-800"
+    //           onClick={() => router.push("/courses")}
+    //         >
+    //           Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+    //         </Button>
+    //       </div>
+    //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    //         {dataCourse.slice(0, 4).map((course, index) => (
+    //           <FadeContent
+    //             key={index}
+    //             blur={true}
+    //             duration={100}
+    //             easing="ease-out"
+    //             initialOpacity={0}
+    //             className="transform transition-all hover:-translate-y-2"
+    //           >
+    //             <CoursesBlock {...course} />
+    //           </FadeContent>
+    //         ))}
+    //       </div>
+    //     </div>
+    //   </section>
+
+    //   {/* CTA Section */}
+    //   <section className="bg-indigo-600 text-white py-16">
+    //     <div className="container mx-auto text-center" data-aos="zoom-in">
+    //       <h2 className="text-3xl md:text-4xl font-bold mb-4">
+    //         Sẵn sàng nâng cao kỹ năng của bạn?
+    //       </h2>
+    //       <p className="text-lg mb-6 max-w-2xl mx-auto">
+    //         Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ
+    //         giảng viên hàng đầu.
+    //       </p>
+    //       <Button
+    //         className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 py-3 font-semibold"
+    //         onClick={() => router.push("/signup")}
+    //       >
+    //         Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
+    //       </Button>
+    //     </div>
+    //   </section>
+    // </div>
+
+    <div className="w-full min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite font-sans overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="relative w-full h-[600px] bg-gradient-to-r from-majorelleBlue to-cosmicCobalt">
+        <div className="absolute inset-0 bg-black/30 z-10" />
         <div
-          className="bg-contain md:bg-right bg-center gap-2 bg-no-repeat w-full lg:h-[500px] md:h-[450px] h-[400px] rounded-md overflow-hidden"
-          style={{ backgroundImage: `url(${"/images/dashboard_bg.png"})` }}
-        >
-          <div className="flex flex-col justify-center w-3/5 gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-white md:text-majorelleBlue font-sans text-center z-20">
-            <SplitText
-              text="Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi"
-              className="lg:text-[38px] md:text-[24px] text-[20px] font-bold"
-              delay={15}
-              animationFrom={{ opacity: 0, transform: "translate3d(0,50px,0)" }}
-              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
-              threshold={0.2}
-              rootMargin="-50px"
-            />
-            <SplitText
-              text=" Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm; Mô
+          className="absolute inset-0 bg-cover bg-center dark:opacity-20 opacity-50"
+          style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
+        />
+        <div className="relative flex flex-col md:justify-center w-full dark:text-white gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-majorelleBlue md:text-majorelleBlue font-sans text-center z-20">
+          <SplitText
+            text="Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi"
+            className="lg:text-[38px] text-left md:text-[24px] text-[20px] font-bold"
+            delay={15}
+            animationFrom={{
+              opacity: 0,
+              transform: "translate3d(0,50px,0)",
+            }}
+            animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+            threshold={0.2}
+            rootMargin="-50px"
+          />
+          <SplitText
+            text=" Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm; Mô
               hình học tập đa dạng & định hướng kết quả đầu ra, tích hợp công
               nghệ tiên tiến."
-              className="mt-2 lg:text-[16px] md:text-[14px] text-[12px] md:text-black70 dark:text-white text-white"
-              delay={10}
-              animationFrom={{ opacity: 0, transform: "translate3d(0,50px,0)" }}
-              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
-              threshold={0.2}
-              rootMargin="-50px"
-            />
+            className="mt-2 lg:text-[16px] md:text-[14px] text-[12px] md:text-black70 dark:text-white text-majorelleBlue"
+            delay={10}
+            animationFrom={{
+              opacity: 0,
+              transform: "translate3d(0,50px,0)",
+            }}
+            animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+            threshold={0.2}
+            rootMargin="-50px"
+          />
 
-            <div className="w-full">
-              <FadeContent
-                blur={true}
-                duration={100}
-                easing="ease-out"
-                initialOpacity={0}
-                className="flex flex-col md:flex-row gap-4 items-center justify-center"
-              >
-                <button className="button transform transition hover:scale-110 duration-300 ease-in-out">
-                  Tìm khóa học
-                  <ArrowRightCircle className="icon" color="#fff" />
-                </button>
-                <div className="flex flex-row gap-2 items-center justify-center">
-                  <Headset size={32} className="text-majorelleBlue font-bold" />
-                  <div className="flex flex-col font-sans font-medium text-[16px]">
-                    <span className="text-majorelleBlue70">Hotline LH</span>
-                    <span className="text-majorelleBlue font-bold">
-                      1900 1008
-                    </span>
-                  </div>
-                </div>
-              </FadeContent>
+          <div className="flex items-center gap-4">
+            <Button
+              className="bg-majorelleBlue text-white hover:bg-majorelleBlue70 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
+              onClick={() => router.push("/courses")}
+            >
+              Tìm khóa học
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <div className="flex items-center gap-2 text-white">
+              <Headset className="w-6 h-6 text-beautyGreen" />
+              <div>
+                <p className="text-sm opacity-80">Hotline</p>
+                <p className="font-bold dark:text-beautyGreen text-majorelleBlue ">
+                  1900 1008
+                </p>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Nội dung nằm trên lớp phủ với animation flip-down */}
-        <FadeContent
-          blur={true}
-          duration={100}
-          easing="ease-out"
-          initialOpacity={0}
-          className="flex flex-col items-center justify-center gap-4"
+      {/* Stats Section */}
+      <section className="container mx-auto py-16">
+        <div
+          className="grid grid-cols-1 md:grid-cols-4 gap-6"
+          data-aos="fade-up"
         >
-          <div className="flex flex-col items-center justify-center gap-4">
-            <text className="font-sans font-bold text-[28px] text-gray-900 dark:text-AntiFlashWhite">
-              Giới thiệu chung
-            </text>
-            <text className="font-sans font-medium text-[16px] text-darkSilver text-center md:w-1/2 w-4/5">
-              Các khóa học của chúng tôi đều được xây dựng kết hợp giữa lý
-              thuyết nền tảng và tính ứng dụng thực tế. Đội ngũ tư vấn và giảng
-              viên là chuyên gia nhiều năm kinh nghiệm trong lĩnh vực đào tạo và
-              tư vấn. Ngoài các khóa đào tạo cho cá nhân, doanh nghiệp trên nền
-              tảng offline và online, triển khai hệ thống cho doanh nghiệp. Đào
-              tạo và cung cấp nhân sự chất lượng cao đến các doanh nghiệp có nhu
-              cầu. Mục tiêu của trung tâm là mang lại những dịch vụ có giá trị
-              thực tiễn đến doanh nghiệp.
-            </text>
+          <InfoDashboard
+            number={10}
+            title={"Giảng viên"}
+            Icon={IdCard}
+            color="#1568DF"
+          />
+          <InfoDashboard
+            number={2000}
+            title={"Bài học"}
+            Icon={BookCheck}
+            color="#219653"
+          />
+          <InfoDashboard
+            number={100}
+            title={"Sinh viên"}
+            Icon={GraduationCap}
+            color="#9B51DF"
+          />
+          <InfoDashboard
+            number={10}
+            title={"Video"}
+            Icon={Film}
+            color="#FF2E2E"
+          />
+        </div>
+      </section>
 
-            <div className="w-full">
+      {/* About Section */}
+      <section className="bg-white dark:bg-cosmicCobalt/10 py-16">
+        <div className="container mx-auto text-center" data-aos="fade-up">
+          <h2 className="text-3xl md:text-4xl font-bold text-majorelleBlue dark:text-majorelleBlue mb-6">
+            Về chúng tôi
+          </h2>
+          <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
+            Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành, được
+            thiết kế bởi đội ngũ chuyên gia hàng đầu. Mục tiêu là mang lại giá
+            trị thực tiễn cho học viên và doanh nghiệp thông qua giáo dục chất
+            lượng cao.
+          </p>
+        </div>
+      </section>
+
+      {/* Lecturers Section */}
+      <section className="container mx-auto py-16">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
+            Giảng viên tiêu biểu
+          </h2>
+          <Button
+            variant="link"
+            className="text-majorelleBlue hover:text-majorelleBlue70"
+            onClick={() => router.push("/lecturers")}
+          >
+            Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {dataLecture.slice(0, 4).map((lecture, index) => (
+            <FadeContent
+              key={index}
+              blur={true}
+              duration={100}
+              easing="ease-out"
+              initialOpacity={0}
+              className="transform transition-all hover:-translate-y-2"
+            >
+              <LecturersBlock {...lecture} />
+            </FadeContent>
+          ))}
+        </div>
+      </section>
+
+      {/* Courses Section */}
+      <section className="py-16">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
+              Khóa học nổi bật
+            </h2>
+            <Button
+              variant="link"
+              className="text-majorelleBlue hover:text-majorelleBlue70"
+              onClick={() => router.push("/courses")}
+            >
+              Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {dataCourse.slice(0, 4).map((course, index) => (
               <FadeContent
+                key={index}
                 blur={true}
                 duration={100}
                 easing="ease-out"
-                className="grid grid-cols-2 md:grid-cols-4 w-full gap-4 items-center justify-center"
                 initialOpacity={0}
+                className="transform transition-all hover:-translate-y-2"
               >
-                <InfoDashboard
-                  number={10}
-                  title={"Giảng viên"}
-                  Icon={IdCard}
-                  color="#1568DF"
-                />
-                <InfoDashboard
-                  number={2000}
-                  title={"Bài học"}
-                  Icon={BookCheck}
-                  color="#219653"
-                />
-                <InfoDashboard
-                  number={100}
-                  title={"Sinh viên"}
-                  Icon={GraduationCap}
-                  color="#9B51DF"
-                />
-                <InfoDashboard
-                  number={10}
-                  title={"Video"}
-                  Icon={Film}
-                  color="#FF2E2E"
-                />
+                <CoursesBlock {...course} />
               </FadeContent>
-            </div>
+            ))}
           </div>
-        </FadeContent>
-      </div>
-      <hr className="py-4" />
+        </div>
+      </section>
 
-      <div className="w-full flex flex-col gap-2">
-        <div className="w-full flex flex-row items-center justify-between">
-          <text className="text-[20px] text-gray-900 dark:text-AntiFlashWhite">
-            Top giảng viên tại E-Learning
-          </text>
-          <text className="text-[12px] text-lightSilver dark:text-gray-400">
-            Xem thêm
-          </text>
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-majorelleBlue to-persianIndigo dark:text-white text-majorelleBlue py-16">
+        <div className="container mx-auto text-center" data-aos="zoom-in">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Sẵn sàng nâng cao kỹ năng của bạn?
+          </h2>
+          <p className="text-lg mb-6 max-w-2xl mx-auto text-darkSilver">
+            Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ
+            giảng viên hàng đầu.
+          </p>
+          <Button
+            className="bg-yankeesBlue text-white hover:bg-yankeesBlue/80 rounded-full px-8 py-3 font-semibold"
+            onClick={() => router.push("/signup")}
+          >
+            Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
         </div>
-        <div className="w-full h-full px-6 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2">
-          {dataLecture.map((lecture: lectureBlock, index: number) => (
-            <FadeContent
-              blur={true}
-              duration={100}
-              easing="ease-out"
-              initialOpacity={0}
-            >
-              {/* Anything placed inside this container will be fade into view */}
-              <div key={index}>
-                <LecturersBlock
-                  avatar={lecture.avatar}
-                  name={lecture.name}
-                  rating={lecture.rating}
-                  major={lecture.major}
-                  numberCourse={lecture.numberCourse}
-                  numberStudent={lecture.numberStudent}
-                  description={lecture.description}
-                />
-              </div>
-            </FadeContent>
-          ))}
-        </div>
-      </div>
-
-      <div data-aos="fade-up" className="w-full flex flex-col gap-2">
-        <div className="w-full flex flex-row items-center justify-between">
-          <text className="text-[20px] text-gray-900 dark:text-AntiFlashWhite">
-            Top Khóa học tại E-Learning
-          </text>
-          <text className="text-[12px] text-lightSilver dark:text-gray-400">
-            Xem thêm
-          </text>
-        </div>
-        <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2">
-          {dataCourse.map((course: courseBlock, index: number) => (
-            <FadeContent
-              blur={true}
-              duration={100}
-              easing="ease-out"
-              initialOpacity={0}
-            >
-              <div key={index}>
-                <CoursesBlock
-                  avatar={course.avatar}
-                  name={course.name}
-                  rating={course.rating}
-                  title={course.title}
-                  level={course.level}
-                  numberStudent={course.numberStudent}
-                  description={course.description}
-                  progress={course.progress}
-                  price={course.price}
-                  priceFinal={course.priceFinal}
-                  status={course.status}
-                />
-              </div>
-            </FadeContent>
-          ))}
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

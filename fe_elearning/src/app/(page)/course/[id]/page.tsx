@@ -89,26 +89,29 @@ const Page = () => {
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
   return (
-    <div className="flex lg:flex-row md:flex-row flex-col-reverse  gap-2 ">
-      <div className="flex flex-col lg:w-3/4 md:w-2/3">
-        <InfoCourse
-          title={dataCourseDetails.title}
-          rating={dataCourseDetails.rating}
-          numberStudent={dataCourseDetails.enrolled_students}
-          level={dataCourseDetails.level}
-          lecture={dataCourseDetails.lecture}
-          price={dataCourseDetails.price}
-          description={dataCourseDetails.short_description}
-        />
-      </div>
-      {/* <hr className="hidden md:block lg:block border-goGreen border-spacing-1" /> */}
+    <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Main Content */}
+        <div className="lg:w-3/4">
+          <InfoCourse
+            title={dataCourseDetails.title}
+            rating={dataCourseDetails.rating}
+            numberStudent={dataCourseDetails.enrolled_students}
+            level={dataCourseDetails.level}
+            lecture={dataCourseDetails.lecture}
+            price={dataCourseDetails.price}
+            description={dataCourseDetails.short_description}
+          />
+        </div>
 
-      <div className="w-full lg:w-1/4 md:w-1/3">
-        <InfoBlockCourse
-          isRegistered={true}
-          price={dataCourseDetails.price}
-          level={dataCourseDetails.level}
-        />
+        {/* Sidebar */}
+        <div className="lg:w-1/4">
+          <InfoBlockCourse
+            isRegistered={true}
+            price={dataCourseDetails.price}
+            level={dataCourseDetails.level}
+          />
+        </div>
       </div>
     </div>
   );

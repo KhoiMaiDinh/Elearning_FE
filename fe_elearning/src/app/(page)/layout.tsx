@@ -31,7 +31,7 @@ export default function RootLayout({
   }, []);
 
   return (
-    <body className="bg-AntiFlashWhite">
+    <body className="bg-AntiFlashWhite dark:bg-eerieBlack">
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -39,7 +39,7 @@ export default function RootLayout({
         disableTransitionOnChange
       >
         <div className="flex items-start justify-start bg-AntiFlashWhite dark:bg-eerieBlack">
-          <SidebarProvider>
+          {/* <SidebarProvider>
             <AppSidebar />
 
             <SidebarInset className="bg-AntiFlashWhite dark:bg-eerieBlack">
@@ -64,7 +64,13 @@ export default function RootLayout({
                 </div>
               </div>
             </SidebarInset>
-          </SidebarProvider>
+          </SidebarProvider> */}
+          <div className="w-full h-full flex flex-col bg-white dark:bg-eerieBlack">
+            <Header />
+            <div className="w-full h-full p-5 bg-AntiFlashWhite dark:bg-eerieBlack ">
+              {children}
+            </div>
+          </div>
         </div>
       </ThemeProvider>
     </body>

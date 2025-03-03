@@ -105,7 +105,6 @@ const ProfileStudent = () => {
       }
 
       // Upload file lên MinIO bằng axios
-      const url = process.env.NEXT_PUBLIC_BASE_URL_IMAGE!;
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {

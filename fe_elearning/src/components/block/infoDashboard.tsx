@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+
 import CountUp from "../text/countUp";
 
 type infoDashboard = {
@@ -17,18 +16,9 @@ const InfoDashboard: React.FC<infoDashboard> = ({
   color,
 }) => {
   // Khởi tạo AOS cho animation fade-up
-  useEffect(() => {
-    AOS.init({
-      duration: 500,
-      once: true,
-    });
-  }, []);
 
   return (
-    <div
-      data-aos="fade-up"
-      className="flex flex-row rounded-md items-center justify-center gap-2 p-4 bg-white dark:bg-black50 shadow-md hover:shadow-lg transition-shadow"
-    >
+    <div className="flex flex-row rounded-md items-center justify-center gap-2 p-4 bg-white dark:bg-black50 shadow-md hover:shadow-lg transition-shadow">
       <Icon color={color} size={48} />
       <div className="flex flex-col font-sans text-black dark:text-AntiFlashWhite leading-snug">
         <p className="text-[24px] font-bold">
