@@ -18,9 +18,11 @@ export interface CourseForm {
   title: string;
   level: string;
   price: number;
+  priceFinal?: number;
   short_description: string;
   course: Section[];
   rating?: number;
   enrolled_students?: number;
   lecture?: string;
+  coverPhoto?: string;
 }
