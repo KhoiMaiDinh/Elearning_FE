@@ -1,17 +1,19 @@
 // 'use client'
-import { Roles } from "@/types/userType";
+import { Lecture } from "@/types/registerLectureFormType";
+import { FileData, Roles } from "@/types/userType";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userInfo: {
     username: "",
-    profile_image: "",
+    profile_image: <FileData>{},
     id: "",
     roles: <Roles[]>{},
     email: "",
     createdAt: "",
     first_name: "",
     last_name: "",
+    instructor_profile: <Lecture | null>null,
   },
 };
 

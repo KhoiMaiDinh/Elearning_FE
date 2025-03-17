@@ -208,14 +208,14 @@ const Page = () => {
             />
           </div>
           {/* Tab Đăng nhập / Đăng ký */}
-          <div className="flex justify-center gap-6 bg-majorelleBlue50 rounded-full w-fit p-2">
+          <div className="flex justify-center gap-6 bg-majorelleBlue50 dark:bg-black50 rounded-full w-fit p-2">
             {" "}
             <Button
               onClick={() => handleButtonClick("login")}
               className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
                 activeButton === "login"
-                  ? "bg-majorelleBlue text-white hover:bg-majorelleBlue"
-                  : "bg-trnsp text-majorelleBlue hover:bg-majorelleBlue70 hover:text-white"
+                  ? "bg-majorelleBlue dark:bg-black text-white hover:bg-majorelleBlue dark:hover:bg-black"
+                  : " text-majorelleBlue dark:text-black hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
               } hover:shadow-lg`}
             >
               Đăng nhập
@@ -225,8 +225,8 @@ const Page = () => {
               onClick={() => handleButtonClick("signup")}
               className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
                 activeButton === "signup"
-                  ? "bg-majorelleBlue text-white hover:bg-majorelleBlue"
-                  : "bg-trnsp text-majorelleBlue hover:bg-majorelleBlue70 hover:text-white"
+                  ? "bg-majorelleBlue dark:bg-black text-white hover:bg-majorelleBlue dark:hover:bg-black"
+                  : " text-majorelleBlue dark:text-black hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
               } hover:shadow-lg`}
             >
               Đăng ký
@@ -235,7 +235,7 @@ const Page = () => {
           {/* Mô tả */}
           {/* Divider */}
           <form
-            className="flex flex-col gap-2.5 bg-white md:p-4 p-10 md:w-[450px] w-[350px] rounded-[20px] font-sans"
+            className="flex flex-col gap-2.5 bg-white dark:bg-black md:p-4 p-10 md:w-[450px] w-[350px] rounded-[20px] font-sans"
             onSubmit={handleSubmit(onSubmit)}
           >
             {/* ten */}
@@ -309,7 +309,7 @@ const Page = () => {
               render={({ field }) => (
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-col">
-                    <label className="text-[#151717] font-semibold">
+                    <label className="text-[#151717] dark:text-white/80 font-semibold">
                       Email
                     </label>
                   </div>
@@ -340,7 +340,7 @@ const Page = () => {
               render={({ field }) => (
                 <div>
                   <div className="flex flex-col">
-                    <label className="text-[#151717] font-semibold">
+                    <label className="text-[#151717]   dark:text-white/80  font-semibold">
                       Mật khẩu
                     </label>
                   </div>
@@ -377,7 +377,7 @@ const Page = () => {
                 render={({ field }) => (
                   <div>
                     <div className="flex flex-col">
-                      <label className="text-[#151717] font-semibold">
+                      <label className="text-[#151717]  dark:text-white/80 font-semibold">
                         Xác nhận mật khẩu
                       </label>
                     </div>
@@ -419,7 +419,7 @@ const Page = () => {
                 <input type="checkbox" id="remember" className="h-4 w-4" />
                 <label
                   htmlFor="remember"
-                  className="text-[14px] text-black font-normal"
+                  className="text-[14px] text-black  dark:text-white/80 font-normal"
                 >
                   Ghi nhớ
                 </label>
@@ -458,7 +458,7 @@ const Page = () => {
               {/* Google Button */}
               <button
                 type="button"
-                className="mt-2.5 w-full h-[50px] rounded-[10px] flex items-center justify-center gap-2.5 border border-[#ededef] bg-white cursor-pointer transition duration-200 ease-in-out hover:border-[#2d79f3]"
+                className="mt-2.5 w-full h-[50px] text-black rounded-[10px] flex items-center justify-center gap-2.5 border border-[#ededef] bg-white cursor-pointer transition duration-200 ease-in-out hover:border-[#2d79f3]"
                 onClick={() => signIn("google")}
               >
                 <svg height="20" width="20" viewBox="0 0 512 512">
@@ -485,7 +485,7 @@ const Page = () => {
               {/* Apple Button */}
               <button
                 type="button"
-                className="mt-2.5 w-full h-[50px] rounded-[10px] flex items-center justify-center gap-2.5 border border-[#ededef] bg-white cursor-pointer transition duration-200 ease-in-out hover:border-[#2d79f3]"
+                className="mt-2.5 w-full h-[50px] text-black rounded-[10px] flex items-center justify-center gap-2.5 border border-[#ededef] bg-white cursor-pointer transition duration-200 ease-in-out hover:border-[#2d79f3]"
               >
                 <svg height="20" width="20" viewBox="0 0 22.773 22.773">
                   <g>

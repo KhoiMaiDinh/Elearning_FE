@@ -14,28 +14,30 @@ import { Label } from "../ui/label";
 type selectFilter = {
   label: string;
   disabled?: boolean;
-  onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
   placeholder?: string;
   data: { id: string; value: any }[];
   error?: string;
+  className?: string;
+  value?: string;
 };
-const SelectFilter: React.FC<selectFilter> = ({
+const SelectRegister: React.FC<selectFilter> = ({
   label,
   placeholder,
   disabled,
-  onChange,
+  onValueChange,
   data,
   error,
+  className,
+  value,
 }) => {
   return (
-    <div className="flex flex-col gap-2 ">
-      <div className="flex flex-row ">
-        <Label className="flex flex-row items-center text-[14px] font-bold py-2 font-sans">
-          {label}
-        </Label>
-      </div>
-      <Select disabled={disabled} onValueChange={onChange}>
-        <SelectTrigger className="w-28 sm:w-28 md:w-32 lg:w-36">
+    <div
+      className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
+    >
+      <Label>{label}</Label>
+      <Select disabled={disabled} onValueChange={onValueChange} value={value}>
+        <SelectTrigger className=" sm:min-w-28 md:min-w-32 lg:min-w-36 w-fit">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -58,4 +60,4 @@ const SelectFilter: React.FC<selectFilter> = ({
   );
 };
 
-export default SelectFilter;
+export default SelectRegister;

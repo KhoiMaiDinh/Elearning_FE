@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserType } from "@/types/userType";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/constants/store";
-import { APIUpdateCurrentUser } from "@/utils/user";
+import { APIGetCurrentUser, APIUpdateCurrentUser } from "@/utils/user";
 import axios from "axios";
 import { APIGetPresignedUrl } from "@/utils/storage";
 import { setUser } from "@/constants/userSlice";
@@ -32,7 +32,15 @@ const schema = yup.object().shape({
     .string()
     .required("Biệt danh không được bỏ trống")
     .max(60, "Tối đa 60 ký tự"),
-  profile_image: yup.string().required("Ảnh đại diện không được để trống"),
+  profile_image: yup
+    .object()
+    .shape({
+      key: yup.string().required("Ảnh đại diện không được để trống"),
+      bucket: yup.string(),
+      status: yup.string(),
+      rejected_reason: yup.string(),
+    })
+    .required("Ảnh đại diện không được để trống"),
 });
 
 const ProfileStudent = () => {
@@ -49,7 +57,12 @@ const ProfileStudent = () => {
       last_name: "",
       username: "",
       email: "",
-      profile_image: "",
+      profile_image: {
+        key: "",
+        bucket: undefined,
+        status: undefined,
+        rejected_reason: undefined,
+      },
     },
   });
 
@@ -71,16 +84,49 @@ const ProfileStudent = () => {
       setValue("last_name", userInfo.last_name);
       setValue("email", userInfo.email);
       setValue("username", userInfo.username);
-      setValue("profile_image", userInfo.profile_image || "");
-      setImagePreview(userInfo.profile_image || "");
+      setValue("profile_image", {
+        key: userInfo.profile_image?.key || "",
+        bucket: userInfo.profile_image?.bucket || "",
+        status: userInfo.profile_image?.status || "",
+        rejected_reason: userInfo.profile_image?.rejected_reason || "",
+      });
+
+      // Chỉ set imagePreview khi có query parameters
+      if (
+        profileImage.key.startsWith("data:image") ||
+        profileImage.key.startsWith("blob:") ||
+        profileImage.key.includes("?")
+      ) {
+        setImagePreview(
+          profileImage.key.startsWith("data:image") ||
+            profileImage.key.startsWith("blob:")
+            ? profileImage.key
+            : process.env.NEXT_PUBLIC_BASE_URL_IMAGE + profileImage.key
+        );
+      }
     }
   }, [userInfo, setValue, disable]);
 
   // Đồng bộ preview khi profile_image thay đổi
   useEffect(() => {
-    if (profileImage) {
-      setImagePreview(profileImage);
+    if (profileImage?.key) {
+      // Chỉ set imagePreview trong 2 trường hợp:
+      // 1. Khi là local file (data:image hoặc blob:)
+      // 2. Khi có query parameters (presigned URL)
+      if (
+        profileImage.key.startsWith("data:image") ||
+        profileImage.key.startsWith("blob:") ||
+        profileImage.key.includes("?")
+      ) {
+        setImagePreview(
+          profileImage.key.startsWith("data:image") ||
+            profileImage.key.startsWith("blob:")
+            ? profileImage.key
+            : process.env.NEXT_PUBLIC_BASE_URL_IMAGE + profileImage.key
+        );
+      }
     }
+    console.log("🚀 ~ ProfileStudent ~ profileImage:", profileImage);
   }, [profileImage]);
 
   // Lấy presigned URL từ backend
@@ -90,7 +136,8 @@ const ProfileStudent = () => {
     try {
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
-        resource: "user",
+        entity: "user",
+        entity_property: "profile_image",
       });
       const { postURL, formData } = presignedData?.data;
 
@@ -100,9 +147,6 @@ const ProfileStudent = () => {
         uploadFormData.append(key, value as string);
       });
       uploadFormData.append("file", file); // Thêm file
-      for (const value of uploadFormData.values()) {
-        console.log(value);
-      }
 
       // Upload file lên MinIO bằng axios
 
@@ -112,7 +156,9 @@ const ProfileStudent = () => {
         },
       });
       if (response.status === 204 || response.status === 200) {
-        return postURL + "/" + uploadFormData.get("key");
+        const key = uploadFormData.get("key");
+        if (!key) throw new Error("Missing key in form data");
+        return key.toString();
       } else {
         throw new Error("Upload thất bại");
       }
@@ -124,29 +170,31 @@ const ProfileStudent = () => {
 
   const onSubmit = async (data: FieldValues) => {
     if (!disable && userInfo?.id) {
-      let updatedProfileImage = data.profile_image;
+      let profileImageKey = data.profile_image.key;
 
-      // Nếu có file mới, upload lên MinIO
-      if (selectedFile) {
-        try {
-          updatedProfileImage = await uploadToMinIO(selectedFile);
-          setValue("profile_image", updatedProfileImage); // Cập nhật profile_image với URL từ MinIO
-        } catch (error) {
-          setAlertDescription("Upload ảnh thất bại");
-          setShowAlertError(true);
-          setTimeout(() => setShowAlertError(false), 3000);
-          return;
-        }
+      // Cắt bỏ query parameters nếu có
+      if (profileImageKey.includes("?")) {
+        profileImageKey = profileImageKey.split("?")[0];
       }
 
       const dataSubmit = {
         first_name: data.first_name,
         last_name: data.last_name,
         username: data.username,
-        profile_image: updatedProfileImage,
+        profile_image: {
+          ...data.profile_image,
+          key: profileImageKey,
+        },
       };
 
       handleUpdateProfileUser(dataSubmit);
+    }
+  };
+
+  const handleGetCurrentUser = async () => {
+    const response = await APIGetCurrentUser();
+    if (response?.status === 200) {
+      dispatch(setUser(response?.data));
     }
   };
 
@@ -158,6 +206,7 @@ const ProfileStudent = () => {
         setShowAlertSuccess(true);
         setDisable(true); // Quay lại chế độ disable
         setSelectedFile(null); // Xóa file tạm sau khi upload thành công
+        handleGetCurrentUser();
         dispatch(setUser(response?.data));
         setTimeout(() => setShowAlertSuccess(false), 3000);
       } else {
@@ -191,13 +240,7 @@ const ProfileStudent = () => {
                 <div className="flex flex-col gap-2 items-center">
                   <Avatar className="w-24 h-24">
                     <AvatarImage
-                      src={
-                        imagePreview?.startsWith("data:image") ||
-                        imagePreview?.startsWith("blob:")
-                          ? imagePreview
-                          : process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                            imagePreview
-                      }
+                      src={imagePreview}
                       alt="Profile Image"
                       className="object-cover"
                     />
@@ -209,12 +252,33 @@ const ProfileStudent = () => {
                       accept="image/*"
                       error={errors.profile_image?.message}
                       disabled={disable}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
-                          const imageUrl = URL.createObjectURL(file);
-                          setValue("profile_image", imageUrl); // Lưu URL tạm thời để preview
-                          setSelectedFile(file); // Lưu file thực tế để upload
+                          try {
+                            // Hiển thị preview ngay
+
+                            setSelectedFile(file);
+
+                            const previewUrl = URL.createObjectURL(file);
+
+                            setImagePreview(previewUrl);
+
+                            // Upload file
+                            const uploadedKey = await uploadToMinIO(file);
+
+                            // Cập nhật form value với file đã upload
+                            setValue("profile_image", {
+                              key: uploadedKey,
+                              bucket: undefined,
+                              status: undefined,
+                              rejected_reason: undefined,
+                            });
+                          } catch (error) {
+                            setAlertDescription("Upload ảnh thất bại");
+                            setShowAlertError(true);
+                            setTimeout(() => setShowAlertError(false), 3000);
+                          }
                         }
                       }}
                     />

@@ -10,10 +10,10 @@ const AlertSuccess: React.FC<AlertType> = ({ description }) => {
     <div className="fixed right-4 top-4 z-50 rounded-md bg-white font-sans shadow-xl">
       <Alert>
         <RocketIcon color="#2a435d" className="h-4 w-4" />
-        <AlertTitle className="font-bold text-majorelleBlue">
+        <AlertTitle className="font-bold text-majorelleBlue dark:text-white/80">
           Thông báo!
         </AlertTitle>
-        <AlertDescription className="font-medium text-majorelleBlue">
+        <AlertDescription className="font-medium text-majorelleBlue dark:text-white/80">
           {description}
         </AlertDescription>
       </Alert>

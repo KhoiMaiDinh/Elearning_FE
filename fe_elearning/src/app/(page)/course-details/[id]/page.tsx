@@ -24,14 +24,16 @@ const courseData: CourseForm = {
           lesson_content:
             "Tìm hiểu cơ bản về JavaScript và vai trò của nó trong lập trình web.",
           resources: ["Tài liệu giới thiệu JavaScript.pdf"],
-          video_url: "https://example.com/video/javascript-introduction.mp4",
+          video_url:
+            "http://192.168.110.50:9000/video/427928847_7210588072356478_1781648401361081538_n/master.m3u8",
         },
         {
           lesson_title: "Thiết lập môi trường làm việc",
           lesson_content:
             "Hướng dẫn cài đặt và sử dụng trình biên tập mã như VS Code.",
           resources: ["Hướng dẫn cài đặt VS Code.pdf"],
-          video_url: "https://example.com/video/setup-environment.mp4",
+          video_url:
+            "http://192.168.110.50:9000/video/huong_dan_pos365/master.m3u8",
         },
       ],
       section_video: "https://example.com/video/section-intro.mp4",

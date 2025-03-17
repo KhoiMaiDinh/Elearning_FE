@@ -5,49 +5,44 @@ import StatisticLecture from "./statisticLecture";
 
 const RegisteredLecture = () => {
   const [active, setActive] = useState("Hồ sơ");
-  const handleButtonClick = async (type: string) => {
-    setActive(type);
+
+  const tabs = [
+    { id: "Hồ sơ", label: "Hồ sơ" },
+    { id: "Khóa học", label: "Khóa học" },
+    { id: "Thống kê", label: "Thống kê" },
+  ];
+
+  const TabContent = {
+    "Hồ sơ": ProfileLecture,
+    "Khóa học": CourseLecture,
+    "Thống kê": StatisticLecture,
   };
 
+  const ActiveComponent = TabContent[active as keyof typeof TabContent];
+
   return (
-    <div className="w-full h-full">
-      <div className="w-full flex flex-row lg:text-[16px] md:text-[16px] text-[12px] font-sans font-medium text-black dark:text-AntiFlashWhite sm:text-[12px] lg:items-start md:items-start items-center ">
-        <div
-          onClick={() => handleButtonClick("Hồ sơ")}
-          className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Hồ sơ"
-              ? "bg-white dark:bg-black50"
-              : "text-black50 bg-none dark:text-darkSilver"
-          }`}
-        >
-          <text>Hồ sơ</text>
-        </div>
-        <div
-          onClick={() => handleButtonClick("Khóa học")}
-          className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Khóa học"
-              ? "bg-white dark:bg-black50"
-              : "text-black50 bg-none dark:text-darkSilver"
-          }`}
-        >
-          <text>Khóa học</text>
-        </div>
-        <div
-          onClick={() => handleButtonClick("Thống kê")}
-          className={`flex w-fit px-8 py-2 rounded-t-sm hover:shadow-md hover:cursor-pointer ${
-            active === "Thống kê"
-              ? "bg-white dark:bg-black50"
-              : "text-black50 bg-none dark:text-darkSilver"
-          }`}
-        >
-          <text>Thống kê</text>
-        </div>
+    <div className="w-full h-full flex flex-col">
+      <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={`
+              px-8 py-3 text-sm font-medium transition-all duration-200
+              ${
+                active === tab.id
+                  ? "bg-white dark:bg-black50 text-majorelleBlue dark:text-white border-b-2 border-majorelleBlue"
+                  : "text-black50 dark:text-darkSilver hover:bg-gray/10 dark:hover:bg-darkSilver/10"
+              }
+            `}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <div className="w-full flex items-center ">
-        {active === "Hồ sơ" && <ProfileLecture />}
-        {active === "Khóa học" && <CourseLecture />}
-        {active === "Thống kê" && <StatisticLecture />}
+      <div className="w-full flex-1 mt-6">
+        <ActiveComponent />
       </div>
     </div>
   );

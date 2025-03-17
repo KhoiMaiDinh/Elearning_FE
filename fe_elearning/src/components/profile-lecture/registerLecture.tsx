@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useForm,
   Controller,
@@ -12,209 +12,501 @@ import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
 import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
 import { Button } from "../ui/button";
 import { RegisterLectureForm } from "@/types/registerLectureFormType";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/constants/store";
+import { X } from "lucide-react";
+import { APIRegisterLecture } from "@/utils/lecture";
+import { APIGetPresignedUrl } from "@/utils/storage";
+import axios from "axios";
+import { APIGetCategory } from "@/utils/category";
+import { Category } from "@/types/categoryType";
+import SelectRegister from "../selectComponent/selectRegister";
+import AlertSuccess from "../alert/AlertSuccess";
+import AlertError from "../alert/AlertError";
+import { setUser } from "@/constants/userSlice";
+import RegisteredLecture from "./registeredLecture";
 
 // Schema validation với Yup
 const schema = yup.object().shape({
-  fullName: yup.string().required("Họ và tên không được để trống"),
-  dob: yup.string().required("Ngày sinh không được để trống"),
-  email: yup
-    .string()
-    .email("Email không hợp lệ")
-    .required("Email không được để trống"),
-  phone: yup
-    .string()
-    .matches(/^[0-9]{10}$/, "Số điện thoại phải gồm 10 chữ số")
-    .required("Số điện thoại không được để trống"),
-  address: yup.string().required("Địa chỉ không được để trống"),
-  expertise: yup.string().required("Lĩnh vực chuyên môn không được để trống"),
-  experience: yup.string().required("Mô tả kinh nghiệm không được để trống"),
-  certificate: yup
-    .mixed<FileList>()
-    .test(
-      "fileRequired",
-      "Vui lòng tải lên ít nhất 1 chứng chỉ/bằng cấp",
-      (value) => value && value.length > 0
-    )
-    .test(
-      "fileLimit",
-      "Chỉ được tải lên tối đa 5 file",
-      (value) => value && value.length <= 5
-    ),
-
+  category: yup.object().shape({
+    slug: yup.string().required("Lĩnh vực chuyên môn không được để trống"),
+  }),
+  biography: yup.string().required("Mô tả kinh nghiệm không được để trống"),
+  certificates: yup
+    .array()
+    .of(yup.string().required())
+    .required("Bằng cấp/chứng chỉ không được để trống")
+    .min(1, "Bằng cấp/chứng chỉ không được để trống"),
+  headline: yup.string().required("Tiêu đề không được để trống"),
+  resume: yup.string().required("CV không được để trống"),
+  website_url: yup.string().nullable(),
+  facebook_url: yup.string().nullable(),
+  linkedin_url: yup.string().nullable(),
   bankAccount: yup.string().required("Số tài khoản không được để trống"),
   bankName: yup.string().required("Ngân hàng không được để trống"),
   accountHolder: yup.string().required("Tên chủ tài khoản không được để trống"),
-});
+}) as yup.ObjectSchema<RegisterLectureForm>;
 
 const RegisterLecture = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
+    trigger,
+    watch,
   } = useForm<RegisterLectureForm>({
     resolver: yupResolver(schema),
     defaultValues: {
-      fullName: "",
-      dob: "",
-      email: "",
-      phone: "",
-      address: "",
-      expertise: "",
-      experience: "",
-      certificate: undefined,
+      category: {
+        slug: "",
+      },
+      biography: "",
+      headline: "",
+      resume: "",
+      website_url: null,
+      certificates: [] as string[],
       bankAccount: "",
       bankName: "",
       accountHolder: "",
+      facebook_url: null,
+      linkedin_url: null,
     },
   });
 
-  // State để lưu danh sách file đã chọn
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  console.log("🚀 ~ RegisterLecture ~ selectedFiles:", selectedFiles);
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+  const [showAlertError, setShowAlertError] = useState(false);
+  const [alertDescription, setAlertDescription] = useState("");
+  const [category, setCategory] = useState<{ id: string; value: string }[]>([]);
+  const [resumePreview, setResumePreview] = useState<{
+    url: string;
+    name: string;
+    file?: File;
+  } | null>(null);
+  const [certificatePreviews, setCertificatePreviews] = useState<
+    Array<{ url: string; name: string; file: File }>
+  >([]);
+  const certificateNames = watch("certificates");
+  const resumeName = watch("resume");
 
-  // Hàm xử lý khi chọn file
-  const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    onChange: (files: FileList) => void
-  ) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      setSelectedFiles(fileArray);
-      onChange(files);
+  const categorySlug = watch("category.slug");
+
+  // Validate lại khi category.slug thay đổi
+  useEffect(() => {
+    if (categorySlug) {
+      trigger("category.slug");
+    }
+  }, [categorySlug, trigger]);
+
+  // Validate lại khi resume thay đổi
+  useEffect(() => {
+    if (resumePreview?.file) {
+      trigger("resume");
+    }
+  }, [resumePreview, trigger]);
+
+  // Validate lại khi certificates thay đổi
+  useEffect(() => {
+    if (certificatePreviews.length > 0) {
+      trigger("certificates");
+    }
+  }, [certificatePreviews, trigger]);
+
+  // Xóa file certificate
+  const removeCertificate = (index: number) => {
+    const updatedPreviews = certificatePreviews.filter((_, i) => i !== index);
+    setCertificatePreviews(updatedPreviews);
+  };
+
+  // Xóa file resume
+  const removeResume = () => {
+    setResumePreview(null);
+  };
+
+  // Upload file lên MinIO bằng presigned URL với axios
+  const uploadToMinIO = async (
+    file: File,
+    entity_property: string
+  ): Promise<string> => {
+    try {
+      const presignedData = await APIGetPresignedUrl({
+        filename: file.name,
+        entity: "instructor",
+        entity_property: entity_property,
+      });
+      const { postURL, formData } = presignedData?.data;
+
+      const uploadFormData = new FormData();
+      // Thêm các field từ formData
+      Object.entries(formData).forEach(([key, value]) => {
+        uploadFormData.append(key, value as string);
+      });
+      uploadFormData.append("file", file);
+
+      const response = await axios.post(postURL, uploadFormData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 204 || response.status === 200) {
+        const key = uploadFormData.get("key");
+        if (!key) throw new Error("Missing key in form data");
+        return key.toString();
+      } else {
+        throw new Error("Upload thất bại");
+      }
+    } catch (error) {
+      console.error("Error uploading to MinIO:", error);
+      throw error;
     }
   };
 
-  const onSubmit = (data: FieldValues) => {
-    console.log("Form data:", data);
-    alert("Đăng ký thành công!");
+  const handleResumeChange = async (files: FileList) => {
+    const file = files[0];
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setResumePreview({
+          url: e.target?.result as string,
+          name: file.name,
+          file: file,
+        });
+        setValue("resume", file.name);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload ngay khi chọn file
+      const resumeUrl = await uploadToMinIO(file, "resume");
+      setValue("resume", resumeUrl);
+    } catch (error) {
+      setAlertDescription("Không thể upload CV");
+      setShowAlertError(true);
+      setTimeout(() => setShowAlertError(false), 3000);
+    }
   };
 
-  return (
+  const handleCertificatesChange = async (files: FileList) => {
+    const fileArray = Array.from(files);
+    const currentCertificates = [...(certificateNames || [])];
+
+    for (const file of fileArray) {
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setCertificatePreviews((prev) => [
+            ...prev,
+            {
+              url: e.target?.result as string,
+              name: file.name,
+              file: file,
+            },
+          ]);
+          setValue("certificates", [...certificateNames, file.name]);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload ngay khi chọn file
+        const fileUrl = await uploadToMinIO(file, "certificates");
+        currentCertificates.push(fileUrl);
+      } catch (error) {
+        setAlertDescription("Không thể upload chứng chỉ");
+        setShowAlertError(true);
+        setTimeout(() => setShowAlertError(false), 3000);
+        return;
+      }
+    }
+    setValue("certificates", currentCertificates);
+  };
+
+  const handleGetCategory = async () => {
+    const response = await APIGetCategory({ language: "vi" });
+    if (response?.status === 200) {
+      const data = response?.data?.map((item: Category) => ({
+        id: item.slug,
+        value: item?.translations[0]?.name,
+      }));
+      setCategory(data);
+    }
+  };
+
+  const handleRegisterLecture = async (data: FieldValues) => {
+    setLoading(true);
+    try {
+      const response = await APIRegisterLecture(data);
+      if (response?.status === 200) {
+        setAlertDescription("Đăng ký thành công");
+        setShowAlertSuccess(true);
+        setLoading(false);
+
+        dispatch(
+          setUser({
+            ...userInfo,
+            instructor_profile: response?.data,
+          })
+        );
+        setTimeout(() => {
+          setShowAlertSuccess(false);
+        }, 3000);
+      } else {
+        setAlertDescription("Đăng ký thất bại");
+        setShowAlertError(true);
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
+        setLoading(false);
+      }
+    } catch (err) {
+      setAlertDescription("Đăng ký thất bại");
+      setShowAlertError(true);
+      setTimeout(() => {
+        setShowAlertError(false);
+      }, 3000);
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = async (data: FieldValues) => {
+    if (!resumeName || certificateNames.length === 0) {
+      if (!resumeName) {
+        setAlertDescription("Vui lòng upload CV");
+        setShowAlertError(true);
+        setTimeout(() => setShowAlertError(false), 3000);
+      }
+      if (certificateNames.length === 0) {
+        setAlertDescription("Vui lòng upload ít nhất một chứng chỉ");
+        setShowAlertError(true);
+        setTimeout(() => setShowAlertError(false), 3000);
+      }
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const dataSubmit = {
+        ...data,
+        website_url: data.website_url || null,
+        facebook_url: data.facebook_url || null,
+        linkedin_url: data.linkedin_url || null,
+      };
+
+      await handleRegisterLecture(dataSubmit);
+    } catch (error) {
+      setAlertDescription("Đăng ký thất bại");
+      setShowAlertError(true);
+      setTimeout(() => setShowAlertError(false), 3000);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleGetCategory();
+  }, []);
+
+  return !userInfo.instructor_profile ? (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="w-full h-full gap-2 flex flex-col "
     >
-      <div className="bg-white dark:bg-eerieBlack w-full h-full shadow-md rounded-lg p-3 border">
+      {/* Thông tin cá nhân */}
+      <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
         <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin cá nhân
         </p>
-        <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
-          <Controller
-            name="fullName"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Họ và tên"
-                error={errors.fullName?.message} // Hiển thị lỗi nếu có
-              />
-            )}
+        <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
+          <InputRegisterLecture
+            labelText="Họ và tên"
+            value={userInfo?.first_name + " " + userInfo?.last_name}
+            disabled={true}
           />
-
-          <Controller
-            name="dob"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Ngày sinh"
-                type="date"
-                className="w-fit"
-                error={errors.dob?.message} // Hiển thị lỗi nếu có
-              />
-            )}
+          <InputRegisterLecture
+            labelText="Email"
+            value={userInfo?.email}
+            disabled={true}
           />
-
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Email"
-                error={errors.email?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-
-          <Controller
-            name="phone"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Số điện thoại"
-                error={errors.phone?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-
-          <Controller
-            name="address"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Địa chỉ"
-                error={errors.address?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-
-          {/* Các trường khác tương tự */}
         </div>
       </div>
 
-      <div className="bg-white dark:bg-eerieBlack w-full h-full  shadow-md rounded-lg  p-3 border">
-        <text className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
+      {/* Thông tin chuyên môn */}
+      <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
+        <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin chuyên môn
-        </text>
-        <div className=" grid  w-full h-full p-3 gap-3">
+        </p>
+        <div className="grid w-full p-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Controller
+              name="category.slug"
+              control={control}
+              render={({ field }) => (
+                <SelectRegister
+                  {...field}
+                  label="Lĩnh vực chuyên môn"
+                  error={errors.category?.slug?.message}
+                  data={category}
+                  onValueChange={(e) => {
+                    setValue("category.slug", e);
+                    trigger("category.slug");
+                  }}
+                />
+              )}
+            />
+
+            <Controller
+              name="headline"
+              control={control}
+              render={({ field }) => (
+                <InputRegisterLecture
+                  {...field}
+                  labelText="Tiêu đề"
+                  error={errors.headline?.message}
+                />
+              )}
+            />
+            <Controller
+              name="resume"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <div className="flex items-center gap-2">
+                    <InputRegisterLecture
+                      {...field}
+                      type="file"
+                      accept=".pdf"
+                      labelText="CV (PDF)"
+                      error={errors.resume?.message}
+                      onChange={(e) => {
+                        const files = (e.target as HTMLInputElement).files;
+                        if (files?.length) {
+                          handleResumeChange(files);
+                        }
+                      }}
+                    />
+                    {resumePreview && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:bg-red-100"
+                        onClick={removeResume}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {resumePreview && (
+                    <div className="mt-2 border rounded p-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">
+                          {resumePreview.name}
+                        </span>
+                      </div>
+                      <iframe
+                        src={resumePreview.url}
+                        className="md:w-1/2 w-full md:h-[200px] h-[100px]  rounded"
+                        title="CV Preview"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="website_url"
+              control={control}
+              render={({ field }) => (
+                <InputRegisterLecture
+                  {...field}
+                  labelText="Website"
+                  error={errors.website_url?.message}
+                />
+              )}
+            />
+            <Controller
+              name="facebook_url"
+              control={control}
+              render={({ field }) => (
+                <InputRegisterLecture
+                  {...field}
+                  labelText="Facebook"
+                  error={errors.facebook_url?.message}
+                />
+              )}
+            />
+            <Controller
+              name="linkedin_url"
+              control={control}
+              render={({ field }) => (
+                <InputRegisterLecture
+                  {...field}
+                  labelText="Linkedin"
+                  error={errors.linkedin_url?.message}
+                />
+              )}
+            />
+          </div>
+
           <Controller
-            name="expertise"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Lĩnh vực chuyên môn"
-                error={errors.expertise?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-          <Controller
-            name="experience"
+            name="biography"
             control={control}
             render={({ field }) => (
               <TextAreaRegisterLecture
-                {...field} // Truyền các props từ field vào component
+                {...field}
                 labelText="Mô tả kinh nghiệm"
-                error={errors.experience?.message} // Hiển thị lỗi nếu có
+                error={errors.biography?.message}
+                className="min-h-[180px]"
               />
             )}
           />
+
           <Controller
-            name="certificate"
+            name="certificates"
             control={control}
-            render={({ field: { onChange, ...field } }) => (
-              <div className="flex flex-col gap-2">
+            render={({ field }) => (
+              <div>
                 <InputRegisterLecture
                   {...field}
-                  labelText="Chứng chỉ/bằng cấp"
+                  labelText="Chứng chỉ/bằng cấp (PDF)"
                   type="file"
-                  onChange={(e) => handleFileChange(e, onChange)}
-                  error={errors.certificate?.message}
+                  accept=".pdf"
+                  multiple
+                  error={errors.certificates?.message}
+                  onChange={(e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files?.length) {
+                      handleCertificatesChange(files);
+                    }
+                  }}
                 />
-                {selectedFiles.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm font-medium">File đã chọn:</p>
-                    <ul className="list-disc pl-5 text-sm">
-                      {selectedFiles.map((file, index) => (
-                        <li key={index}>
-                          {file.name} - {file.type || "Không xác định"}
-                        </li>
-                      ))}
-                    </ul>
+                {certificatePreviews.length > 0 && (
+                  <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {certificatePreviews.map((preview, index) => (
+                      <div key={index} className="relative border rounded p-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600 truncate max-w-[150px]">
+                            {preview.name}
+                          </span>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:bg-red-100"
+                              onClick={() => removeCertificate(index)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <iframe
+                          src={preview.url}
+                          className="w-full md:h-[400px] h-[100px]  rounded"
+                          title={`Certificate ${index + 1}`}
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -227,7 +519,7 @@ const RegisterLecture = () => {
         <text className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
           Thông tin tài khoản
         </text>
-        <div className=" grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
+        <div className=" grid  grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
           <Controller
             name="bankAccount"
             control={control}
@@ -269,10 +561,14 @@ const RegisterLecture = () => {
           type="submit"
           className="w-32 bg-majorelleBlue  dark:shadow-majorelleBlue50 dark:shadow-md text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
         >
-          Gửi xét duyệt
+          {loading ? "Đang gửi..." : "Gửi xét duyệt"}
         </Button>
       </div>
+      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
+      {showAlertError && <AlertError description={alertDescription} />}
     </form>
+  ) : (
+    <RegisteredLecture />
   );
 };
 

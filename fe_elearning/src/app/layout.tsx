@@ -11,8 +11,9 @@ import { appWithTranslation } from "next-i18next";
 // import { PersistGate } from 'redux-persist/integration/react'
 
 const inter = Inter({
-  subsets: ["latin"], // Chọn các subsets cần thiết
-  weight: ["100", "200", "400", "500", "700", "900"], // Các trọng số bạn muốn sử dụng
+  variable: "--font-inter",
+  subsets: ["latin"],
+  // weight: ['400', '500', '700'], // Specify weights you need
 });
 
 const RootLayout = ({ children }: any) => {
@@ -29,7 +30,7 @@ const RootLayout = ({ children }: any) => {
         {/* <link rel="shortcut icon" href={(metadata.icons as any)?.shortcut} />
         <link rel="apple-touch-icon" href={(metadata.icons as any)?.apple} /> */}
       </head>
-      <body className={inter.className}>
+      <body className={` ${inter.variable}`}>
         <Provider store={store}>
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
         </Provider>

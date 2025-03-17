@@ -1,11 +1,20 @@
+import { Lecture } from "./registerLectureFormType";
+
 export interface Roles {
   role_name: string;
   permissions: any;
 }
 
+export interface FileData {
+  key: string;
+  bucket?: string;
+  status?: string;
+  rejected_reason?: string;
+}
+
 export interface UserType {
   username: string;
-  profile_image: string;
+  profile_image: FileData;
   id?: string;
   email: string;
   createdAt?: string;
@@ -13,4 +22,5 @@ export interface UserType {
   last_name: string;
   roles?: Roles[];
   phone_number?: string;
+  instructor_profile?: Lecture;
 }

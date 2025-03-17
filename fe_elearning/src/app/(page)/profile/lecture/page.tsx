@@ -10,13 +10,13 @@ const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   useEffect(() => {
-    // Scroll to top when the component mounts or route changes
-    window.scrollTo(0, 0);
-  }, []);
+    console.log(userInfo);
+  }, [userInfo]);
   return (
     <div className="w-full h-full">
       {userInfo.id ? (
-        userInfo?.roles[0]?.role_name === "student" ? (
+        !userInfo?.roles?.some((role) => role.role_name === "instructor") &&
+        !userInfo?.instructor_profile ? (
           <NotRegisteredLecture />
         ) : (
           <RegisteredLecture />
