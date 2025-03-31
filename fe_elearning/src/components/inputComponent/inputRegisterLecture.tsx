@@ -1,7 +1,7 @@
-// @/components/inputComponent/inputRegisterLecture.tsx
-import React from "react";
+import React, { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Upload } from "lucide-react";
 
 type InputRegisterLectureProps = {
   labelText: string;
@@ -30,23 +30,54 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
   multiple,
   accept,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Xử lý khi nhấp vào giao diện tùy chỉnh để kích hoạt input file
+  const handleCustomClick = () => {
+    if (fileInputRef.current && type === "file") {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div
       className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
       <Label htmlFor={name}>{labelText}</Label>
-      <Input
-        type={type}
-        id={name}
-        name={name}
-        placeholder={placeholder}
-        // Không truyền value nếu type="file"
-        {...(type !== "file" && { value })}
-        onChange={onChange}
-        disabled={disabled}
-        multiple={multiple}
-        accept={accept}
-      />
+      {type === "file" ? (
+        <>
+          {/* Input file ẩn */}
+          <Input
+            type="file"
+            id={name}
+            name={name}
+            ref={fileInputRef}
+            className="hidden" // Ẩn input file mặc định
+            onChange={onChange}
+            disabled={disabled}
+            multiple={multiple}
+            accept={accept}
+          />
+          {/* Giao diện tùy chỉnh */}
+          <div
+            onClick={handleCustomClick}
+            className="cursor-pointer shadow-sm flex font-sans font-normal text-xs flex-row gap-1 w-fit px-4 py-1 items-center justify-center rounded-md dark:border dark:border-lightSilver/50 shadow-majorelleBlue hover:underline"
+          >
+            Upload
+            <Upload className="w-4 h-4" />
+          </div>
+        </>
+      ) : (
+        <Input
+          type={type}
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+        />
+      )}
       {error && (
         <div className="text-[12px] font-sans font-normal text-redPigment">
           {error}

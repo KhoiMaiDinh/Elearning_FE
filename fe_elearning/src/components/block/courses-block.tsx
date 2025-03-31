@@ -47,7 +47,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   };
 
   return (
-    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+    <Card className="w-full h-full max-w-sm hover:shadow-lg transition-shadow">
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
@@ -111,7 +111,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between items-center">
+      <CardFooter className="flex justify-between  items-end">
         <div className="space-x-2">
           {price && (
             <span className="text-muted-foreground line-through">
@@ -124,7 +124,9 @@ const CoursesBlock: React.FC<coursesBlock> = ({
             </span>
           )}
         </div>
-        <Badge variant="outline">Xem chi tiết</Badge>
+        <Badge variant="outline" className="text-[10px]">
+          Xem chi tiết
+        </Badge>
       </CardFooter>
     </Card>
   );

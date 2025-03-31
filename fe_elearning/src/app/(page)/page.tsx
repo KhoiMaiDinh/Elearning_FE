@@ -150,7 +150,6 @@ const dataCourse = [
     description: "Khóa học cung cấp kiến thức cơ bản về thiết kế UI/UX.",
     name: "Trần Minh C",
     status: "Chưa đăng ký",
-    progress: 0, // Chưa bắt đầu
     price: 400000,
     priceFinal: 350000, // Giá sau giảm
   },
@@ -247,7 +246,7 @@ export default function Page() {
       {/* Stats Section */}
       <section className="container mx-auto py-16">
         <div
-          className="grid grid-cols-1 md:grid-cols-4 gap-6"
+          className="grid grid-cols-1 h-full md:grid-cols-4 gap-6"
           data-aos="fade-up"
         >
           <InfoDashboard

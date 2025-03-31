@@ -23,7 +23,7 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   onOpenChange,
   onConfirm,
   title = "Xác nhận xóa",
-  description = "Bạn có chắc chắn muốn xóa phần này không? Hành động này không thể hoàn tác.",
+  description = "Bạn có chắc chắn muốn xóa không? Hành động này không thể hoàn tác.",
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>

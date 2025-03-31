@@ -1,5 +1,6 @@
 // @/types/courseType.ts
 export interface Lesson {
+  _id?: string;
   lesson_title: string;
   lesson_content: string;
   resources: string[];
@@ -7,6 +8,7 @@ export interface Lesson {
 }
 
 export interface Section {
+  _id?: string;
   section_title: string;
   content: Lesson[];
   section_video: string;
@@ -15,6 +17,8 @@ export interface Section {
 }
 
 export interface CourseForm {
+  _id?: string;
+  category_id: string;
   title: string;
   level: string;
   price: number;

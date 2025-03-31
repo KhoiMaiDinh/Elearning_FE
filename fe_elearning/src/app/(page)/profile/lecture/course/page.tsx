@@ -15,13 +15,19 @@ import { CourseForm } from "@/types/courseType";
 import { ConfirmDeleteDialog } from "@/components/alert/AlertOption";
 import { Delete } from "lucide-react";
 import dynamic from "next/dynamic";
+import SelectRegister from "@/components/selectComponent/selectRegister";
 
-const TextareaWithLabel = dynamic(
-  () => import("@/components/inputComponent/textAreaRegisterLecture"),
-  {
-    ssr: false,
-  }
-);
+const dataLevel = [
+  { id: "BEGINNER", value: "Sơ cấp" },
+  { id: "INTERMEDIATE", value: "Trung cấp" },
+  { id: "ADVANCED", value: "Nâng cao" },
+];
+
+const dataCategory = [
+  { id: "BEGINNER", value: "Sơ cấp" },
+  { id: "INTERMEDIATE", value: "Trung cấp" },
+  { id: "ADVANCED", value: "Nâng cao" },
+];
 
 // Schema validation với Yup
 const lessonSchema = yup.object().shape({
@@ -46,6 +52,7 @@ const sectionSchema = yup.object().shape({
 });
 
 const schema = yup.object().shape({
+  category_id: yup.string().required("Lĩnh vực không được để trống"),
   title: yup.string().required("Tiêu đề khóa học không được để trống"),
   level: yup.string().required("Cấp độ không được để trống"),
   price: yup
@@ -71,6 +78,7 @@ const UploadCourse: React.FC = () => {
   } = useForm<CourseForm>({
     resolver: yupResolver<CourseForm>(schema),
     defaultValues: {
+      category_id: "",
       title: "",
       level: "",
       price: 0,
@@ -106,7 +114,8 @@ const UploadCourse: React.FC = () => {
     name: "course",
   });
 
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isSectionDialogOpen, setIsSectionDialogOpen] =
+    useState<boolean>(false);
   const [sectionToRemove, setSectionToRemove] = useState<number | null>(null);
   const [videoPreviews, setVideoPreviews] = useState<{
     [key: string]: string;
@@ -122,13 +131,13 @@ const UploadCourse: React.FC = () => {
 
   const confirmRemoveSection = (index: number): void => {
     setSectionToRemove(index);
-    setIsDialogOpen(true);
+    setIsSectionDialogOpen(true);
   };
 
   const handleRemoveSection = (): void => {
     if (sectionToRemove !== null) {
       removeSection(sectionToRemove);
-      setIsDialogOpen(false);
+      setIsSectionDialogOpen(false);
       setSectionToRemove(null);
     }
   };
@@ -153,18 +162,7 @@ const UploadCourse: React.FC = () => {
               />
             )}
           />
-          <Controller
-            name="level"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field}
-                labelText="Cấp độ (Cơ bản/Trung cấp/Nâng cao)"
-                error={errors.level?.message}
-                onChange={(e) => field.onChange(e.target.value)}
-              />
-            )}
-          />
+
           <Controller
             name="price"
             control={control}
@@ -179,17 +177,44 @@ const UploadCourse: React.FC = () => {
             )}
           />
           <Controller
-            name="short_description"
+            name="level"
             control={control}
             render={({ field }) => (
-              <InputRegisterLecture
+              <SelectRegister
                 {...field}
-                labelText="Mô tả ngắn"
-                error={errors.short_description?.message}
-                onChange={(value) => field.onChange(value)}
+                label="Cấp độ (Cơ bản/Trung cấp/Nâng cao)"
+                error={errors.level?.message}
+                data={dataLevel}
               />
             )}
           />
+          <Controller
+            name="category_id"
+            control={control}
+            render={({ field }) => (
+              <SelectRegister
+                {...field}
+                label="Lĩnh vực"
+                error={errors.level?.message}
+                data={dataLevel}
+              />
+            )}
+          />
+
+          <div className="w-full md:col-span-2">
+            <Controller
+              name="short_description"
+              control={control}
+              render={({ field }) => (
+                <TextAreaRegisterLecture
+                  {...field}
+                  labelText="Mô tả ngắn"
+                  error={errors.short_description?.message}
+                  onChange={(value) => field.onChange(value)}
+                />
+              )}
+            />
+          </div>
         </div>
       </div>
 
@@ -197,7 +222,7 @@ const UploadCourse: React.FC = () => {
         <h2 className="text-lg font-bold">Nội dung khóa học</h2>
         {sectionFields.map((section, sectionIndex) => (
           <div key={section.id}>
-            <span className="flex font-bold text-[16px] text-black">
+            <span className="flex font-bold text-[16px] text-black dark:text-AntiFlashWhite">
               Phần {sectionIndex + 1}
             </span>
             <div className="border p-3 mb-3 rounded flex flex-col gap-3">
@@ -294,6 +319,7 @@ const UploadCourse: React.FC = () => {
                         );
                         const fileNames = files.map((file: File) => file.name);
                         field.onChange([...(field.value || []), ...fileNames]);
+                        (e.target as HTMLInputElement).value = "";
                       }}
                     />
                     {field.value && field.value.length > 0 && (
@@ -309,6 +335,10 @@ const UploadCourse: React.FC = () => {
                                   (_: string, i: number) => i !== index
                                 );
                                 field.onChange(updatedResources);
+                                const input = document.querySelector(
+                                  `input[name="${field.name}"]`
+                                ) as HTMLInputElement;
+                                if (input) input.value = "";
                               }}
                             >
                               <Delete className="text-[12px]" />
@@ -373,8 +403,8 @@ const UploadCourse: React.FC = () => {
       </div>
 
       <ConfirmDeleteDialog
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        isOpen={isSectionDialogOpen}
+        onOpenChange={setIsSectionDialogOpen}
         onConfirm={handleRemoveSection}
       />
     </form>
@@ -407,12 +437,28 @@ const SectionLessons: React.FC<SectionLessonsProps> = ({
     name: `course.${sectionIndex}.content`,
   });
 
+  const [isLessonDialogOpen, setIsLessonDialogOpen] = useState<boolean>(false);
+  const [lessonToRemove, setLessonToRemove] = useState<number | null>(null);
+
+  const confirmRemoveLesson = (index: number): void => {
+    setLessonToRemove(index);
+    setIsLessonDialogOpen(true);
+  };
+
+  const handleRemoveLesson = (): void => {
+    if (lessonToRemove !== null) {
+      removeLesson(lessonToRemove);
+      setIsLessonDialogOpen(false);
+      setLessonToRemove(null);
+    }
+  };
+
   return (
     <div className="mt-3">
       <h3 className="text-md font-bold">Bài học</h3>
       {lessonFields.map((lesson, lessonIndex) => (
         <div key={lesson.id}>
-          <span className="flex font-bold text-md text-black">
+          <span className="flex font-bold text-md text-black dark:text-AntiFlashWhite">
             Bài {lessonIndex + 1}
           </span>
           <div className="border p-2 mb-2 rounded gap-3 flex flex-col">
@@ -515,6 +561,7 @@ const SectionLessons: React.FC<SectionLessonsProps> = ({
                       );
                       const fileNames = files.map((file: File) => file.name);
                       field.onChange([...(field.value || []), ...fileNames]);
+                      (e.target as HTMLInputElement).value = "";
                     }}
                   />
                   {field.value && field.value.length > 0 && (
@@ -530,6 +577,10 @@ const SectionLessons: React.FC<SectionLessonsProps> = ({
                                 (_: string, i: number) => i !== index
                               );
                               field.onChange(updatedResources);
+                              const input = document.querySelector(
+                                `input[name="${field.name}"]`
+                              ) as HTMLInputElement;
+                              if (input) input.value = "";
                             }}
                           >
                             Xóa
@@ -544,7 +595,7 @@ const SectionLessons: React.FC<SectionLessonsProps> = ({
             <Button
               type="button"
               className="mt-2 w-fit py-2 px-4 bg-redPigment text-white"
-              onClick={() => removeLesson(lessonIndex)}
+              onClick={() => confirmRemoveLesson(lessonIndex)} // Thay đổi để mở popup
             >
               Xóa bài học
             </Button>
@@ -565,6 +616,13 @@ const SectionLessons: React.FC<SectionLessonsProps> = ({
       >
         Thêm bài học mới
       </Button>
+
+      {/* Popup xác nhận xóa bài học */}
+      <ConfirmDeleteDialog
+        isOpen={isLessonDialogOpen}
+        onOpenChange={setIsLessonDialogOpen}
+        onConfirm={handleRemoveLesson}
+      />
     </div>
   );
 };
