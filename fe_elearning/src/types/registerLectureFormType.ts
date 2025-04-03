@@ -1,13 +1,13 @@
 import { Category } from "./categoryType";
-
+import { MediaType } from "./mediaType";
 export type RegisterLectureForm = {
   category: {
     slug: string;
   };
   biography: string;
-  certificates: string[];
+  certificates: MediaType[];
   headline: string;
-  resume: string;
+  resume: MediaType;
   website_url?: string | null;
   facebook_url?: string | null;
   linkedin_url?: string | null;

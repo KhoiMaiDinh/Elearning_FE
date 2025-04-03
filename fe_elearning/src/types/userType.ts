@@ -10,6 +10,7 @@ export interface FileData {
   bucket?: string;
   status?: string;
   rejected_reason?: string;
+  id?: string;
 }
 
 export interface UserType {

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useForm,
   Controller,
@@ -25,7 +25,7 @@ import AlertSuccess from "../alert/AlertSuccess";
 import AlertError from "../alert/AlertError";
 import { setUser } from "@/constants/userSlice";
 import RegisteredLecture from "./registeredLecture";
-
+import { MediaType } from "@/types/mediaType";
 // Schema validation với Yup
 const schema = yup.object().shape({
   category: yup.object().shape({
@@ -34,11 +34,22 @@ const schema = yup.object().shape({
   biography: yup.string().required("Mô tả kinh nghiệm không được để trống"),
   certificates: yup
     .array()
-    .of(yup.string().required())
+    .of(
+      yup.object().shape({
+        key: yup.string().required("Key của chứng chỉ không được để trống"),
+        id: yup.string().required("ID của chứng chỉ không được để trống"),
+      })
+    )
     .required("Bằng cấp/chứng chỉ không được để trống")
     .min(1, "Bằng cấp/chứng chỉ không được để trống"),
   headline: yup.string().required("Tiêu đề không được để trống"),
-  resume: yup.string().required("CV không được để trống"),
+  resume: yup
+    .object()
+    .shape({
+      key: yup.string().required("Key của CV không được để trống"),
+      id: yup.string().required("ID của CV không được để trống"),
+    })
+    .required("CV không được để trống"),
   website_url: yup.string().nullable(),
   facebook_url: yup.string().nullable(),
   linkedin_url: yup.string().nullable(),
@@ -63,9 +74,9 @@ const RegisterLecture = () => {
       },
       biography: "",
       headline: "",
-      resume: "",
+      resume: { key: "", id: "" },
       website_url: null,
-      certificates: [] as string[],
+      certificates: [] as Array<{ key: string; id: string }>,
       bankAccount: "",
       bankName: "",
       accountHolder: "",
@@ -87,12 +98,16 @@ const RegisterLecture = () => {
     file?: File;
   } | null>(null);
   const [certificatePreviews, setCertificatePreviews] = useState<
-    Array<{ url: string; name: string; file: File }>
+    Array<{ url: string; name: string; file: File; key: string; id: string }>
   >([]);
   const certificateNames = watch("certificates");
   const resumeName = watch("resume");
 
   const categorySlug = watch("category.slug");
+
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+
+  const certificateInputRef = useRef<HTMLInputElement>(null);
 
   // Validate lại khi category.slug thay đổi
   useEffect(() => {
@@ -119,25 +134,40 @@ const RegisterLecture = () => {
   const removeCertificate = (index: number) => {
     const updatedPreviews = certificatePreviews.filter((_, i) => i !== index);
     setCertificatePreviews(updatedPreviews);
+    setValue(
+      "certificates",
+      updatedPreviews.map((preview) => preview)
+    );
+    trigger("certificates");
+    if (certificateInputRef.current) {
+      certificateInputRef.current.value = ""; // Reset giá trị input file
+    }
   };
 
   // Xóa file resume
   const removeResume = () => {
     setResumePreview(null);
+    setValue("resume", { key: "", id: "" });
+    trigger("resume");
+    if (resumeInputRef.current) {
+      resumeInputRef.current.value = ""; // Reset giá trị input file
+    }
   };
 
   // Upload file lên MinIO bằng presigned URL với axios
   const uploadToMinIO = async (
     file: File,
+    entity: string,
     entity_property: string
-  ): Promise<string> => {
+  ): Promise<{ key: string; id: string }> => {
     try {
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
-        entity: "instructor",
-        entity_property: entity_property,
+        entity: entity, // Tên entity
+        entity_property: entity_property, // Tên thuộc tính của entity
       });
-      const { postURL, formData } = presignedData?.data;
+      const { postURL, formData } = presignedData?.data?.result;
+      const id = presignedData?.data?.id; // Lấy id từ API
 
       const uploadFormData = new FormData();
       // Thêm các field từ formData
@@ -145,6 +175,7 @@ const RegisterLecture = () => {
         uploadFormData.append(key, value as string);
       });
       uploadFormData.append("file", file);
+      uploadFormData.append("id", id);
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {
@@ -155,7 +186,7 @@ const RegisterLecture = () => {
       if (response.status === 204 || response.status === 200) {
         const key = uploadFormData.get("key");
         if (!key) throw new Error("Missing key in form data");
-        return key.toString();
+        return { key: key.toString(), id }; // Trả về cả key và id
       } else {
         throw new Error("Upload thất bại");
       }
@@ -175,13 +206,14 @@ const RegisterLecture = () => {
           name: file.name,
           file: file,
         });
-        setValue("resume", file.name);
       };
       reader.readAsDataURL(file);
 
-      // Upload ngay khi chọn file
-      const resumeUrl = await uploadToMinIO(file, "resume");
-      setValue("resume", resumeUrl);
+      // Upload file và lấy cả key và id
+      const { key, id } = await uploadToMinIO(file, "instructor", "resume");
+      // Lưu cả key và id vào form
+      setValue("resume", { key, id }); // Lưu dưới dạng chuỗi JSON
+      trigger("resume");
     } catch (error) {
       setAlertDescription("Không thể upload CV");
       setShowAlertError(true);
@@ -196,22 +228,28 @@ const RegisterLecture = () => {
     for (const file of fileArray) {
       try {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
+          const { key, id } = await uploadToMinIO(
+            file,
+            "certificate",
+            "certificate_file"
+          );
+          // Thêm object chứa key và id vào mảng certificates
+          currentCertificates.push({ key, id });
+          setValue("certificates", currentCertificates);
           setCertificatePreviews((prev) => [
             ...prev,
             {
               url: e.target?.result as string,
               name: file.name,
               file: file,
+              key: key,
+              id: id,
             },
           ]);
-          setValue("certificates", [...certificateNames, file.name]);
+          trigger("certificates");
         };
         reader.readAsDataURL(file);
-
-        // Upload ngay khi chọn file
-        const fileUrl = await uploadToMinIO(file, "certificates");
-        currentCertificates.push(fileUrl);
       } catch (error) {
         setAlertDescription("Không thể upload chứng chỉ");
         setShowAlertError(true);
@@ -219,7 +257,6 @@ const RegisterLecture = () => {
         return;
       }
     }
-    setValue("certificates", currentCertificates);
   };
 
   const handleGetCategory = async () => {

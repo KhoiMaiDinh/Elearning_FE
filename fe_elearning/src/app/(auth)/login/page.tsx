@@ -121,6 +121,7 @@ const Page = () => {
         localStorage.setItem("expires_at", response?.data?.exp_token); // Thời gian hết hạn
 
         setAlertDescription("Đăng nhập thành công");
+
         setShowAlertSuccess(true);
 
         setTimeout(() => {
@@ -152,6 +153,7 @@ const Page = () => {
     if (response?.status === 201) {
       setAlertDescription("Đăng ký thành công");
       setShowAlertSuccess(true);
+      await handleLogin(data);
 
       setTimeout(() => {
         setShowAlertSuccess(false);
@@ -196,7 +198,7 @@ const Page = () => {
           {/* Header */}
           <div className="flex flex-row items-center gap-2 justify-center">
             {" "}
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-majorelleBlue">
               Chào mừng đến với ...!
             </h1>
             <Image
@@ -215,7 +217,7 @@ const Page = () => {
               className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
                 activeButton === "login"
                   ? "bg-majorelleBlue dark:bg-black text-white hover:bg-majorelleBlue dark:hover:bg-black"
-                  : " text-majorelleBlue dark:text-black hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
+                  : " text-majorelleBlue dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
               } hover:shadow-lg`}
             >
               Đăng nhập
@@ -226,7 +228,7 @@ const Page = () => {
               className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
                 activeButton === "signup"
                   ? "bg-majorelleBlue dark:bg-black text-white hover:bg-majorelleBlue dark:hover:bg-black"
-                  : " text-majorelleBlue dark:text-black hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
+                  : " text-majorelleBlue dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:bg-black70"
               } hover:shadow-lg`}
             >
               Đăng ký

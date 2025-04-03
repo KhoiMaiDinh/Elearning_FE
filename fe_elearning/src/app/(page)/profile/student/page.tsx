@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useForm, Controller, FieldValues } from "react-hook-form";
+import { useForm, Controller, FieldValues, Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
@@ -32,15 +32,13 @@ const schema = yup.object().shape({
     .string()
     .required("Biệt danh không được bỏ trống")
     .max(60, "Tối đa 60 ký tự"),
-  profile_image: yup
-    .object()
-    .shape({
-      key: yup.string().required("Ảnh đại diện không được để trống"),
-      bucket: yup.string(),
-      status: yup.string(),
-      rejected_reason: yup.string(),
-    })
-    .required("Ảnh đại diện không được để trống"),
+  profile_image: yup.object().shape({
+    key: yup.string(),
+    bucket: yup.string(),
+    status: yup.string(),
+    rejected_reason: yup.string(),
+    id: yup.string(),
+  }),
 });
 
 const ProfileStudent = () => {
@@ -51,7 +49,7 @@ const ProfileStudent = () => {
     setValue,
     watch,
   } = useForm<UserType>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as unknown as Resolver<UserType>,
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -59,9 +57,10 @@ const ProfileStudent = () => {
       email: "",
       profile_image: {
         key: "",
-        bucket: undefined,
-        status: undefined,
-        rejected_reason: undefined,
+        bucket: "",
+        status: "",
+        rejected_reason: "",
+        id: "",
       },
     },
   });
@@ -110,9 +109,6 @@ const ProfileStudent = () => {
   // Đồng bộ preview khi profile_image thay đổi
   useEffect(() => {
     if (profileImage?.key) {
-      // Chỉ set imagePreview trong 2 trường hợp:
-      // 1. Khi là local file (data:image hoặc blob:)
-      // 2. Khi có query parameters (presigned URL)
       if (
         profileImage.key.startsWith("data:image") ||
         profileImage.key.startsWith("blob:") ||
@@ -124,41 +120,50 @@ const ProfileStudent = () => {
             ? profileImage.key
             : process.env.NEXT_PUBLIC_BASE_URL_IMAGE + profileImage.key
         );
+        setValue("profile_image", {
+          key: profileImage.key,
+          bucket: profileImage.bucket,
+          status: profileImage.status,
+          rejected_reason: profileImage.rejected_reason,
+          id: profileImage.id,
+        });
       }
     }
-    console.log("🚀 ~ ProfileStudent ~ profileImage:", profileImage);
   }, [profileImage]);
 
   // Lấy presigned URL từ backend
 
   // Upload file lên MinIO bằng presigned URL với axios
-  const uploadToMinIO = async (file: File): Promise<string> => {
+  const uploadToMinIO = async (
+    file: File
+  ): Promise<{ key: string; id: string }> => {
     try {
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
         entity: "user",
         entity_property: "profile_image",
       });
-      const { postURL, formData } = presignedData?.data;
+      const { postURL, formData } = presignedData?.data?.result;
+      const id = presignedData?.data?.id; // Lấy id từ API
 
       const uploadFormData = new FormData();
-      // Thêm các field từ formData
       Object.entries(formData).forEach(([key, value]) => {
         uploadFormData.append(key, value as string);
       });
-      uploadFormData.append("file", file); // Thêm file
 
-      // Upload file lên MinIO bằng axios
+      uploadFormData.append("file", file);
+      uploadFormData.append("id", id); // Gửi id trong form data
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
       if (response.status === 204 || response.status === 200) {
         const key = uploadFormData.get("key");
         if (!key) throw new Error("Missing key in form data");
-        return key.toString();
+        return { key: key.toString(), id }; // Trả về cả key và id
       } else {
         throw new Error("Upload thất bại");
       }
@@ -167,10 +172,9 @@ const ProfileStudent = () => {
       throw error;
     }
   };
-
   const onSubmit = async (data: FieldValues) => {
     if (!disable && userInfo?.id) {
-      let profileImageKey = data.profile_image.key;
+      let profileImageKey = data.profile_image.key; // Sửa từ .id thành .key
 
       // Cắt bỏ query parameters nếu có
       if (profileImageKey.includes("?")) {
@@ -184,6 +188,7 @@ const ProfileStudent = () => {
         profile_image: {
           ...data.profile_image,
           key: profileImageKey,
+          id: data.profile_image.id, // Đảm bảo id được gửi
         },
       };
 
@@ -256,20 +261,17 @@ const ProfileStudent = () => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
                           try {
-                            // Hiển thị preview ngay
-
                             setSelectedFile(file);
-
                             const previewUrl = URL.createObjectURL(file);
-
                             setImagePreview(previewUrl);
 
-                            // Upload file
-                            const uploadedKey = await uploadToMinIO(file);
+                            // Upload file và lấy key + id
+                            const { key, id } = await uploadToMinIO(file);
 
-                            // Cập nhật form value với file đã upload
+                            // Cập nhật form value với key và id
                             setValue("profile_image", {
-                              key: uploadedKey,
+                              key,
+                              id, // Thêm id vào đây
                               bucket: undefined,
                               status: undefined,
                               rejected_reason: undefined,
@@ -358,10 +360,11 @@ const ProfileStudent = () => {
                 Hủy
               </button>
               <button
+                onClick={handleSubmit(onSubmit)}
                 type="submit"
                 className="w-32 bg-majorelleBlue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
               >
-                Gửi xét duyệt
+                Lưu
               </button>
             </div>
           )}

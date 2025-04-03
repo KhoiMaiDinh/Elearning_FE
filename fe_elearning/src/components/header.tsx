@@ -278,7 +278,10 @@ const Header = () => {
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src={userInfo.profile_image}
+                      src={
+                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                        userInfo.profile_image?.key
+                      }
                       alt={userInfo.username}
                     />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
@@ -302,10 +305,13 @@ const Header = () => {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={userInfo.profile_image}
+                        src={
+                          process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                          userInfo.profile_image?.key
+                        }
                         alt={userInfo.username}
                       />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      {/* <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">

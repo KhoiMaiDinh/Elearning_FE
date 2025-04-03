@@ -7,7 +7,7 @@ import { Section } from "@/types/courseType";
 
 interface CourseTabsProps {
   description: string;
-  sections: Section[];
+  sections?: Section[];
   lecture?: string;
   rating?: number;
   enrolledStudents?: number;
@@ -197,22 +197,25 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           Tài liệu
         </h3>
         <ul className="space-y-2">
-          {sections.flatMap((section) =>
-            section.section_resources.map((resource, index) => (
-              <li key={index} className="flex items-center justify-between">
-                <span className="text-darkSilver dark:text-lightSilver">
-                  {resource}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-majorelleBlue hover:text-majorelleBlue70"
-                >
-                  <Download size={16} />
-                </Button>
-              </li>
-            ))
-          )}
+          {sections &&
+            sections.flatMap(
+              (section) =>
+                section.section_resources &&
+                section.section_resources.map((resource, index) => (
+                  <li key={index} className="flex items-center justify-between">
+                    <span className="text-darkSilver dark:text-lightSilver">
+                      {resource}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-majorelleBlue hover:text-majorelleBlue70"
+                    >
+                      <Download size={16} />
+                    </Button>
+                  </li>
+                ))
+            )}
         </ul>
       </TabsContent>
 

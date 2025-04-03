@@ -1,5 +1,11 @@
 import axiosInstance from "./axios";
-const APIGetCategory = async ({ language }: { language: string }) => {
+const APIGetCategory = async ({
+  language,
+  with_children,
+}: {
+  language: string;
+  with_children?: boolean;
+}) => {
   try {
     if (!language) {
       language = "vi";
@@ -7,6 +13,7 @@ const APIGetCategory = async ({ language }: { language: string }) => {
     const response = await axiosInstance.get("/categories", {
       params: {
         language,
+        with_children: with_children || false,
       },
     });
     if (response.status === 200) {

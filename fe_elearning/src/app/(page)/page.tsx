@@ -189,7 +189,7 @@ export default function Page() {
     <div className="w-full min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite font-sans overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative w-full h-[600px] bg-gradient-to-r from-majorelleBlue to-cosmicCobalt">
-        <div className="absolute inset-0 bg-black/30 z-10" />
+        <div className="absolute inset-0 dark:bg-black/30 bg-white/30 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center dark:opacity-20 opacity-50"
           style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}

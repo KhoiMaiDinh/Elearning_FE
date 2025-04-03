@@ -1,18 +1,18 @@
 import React from "react";
 import { PlayCircle } from "lucide-react";
-import { Lesson, Section } from "@/types/courseType";
+import { CourseItem, Section } from "@/types/courseType";
 
-interface LessonListProps {
+interface CourseItemListProps {
   sections: Section[];
-  currentLessonId: string;
-  onLessonSelect: (lesson: Lesson) => void;
+  currentCourseItemId: string;
+  onCourseItemSelect: (courseItem: CourseItem) => void;
   isExpanded: boolean;
 }
 
-const LessonList: React.FC<LessonListProps> = ({
+const CourseItemList: React.FC<CourseItemListProps> = ({
   sections,
-  currentLessonId,
-  onLessonSelect,
+  currentCourseItemId,
+  onCourseItemSelect,
   isExpanded,
 }) => {
   return (
@@ -28,33 +28,34 @@ const LessonList: React.FC<LessonListProps> = ({
         <div key={sectionIndex} className="mb-4">
           {isExpanded && (
             <h4 className="p-2 text-sm font-medium text-cosmicCobalt dark:text-AntiFlashWhite bg-majorelleBlue20 dark:bg-majorelleBlue/10">
-              {section.section_title}
+              {section.title}
             </h4>
           )}
           <ul className="space-y-2">
-            {section.content.map((lesson) => (
-              <li
-                key={lesson.lesson_title}
-                onClick={() => onLessonSelect(lesson)}
-                className={`p-4 flex items-center gap-2 cursor-pointer hover:bg-majorelleBlue20 dark:hover:bg-majorelleBlue/10 transition-colors ${
-                  lesson.lesson_title === currentLessonId
-                    ? "bg-majorelleBlue50 dark:bg-majorelleBlue/20"
-                    : ""
-                }`}
-              >
-                <PlayCircle
-                  size={20}
-                  className="text-majorelleBlue flex-shrink-0"
-                />
-                {isExpanded && (
-                  <div className="flex-1">
-                    <p className="text-darkSilver dark:text-lightSilver">
-                      {lesson.lesson_title}
-                    </p>
-                  </div>
-                )}
-              </li>
-            ))}
+            {section.content &&
+              section?.content.map((courseItem) => (
+                <li
+                  key={courseItem.title}
+                  onClick={() => onCourseItemSelect(courseItem)}
+                  className={`p-4 flex items-center gap-2 cursor-pointer hover:bg-majorelleBlue20 dark:hover:bg-majorelleBlue/10 transition-colors ${
+                    courseItem.title === currentCourseItemId
+                      ? "bg-majorelleBlue50 dark:bg-majorelleBlue/20"
+                      : ""
+                  }`}
+                >
+                  <PlayCircle
+                    size={20}
+                    className="text-majorelleBlue flex-shrink-0"
+                  />
+                  {isExpanded && (
+                    <div className="flex-1">
+                      <p className="text-darkSilver dark:text-lightSilver">
+                        {courseItem.title}
+                      </p>
+                    </div>
+                  )}
+                </li>
+              ))}
           </ul>
         </div>
       ))}
@@ -62,4 +63,4 @@ const LessonList: React.FC<LessonListProps> = ({
   );
 };
 
-export default LessonList;
+export default CourseItemList;
