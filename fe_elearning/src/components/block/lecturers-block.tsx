@@ -31,7 +31,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
 }) => {
   const { theme } = useTheme();
   return (
-    <Card className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-majorelleBlue shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack">
+    <Card className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-cosmicCobalt shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack">
       <CardHeader className="flex flex-col items-center gap-4">
         <Avatar className="w-24 h-24 shadow">
           <AvatarImage src={avatar} alt={name} />
@@ -48,7 +48,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
           </h3>
           <Badge
             variant="secondary"
-            className="mt-1 bg-majorelleBlue20/50  dark:bg-majorelleBlue20 dark:text-white text-black/70"
+            className="mt-1 bg-LavenderIndigo/80 dark:bg-LavenderIndigo/50 text-white"
           >
             {major || "Chưa xác định"}
           </Badge>
@@ -80,12 +80,6 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
           )}
         </div>
       </CardContent>
-
-      <CardFooter className="justify-center">
-        <button className="px-4 py-1.5 text-sm font-medium rounded-xl bg-majorelleBlue text-white hover:bg-majorelleBlue/90 transition">
-          Xem chi tiết
-        </button>
-      </CardFooter>
     </Card>
   );
 };

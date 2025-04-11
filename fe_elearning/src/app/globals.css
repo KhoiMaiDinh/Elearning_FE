@@ -7,6 +7,13 @@ body {
   background-color: "#EFF1F4";
 }
 
+.text-custom-violet-gradient {
+  background: linear-gradient(to right, #b781ff, #8844ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

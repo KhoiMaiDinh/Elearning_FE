@@ -87,7 +87,9 @@ const CourseLecture = () => {
   }, []);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-black50 font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">
-      <FilterBlock />
+      <div className="w-full h-full flex items-end justify-end">
+        <FilterBlock />
+      </div>{" "}
       <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
         {dataCourse.map((course: courseBlock, index: number) => (
           <CoursesBlock

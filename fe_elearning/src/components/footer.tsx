@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="max-w-[1440px]  mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 border-b border-darkSilver/20 dark:border-lightSilver/20 pb-10">
         {/* Cột 1: Logo + mô tả */}
         <div>
-          <h2 className="text-2xl font-bold text-majorelleBlue dark:text-white mb-4">
+          <h2 className="text-2xl font-bold text-LavenderIndigo dark:text-white mb-4">
             NovaLearn
           </h2>
           <p className="text-sm text-muted-foreground">

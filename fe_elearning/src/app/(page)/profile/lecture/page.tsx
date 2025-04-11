@@ -14,7 +14,7 @@ const Page = () => {
   }, [userInfo]);
   return (
     <div className="w-full h-full">
-      {userInfo.id ? (
+      {/* {userInfo.id ? (
         !userInfo?.roles?.some((role) => role.role_name === "instructor") &&
         !userInfo?.instructor_profile ? (
           <NotRegisteredLecture />
@@ -23,8 +23,8 @@ const Page = () => {
         )
       ) : (
         <Loader />
-      )}
-      {/* <RegisteredLecture /> */}
+      )} */}
+      <RegisteredLecture />
     </div>
   );
 };

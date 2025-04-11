@@ -9,7 +9,7 @@ import SelectRegister from "@/components/selectComponent/selectRegister";
 import TextAreaRegisterLecture from "@/components/inputComponent/textAreaRegisterLecture";
 import { APIUpdateCourse } from "@/utils/course";
 import { uploadToMinIO } from "@/utils/storage";
-import { CourseForm } from "@/types/courseType"; // Import type từ file của bạn
+import { CourseForm } from "@/types/courseType";
 import { MediaType } from "@/types/mediaType";
 import { APIGetCategory } from "@/utils/category";
 
@@ -54,14 +54,10 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 }) => {
   const [isEditingBasic, setIsEditingBasic] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [categoryData, setCategoryData] = useState<
-    { id: string; value: string; children?: { id: string; value: string }[] }[]
-  >([]);
+  const [categoryData, setCategoryData] = useState<any[]>([]);
   const [selectedParentCategory, setSelectedParentCategory] =
     useState<string>("");
-  const [childCategories, setChildCategories] = useState<
-    { id: string; value: string }[]
-  >([]);
+  const [childCategories, setChildCategories] = useState<any[]>([]);
 
   const {
     control,
@@ -154,20 +150,24 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-eerieBlack shadow-md rounded-lg p-3 border">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Thông tin khóa học</h2>
+    <div className="bg-white dark:bg-eerieBlack shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-cosmicCobalt dark:text-white">
+          Thông tin khóa học
+        </h2>
         <Button
           type="button"
-          className="bg-majorelleBlue text-white"
+          className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:brightness-110 ${
+            isEditingBasic ? "bg-redPigment" : "bg-cosmicCobalt"
+          }`}
           onClick={() => setIsEditingBasic(!isEditingBasic)}
         >
           {isEditingBasic ? "Hủy" : "Chỉnh sửa"}
         </Button>
       </div>
       {courseInfo && !isEditingBasic ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3 text-cosmicCobalt dark:text-white/90">
             <p>
               <strong>Tiêu đề:</strong> {courseInfo.title}
             </p>
@@ -185,7 +185,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             </p>
             <p>
               <strong>Mô tả:</strong>
-              <span
+              <div
                 className="ql-content"
                 dangerouslySetInnerHTML={{
                   __html: courseInfo.description || "",
@@ -193,18 +193,18 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               />
             </p>
           </div>
-          <div>
+          <div className="flex items-start justify-center">
             {imagePreview && (
               <img
                 src={imagePreview}
                 alt="Ảnh bìa"
-                className="w-full max-w-xs rounded-lg shadow-md"
+                className="w-full max-w-xs rounded-xl shadow-lg"
               />
             )}
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Controller
             name="title"
             control={control}
@@ -233,33 +233,29 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               <SelectRegister {...field} label="Cấp độ" data={data} />
             )}
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <SelectRegister
-                label="Chuyên ngành"
-                data={categoryData.map((cat) => ({
-                  id: cat.id,
-                  value: cat.value,
-                }))}
-                onValueChange={handleParentCategoryChange}
-                value={selectedParentCategory}
-              />
-            </div>
-            <div>
-              <Controller
-                name="category.slug"
-                control={control}
-                render={({ field }) => (
-                  <SelectRegister
-                    label="Lĩnh vực"
-                    data={childCategories}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={!selectedParentCategory}
-                  />
-                )}
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SelectRegister
+              label="Chuyên ngành"
+              data={categoryData.map((cat) => ({
+                id: cat.id,
+                value: cat.value,
+              }))}
+              onValueChange={handleParentCategoryChange}
+              value={selectedParentCategory}
+            />
+            <Controller
+              name="category.slug"
+              control={control}
+              render={({ field }) => (
+                <SelectRegister
+                  label="Lĩnh vực"
+                  data={childCategories}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={!selectedParentCategory}
+                />
+              )}
+            />
           </div>
           <Controller
             name="price"
@@ -276,7 +272,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             name="thumbnail"
             control={control}
             render={({ field }) => (
-              <div className="flex flex-col gap-2">
+              <div className="space-y-2">
                 <InputRegisterLecture
                   labelText="Ảnh bìa"
                   type="file"
@@ -300,13 +296,16 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   <img
                     src={imagePreview}
                     alt="Ảnh bìa"
-                    className="mt-2 w-full max-w-xs"
+                    className="w-full max-w-xs rounded-lg shadow"
                   />
                 )}
               </div>
             )}
           />
-          <Button type="submit" className="bg-majorelleBlue text-white">
+          <Button
+            type="submit"
+            className="bg-majorelleBlue hover:brightness-110 text-white"
+          >
             Lưu
           </Button>
         </form>

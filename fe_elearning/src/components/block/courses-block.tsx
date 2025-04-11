@@ -47,7 +47,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   };
 
   return (
-    <Card className="w-full h-full max-w-sm hover:shadow-lg transition-shadow">
+    <Card className="w-full h-full max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow">
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
@@ -62,7 +62,9 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           )}
         </div>
       </CardHeader>
-      <CardContent className="pt-4 space-y-3">
+
+      {/* Nội dung chính, set grow để phần dưới đẩy xuống */}
+      <CardContent className="pt-4 space-y-3 flex-grow">
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
             <AvatarImage src={avatar} />
@@ -111,7 +113,9 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between  items-end">
+
+      {/* Phần giá & button luôn ở dưới cùng */}
+      <CardFooter className="flex justify-between items-end mt-auto pt-2">
         <div className="space-x-2">
           {price && (
             <span className="text-muted-foreground line-through">

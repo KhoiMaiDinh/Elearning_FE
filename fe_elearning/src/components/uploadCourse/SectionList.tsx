@@ -26,54 +26,58 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({ item }) => {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   return (
-    <div className="ml-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-2">
-      <p>
-        <strong>Tiêu đề:</strong> {item.title}
+    <div className="ml-6 mt-4 p-4 rounded-xl bg-antiFlashWhite dark:bg-gray-900 border">
+      <p className="mb-1">
+        <strong>🎯 Tiêu đề:</strong> {item.title}
       </p>
-      <p>
-        <strong>Nội dung:</strong>
+      <p className="mb-1">
+        <strong>📄 Nội dung:</strong>{" "}
         <span
-          className="ql-content"
+          className="ql-content text-sm"
           dangerouslySetInnerHTML={{ __html: item.description }}
         />
       </p>
+
       {item.video && (
-        <div className="mt-2">
-          <p>
-            <strong>Video:</strong>
-          </p>
+        <div className="mt-3">
+          <p className="font-semibold mb-1">🎥 Video:</p>
           {item.video.video.status === "VALIDATED" ? (
             <video
               src={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${item.video.video.key}`}
               controls
-              className="w-full max-w-xs"
+              className="w-full max-w-sm rounded-lg shadow"
             />
           ) : item.video.video.status === "UPLOADED" ? (
-            <div className="w-full max-w-xs bg-gray-200 rounded-full h-2.5">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: `${uploadProgress}%` }}
-              />
-              <p className="text-sm text-gray-600 mt-1">Đang xử lý video...</p>
+            <div>
+              <div className="w-full max-w-sm bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+              <p className="text-sm text-gray-600 mt-1">
+                ⏳ Đang xử lý video...
+              </p>
             </div>
           ) : (
-            <p className="text-sm text-red-600">Video đang được kiểm duyệt</p>
+            <p className="text-sm text-red-600">
+              ⛔ Video đang được kiểm duyệt
+            </p>
           )}
         </div>
       )}
-      {item.resources && item.resources.length > 0 && (
-        <div className="mt-2">
-          <p>
-            <strong>Tài liệu:</strong>
-          </p>
-          <ul className="list-disc pl-5">
-            {item.resources.map((resource: { key: string }, idx: number) => (
+
+      {item.resources?.length > 0 && (
+        <div className="mt-3">
+          <p className="font-semibold mb-1">📎 Tài liệu:</p>
+          <ul className="list-disc pl-6 text-sm space-y-1">
+            {item.resources.map((resource, idx) => (
               <li key={idx}>
                 <a
                   href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.key}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="text-majorelleBlue hover:underline"
                 >
                   {resource.key.split("/").pop()}
                 </a>
@@ -82,8 +86,9 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({ item }) => {
           </ul>
         </div>
       )}
-      <p className="mt-2">
-        <strong>Xem trước:</strong> {item.is_preview ? "Có" : "Không"}
+
+      <p className="mt-3 text-sm">
+        <strong>👁️ Xem trước:</strong> {item.is_preview ? "Có" : "Không"}
       </p>
     </div>
   );
@@ -107,11 +112,12 @@ const SectionList: React.FC<SectionListProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-eerieBlack shadow-md rounded-lg p-3 border">
-      <h2 className="text-xl font-bold mb-4">Phần bài giảng</h2>
+    <div className="bg-white dark:bg-eerieBlack text-cosmicCobalt shadow-md rounded-xl p-6 border">
+      <h2 className="text-2xl font-bold mb-6">📚 Phần bài giảng</h2>
+
       {sections.length > 0 ? (
         sections.map((section, index) => (
-          <div key={index} className="p-2 border-b">
+          <div key={index} className="mb-6 pb-4 border-b">
             {editingSectionIndex === index ? (
               <SectionForm
                 section={section as Section & { course?: { id: string } }}
@@ -130,43 +136,44 @@ const SectionList: React.FC<SectionListProps> = ({
               />
             ) : (
               <div>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-semibold">
                     Phần {index + 1}: {section.title}
                   </h3>
                   <Button
                     type="button"
-                    className="bg-majorelleBlue text-white"
+                    className="bg-cosmicCobalt text-white"
                     onClick={() => setEditingSectionIndex(index)}
                   >
-                    Chỉnh sửa
+                    ✏️ Chỉnh sửa
                   </Button>
                 </div>
+
                 {section.description && (
-                  <p>
-                    <strong>Mô tả:</strong>
+                  <p className="mb-2 text-sm">
+                    <strong>Mô tả:</strong>{" "}
                     <span
                       className="ql-content"
                       dangerouslySetInnerHTML={{ __html: section.description }}
                     />
                   </p>
                 )}
-                {section.lectures && section.lectures.length > 0 && (
-                  <div className="mt-3">
-                    <h4 className="text-md font-bold">Bài giảng</h4>
-                    {section.lectures.map(
-                      (item: CourseItem, itemIndex: number) => (
-                        <CourseItemDisplay
-                          key={itemIndex}
-                          item={item}
-                          sectionIndex={index}
-                          onSave={() => handleGetCourseInfo(section.id)}
-                          onCancel={() => setIsAddingCourseItem(null)}
-                        />
-                      )
-                    )}
+
+                {section.lectures?.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold text-md mb-2">📘 Bài giảng</h4>
+                    {section.lectures.map((item, itemIndex) => (
+                      <CourseItemDisplay
+                        key={itemIndex}
+                        item={item}
+                        sectionIndex={index}
+                        onSave={() => handleGetCourseInfo(section.id)}
+                        onCancel={() => setIsAddingCourseItem(null)}
+                      />
+                    ))}
                   </div>
                 )}
+
                 {isAddingCourseItem === index ? (
                   <CourseItemForm
                     sectionIndex={index}
@@ -180,10 +187,10 @@ const SectionList: React.FC<SectionListProps> = ({
                 ) : (
                   <Button
                     type="button"
-                    className="mt-2 bg-majorelleBlue text-white"
+                    className="mt-3 bg-custom-gradient-button-violet text-white"
                     onClick={() => setIsAddingCourseItem(index)}
                   >
-                    Thêm bài giảng
+                    ➕ Thêm bài giảng
                   </Button>
                 )}
               </div>
@@ -191,7 +198,7 @@ const SectionList: React.FC<SectionListProps> = ({
           </div>
         ))
       ) : (
-        <p>Chưa có phần bài giảng nào.</p>
+        <p className="text-gray italic">Chưa có phần bài giảng nào.</p>
       )}
 
       {isEditingSection ? (
@@ -221,10 +228,10 @@ const SectionList: React.FC<SectionListProps> = ({
       ) : (
         <Button
           type="button"
-          className="mt-2 bg-majorelleBlue text-white"
+          className="mt-4 bg-majorelleBlue text-white"
           onClick={() => setIsEditingSection(true)}
         >
-          Thêm phần bài giảng
+          + Thêm phần bài giảng
         </Button>
       )}
     </div>

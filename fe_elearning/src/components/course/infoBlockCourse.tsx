@@ -75,7 +75,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       )}
 
       <div className="flex flex-col ">
-        <Button className="bg-majorelleBlue w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white dark:bg-AntiFlashWhite dark:text-black hover:shadow-md dark:hover:shadow-majorelleBlue dark:hover:text-majorelleBlue">
+        <Button className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
           {isRegistered ? "Tiếp tục" : "Đăng ký"}
         </Button>
       </div>

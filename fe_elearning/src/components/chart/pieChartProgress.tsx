@@ -5,8 +5,8 @@ import { Pie, PieChart, Label } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const chartData = (value: number) => [
-  { name: "Used", value, fill: "#545AE8" },
-  { name: "Remaining", value: 100 - value, fill: "#736C6C" },
+  { name: "Used", value, fill: "#8844FF" },
+  { name: "Remaining", value: 100 - value, fill: "rgba(136, 68, 255, 0.2)" },
 ];
 
 type Props = {

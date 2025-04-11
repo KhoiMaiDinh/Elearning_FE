@@ -104,6 +104,10 @@ export default {
       majorelleBlue50: "rgba(86, 91, 221, 0.5)",
       majorelleBlue20: "rgba(86, 91, 221, 0.2)",
       majorelleBlue70: "rgba(86, 91, 221, 0.7)",
+
+      PaleViolet: "#B781FF",
+      LavenderIndigo: "#8844FF",
+
       lightSilver: "#d9d9d9",
       champagne: "#F0F2CB",
       Sunglow: "#FFCD29",
@@ -135,12 +139,13 @@ export default {
       russianViolet: "#2D1E4A",
       persianIndigo: "#371D73",
       yankeesBlue: "#152A43",
+      transparent: "transparent",
     },
     backgroundImage: {
-      "custom-gradient-dark":
-        "linear-gradient(to bottom right, #1E293B, #334155)",
-      "custom-gradient-light":
-        "linear-gradient(to bottom right, #E5E7EB, #F3F4F6)",
+      "custom-gradient-dark": "linear-gradient(to  right, #1E293B, #334155)",
+      "custom-gradient-light": "linear-gradient(to  right, #E5E7EB, #F3F4F6)",
+      "custom-gradient-button-violet":
+        "linear-gradient(to bottom, #B781FF, #8844FF)",
     },
   },
   plugins: [require("tailwindcss-animate")],

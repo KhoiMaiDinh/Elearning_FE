@@ -605,7 +605,7 @@ const ProfileLecture = () => {
           {disable ? (
             <Button
               type="button"
-              className="w-32 bg-majorelleBlue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+              className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
               onClick={() => setDisable(false)}
             >
               Chỉnh sửa
@@ -613,7 +613,7 @@ const ProfileLecture = () => {
           ) : (
             <Button
               type="submit"
-              className="w-32 bg-majorelleBlue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+              className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
               disabled={loading}
             >
               {loading ? "Đang gửi..." : "Gửi xét duyệt"}

@@ -196,7 +196,7 @@ export default function Page() {
           alt="dashboard_bg"
           className="absolute inset-0 w-full h-full object-cover dark:opacity-20 opacity-50"
         />
-        <div className="relative flex flex-col md:justify-center w-full dark:text-white gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-majorelleBlue md:text-majorelleBlue font-sans text-center z-20">
+        <div className="relative flex flex-col md:justify-center w-full dark:text-white gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-LavenderIndigo font-sans text-center z-20">
           <SplitText
             text="Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi"
             className="lg:text-[38px] text-left md:text-[24px] text-[20px] font-bold"
@@ -226,7 +226,7 @@ export default function Page() {
 
           <div className="flex items-center gap-4">
             <Button
-              className="bg-majorelleBlue text-white hover:bg-majorelleBlue70 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
+              className="bg-custom-gradient-button-violet text-white hover:scale-105 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
               onClick={() => router.push("/courses")}
             >
               Tìm khóa học
@@ -235,7 +235,9 @@ export default function Page() {
             <div className="flex items-center gap-2 text-white">
               <Headset className="w-6 h-6 text-beautyGreen" />
               <div>
-                <p className="text-sm opacity-80">Hotline</p>
+                <p className="text-sm dark:text-beautyGreen text-majorelleBlue opacity-80">
+                  Hotline
+                </p>
                 <p className="font-bold dark:text-beautyGreen text-majorelleBlue ">
                   1900 1008
                 </p>
@@ -281,7 +283,7 @@ export default function Page() {
       {/* About Section */}
       <section className="bg-white dark:bg-cosmicCobalt/10 py-16">
         <div className="container mx-auto text-center" data-aos="fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-majorelleBlue dark:text-majorelleBlue mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-cosmicCobalt dark:text-white mb-6">
             Về chúng tôi
           </h2>
           <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
@@ -356,7 +358,7 @@ export default function Page() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-majorelleBlue to-persianIndigo dark:text-white text-majorelleBlue py-16">
+      <section className="bg-gradient-to-r from-majorelleBlue to-persianIndigo dark:text-white text-cosmicCobalt py-16">
         <div className="container mx-auto text-center" data-aos="zoom-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Sẵn sàng nâng cao kỹ năng của bạn?

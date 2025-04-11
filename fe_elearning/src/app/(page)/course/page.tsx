@@ -101,7 +101,7 @@ const Page = () => {
         <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
           <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
             Khám phá các{" "}
-            <span className="text-majorelleBlue">khóa học nổi bật</span>
+            <span className="text-LavenderIndigo">khóa học nổi bật</span>
             <br />
             từ nhiều lĩnh vực đa dạng
           </h1>{" "}
@@ -111,7 +111,7 @@ const Page = () => {
             từng bước.
           </p>
           <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
-            <button className="bg-majorelleBlue text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
+            <button className="bg-custom-gradient-button-violet text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
               Xem tất cả khóa học
             </button>
             <button className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition">
@@ -123,7 +123,7 @@ const Page = () => {
       {/* Giang vien uu tu */}
       <section className="py-12  overflow-hidden">
         <div className="text-center mb-8">
-          <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+          <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
             Khóa học nổi bật{" "}
           </h2>
           <p className="md:text-sm text-xs text-muted-foreground mt-2">
@@ -152,7 +152,7 @@ const Page = () => {
         </div>
       </section>
       <div className="md:px-6 pt-4 pb-2">
-        <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+        <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
           Danh sách khóa học
         </h2>
         <p className="md:text-sm text-xs text-muted-foreground mt-1">

@@ -105,7 +105,7 @@ const Page = () => {
         <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
           <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
             Gặp gỡ đội ngũ{" "}
-            <span className="text-majorelleBlue">giảng viên ưu tú</span>
+            <span className="text-LavenderIndigo">giảng viên ưu tú</span>
             <br />
             từ các lĩnh vực khác nhau
           </h1>{" "}
@@ -115,7 +115,7 @@ const Page = () => {
             thực chiến cho bạn.
           </p>
           <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
-            <button className="bg-majorelleBlue text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
+            <button className="bg-custom-gradient-button-violet text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
               Khám phá giảng viên
             </button>
             <button className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition">
@@ -135,7 +135,7 @@ const Page = () => {
       {/* Giang vien uu tu */}
       <section className="py-12  overflow-hidden">
         <div className="text-center mb-8">
-          <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+          <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
             Gương mặt ưu tú
           </h2>
           <p className="md:text-sm text-xs text-muted-foreground mt-2">
@@ -155,7 +155,7 @@ const Page = () => {
                   <img
                     src={lecture.avatar}
                     alt={`Lecturer ${idx}`}
-                    className="object-cover w-full h-full"
+                    className="object-cover text-cosmicCobalt w-full h-full"
                   />
                 </div>
               ))}
@@ -165,7 +165,7 @@ const Page = () => {
 
       {/* Danh sach giang vien */}
       <div className="md:px-6 pt-4 pb-2">
-        <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+        <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
           Danh sách giảng viên
         </h2>
         <p className="md:text-sm text-xs text-muted-foreground mt-1">

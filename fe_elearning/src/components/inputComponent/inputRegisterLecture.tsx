@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { Upload, UploadCloud } from "lucide-react";
 
 type InputRegisterLectureProps = {
   labelText: string;
@@ -61,10 +61,10 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
           {/* Giao diện tùy chỉnh */}
           <div
             onClick={handleCustomClick}
-            className="cursor-pointer shadow-sm flex font-sans font-normal text-xs flex-row gap-1 w-fit px-4 py-1 items-center justify-center rounded-md dark:border dark:border-lightSilver/50 shadow-majorelleBlue hover:underline"
+            className="cursor-pointer shadow-sm flex font-sans font-normal text-xs text-white flex-row gap-1 w-fit px-4 py-2 items-center justify-center rounded-full dark:border dark:border-lightSilver/50 bg-custom-gradient-button-violet hover:underline"
           >
             Upload
-            <Upload className="w-4 h-4" />
+            <UploadCloud className="w-4 h-4 text-white" />
           </div>
         </>
       ) : (

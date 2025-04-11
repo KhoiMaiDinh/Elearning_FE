@@ -426,7 +426,7 @@ const RegisterLecture = () => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="text-red-500 hover:bg-red-100"
+                        className="text-redPigment hover:bg-redPigment/10"
                         onClick={removeResume}
                       >
                         <X className="w-4 h-4" />
@@ -596,7 +596,7 @@ const RegisterLecture = () => {
       <div className="w-full h-full items-center justify-center flex p-4">
         <Button
           type="submit"
-          className="w-32 bg-majorelleBlue  dark:shadow-majorelleBlue50 dark:shadow-md text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+          className="w-32 bg-custom-gradient-button-violet  dark:shadow-majorelleBlue50 dark:shadow-md text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
         >
           {loading ? "Đang gửi..." : "Gửi xét duyệt"}
         </Button>

@@ -266,7 +266,7 @@ const Header = () => {
           {/* Nút đăng nhập */}
           {!userInfo.id && (
             <button
-              className="px-4 py-2 bg-majorelleBlue70 text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium text-black border rounded-lg hover:bg-majorelleBlue50 hover:text-black hover:shadow-md dark:bg-majorelleBlue70 dark:text-white dark:hover:bg-majorelleBlue50 dark:hover:text-gray-200"
+              className="px-4 py-2 bg-custom-gradient-button-violet text-white text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium  border rounded-lg hover:bg-majorelleBlue hover:text-black hover:shadow-md  hover:scale-105 transition-all duration-300"
               onClick={() => router.push("/login")}
             >
               Đăng nhập
