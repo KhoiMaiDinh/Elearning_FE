@@ -2,8 +2,12 @@
 import LecturersBlock from "@/components/block/lecturers-block";
 import FilterBlock from "@/components/filter/filter-block";
 import lectureBlock from "@/types/lecturesBlockType";
-import React, { useEffect } from "react";
-
+import React, { useEffect, useRef } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 const dataLecture: lectureBlock[] = [
   {
     avatar: "/images/avatar.jpg",
@@ -94,9 +98,85 @@ const Page = () => {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
-      <FilterBlock />
-      <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
+    <div className="w-full h-full flex flex-col p-6  gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
+      {/* header */}
+      <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
+        {" "}
+        <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
+          <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
+            Gặp gỡ đội ngũ{" "}
+            <span className="text-majorelleBlue">giảng viên ưu tú</span>
+            <br />
+            từ các lĩnh vực khác nhau
+          </h1>{" "}
+          <p className="mt-4 lg:text-lg md:text-sm text-xs text-muted-foreground max-w-xl">
+            Đội ngũ giảng viên của chúng tôi bao gồm những chuyên gia hàng đầu
+            trong nhiều lĩnh vực — luôn sẵn sàng truyền cảm hứng và kiến thức
+            thực chiến cho bạn.
+          </p>
+          <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
+            <button className="bg-majorelleBlue text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
+              Khám phá giảng viên
+            </button>
+            <button className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition">
+              Đăng ký học thử
+            </button>
+          </div>
+        </div>
+        <div className="col-span-1 flex justify-center">
+          <img
+            src="/images/lecture_bg.png"
+            alt="Giảng viên"
+            className="md:w-[300px] w-[200px] rounded-xl"
+          />
+        </div>
+      </div>
+
+      {/* Giang vien uu tu */}
+      <section className="py-12  overflow-hidden">
+        <div className="text-center mb-8">
+          <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+            Gương mặt ưu tú
+          </h2>
+          <p className="md:text-sm text-xs text-muted-foreground mt-2">
+            Những giảng viên xuất sắc đồng hành cùng bạn
+          </p>
+        </div>
+
+        <div className="relative w-full whitespace-nowrap">
+          <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
+            {dataLecture
+              .concat(dataLecture)
+              .map((lecture: lectureBlock, idx: number) => (
+                <div
+                  key={idx}
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
+                >
+                  <img
+                    src={lecture.avatar}
+                    alt={`Lecturer ${idx}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Danh sach giang vien */}
+      <div className="md:px-6 pt-4 pb-2">
+        <h2 className="md:text-2xl text-xl font-bold text-majorelleBlue dark:text-white">
+          Danh sách giảng viên
+        </h2>
+        <p className="md:text-sm text-xs text-muted-foreground mt-1">
+          Khám phá đội ngũ giảng viên nhiều kinh nghiệm, tận tâm và đầy nhiệt
+          huyết.
+        </p>
+      </div>
+      <div className="w-full h-full flex items-end justify-end">
+        <FilterBlock />
+      </div>
+      <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
         {dataLecture.map((lecture: lectureBlock, index: number) => (
           <LecturersBlock
             avatar={lecture.avatar}

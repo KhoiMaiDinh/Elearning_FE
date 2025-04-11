@@ -70,7 +70,12 @@ export default {
         sans: ["Inter", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
+
       keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -89,6 +94,7 @@ export default {
         },
       },
       animation: {
+        marquee: "marquee 30s linear infinite", // 30s là thời gian chạy của marquee , vong lap chay
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

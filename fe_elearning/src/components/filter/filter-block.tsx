@@ -59,11 +59,14 @@ const FilterBlock = () => {
     <div className="flex flex-row items-center justify-between  py-3 px-4">
       <Sheet>
         <SheetTrigger asChild>
-          <Filter
-            color={theme === "light" ? "#000000" : "#ffffff"}
-            fill={theme === "light" ? "#000000" : "#ffffff"}
-            size={16}
-          />
+          <div className="flex flex-row items-center gap-2 text-black dark:text-white">
+            <Filter
+              color={theme === "light" ? "#000000" : "#ffffff"}
+              fill={theme === "light" ? "#000000" : "#ffffff"}
+              size={16}
+            />
+            <p className="text-sm font-medium">Bộ lọc</p>
+          </div>
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-2 lg:gap-4 md:gap-4">
           <SheetHeader>

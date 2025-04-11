@@ -190,9 +190,11 @@ export default function Page() {
       {/* Hero Section */}
       <section className="relative w-full h-[600px] bg-gradient-to-r from-majorelleBlue to-cosmicCobalt">
         <div className="absolute inset-0 dark:bg-black/30 bg-white/30 z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center dark:opacity-20 opacity-50"
-          style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
+
+        <img
+          src="/images/dashboard_bg.png"
+          alt="dashboard_bg"
+          className="absolute inset-0 w-full h-full object-cover dark:opacity-20 opacity-50"
         />
         <div className="relative flex flex-col md:justify-center w-full dark:text-white gap-2 items-center h-full md:w-2/5 md:text-left px-4  text-majorelleBlue md:text-majorelleBlue font-sans text-center z-20">
           <SplitText

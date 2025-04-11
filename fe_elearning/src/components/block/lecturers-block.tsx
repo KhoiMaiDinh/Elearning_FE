@@ -31,9 +31,9 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
 }) => {
   const { theme } = useTheme();
   return (
-    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+    <Card className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-majorelleBlue shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack">
       <CardHeader className="flex flex-col items-center gap-4">
-        <Avatar className="w-24 h-24">
+        <Avatar className="w-24 h-24 shadow">
           <AvatarImage src={avatar} alt={name} />
           <AvatarFallback>
             {name
@@ -42,21 +42,24 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
               .join("") || "GV"}
           </AvatarFallback>
         </Avatar>
-        <div className="text-center">
-          <h3 className="font-semibold text-lg">{name || "Giảng viên"}</h3>
+        <div className="text-center space-y-1">
+          <h3 className="font-semibold text-lg text-black/80 dark:text-white">
+            {name || "Giảng viên"}
+          </h3>
           <Badge
             variant="secondary"
-            className="mt-1 bg-pinkLace dark:text-black"
+            className="mt-1 bg-majorelleBlue20/50  dark:bg-majorelleBlue20 dark:text-white text-black/70"
           >
             {major || "Chưa xác định"}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm text-muted-foreground text-center line-clamp-3">
+
+      <CardContent className="space-y-4">
+        <p className="text-sm text-darkSilver/70 dark:text-lightSilver/70 text-center line-clamp-3">
           {description || "Chưa có mô tả"}
         </p>
-        <div className="flex justify-around text-sm">
+        <div className="flex justify-around text-sm text-darkSilver/70 dark:text-lightSilver/70">
           {rating && (
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-Sunglow" />
@@ -77,10 +80,11 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
           )}
         </div>
       </CardContent>
+
       <CardFooter className="justify-center">
-        <Badge variant="outline" className="cursor-pointer">
+        <button className="px-4 py-1.5 text-sm font-medium rounded-xl bg-majorelleBlue text-white hover:bg-majorelleBlue/90 transition">
           Xem chi tiết
-        </Badge>
+        </button>
       </CardFooter>
     </Card>
   );
