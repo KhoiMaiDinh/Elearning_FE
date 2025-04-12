@@ -19,6 +19,7 @@ import SelectRegister from "../selectComponent/selectRegister";
 import AlertSuccess from "../alert/AlertSuccess";
 import AlertError from "../alert/AlertError";
 import { setUser } from "@/constants/userSlice";
+import AnimateWrapper from "../animations/animateWrapper";
 
 // Schema validation với Yup
 const schema = yup.object().shape({
@@ -146,7 +147,6 @@ const ProfileLecture = () => {
           name: profile.resume.key,
         });
       }
-      console.log("🚀 ~ useEffect ~ setResumePreview:", resumePreview);
     }
   }, [userInfo?.instructor_profile, setValue]);
 
@@ -332,295 +332,297 @@ const ProfileLecture = () => {
           )}
         </div>
       )}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full h-full gap-2 flex flex-col"
-      >
-        {/* Thông tin cá nhân */}
-        <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
-          <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
-            Thông tin cá nhân
-          </p>
-          <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
-            <InputRegisterLecture
-              labelText="Họ và tên"
-              value={userInfo?.first_name + " " + userInfo?.last_name}
-              disabled={true}
-            />
-            <InputRegisterLecture
-              labelText="Email"
-              value={userInfo?.email}
-              disabled={true}
-            />
-          </div>
-        </div>
-
-        {/* Thông tin chuyên môn */}
-        <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
-          <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
-            Thông tin chuyên môn
-          </p>
-          <div className="grid w-full p-3 gap-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Controller
-                name="category.slug"
-                control={control}
-                render={({ field }) => (
-                  <SelectRegister
-                    {...field}
-                    label="Lĩnh vực chuyên môn"
-                    error={errors.category?.slug?.message}
-                    data={category}
-                    disabled={disable}
-                    value={field.value}
-                    onValueChange={(e) => {
-                      setValue("category.slug", e);
-                    }}
-                  />
-                )}
+      <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full h-full gap-2 flex flex-col"
+        >
+          {/* Thông tin cá nhân */}
+          <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
+            <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
+              Thông tin cá nhân
+            </p>
+            <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
+              <InputRegisterLecture
+                labelText="Họ và tên"
+                value={userInfo?.first_name + " " + userInfo?.last_name}
+                disabled={true}
               />
-
-              <Controller
-                name="headline"
-                control={control}
-                render={({ field }) => (
-                  <InputRegisterLecture
-                    {...field}
-                    labelText="Tiêu đề"
-                    error={errors.headline?.message}
-                    disabled={disable}
-                  />
-                )}
+              <InputRegisterLecture
+                labelText="Email"
+                value={userInfo?.email}
+                disabled={true}
               />
             </div>
+          </div>
 
-            <Controller
-              name="biography"
-              control={control}
-              render={({ field }) => (
-                <TextAreaRegisterLecture
-                  {...field}
-                  labelText="Mô tả kinh nghiệm"
-                  error={errors.biography?.message}
-                  disabled={disable}
-                  className="min-h-[180px]"
+          {/* Thông tin chuyên môn */}
+          <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
+            <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
+              Thông tin chuyên môn
+            </p>
+            <div className="grid w-full p-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Controller
+                  name="category.slug"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectRegister
+                      {...field}
+                      label="Lĩnh vực chuyên môn"
+                      error={errors.category?.slug?.message}
+                      data={category}
+                      disabled={disable}
+                      value={field.value}
+                      onValueChange={(e) => {
+                        setValue("category.slug", e);
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
 
-            <Controller
-              name="resume"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <div className="flex items-center gap-2">
+                <Controller
+                  name="headline"
+                  control={control}
+                  render={({ field }) => (
                     <InputRegisterLecture
                       {...field}
+                      labelText="Tiêu đề"
+                      error={errors.headline?.message}
+                      disabled={disable}
+                    />
+                  )}
+                />
+              </div>
+
+              <Controller
+                name="biography"
+                control={control}
+                render={({ field }) => (
+                  <TextAreaRegisterLecture
+                    {...field}
+                    labelText="Mô tả kinh nghiệm"
+                    error={errors.biography?.message}
+                    disabled={disable}
+                    className="min-h-[180px]"
+                  />
+                )}
+              />
+
+              <Controller
+                name="resume"
+                control={control}
+                render={({ field }) => (
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <InputRegisterLecture
+                        {...field}
+                        type="file"
+                        accept=".pdf"
+                        labelText="CV (PDF)"
+                        error={errors.resume?.message}
+                        disabled={disable}
+                        onChange={(e) => {
+                          const files = (e.target as HTMLInputElement).files;
+                          if (files?.length) {
+                            handleResumeChange(files);
+                          }
+                        }}
+                      />
+                      {resumePreview && !disable && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:bg-red-100"
+                          onClick={removeResume}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {resumePreview && (
+                      <div className="mt-2 border rounded p-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">
+                            {resumePreview.name}
+                          </span>
+                        </div>
+                        <iframe
+                          src={resumePreview.url}
+                          className="md:w-1/2 w-full md:h-[200px] h-[100px] rounded"
+                          title="CV Preview"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="certificates"
+                control={control}
+                render={({ field }) => (
+                  <div>
+                    <InputRegisterLecture
+                      {...field}
+                      labelText="Chứng chỉ/bằng cấp (PDF)"
                       type="file"
                       accept=".pdf"
-                      labelText="CV (PDF)"
-                      error={errors.resume?.message}
+                      multiple
+                      error={errors.certificates?.message}
                       disabled={disable}
                       onChange={(e) => {
                         const files = (e.target as HTMLInputElement).files;
                         if (files?.length) {
-                          handleResumeChange(files);
+                          handleCertificatesChange(files);
                         }
                       }}
                     />
-                    {resumePreview && !disable && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:bg-red-100"
-                        onClick={removeResume}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
+                    {certificatePreviews.length > 0 && (
+                      <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {certificatePreviews.map((preview, index) => (
+                          <div
+                            key={index}
+                            className="relative border rounded p-2"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm text-gray-600 truncate max-w-[150px]">
+                                {preview.name}
+                              </span>
+                              {!disable && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-500 hover:bg-red-100"
+                                  onClick={() => removeFile(index)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <iframe
+                              src={preview.url}
+                              className="w-full md:h-[400px] h-[100px] rounded"
+                              title={`Certificate ${index + 1}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  {resumePreview && (
-                    <div className="mt-2 border rounded p-2">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-gray-600">
-                          {resumePreview.name}
-                        </span>
-                      </div>
-                      <iframe
-                        src={resumePreview.url}
-                        className="md:w-1/2 w-full md:h-[200px] h-[100px] rounded"
-                        title="CV Preview"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            />
+                )}
+              />
 
-            <Controller
-              name="certificates"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <InputRegisterLecture
-                    {...field}
-                    labelText="Chứng chỉ/bằng cấp (PDF)"
-                    type="file"
-                    accept=".pdf"
-                    multiple
-                    error={errors.certificates?.message}
-                    disabled={disable}
-                    onChange={(e) => {
-                      const files = (e.target as HTMLInputElement).files;
-                      if (files?.length) {
-                        handleCertificatesChange(files);
-                      }
-                    }}
-                  />
-                  {certificatePreviews.length > 0 && (
-                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {certificatePreviews.map((preview, index) => (
-                        <div
-                          key={index}
-                          className="relative border rounded p-2"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 truncate max-w-[150px]">
-                              {preview.name}
-                            </span>
-                            {!disable && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:bg-red-100"
-                                onClick={() => removeFile(index)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                          <iframe
-                            src={preview.url}
-                            className="w-full md:h-[400px] h-[100px] rounded"
-                            title={`Certificate ${index + 1}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Controller
+                  name="website_url"
+                  control={control}
+                  render={({ field }) => (
+                    <InputRegisterLecture
+                      {...field}
+                      labelText="Website"
+                      error={errors.website_url?.message}
+                      disabled={disable}
+                    />
                   )}
-                </div>
-              )}
-            />
+                />
+                <Controller
+                  name="facebook_url"
+                  control={control}
+                  render={({ field }) => (
+                    <InputRegisterLecture
+                      {...field}
+                      labelText="Facebook"
+                      error={errors.facebook_url?.message}
+                      disabled={disable}
+                    />
+                  )}
+                />
+                <Controller
+                  name="linkedin_url"
+                  control={control}
+                  render={({ field }) => (
+                    <InputRegisterLecture
+                      {...field}
+                      labelText="Linkedin"
+                      error={errors.linkedin_url?.message}
+                      disabled={disable}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Thông tin tài khoản */}
+          <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
+            <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
+              Thông tin tài khoản
+            </p>
+            <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
               <Controller
-                name="website_url"
+                name="bankAccount"
                 control={control}
                 render={({ field }) => (
                   <InputRegisterLecture
                     {...field}
-                    labelText="Website"
-                    error={errors.website_url?.message}
+                    labelText="Số tài khoản"
+                    error={errors.bankAccount?.message}
                     disabled={disable}
                   />
                 )}
               />
               <Controller
-                name="facebook_url"
+                name="bankName"
                 control={control}
                 render={({ field }) => (
                   <InputRegisterLecture
                     {...field}
-                    labelText="Facebook"
-                    error={errors.facebook_url?.message}
+                    labelText="Ngân hàng"
+                    error={errors.bankName?.message}
                     disabled={disable}
                   />
                 )}
               />
               <Controller
-                name="linkedin_url"
+                name="accountHolder"
                 control={control}
                 render={({ field }) => (
                   <InputRegisterLecture
                     {...field}
-                    labelText="Linkedin"
-                    error={errors.linkedin_url?.message}
+                    labelText="Tên chủ tài khoản"
+                    error={errors.accountHolder?.message}
                     disabled={disable}
                   />
                 )}
               />
             </div>
           </div>
-        </div>
 
-        {/* Thông tin tài khoản */}
-        <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
-          <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
-            Thông tin tài khoản
-          </p>
-          <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
-            <Controller
-              name="bankAccount"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Số tài khoản"
-                  error={errors.bankAccount?.message}
-                  disabled={disable}
-                />
-              )}
-            />
-            <Controller
-              name="bankName"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Ngân hàng"
-                  error={errors.bankName?.message}
-                  disabled={disable}
-                />
-              )}
-            />
-            <Controller
-              name="accountHolder"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Tên chủ tài khoản"
-                  error={errors.accountHolder?.message}
-                  disabled={disable}
-                />
-              )}
-            />
+          {/* Nút điều khiển */}
+          <div className="w-full flex items-center justify-center p-4">
+            {disable ? (
+              <Button
+                type="button"
+                className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                onClick={() => setDisable(false)}
+              >
+                ✍️ Chỉnh sửa
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                disabled={loading}
+              >
+                {loading ? "Đang gửi..." : "Gửi xét duyệt"}
+              </Button>
+            )}
           </div>
-        </div>
-
-        {/* Nút điều khiển */}
-        <div className="w-full flex items-center justify-center p-4">
-          {disable ? (
-            <Button
-              type="button"
-              className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
-              onClick={() => setDisable(false)}
-            >
-              Chỉnh sửa
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
-              disabled={loading}
-            >
-              {loading ? "Đang gửi..." : "Gửi xét duyệt"}
-            </Button>
-          )}
-        </div>
-      </form>
+        </form>
+      </AnimateWrapper>
       {showAlertSuccess && <AlertSuccess description={alertDescription} />}
       {showAlertError && <AlertError description={alertDescription} />}
     </div>

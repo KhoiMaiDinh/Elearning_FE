@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import BillsTable from "@/components/bill/billTable";
 import BillsPagination from "@/components/bill/billPaginations";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 const billData = [
   {
@@ -57,26 +58,29 @@ const BillsPage = () => {
   return (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
       <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
-            Lịch sử thanh toán
-          </h1>
-          <p className="text-darkSilver dark:text-lightSilver">
-            Danh sách các hóa đơn đã thanh toán cho khóa học của bạn
-          </p>
-        </div>
+        <AnimateWrapper delay={0.2} direction="up">
+          <div>
+            <h1 className="text-2xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
+              Lịch sử thanh toán
+            </h1>
+            <p className="text-darkSilver dark:text-lightSilver">
+              Danh sách các hóa đơn đã thanh toán cho khóa học của bạn
+            </p>
+          </div>
+        </AnimateWrapper>
+        <AnimateWrapper delay={0.2} direction="up">
+          <BillsTable
+            bills={paginatedBills}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
 
-        <BillsTable
-          bills={paginatedBills}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-
-        <BillsPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+          <BillsPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </AnimateWrapper>
       </div>
     </div>
   );

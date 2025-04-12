@@ -150,7 +150,7 @@ const AdminDashboard = () => {
                       variant="ghost"
                       onClick={() => alert("Chỉnh sửa user")}
                     >
-                      Chỉnh sửa
+                      ✍️Chỉnh sửa
                     </Button>
                   </TableCell>
                 </TableRow>

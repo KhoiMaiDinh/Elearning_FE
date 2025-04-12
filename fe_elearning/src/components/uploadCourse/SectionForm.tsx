@@ -156,10 +156,17 @@ const SectionForm: React.FC<SectionFormProps> = ({
         )}
       />
       <div className="flex gap-2">
-        <Button type="submit" className="bg-majorelleBlue text-white">
-          {isNewSection ? "Tạo mới" : "Cập nhật"}
+        <Button
+          type="submit"
+          className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
+        >
+          {isNewSection ? "💡Tạo mới" : "💡Cập nhật"}
         </Button>
-        <Button type="button" onClick={onCancel}>
+        <Button
+          type="button"
+          className="bg-redPigment text-white  hover:text-white dark:hover:text-black "
+          onClick={onCancel}
+        >
           Hủy
         </Button>
       </div>

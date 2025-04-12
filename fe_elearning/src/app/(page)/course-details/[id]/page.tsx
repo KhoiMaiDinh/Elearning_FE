@@ -6,6 +6,7 @@ import CourseTabs from "@/components/courseDetails/courseTab";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CourseForm, CourseItem, Section } from "@/types/courseType";
 import CourseItemList from "@/components/courseDetails/lessonList";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 // Dữ liệu mẫu dựa trên CourseForm (giữ nguyên)
 const courseData: CourseForm = {
@@ -157,70 +158,72 @@ const LearnPage = () => {
   const videoUrl = getVideoUrl(currentCourseItem);
 
   return (
-    <div className="min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite">
-      {/* Video và Danh mục bài học */}
-      <div className="flex flex-col lg:flex-row gap-4 p-4">
-        {/* Nút mở/thu nhỏ sidebar */}
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="lg:hidden mb-4 p-2 bg-majorelleBlue text-white rounded-full"
-        >
-          {isSidebarOpen ? (
-            <ChevronLeft size={20} />
-          ) : (
-            <ChevronRight size={20} />
-          )}
-        </button>
+    <AnimateWrapper delay={0.2} direction="up">
+      <div className="min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite">
+        {/* Video và Danh mục bài học */}
+        <div className="flex flex-col lg:flex-row gap-4 p-4">
+          {/* Nút mở/thu nhỏ sidebar */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="lg:hidden mb-4 p-2 bg-majorelleBlue text-white rounded-full"
+          >
+            {isSidebarOpen ? (
+              <ChevronLeft size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
+          </button>
 
-        {/* Sidebar (Danh mục bài học) */}
-        <div
-          className={`${
-            isSidebarOpen ? "w-full lg:w-1/4" : "w-0 lg:w-16"
-          } transition-all duration-300 bg-white dark:bg-richBlack rounded-lg shadow-md overflow-hidden`}
-        >
-          {currentCourseItem && courseData.course && (
-            <CourseItemList
+          {/* Sidebar (Danh mục bài học) */}
+          <div
+            className={`${
+              isSidebarOpen ? "w-full lg:w-1/4" : "w-0 lg:w-16"
+            } transition-all duration-300 bg-white dark:bg-richBlack rounded-lg shadow-md overflow-hidden`}
+          >
+            {currentCourseItem && courseData.course && (
+              <CourseItemList
+                sections={courseData.course}
+                currentCourseItemId={currentCourseItem?.title}
+                onCourseItemSelect={(courseItem) =>
+                  setCurrentCourseItem(courseItem)
+                }
+                isExpanded={isSidebarOpen}
+              />
+            )}
+          </div>
+
+          {/* Video Player - Chỉ render khi có videoUrl */}
+          <div className="flex-1">
+            {currentCourseItem && videoUrl ? (
+              <VideoPlayer
+                videoUrl={videoUrl} // videoUrl đã được đảm bảo là string nhờ kiểm tra
+                title={currentCourseItem.title}
+                coverPhoto={courseData.thumbnail?.key}
+              />
+            ) : (
+              <div className="p-4 text-center">
+                <p>Không có video để phát cho mục này.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="p-4">
+          {courseData && (
+            <CourseTabs
+              description={courseData.description || ""}
               sections={courseData.course}
-              currentCourseItemId={currentCourseItem?.title}
-              onCourseItemSelect={(courseItem) =>
-                setCurrentCourseItem(courseItem)
-              }
-              isExpanded={isSidebarOpen}
+              lecture={courseData.instructor_id}
+              rating={courseData.rating}
+              enrolledStudents={courseData.enrolled_users}
+              price={courseData.price}
+              priceFinal={courseData.priceFinal}
             />
           )}
         </div>
-
-        {/* Video Player - Chỉ render khi có videoUrl */}
-        <div className="flex-1">
-          {currentCourseItem && videoUrl ? (
-            <VideoPlayer
-              videoUrl={videoUrl} // videoUrl đã được đảm bảo là string nhờ kiểm tra
-              title={currentCourseItem.title}
-              coverPhoto={courseData.thumbnail?.key}
-            />
-          ) : (
-            <div className="p-4 text-center">
-              <p>Không có video để phát cho mục này.</p>
-            </div>
-          )}
-        </div>
       </div>
-
-      {/* Tabs */}
-      <div className="p-4">
-        {courseData && (
-          <CourseTabs
-            description={courseData.description || ""}
-            sections={courseData.course}
-            lecture={courseData.instructor_id}
-            rating={courseData.rating}
-            enrolledStudents={courseData.enrolled_users}
-            price={courseData.price}
-            priceFinal={courseData.priceFinal}
-          />
-        )}
-      </div>
-    </div>
+    </AnimateWrapper>
   );
 };
 

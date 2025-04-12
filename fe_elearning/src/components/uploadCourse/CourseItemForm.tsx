@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { useForm, Controller, Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,6 +14,7 @@ import AlertError from "@/components/alert/AlertError";
 import { CourseItem, Section } from "@/types/courseType";
 import { MediaType } from "@/types/mediaType";
 
+// ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
   title: yup.string().required("Tiêu đề bài học không được để trống"),
   description: yup.string().required("Nội dung bài học không được để trống"),
@@ -98,55 +100,52 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     }
   };
 
-  createdItem?.video &&
-    console.log(
-      `${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem?.video.video.key}`
-    );
-
-  console.log(createdItem);
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {createdItem && (
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
-          <h4 className="font-semibold mb-2">Bài giảng vừa tạo:</h4>
-          <div className="space-y-2">
+        <div className="bg-AntiFlashWhite dark:bg-gray/80 p-4 rounded-xl border border-gray/20 dark:border-gray/70 shadow-sm">
+          <h4 className="font-semibold text-lg mb-3">📝 Bài giảng vừa tạo:</h4>
+          <div className="space-y-3 text-sm">
             <p>
-              <strong>Tiêu đề:</strong> {createdItem.title}
+              <strong className="text-eerieBlack dark:text-white/80">
+                Tiêu đề:
+              </strong>{" "}
+              {createdItem.title}
             </p>
             <p>
-              <strong>Nội dung:</strong>
+              <strong className="text-eerieBlack dark:text-white/80">
+                Nội dung:
+              </strong>{" "}
               <span
                 className="ql-content"
-                dangerouslySetInnerHTML={{ __html: createdItem.description }}
+                dangerouslySetInnerHTML={{
+                  __html: createdItem.description,
+                }}
               />
             </p>
             {createdItem.video?.video?.key && (
               <div>
-                <p>
-                  <strong>Video:</strong>
-                </p>
+                <p className="font-semibold">🎥 Video:</p>
                 <video
                   src={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem.video.video.key}`}
                   controls
-                  className="w-full max-w-xs"
+                  className="w-full max-w-sm rounded-lg shadow"
                 />
               </div>
             )}
-            {createdItem.resources && createdItem.resources.length > 0 && (
+            {createdItem.resources?.length > 0 && (
               <div>
-                <p>
-                  <strong>Tài liệu:</strong>
-                </p>
+                <p className="font-semibold">📄 Tài liệu:</p>
                 <ul className="list-disc pl-5">
-                  {createdItem.resources.map((resource, index) => (
-                    <li key={index}>
+                  {createdItem.resources.map((res, i) => (
+                    <li key={i}>
                       <a
-                        href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.key}`}
+                        href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${res.key}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-LavenderIndigo/80 hover:underline"
                       >
-                        {resource.key?.split("/").pop()}
+                        {res.key?.split("/").pop()}
                       </a>
                     </li>
                   ))}
@@ -154,13 +153,16 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
               </div>
             )}
             <p>
-              <strong>Xem trước:</strong>{" "}
-              {createdItem.is_preview ? "Có" : "Không"}
+              <strong className="text-eerieBlack dark:text-white/80">
+                Xem trước:
+              </strong>{" "}
+              {createdItem.is_preview ? "✅ Có" : "❌ Không"}
             </p>
           </div>
         </div>
       )}
-      <form onSubmit={handleSubmit(handleAddCourseItem)} className="space-y-4">
+
+      <form onSubmit={handleSubmit(handleAddCourseItem)} className="space-y-6">
         <Controller
           name="title"
           control={control}
@@ -173,6 +175,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             />
           )}
         />
+
         <Controller
           name="description"
           control={control}
@@ -185,6 +188,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             />
           )}
         />
+
         <Controller
           name="video"
           control={control}
@@ -211,7 +215,6 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                     setVideoPreview(
                       process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key
                     );
-                    console.log(videoPreview);
                     field.onChange(video);
                   }
                 }}
@@ -220,12 +223,13 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 <video
                   src={videoPreview}
                   controls
-                  className="w-full max-w-xs"
+                  className="w-full max-w-sm rounded-md border"
                 />
               )}
             </div>
           )}
         />
+
         <Controller
           name="resources"
           control={control}
@@ -262,8 +266,8 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 }}
               />
               {documentPreviews.length > 0 && (
-                <div className="space-y-2">
-                  <p className="font-semibold">Tài liệu đã tải lên:</p>
+                <div>
+                  <p className="font-medium">📎 Tài liệu đã tải lên:</p>
                   <ul className="list-disc pl-5">
                     {documentPreviews.map((doc, index) => (
                       <li key={index}>
@@ -271,7 +275,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                           href={doc.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-LavenderIndigo/80 hover:underline"
                         >
                           {doc.name}
                         </a>
@@ -283,30 +287,43 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             </div>
           )}
         />
+
         <Controller
           name="is_preview"
           control={control}
           render={({ field }) => (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="is_preview"
                 checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
-                className="w-4 h-4"
+                className="accent-majorelleBlue w-4 h-4"
               />
-              <label htmlFor="is_preview">Cho phép xem trước</label>
+              <label htmlFor="is_preview" className="text-sm">
+                Cho phép xem trước
+              </label>
             </div>
           )}
         />
+
         <div className="flex gap-2">
-          <Button type="submit" className="bg-majorelleBlue text-white">
-            Lưu
+          <Button
+            type="submit"
+            className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
+          >
+            💡Lưu
           </Button>
-          <Button type="button" onClick={onCancel}>
+          <Button
+            type="button"
+            className="bg-redPigment text-white hover:text-white dark:hover:text-black"
+            variant="outline"
+            onClick={onCancel}
+          >
             Hủy
           </Button>
         </div>
+
         {showAlertSuccess && <AlertSuccess description={description} />}
         {showAlertError && <AlertError description={description} />}
       </form>

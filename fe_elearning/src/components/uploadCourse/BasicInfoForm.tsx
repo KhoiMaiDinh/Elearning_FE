@@ -157,12 +157,12 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </h2>
         <Button
           type="button"
-          className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:brightness-110 ${
+          className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black ${
             isEditingBasic ? "bg-redPigment" : "bg-cosmicCobalt"
           }`}
           onClick={() => setIsEditingBasic(!isEditingBasic)}
         >
-          {isEditingBasic ? "Hủy" : "Chỉnh sửa"}
+          {isEditingBasic ? "Hủy" : "✍️ Chỉnh sửa"}
         </Button>
       </div>
       {courseInfo && !isEditingBasic ? (
@@ -304,9 +304,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           />
           <Button
             type="submit"
-            className="bg-majorelleBlue hover:brightness-110 text-white"
+            className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
           >
-            Lưu
+            💡Lưu
           </Button>
         </form>
       )}

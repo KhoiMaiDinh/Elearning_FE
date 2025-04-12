@@ -119,7 +119,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="z-50 w-full p-2 h-11/12 flex items-center justify-between top-0 sticky bg-AntiFlashWhite dark:bg-eerieBlack transition-colors shadow-md">
+    <div className="z-50 w-full p-2 h-11/12 flex items-center justify-between top-0 md:shadow-PaleViolet md:shadow-md dark:md:shadow-cosmicCobalt sticky bg-AntiFlashWhite dark:bg-eerieBlack transition-colors shadow-md">
       <div className="flex w-full justify-between md:px-4 items-center space-x-4">
         <div className="flex h-full items-center sm:hidden">
           <DropdownMenu>
@@ -266,10 +266,10 @@ const Header = () => {
           {/* Nút đăng nhập */}
           {!userInfo.id && (
             <button
-              className="px-4 py-2 bg-custom-gradient-button-violet text-white text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium  border rounded-lg hover:bg-majorelleBlue hover:text-black hover:shadow-md  hover:scale-105 transition-all duration-300"
+              className="px-4 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium  border rounded-lg hover:brightness-125"
               onClick={() => router.push("/login")}
             >
-              Đăng nhập
+              🔓 Đăng nhập
             </button>
           )}
           {userInfo.id && (

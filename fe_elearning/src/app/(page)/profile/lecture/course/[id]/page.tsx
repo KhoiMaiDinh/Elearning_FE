@@ -10,6 +10,7 @@ import SectionList from "@/components/uploadCourse/SectionList";
 import AlertSuccess from "@/components/alert/AlertSuccess";
 import AlertError from "@/components/alert/AlertError";
 import { Section } from "@/types/courseType";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
@@ -45,22 +46,26 @@ const CourseDetails: React.FC = () => {
 
   return (
     <div className="w-full h-full gap-4 flex flex-col p-4">
-      <BasicInfoForm
-        courseInfo={courseInfo}
-        courseId={courseId}
-        setShowAlertSuccess={setShowAlertSuccess}
-        setShowAlertError={setShowAlertError}
-        setDescription={setDescription}
-      />
-      <SectionList
-        sections={sections}
-        setSections={setSections}
-        courseId={courseId}
-        handleGetCourseInfo={handleGetCourseInfo}
-        setShowAlertSuccess={setShowAlertSuccess}
-        setShowAlertError={setShowAlertError}
-        setDescription={setDescription}
-      />
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <BasicInfoForm
+          courseInfo={courseInfo}
+          courseId={courseId}
+          setShowAlertSuccess={setShowAlertSuccess}
+          setShowAlertError={setShowAlertError}
+          setDescription={setDescription}
+        />
+      </AnimateWrapper>
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <SectionList
+          sections={sections}
+          setSections={setSections}
+          courseId={courseId}
+          handleGetCourseInfo={handleGetCourseInfo}
+          setShowAlertSuccess={setShowAlertSuccess}
+          setShowAlertError={setShowAlertError}
+          setDescription={setDescription}
+        />
+      </AnimateWrapper>
       {showAlertSuccess && <AlertSuccess description={description} />}
       {showAlertError && <AlertError description={description} />}
     </div>

@@ -13,6 +13,7 @@ import { APIGetCurrentUser, APIUpdateCurrentUser } from "@/utils/user";
 import axios from "axios";
 import { APIGetPresignedUrl } from "@/utils/storage";
 import { setUser } from "@/constants/userSlice";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 // Schema validation với Yup
 const schema = yup.object().shape({
@@ -228,161 +229,164 @@ const ProfileStudent = () => {
 
   return (
     <div className="bg-white dark:bg-black50 w-full p-4 rounded-b-sm">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full h-full gap-2 flex flex-col"
-      >
-        {/* Thông tin cá nhân */}
-        <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border gap-3 flex flex-col">
-          <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
-            Thông tin cá nhân
-          </p>
-          <div className="flex w-full">
-            <Controller
-              name="profile_image"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-2 items-center">
-                  <Avatar className="w-24 h-24">
-                    <AvatarImage
-                      src={imagePreview}
-                      alt="Profile Image"
-                      className="object-cover"
-                    />
-                  </Avatar>
-                  {!disable && (
-                    <InputRegisterLecture
-                      labelText="Ảnh đại diện"
-                      type="file"
-                      accept="image/*"
-                      error={errors.profile_image?.message}
-                      disabled={disable}
-                      onChange={async (e) => {
-                        const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) {
-                          try {
-                            setSelectedFile(file);
-                            const previewUrl = URL.createObjectURL(file);
-                            setImagePreview(previewUrl);
+      <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full h-full gap-2 flex flex-col"
+        >
+          {/* Thông tin cá nhân */}
+          <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border gap-3 flex flex-col">
+            <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
+              Thông tin cá nhân
+            </p>
+            <div className="flex w-full">
+              <Controller
+                name="profile_image"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-2 items-center">
+                    <Avatar className="w-24 h-24">
+                      <AvatarImage
+                        src={imagePreview}
+                        alt="Profile Image"
+                        className="object-cover"
+                      />
+                    </Avatar>
+                    {!disable && (
+                      <InputRegisterLecture
+                        labelText="Ảnh đại diện"
+                        type="file"
+                        accept="image/*"
+                        error={errors.profile_image?.message}
+                        disabled={disable}
+                        onChange={async (e) => {
+                          const file = (e.target as HTMLInputElement)
+                            .files?.[0];
+                          if (file) {
+                            try {
+                              setSelectedFile(file);
+                              const previewUrl = URL.createObjectURL(file);
+                              setImagePreview(previewUrl);
 
-                            // Upload file và lấy key + id
-                            const { key, id } = await uploadToMinIO(file);
+                              // Upload file và lấy key + id
+                              const { key, id } = await uploadToMinIO(file);
 
-                            // Cập nhật form value với key và id
-                            setValue("profile_image", {
-                              key,
-                              id, // Thêm id vào đây
-                              bucket: undefined,
-                              status: undefined,
-                              rejected_reason: undefined,
-                            });
-                          } catch (error) {
-                            setAlertDescription("Upload ảnh thất bại");
-                            setShowAlertError(true);
-                            setTimeout(() => setShowAlertError(false), 3000);
+                              // Cập nhật form value với key và id
+                              setValue("profile_image", {
+                                key,
+                                id, // Thêm id vào đây
+                                bucket: undefined,
+                                status: undefined,
+                                rejected_reason: undefined,
+                              });
+                            } catch (error) {
+                              setAlertDescription("Upload ảnh thất bại");
+                              setShowAlertError(true);
+                              setTimeout(() => setShowAlertError(false), 3000);
+                            }
                           }
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-            />
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
+              <Controller
+                name="first_name"
+                control={control}
+                render={({ field }) => (
+                  <InputRegisterLecture
+                    {...field}
+                    labelText="Họ"
+                    error={errors.first_name?.message}
+                    disabled={disable}
+                  />
+                )}
+              />
+              <Controller
+                name="last_name"
+                control={control}
+                render={({ field }) => (
+                  <InputRegisterLecture
+                    {...field}
+                    labelText="Tên"
+                    className="w-fit"
+                    error={errors.last_name?.message}
+                    disabled={disable}
+                  />
+                )}
+              />
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <InputRegisterLecture
+                    {...field}
+                    labelText="Email"
+                    error={errors.email?.message}
+                    disabled={true} // Email không cho chỉnh sửa
+                  />
+                )}
+              />
+              <Controller
+                name="username"
+                control={control}
+                render={({ field }) => (
+                  <InputRegisterLecture
+                    {...field}
+                    labelText="Biệt danh"
+                    error={errors.username?.message}
+                    disabled={disable}
+                  />
+                )}
+              />
+            </div>
           </div>
-          <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
-            <Controller
-              name="first_name"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Họ"
-                  error={errors.first_name?.message}
-                  disabled={disable}
-                />
-              )}
-            />
-            <Controller
-              name="last_name"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Tên"
-                  className="w-fit"
-                  error={errors.last_name?.message}
-                  disabled={disable}
-                />
-              )}
-            />
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Email"
-                  error={errors.email?.message}
-                  disabled={true} // Email không cho chỉnh sửa
-                />
-              )}
-            />
-            <Controller
-              name="username"
-              control={control}
-              render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Biệt danh"
-                  error={errors.username?.message}
-                  disabled={disable}
-                />
-              )}
-            />
-          </div>
-        </div>
 
-        {/* Nút điều khiển */}
-        <div className="w-full flex items-center justify-center p-4">
-          {disable ? (
-            <button
-              className="w-32 bg-majorelleBlue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
-              onClick={() => setDisable(false)}
-            >
-              Chỉnh sửa
-            </button>
-          ) : (
-            <div className="flex flex-row w-full gap-3 items-center justify-center">
+          {/* Nút điều khiển */}
+          <div className="w-full flex items-center justify-center p-4">
+            {disable ? (
               <button
-                className="w-32 bg-redPigment text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
-                onClick={() => setDisable(true)}
+                className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                onClick={() => setDisable(false)}
               >
-                Hủy
+                ✍️ Chỉnh sửa
               </button>
-              <button
-                onClick={handleSubmit(onSubmit)}
-                type="submit"
-                className="w-32 bg-majorelleBlue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
-              >
-                Lưu
-              </button>
+            ) : (
+              <div className="flex flex-row w-full gap-3 items-center justify-center">
+                <button
+                  className="w-32 bg-redPigment text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                  onClick={() => setDisable(true)}
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleSubmit(onSubmit)}
+                  type="submit"
+                  className="w-32 bg-custom-gradient-button-violet text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                >
+                  ✅Lưu
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Alert Success */}
+          {showAlertSuccess && (
+            <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg">
+              {alertDescription}
             </div>
           )}
-        </div>
-
-        {/* Alert Success */}
-        {showAlertSuccess && (
-          <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg">
-            {alertDescription}
-          </div>
-        )}
-        {/* Alert Error */}
-        {showAlertError && (
-          <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg">
-            {alertDescription}
-          </div>
-        )}
-      </form>
+          {/* Alert Error */}
+          {showAlertError && (
+            <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg">
+              {alertDescription}
+            </div>
+          )}
+        </form>
+      </AnimateWrapper>
     </div>
   );
 };

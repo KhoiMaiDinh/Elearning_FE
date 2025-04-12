@@ -146,6 +146,8 @@ export default {
       "custom-gradient-light": "linear-gradient(to  right, #E5E7EB, #F3F4F6)",
       "custom-gradient-button-violet":
         "linear-gradient(to bottom, #B781FF, #8844FF)",
+      "custom-gradient-button-blue":
+        "linear-gradient(to bottom,#545AE8, #2F327D)",
     },
   },
   plugins: [require("tailwindcss-animate")],

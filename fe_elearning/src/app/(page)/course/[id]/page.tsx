@@ -1,4 +1,5 @@
 "use client";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 import InfoBlockCourse from "@/components/course/infoBlockCourse";
 import InfoCourse from "@/components/course/infoCourse";
 import { useParams } from "next/navigation";
@@ -90,29 +91,31 @@ const Page = () => {
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
   return (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main Content */}
-        <div className="lg:w-3/4">
-          <InfoCourse
-            title={dataCourseDetails.title}
-            rating={dataCourseDetails.rating}
-            numberStudent={dataCourseDetails.enrolled_students}
-            level={dataCourseDetails.level}
-            lecture={dataCourseDetails.lecture}
-            price={dataCourseDetails.price}
-            description={dataCourseDetails.short_description}
-          />
-        </div>
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Content */}
+          <div className="lg:w-3/4">
+            <InfoCourse
+              title={dataCourseDetails.title}
+              rating={dataCourseDetails.rating}
+              numberStudent={dataCourseDetails.enrolled_students}
+              level={dataCourseDetails.level}
+              lecture={dataCourseDetails.lecture}
+              price={dataCourseDetails.price}
+              description={dataCourseDetails.short_description}
+            />
+          </div>
 
-        {/* Sidebar */}
-        <div className="lg:w-1/4">
-          <InfoBlockCourse
-            isRegistered={true}
-            price={dataCourseDetails.price}
-            level={dataCourseDetails.level}
-          />
+          {/* Sidebar */}
+          <div className="lg:w-1/4">
+            <InfoBlockCourse
+              isRegistered={true}
+              price={dataCourseDetails.price}
+              level={dataCourseDetails.level}
+            />
+          </div>
         </div>
-      </div>
+      </AnimateWrapper>
     </div>
   );
 };

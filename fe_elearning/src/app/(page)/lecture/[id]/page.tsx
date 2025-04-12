@@ -5,6 +5,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Star, BookOpen } from "lucide-react";
 import CoursesBlock from "@/components/block/courses-block"; // Đảm bảo import đúng đường dẫn
 import { Badge } from "@/components/ui/badge";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 // Dữ liệu giả như gọi từ API
 const teacherData = {
@@ -99,91 +100,101 @@ const TeacherProfile = () => {
   return (
     <div className="container bg-white dark:bg-chineseBlack rounded-xl overflow-hidden mx-auto space-y-10">
       <Card className=" mx-auto bg-white dark:bg-chineseBlack shadow-md ">
-        <CardHeader className="flex flex-col md:flex-row items-center gap-6">
-          <Avatar className="w-32 h-32">
-            <AvatarImage src={teacherData.avatarUrl} alt={teacherData.name} />
-          </Avatar>
-          <div className="space-y-2 text-center md:text-left">
-            <CardTitle className="text-3xl font-bold">
-              {teacherData.name}
-            </CardTitle>
-            <div className="flex items-center gap-2 justify-center md:justify-start">
-              <Mail className="w-4 h-4" />
-              <span className="text-muted-foreground">{teacherData.email}</span>
-            </div>
-            <div className="flex gap-4 justify-center md:justify-start">
-              <div className="flex items-center gap-1">
-                <BookOpen className="w-4 h-4" />
-                <span>{teacherData.postCount} bài giảng</span>
+        <AnimateWrapper delay={0.2} direction="up">
+          <CardHeader className="flex flex-col md:flex-row items-center gap-6">
+            <Avatar className="w-32 h-32">
+              <AvatarImage src={teacherData.avatarUrl} alt={teacherData.name} />
+            </Avatar>
+            <div className="space-y-2 text-center md:text-left">
+              <CardTitle className="text-3xl font-bold">
+                {teacherData.name}
+              </CardTitle>
+              <div className="flex items-center gap-2 justify-center md:justify-start">
+                <Mail className="w-4 h-4" />
+                <span className="text-muted-foreground">
+                  {teacherData.email}
+                </span>
               </div>
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span>{teacherData.rating.toFixed(1)}/5</span>
+              <div className="flex gap-4 justify-center md:justify-start">
+                <div className="flex items-center gap-1">
+                  <BookOpen className="w-4 h-4" />
+                  <span>{teacherData.postCount} bài giảng</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span>{teacherData.rating.toFixed(1)}/5</span>
+                </div>
               </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Giới thiệu</h3>
-            <p className="text-muted-foreground">{teacherData.description}</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
-            <div className="flex flex-wrap gap-2">
-              {teacherData.expertise.map((skill, index) => (
-                <Badge key={index} variant="secondary">
-                  {skill}
-                </Badge>
-              ))}
+          </CardHeader>
+        </AnimateWrapper>
+        <AnimateWrapper delay={0.2} direction="up">
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Giới thiệu</h3>
+              <p className="text-muted-foreground">{teacherData.description}</p>
             </div>
-          </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
+              <div className="flex flex-wrap gap-2">
+                {teacherData.expertise.map((skill, index) => (
+                  <Badge key={index} variant="secondary">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
 
-          <div className="">
-            <h3 className="text-lg font-semibold mb-2">Khoá học tiêu biểu</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {dataCourse.slice(0, 2).map((course, index) => (
-                <Card key={index} className="p-2">
-                  <img
-                    src={course.coverPhoto}
-                    alt={course.title}
-                    className="w-full h-40 object-cover rounded-md"
-                  />
-                  <div className="mt-2 space-y-1">
-                    <h4 className="font-semibold text-base">{course.title}</h4>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {course.description}
-                    </p>
-                  </div>
-                </Card>
-              ))}
+            <div className="">
+              <h3 className="text-lg font-semibold mb-2">Khoá học tiêu biểu</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {dataCourse.slice(0, 2).map((course, index) => (
+                  <Card key={index} className="p-2">
+                    <img
+                      src={course.coverPhoto}
+                      alt={course.title}
+                      className="w-full h-40 object-cover rounded-md"
+                    />
+                    <div className="mt-2 space-y-1">
+                      <h4 className="font-semibold text-base">
+                        {course.title}
+                      </h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {course.description}
+                      </p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        </AnimateWrapper>
       </Card>
 
       {/* Danh sách khóa học */}
-      <div className="max-w-6xl mx-auto space-y-6 p-2">
-        <h2 className="text-2xl font-bold">Các khóa học của giảng viên</h2>
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-          {dataCourse.slice(2, 10).map((course, index) => (
-            <CoursesBlock
-              key={index}
-              avatar={course.avatar}
-              name={course.name}
-              rating={course.rating}
-              title={course.title}
-              level={course.level}
-              numberStudent={course.numberStudent}
-              description={course.description}
-              progress={course.progress}
-              price={course.price}
-              priceFinal={course.priceFinal}
-              status={course.status}
-            />
-          ))}
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <div className="max-w-6xl mx-auto space-y-6 p-2">
+          <h2 className="text-2xl font-bold">Các khóa học của giảng viên</h2>
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+            {dataCourse.slice(2, 10).map((course, index) => (
+              <CoursesBlock
+                key={index}
+                avatar={course.avatar}
+                name={course.name}
+                rating={course.rating}
+                title={course.title}
+                level={course.level}
+                numberStudent={course.numberStudent}
+                description={course.description}
+                progress={course.progress}
+                price={course.price}
+                priceFinal={course.priceFinal}
+                status={course.status}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </AnimateWrapper>
     </div>
   );
 };

@@ -26,7 +26,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({ item }) => {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   return (
-    <div className="ml-6 mt-4 p-4 rounded-xl bg-antiFlashWhite dark:bg-gray-900 border">
+    <div className="ml-6 mt-4 p-4 rounded-xl bg-AntiFlashWhite dark:bg-gray/90 border">
       <p className="mb-1">
         <strong>🎯 Tiêu đề:</strong> {item.title}
       </p>
@@ -112,7 +112,7 @@ const SectionList: React.FC<SectionListProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-eerieBlack text-cosmicCobalt shadow-md rounded-xl p-6 border">
+    <div className="bg-white dark:bg-eerieBlack text-cosmicCobalt dark:text-white shadow-md rounded-xl p-6 border">
       <h2 className="text-2xl font-bold mb-6">📚 Phần bài giảng</h2>
 
       {sections.length > 0 ? (
@@ -142,10 +142,10 @@ const SectionList: React.FC<SectionListProps> = ({
                   </h3>
                   <Button
                     type="button"
-                    className="bg-cosmicCobalt text-white"
+                    className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-black hover:text-white"
                     onClick={() => setEditingSectionIndex(index)}
                   >
-                    ✏️ Chỉnh sửa
+                    ✍️ Chỉnh sửa
                   </Button>
                 </div>
 
@@ -187,7 +187,7 @@ const SectionList: React.FC<SectionListProps> = ({
                 ) : (
                   <Button
                     type="button"
-                    className="mt-3 bg-custom-gradient-button-violet text-white"
+                    className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
                     onClick={() => setIsAddingCourseItem(index)}
                   >
                     ➕ Thêm bài giảng
@@ -228,7 +228,7 @@ const SectionList: React.FC<SectionListProps> = ({
       ) : (
         <Button
           type="button"
-          className="mt-4 bg-majorelleBlue text-white"
+          className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
           onClick={() => setIsEditingSection(true)}
         >
           + Thêm phần bài giảng

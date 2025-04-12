@@ -47,7 +47,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   };
 
   return (
-    <Card className="w-full h-full max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow">
+    <Card className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow">
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img

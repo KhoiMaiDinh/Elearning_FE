@@ -48,7 +48,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
           </h3>
           <Badge
             variant="secondary"
-            className="mt-1 bg-LavenderIndigo/80 dark:bg-LavenderIndigo/50 text-white"
+            className="mt-1 bg-LavenderIndigo/80 dark:bg-LavenderIndigo/50 text-white hover:bg-LavenderIndigo/80 dark:hover:bg-LavenderIndigo/50"
           >
             {major || "Chưa xác định"}
           </Badge>

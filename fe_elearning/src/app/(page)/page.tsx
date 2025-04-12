@@ -23,6 +23,7 @@ import SplitText from "@/components/text/splitText";
 import FadeContent from "@/components/animations/fadeContent";
 import Aurora from "@/components/animations/background-aurora";
 import { useRouter } from "next/navigation";
+import AnimateWrapper from "@/components/animations/animateWrapper";
 
 const dataLecture: lectureBlock[] = [
   {
@@ -283,65 +284,37 @@ export default function Page() {
       {/* About Section */}
       <section className="bg-white dark:bg-cosmicCobalt/10 py-16">
         <div className="container mx-auto text-center" data-aos="fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-cosmicCobalt dark:text-white mb-6">
-            Về chúng tôi
-          </h2>
-          <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
-            Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành, được
-            thiết kế bởi đội ngũ chuyên gia hàng đầu. Mục tiêu là mang lại giá
-            trị thực tiễn cho học viên và doanh nghiệp thông qua giáo dục chất
-            lượng cao.
-          </p>
+          <AnimateWrapper delay={0.3} direction="up">
+            <h2 className="text-3xl md:text-4xl font-bold text-cosmicCobalt dark:text-white mb-6">
+              Về chúng tôi
+            </h2>
+            <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
+              Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành,
+              được thiết kế bởi đội ngũ chuyên gia hàng đầu. Mục tiêu là mang
+              lại giá trị thực tiễn cho học viên và doanh nghiệp thông qua giáo
+              dục chất lượng cao.
+            </p>
+          </AnimateWrapper>
         </div>
       </section>
 
       {/* Lecturers Section */}
-      <section className="container mx-auto py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
-            Giảng viên tiêu biểu
-          </h2>
-          <Button
-            variant="link"
-            className="text-majorelleBlue hover:text-majorelleBlue70"
-            onClick={() => router.push("/lecturers")}
-          >
-            Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {dataLecture.slice(0, 4).map((lecture, index) => (
-            <FadeContent
-              key={index}
-              blur={true}
-              duration={100}
-              easing="ease-out"
-              initialOpacity={0}
-              className="transform transition-all hover:-translate-y-2"
-            >
-              <LecturersBlock {...lecture} />
-            </FadeContent>
-          ))}
-        </div>
-      </section>
-
-      {/* Courses Section */}
-      <section className="py-16">
-        <div className="container mx-auto">
+      <AnimateWrapper delay={0.3} direction="up">
+        <section className="container mx-auto py-16">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
-              Khóa học nổi bật
+              Giảng viên tiêu biểu
             </h2>
             <Button
               variant="link"
               className="text-majorelleBlue hover:text-majorelleBlue70"
-              onClick={() => router.push("/courses")}
+              onClick={() => router.push("/lecturers")}
             >
               Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {dataCourse.slice(0, 4).map((course, index) => (
+            {dataLecture.slice(0, 4).map((lecture, index) => (
               <FadeContent
                 key={index}
                 blur={true}
@@ -350,29 +323,69 @@ export default function Page() {
                 initialOpacity={0}
                 className="transform transition-all hover:-translate-y-2"
               >
-                <CoursesBlock {...course} />
+                <LecturersBlock {...lecture} />
               </FadeContent>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimateWrapper>
+
+      {/* Courses Section */}
+      <AnimateWrapper delay={0.3} direction="up">
+        <section className="py-16">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
+                Khóa học nổi bật
+              </h2>
+              <Button
+                variant="link"
+                className="text-majorelleBlue hover:text-majorelleBlue70"
+                onClick={() => router.push("/courses")}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {dataCourse.slice(0, 4).map((course, index) => (
+                <FadeContent
+                  key={index}
+                  blur={true}
+                  duration={100}
+                  easing="ease-out"
+                  initialOpacity={0}
+                  className="transform transition-all hover:-translate-y-2"
+                >
+                  <CoursesBlock {...course} />
+                </FadeContent>
+              ))}
+            </div>
+          </div>
+        </section>
+      </AnimateWrapper>
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-majorelleBlue to-persianIndigo dark:text-white text-cosmicCobalt py-16">
         <div className="container mx-auto text-center" data-aos="zoom-in">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Sẵn sàng nâng cao kỹ năng của bạn?
-          </h2>
-          <p className="text-lg mb-6 max-w-2xl mx-auto text-darkSilver">
-            Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ
-            giảng viên hàng đầu.
-          </p>
-          <Button
-            className="bg-yankeesBlue text-white hover:bg-yankeesBlue/80 rounded-full px-8 py-3 font-semibold"
-            onClick={() => router.push("/signup")}
-          >
-            Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <AnimateWrapper delay={0.3} direction="up">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Sẵn sàng nâng cao kỹ năng của bạn?
+            </h2>
+          </AnimateWrapper>
+          <AnimateWrapper delay={0.3} direction="up">
+            <p className="text-lg mb-6 max-w-2xl mx-auto text-darkSilver">
+              Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ
+              giảng viên hàng đầu.
+            </p>
+          </AnimateWrapper>
+          <AnimateWrapper delay={0.3} direction="up">
+            <Button
+              className="bg-yankeesBlue text-white hover:bg-yankeesBlue/80 rounded-full px-8 py-3 font-semibold"
+              onClick={() => router.push("/signup")}
+            >
+              Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </AnimateWrapper>
         </div>
       </section>
     </div>
