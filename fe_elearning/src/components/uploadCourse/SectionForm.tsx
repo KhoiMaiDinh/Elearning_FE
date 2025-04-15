@@ -87,9 +87,12 @@ const SectionForm: React.FC<SectionFormProps> = ({
           title: data.title,
           description: data.description,
           position: section.position,
-          lectures: [],
+          items: [],
         };
         onSave(newSection);
+        setShowAlertSuccess(true);
+        setDescription("Tạo phần bài giảng thành công");
+        setTimeout(() => setShowAlertSuccess(false), 3000);
         await handleGetCourseInfo();
       }
     } catch (error) {

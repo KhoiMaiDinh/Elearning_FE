@@ -12,6 +12,7 @@ const initialState = {
     description: "",
     level: "",
     price: 0,
+
     thumbnail: {
       key: "",
       id: "",
@@ -20,7 +21,19 @@ const initialState = {
     category: {
       slug: "",
       name: "",
-      children: [],
+      children: [
+        {
+          slug: "",
+          name: "",
+          translations: [],
+        },
+      ],
+      parent: {
+        slug: "",
+        name: "",
+        translations: [],
+      },
+      translations: [],
     },
     createdAt: "",
     instructor_profile: <Lecture | null>null,

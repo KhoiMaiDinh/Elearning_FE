@@ -4,7 +4,8 @@ import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
 import courseBlock from "@/types/coursesBlockType";
 import lectureBlock from "@/types/lecturesBlockType";
-import React, { useEffect } from "react";
+import { APIGetListCourse } from "@/utils/course";
+import React, { useEffect, useState } from "react";
 
 const dataCourse = [
   {
@@ -87,6 +88,41 @@ const Page = () => {
     // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
   }, []);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [filter, setFilter] = useState({
+    page: 1,
+    limit: 10,
+
+    category_slug: undefined,
+    level: undefined,
+    min_price: undefined,
+    max_price: undefined,
+    min_rating: undefined,
+    instructor_username: undefined,
+    with_instructor: false,
+    with_category: false,
+    include_disabled: false,
+  });
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleGetListCourse = async () => {
+    try {
+      const response = await APIGetListCourse(filter);
+      setData(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    handleGetListCourse();
+  }, [filter]);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
       {/* header */}

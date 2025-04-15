@@ -2,8 +2,9 @@
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import InfoBlockCourse from "@/components/course/infoBlockCourse";
 import InfoCourse from "@/components/course/infoCourse";
+import { APIGetCourseById } from "@/utils/course";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const dataCourseDetails = {
   title: "Lập Trình Web Toàn Diện Với JavaScript",
@@ -89,6 +90,18 @@ const dataCourseDetails = {
 const Page = () => {
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
+  const [dataCourse, setDataCourse] = useState<any>(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await APIGetCourseById(id || "", {
+        with_instructor: true,
+      });
+      if (response && response.data) {
+        setDataCourse(response.data);
+      }
+    };
+    fetchData();
+  }, [id]);
   return (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
@@ -96,13 +109,17 @@ const Page = () => {
           {/* Main Content */}
           <div className="lg:w-3/4">
             <InfoCourse
-              title={dataCourseDetails.title}
-              rating={dataCourseDetails.rating}
-              numberStudent={dataCourseDetails.enrolled_students}
-              level={dataCourseDetails.level}
-              lecture={dataCourseDetails.lecture}
-              price={dataCourseDetails.price}
-              description={dataCourseDetails.short_description}
+              title={dataCourse?.title}
+              rating={dataCourse?.rating}
+              numberStudent={dataCourse?.number_student}
+              level={dataCourse?.level}
+              lecture={
+                dataCourse?.instructor?.user?.first_name +
+                " " +
+                dataCourse?.instructor?.user?.last_name
+              }
+              price={dataCourse?.price}
+              description={dataCourse?.subtitle}
             />
           </div>
 

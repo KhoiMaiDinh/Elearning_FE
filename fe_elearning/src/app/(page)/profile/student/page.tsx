@@ -105,7 +105,7 @@ const ProfileStudent = () => {
         );
       }
     }
-  }, [userInfo, setValue, disable]);
+  }, [userInfo]);
 
   // Đồng bộ preview khi profile_image thay đổi
   useEffect(() => {
@@ -130,7 +130,7 @@ const ProfileStudent = () => {
         });
       }
     }
-  }, [profileImage]);
+  }, [profileImage.key]);
 
   // Lấy presigned URL từ backend
 
@@ -348,27 +348,31 @@ const ProfileStudent = () => {
           {/* Nút điều khiển */}
           <div className="w-full flex items-center justify-center p-4">
             {disable ? (
-              <button
+              <Button
                 className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
                 onClick={() => setDisable(false)}
               >
                 ✍️ Chỉnh sửa
-              </button>
+              </Button>
             ) : (
               <div className="flex flex-row w-full gap-3 items-center justify-center">
-                <button
-                  className="w-32 bg-redPigment text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                <Button
+                  className="w-32 bg-redPigment text-white dark:hover:shadow-sm dark:hover:shadow-white dark:hover:text-redPigment  rounded-md font-sans font-medium text-[16px] p-2"
                   onClick={() => setDisable(true)}
                 >
                   Hủy
-                </button>
-                <button
-                  onClick={handleSubmit(onSubmit)}
+                </Button>
+                <Button
                   type="submit"
-                  className="w-32 bg-custom-gradient-button-violet text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                  className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 hover:scale-105 transition-transform duration-200 text-white"
                 >
-                  ✅Lưu
-                </button>
+                  <img
+                    src="/icons/icon_save.png"
+                    alt="save"
+                    className="w-5 h-5 object-fill"
+                  />
+                  Lưu
+                </Button>
               </div>
             )}
           </div>

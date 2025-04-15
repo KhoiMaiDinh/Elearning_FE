@@ -72,7 +72,7 @@ const ProfileLecture = () => {
       },
       biography: "",
       headline: "",
-      resume: "",
+      resume: undefined,
       website_url: null,
       certificates: [],
       bankAccount: "",
@@ -107,10 +107,13 @@ const ProfileLecture = () => {
       setValue("category.slug", profile.category.slug);
       setValue("biography", profile.biography);
       setValue("headline", profile.headline);
-      setValue(
-        "resume",
-        process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT + profile.resume?.key || ""
-      );
+      setValue("resume", {
+        id: profile.resume?.key || "",
+        key: profile.resume?.key || "",
+        bucket: profile.resume?.bucket || "",
+        status: profile.resume?.status || "",
+        rejection_reason: profile.resume?.rejected_reason || "",
+      });
       setValue("website_url", profile.website_url);
       setValue("facebook_url", profile.facebook_url);
       setValue("linkedin_url", profile.linkedin_url);
@@ -123,12 +126,7 @@ const ProfileLecture = () => {
         profile.certificates?.map(
           (cert: FileData) => cert.certificate_file.key
         ) || [];
-      setValue(
-        "certificates",
-        certKeys.map(
-          (key) => `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT || ""}${key}`
-        )
-      );
+      setValue("certificates", profile.certificates);
 
       // Set previews
       setCertificatePreviews(
@@ -215,13 +213,25 @@ const ProfileLecture = () => {
           name: file.name,
           file: file,
         });
-        setValue("resume", file.name);
+        setValue("resume", {
+          id: file.name,
+          key: file.name,
+          bucket: "",
+          status: "",
+          rejection_reason: undefined,
+        });
       };
       reader.readAsDataURL(file);
 
       // Upload when file is selected
       const resumeUrl = await uploadToMinIO(file, "resume");
-      setValue("resume", resumeUrl);
+      setValue("resume", {
+        id: resumeUrl,
+        key: resumeUrl,
+        bucket: "",
+        status: "",
+        rejection_reason: undefined,
+      });
     } catch (error) {
       setAlertDescription("Không thể upload CV");
       setShowAlertError(true);
@@ -251,7 +261,13 @@ const ProfileLecture = () => {
 
         // Upload when file is selected
         const fileUrl = await uploadToMinIO(file, "certificates");
-        currentCertificates.push(fileUrl);
+        currentCertificates.push({
+          id: fileUrl,
+          key: fileUrl,
+          bucket: "",
+          status: "",
+          rejection_reason: undefined,
+        });
       } catch (error) {
         setAlertDescription("Không thể upload chứng chỉ");
         setShowAlertError(true);
@@ -273,7 +289,13 @@ const ProfileLecture = () => {
   // Remove resume
   const removeResume = () => {
     setResumePreview(null);
-    setValue("resume", "");
+    setValue("resume", {
+      id: "",
+      key: "",
+      bucket: "",
+      status: "",
+      rejection_reason: undefined,
+    });
   };
 
   const onSubmit = async (data: FieldValues) => {
@@ -316,7 +338,7 @@ const ProfileLecture = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-black50 w-full p-4 rounded-b-sm">
+    <div className="bg-white dark:bg-black/10 w-full p-4 rounded-b-sm">
       {userInfo?.instructor_profile?.is_approved !== undefined && (
         <div className="mb-4 flex justify-end">
           {userInfo.instructor_profile.is_approved ? (

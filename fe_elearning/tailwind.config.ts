@@ -134,7 +134,10 @@ export default {
       seoulPurple20: "rgba(133, 18, 145,0.2)",
       beautyGreen: "#66A586",
       beautyGreen20: "rgba(102, 165, 134, 0.2)",
-      eerieBlack: "#18181B",
+      // eerieBlack: "#18181B",
+      eerieBlack: "#080f17",
+      // eerieBlack2: "#0a121a",
+
       richBlack: "#070C2A",
       russianViolet: "#2D1E4A",
       persianIndigo: "#371D73",

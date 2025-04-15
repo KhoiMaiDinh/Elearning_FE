@@ -17,175 +17,168 @@ import {
   IdCard,
   UsersRound,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos";
 import SplitText from "@/components/text/splitText";
 import FadeContent from "@/components/animations/fadeContent";
 import Aurora from "@/components/animations/background-aurora";
 import { useRouter } from "next/navigation";
 import AnimateWrapper from "@/components/animations/animateWrapper";
+import { APIGetListLecture } from "@/utils/lecture";
+import { APIGetListCourse } from "@/utils/course";
 
-const dataLecture: lectureBlock[] = [
-  {
-    avatar: "/images/avatar.jpg",
-    name: "Lê Thị Thu Hiền",
-    rating: 4.9,
-    major: "Công nghệ thông tin",
-    description:
-      "Chuyên gia CNTT vớibáo khoa học đạt chuẩn quốc tế báo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-    numberCourse: 12,
-    numberStudent: 250,
-  },
-  {
-    avatar: "/images/avatar2.jpg",
-    name: "Nguyễn Văn An",
-    rating: 4.8,
-    major: "Phân tích dữ liệu",
-    description:
-      "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-    numberCourse: 8,
-    numberStudent: 180,
-  },
-  {
-    avatar: "/images/avatar.jpg",
-    name: "Lê Thị Thu Hiền",
-    rating: 4.9,
-    major: "Công nghệ thông tin",
-    description:
-      "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-    numberCourse: 12,
-    numberStudent: 250,
-  },
-  {
-    avatar: "/images/avatar2.jpg",
-    name: "Nguyễn Văn An",
-    rating: 4.8,
-    major: "Phân tích dữ liệu",
-    description:
-      "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-    numberCourse: 8,
-    numberStudent: 180,
-  },
-  {
-    avatar: "/images/avatar.jpg",
-    name: "Lê Thị Thu Hiền",
-    rating: 4.9,
-    major: "Công nghệ thông tin",
-    description:
-      "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-    numberCourse: 12,
-    numberStudent: 250,
-  },
-  {
-    avatar: "/images/avatar2.jpg",
-    name: "Nguyễn Văn An",
-    rating: 4.8,
-    major: "Phân tích dữ liệu",
-    description:
-      "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-    numberCourse: 8,
-    numberStudent: 180,
-  },
-  {
-    avatar: "/images/avatar.jpg",
-    name: "Lê Thị Thu Hiền",
-    rating: 4.9,
-    major: "Công nghệ thông tin",
-    description:
-      "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-    numberCourse: 12,
-    numberStudent: 250,
-  },
-  {
-    avatar: "/images/avatar2.jpg",
-    name: "Nguyễn Văn An",
-    rating: 4.8,
-    major: "Phân tích dữ liệu",
-    description:
-      "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-    numberCourse: 8,
-    numberStudent: 180,
-  },
-  //... more lecturers
-];
+// const dataCourse = [
+//   {
+//     coverPhoto: "/images/course1.jpg",
+//     avatar: "/images/avatar.jpg",
+//     title: "Lập trình ReactJS cơ bản",
+//     rating: 4.9,
+//     level: "Cơ bản",
+//     numberStudent: 1200,
+//     description:
+//       "Khóa học dành cho người mới bắt đầu muốn tìm hiểu về ReactJS.",
+//     name: "Nguyễn Văn A",
+//     status: "Chưa đăng ký",
+//     progress: 45, // Đã hoàn thành 45% khóa học
+//     price: 500000,
+//     priceFinal: 450000, // Giá sau giảm
+//   },
+//   {
+//     coverPhoto: "/images/course2.jpg",
+//     avatar: "/images/avatar.jpg",
+//     title: "Phân tích dữ liệu với Python",
+//     rating: 4.8,
+//     level: "Trung cấp",
+//     numberStudent: 800,
+//     description:
+//       "Học cách phân tích dữ liệu và trực quan hóa với Python. Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
 
-const dataCourse = [
-  {
-    coverPhoto: "/images/course1.jpg",
-    avatar: "/images/avatar.jpg",
-    title: "Lập trình ReactJS cơ bản",
-    rating: 4.9,
-    level: "Cơ bản",
-    numberStudent: 1200,
-    description:
-      "Khóa học dành cho người mới bắt đầu muốn tìm hiểu về ReactJS.",
-    name: "Nguyễn Văn A",
-    status: "Chưa đăng ký",
-    progress: 45, // Đã hoàn thành 45% khóa học
-    price: 500000,
-    priceFinal: 450000, // Giá sau giảm
-  },
-  {
-    coverPhoto: "/images/course2.jpg",
-    avatar: "/images/avatar.jpg",
-    title: "Phân tích dữ liệu với Python",
-    rating: 4.8,
-    level: "Trung cấp",
-    numberStudent: 800,
-    description:
-      "Học cách phân tích dữ liệu và trực quan hóa với Python. Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
-
-    name: "Lê Thị B",
-    status: "Đang học",
-    progress: 50, // Đã hoàn thành khóa học
-    price: 700000,
-    priceFinal: 700000, // Không giảm giá
-  },
-  {
-    coverPhoto: "/images/course3.jpg",
-    avatar: "/images/avatar.jpg",
-    title: "Thiết kế giao diện với Figma",
-    rating: 4.7,
-    level: "Cơ bản",
-    numberStudent: 650,
-    description: "Khóa học cung cấp kiến thức cơ bản về thiết kế UI/UX.",
-    name: "Trần Minh C",
-    status: "Chưa đăng ký",
-    price: 400000,
-    priceFinal: 350000, // Giá sau giảm
-  },
-  {
-    coverPhoto: "/images/course4.jpg",
-    avatar: "/images/avatar.jpg",
-    title: "Lập trình Backend với Node.js",
-    rating: 4.6,
-    level: "Nâng cao",
-    numberStudent: 1550,
-    description: "Nâng cao kỹ năng lập trình backend với Node.js và Express.",
-    name: "Phạm Duy D",
-    status: "Chưa đăng ký",
-    progress: 60, // Đã hoàn thành 60% khóa học
-    price: 600000,
-    priceFinal: 500000, // Giá sau giảm
-  },
-  {
-    coverPhoto: "/images/course5.jpg",
-    avatar: "/images/avatar.jpg",
-    title: "Phát triển ứng dụng di động với Flutter",
-    rating: 4.9,
-    level: "Trung cấp",
-    numberStudent: 1100,
-    description:
-      "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
-    name: "Hoàng Văn E",
-    status: "Chưa đăng ký",
-    progress: 100, // Đã hoàn thành khóa học
-    price: 800000,
-    priceFinal: 750000, // Giá sau giảm
-  },
-];
+//     name: "Lê Thị B",
+//     status: "Đang học",
+//     progress: 50, // Đã hoàn thành khóa học
+//     price: 700000,
+//     priceFinal: 700000, // Không giảm giá
+//   },
+//   {
+//     coverPhoto: "/images/course3.jpg",
+//     avatar: "/images/avatar.jpg",
+//     title: "Thiết kế giao diện với Figma",
+//     rating: 4.7,
+//     level: "Cơ bản",
+//     numberStudent: 650,
+//     description: "Khóa học cung cấp kiến thức cơ bản về thiết kế UI/UX.",
+//     name: "Trần Minh C",
+//     status: "Chưa đăng ký",
+//     price: 400000,
+//     priceFinal: 350000, // Giá sau giảm
+//   },
+//   {
+//     coverPhoto: "/images/course4.jpg",
+//     avatar: "/images/avatar.jpg",
+//     title: "Lập trình Backend với Node.js",
+//     rating: 4.6,
+//     level: "Nâng cao",
+//     numberStudent: 1550,
+//     description: "Nâng cao kỹ năng lập trình backend với Node.js và Express.",
+//     name: "Phạm Duy D",
+//     status: "Chưa đăng ký",
+//     progress: 60, // Đã hoàn thành 60% khóa học
+//     price: 600000,
+//     priceFinal: 500000, // Giá sau giảm
+//   },
+//   {
+//     coverPhoto: "/images/course5.jpg",
+//     avatar: "/images/avatar.jpg",
+//     title: "Phát triển ứng dụng di động với Flutter",
+//     rating: 4.9,
+//     level: "Trung cấp",
+//     numberStudent: 1100,
+//     description:
+//       "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
+//     name: "Hoàng Văn E",
+//     status: "Chưa đăng ký",
+//     progress: 100, // Đã hoàn thành khóa học
+//     price: 800000,
+//     priceFinal: 750000, // Giá sau giảm
+//   },
+// ];
 export default function Page() {
   const router = useRouter();
+
+  const [listLecture, setListLecture] = useState<lectureBlock[]>([]);
+  const [listCourse, setListCourse] = useState<courseBlock[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [paramsLecture, setParamsLecture] = useState({
+    page: 1,
+    limit: 10,
+    search: undefined,
+    specialty: undefined,
+    // is_approved: true,
+  });
+
+  const [paramsCourse, setParamsCourse] = useState({
+    page: 1,
+    limit: 10,
+    search: undefined,
+    category_slug: undefined,
+    level: undefined,
+    with_instructor: true,
+  });
+
+  const handleGetListLecture = async () => {
+    try {
+      const response = await APIGetListLecture(paramsLecture);
+      if (response && response.data) {
+        const data = response.data.map((item: any) => ({
+          username: item?.user?.username,
+          avatar: item?.user?.profile_image?.key,
+          name: item?.user?.first_name + " " + item?.user?.last_name,
+          rating: item?.rating || null,
+          major: item?.category?.translations[0]?.name,
+          description: item?.biography,
+          numberCourse: item?.total_courses || null,
+          numberStudent: item?.number_student || null,
+        }));
+        setListLecture(data);
+      } else {
+        setError("Không tìm thấy dữ liệu");
+      }
+    } catch (err) {
+      console.error("Error during get list lecture:", err);
+    }
+  };
+
+  const handleGetListCourse = async () => {
+    try {
+      const response = await APIGetListCourse(paramsCourse);
+      if (response && response.data) {
+        const data = response.data.map((item: any) => ({
+          coverPhoto: item?.cover_image?.key || "",
+          avatar: item?.instructor?.user?.profile_image?.key || "",
+          title: item?.title || "",
+          rating: item?.rating || null,
+          level: item?.level || null,
+          numberStudent: item?.number_student || null,
+          description: item?.subtitle || "",
+          name:
+            item?.instructor?.user?.first_name +
+            " " +
+            item?.instructor?.user?.last_name,
+          price: item?.price,
+          id: item?.id,
+        }));
+        setListCourse(data);
+      }
+    } catch (err) {
+      console.error("Error during get list course:", err);
+    }
+  };
+  useEffect(() => {
+    handleGetListLecture();
+    handleGetListCourse();
+  }, []);
+
   return (
     <div className="w-full min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite font-sans overflow-x-hidden">
       {/* Hero Section */}
@@ -307,14 +300,14 @@ export default function Page() {
             </h2>
             <Button
               variant="link"
-              className="text-majorelleBlue hover:text-majorelleBlue70"
+              className="text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
               onClick={() => router.push("/lecturers")}
             >
               Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {dataLecture.slice(0, 4).map((lecture, index) => (
+            {listLecture.slice(0, 4).map((lecture, index) => (
               <FadeContent
                 key={index}
                 blur={true}
@@ -340,14 +333,14 @@ export default function Page() {
               </h2>
               <Button
                 variant="link"
-                className="text-majorelleBlue hover:text-majorelleBlue70"
+                className="text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
                 onClick={() => router.push("/courses")}
               >
                 Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
               </Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {dataCourse.slice(0, 4).map((course, index) => (
+              {listCourse.slice(0, 4).map((course, index) => (
                 <FadeContent
                   key={index}
                   blur={true}

@@ -1,6 +1,6 @@
 "use client";
 import { Filter, Star } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Sheet,
@@ -16,18 +16,12 @@ import { Button } from "../ui/button";
 import FilterRadioGroup from "./filter-radioGroup";
 import SelectFilter from "../selectComponent/selectFilter";
 import { useTheme } from "next-themes";
-
-const dataField = [
-  { id: "Công nghệ thông tin", value: "Công nghệ thông tin" },
-  { id: "Toán", value: "Toán" },
-  { id: "Văn", value: "Văn" },
-  { id: "Khoa học", value: "Khoa học" },
-];
+import { APIGetCategory } from "@/utils/category";
 
 const dataLevel = [
-  { id: "Cơ bản", value: "Cơ bản" },
-  { id: "Trung bình", value: "Trung bình" },
-  { id: "Nâng cao", value: "Nâng cao" },
+  { id: "BEGINNER", value: "Cơ bản" },
+  { id: "INTERMEDIATE", value: "Trung bình" },
+  { id: "ADVANCED", value: "Nâng cao" },
 ];
 
 const stars = Array.from({ length: 5 }, (_, index) => ({
@@ -43,6 +37,24 @@ const stars = Array.from({ length: 5 }, (_, index) => ({
 
 const FilterBlock = () => {
   const { theme, setTheme } = useTheme(); // Sử dụng hook từ `next-themes`
+  const [category, setCategory] = useState([]);
+  const [filterCategory, setFilterCategory] = useState({
+    language: "vi",
+    with_children: false,
+  });
+
+  const handleGetCategory = async () => {
+    try {
+      const response = await APIGetCategory(filterCategory);
+      const data = response?.data?.map((item: any) => ({
+        id: item.slug,
+        value: item?.translations[0]?.name,
+      }));
+      setCategory(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const [filters, setFilters] = useState({
     reviewValue: "all",
@@ -50,10 +62,17 @@ const FilterBlock = () => {
     levelValue: "all",
   });
 
-  const initialDataFilterField = [{ id: "all", value: "Tất cả" }, ...dataField];
+  const initialDataFilterCategory = [
+    { id: "all", value: "Tất cả" },
+    ...category,
+  ];
   const initialDataFilterLevel = [{ id: "all", value: "Tất cả" }, ...dataLevel];
 
   const initialDataFilterReview = [{ id: "all", value: "Tất cả" }, ...stars];
+
+  useEffect(() => {
+    handleGetCategory();
+  }, [filterCategory]);
 
   return (
     <div className="flex flex-row items-center justify-between  py-3 px-4">
@@ -84,7 +103,7 @@ const FilterBlock = () => {
             />
 
             <SelectFilter
-              data={initialDataFilterField}
+              data={initialDataFilterCategory}
               label="Lĩnh vực"
               placeholder="Chọn lĩnh vực..."
               onChange={(value) =>
@@ -100,7 +119,16 @@ const FilterBlock = () => {
                 setFilters((prev) => ({ ...prev, levelValue: value }))
               }
             />
+            {/* <FilterRadioGroup
+              title="Khoảng giá"
+              data={initialDataFilterPrice}
+              value={filters.priceValue}
+              onChange={(value) =>
+                setFilters((prev) => ({ ...prev, priceValue: value }))
+              }
+            /> */}
           </div>
+
           <SheetFooter className="flex ">
             <SheetClose asChild>
               <Button type="submit">Lưu</Button>

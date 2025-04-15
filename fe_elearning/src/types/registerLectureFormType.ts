@@ -19,18 +19,15 @@ export type RegisterLectureForm = {
 export type Lecture = RegisterLectureForm & {
   category: Category;
   is_approved: boolean;
-  resume: {
-    key: string;
-    rejected_reason: string | null;
-    status: string;
-    bucket: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    profile_image: MediaType;
+    number_course?: number;
+    number_student?: number;
+    rating?: number;
   };
-  certificates: {
-    certificate_file: {
-      key: string;
-      rejected_reason: string | null;
-      status: string;
-      bucket: string;
-    };
-  }[];
 };

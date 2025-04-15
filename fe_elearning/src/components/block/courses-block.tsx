@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -10,8 +10,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 type coursesBlock = {
+  id?: string;
   coverPhoto?: string;
   avatar?: string;
   title?: string;
@@ -26,6 +27,7 @@ type coursesBlock = {
   priceFinal?: number;
 };
 const CoursesBlock: React.FC<coursesBlock> = ({
+  id,
   coverPhoto,
   rating,
   level,
@@ -39,6 +41,7 @@ const CoursesBlock: React.FC<coursesBlock> = ({
   price,
   priceFinal,
 }) => {
+  const router = useRouter();
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -46,12 +49,23 @@ const CoursesBlock: React.FC<coursesBlock> = ({
     }).format(price);
   };
 
+  const [levelShow, setLevelShow] = useState<string>("");
+  useEffect(() => {
+    level === "BEGINNER"
+      ? setLevelShow("Cơ bản")
+      : level === "INTERMEDIATE"
+      ? setLevelShow("Trung bình")
+      : setLevelShow("Nâng cao");
+  }, [level]);
   return (
-    <Card className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow">
+    <Card
+      className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
+      onClick={() => router.push(`/course/${id}`)}
+    >
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={coverPhoto || "/placeholder-course.jpg"}
+            src={process.env.NEXT_PUBLIC_API_URL_IMAGE + (coverPhoto || "")}
             alt={title}
             className="w-full h-full object-cover rounded-t-lg"
           />
@@ -67,8 +81,14 @@ const CoursesBlock: React.FC<coursesBlock> = ({
       <CardContent className="pt-4 space-y-3 flex-grow">
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={avatar} />
+            <AvatarImage
+              alt={name}
+              src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || "")}
+              className="object-cover"
+            />
             <AvatarFallback>{name?.[0]}</AvatarFallback>
+
+            {/* <AvatarFallback>{name?.[0]}</AvatarFallback> */}
           </Avatar>
           <span className="text-sm text-muted-foreground">{name}</span>
         </div>
@@ -80,21 +100,17 @@ const CoursesBlock: React.FC<coursesBlock> = ({
         </p>
 
         <div className="flex items-center gap-4 text-sm">
-          {rating && (
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-Sunglow" />
-              <span>{rating.toFixed(1)}</span>
-            </div>
-          )}
-          {numberStudent && (
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>{numberStudent}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-Sunglow" />
+            <span>{rating ? rating.toFixed(1) : "N/A"}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4" />
+            <span>{numberStudent || 0}</span>
+          </div>
           {level && (
             <Badge variant="outline" className="bg-teaGreen dark:text-black">
-              {level}
+              {levelShow}
             </Badge>
           )}
         </div>
@@ -117,14 +133,14 @@ const CoursesBlock: React.FC<coursesBlock> = ({
       {/* Phần giá & button luôn ở dưới cùng */}
       <CardFooter className="flex justify-between items-end mt-auto pt-2">
         <div className="space-x-2">
-          {price && (
+          {/* {price && (
             <span className="text-muted-foreground line-through">
               {formatPrice(price)}
             </span>
-          )}
-          {priceFinal && (
+          )} */}
+          {price && (
             <span className="font-semibold text-primary">
-              {formatPrice(priceFinal)}
+              {formatPrice(price)}
             </span>
           )}
         </div>

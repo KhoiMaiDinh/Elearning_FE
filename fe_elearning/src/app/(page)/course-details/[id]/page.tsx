@@ -135,11 +135,21 @@ const getVideoUrl = (
   item: CourseItem | Section | undefined
 ): string | undefined => {
   if (!item) return undefined;
-  return "video_id" in item
-    ? item.video_id
-    : "section_video" in item
-    ? item.section_video
-    : undefined;
+
+  // Check if it's a CourseItem with a video
+  if ("video" in item && item.video) {
+    return item.video.id;
+  }
+
+  // Check if it's a Section with items that have videos
+  if ("items" in item && item.items && item.items.length > 0) {
+    const firstItem = item.items[0];
+    if (firstItem.video) {
+      return firstItem.video.id;
+    }
+  }
+
+  return undefined;
 };
 
 const LearnPage = () => {

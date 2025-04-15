@@ -13,6 +13,33 @@ import { CourseForm } from "@/types/courseType";
 import { MediaType } from "@/types/mediaType";
 import { APIGetCategory } from "@/utils/category";
 
+// Define interfaces for category data
+interface CategoryChild {
+  id: string;
+  value: string;
+}
+
+interface CategoryData {
+  id: string;
+  value: string;
+  children?: CategoryChild[];
+}
+
+// 🧩 Tạo component hiển thị dòng nội dung
+const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
+  label,
+  children,
+}) => {
+  return (
+    <div className="flex flex-col gap-2 py-2">
+      <div className="font-semibold text-base text-cosmicCobalt dark:text-white ">
+        {label}
+      </div>
+      <div className="text-sm text-black dark:text-white/80">{children}</div>
+    </div>
+  );
+};
+
 const data = [
   { id: "BEGINNER", value: "Sơ cấp" },
   { id: "INTERMEDIATE", value: "Trung cấp" },
@@ -54,10 +81,10 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 }) => {
   const [isEditingBasic, setIsEditingBasic] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [categoryData, setCategoryData] = useState<any[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [selectedParentCategory, setSelectedParentCategory] =
     useState<string>("");
-  const [childCategories, setChildCategories] = useState<any[]>([]);
+  const [childCategories, setChildCategories] = useState<CategoryChild[]>([]);
 
   const {
     control,
@@ -87,37 +114,62 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       setValue("price", courseInfo.price);
       setValue("description", courseInfo.description || "");
       setValue("thumbnail", courseInfo.thumbnail);
-      setSelectedParentCategory(courseInfo.category?.slug || "");
-      setChildCategories(
-        courseInfo.category?.children?.map((child) => ({
-          id: child.slug,
-          value: child.slug,
-        })) || []
-      );
-      setValue("category.slug", courseInfo.category?.slug || "");
+
+      if (courseInfo.category?.parent?.slug) {
+        setSelectedParentCategory(courseInfo.category.parent.slug);
+
+        const parentCategory = categoryData.find(
+          (cat: CategoryData) => cat.id === courseInfo.category?.parent?.slug
+        );
+
+        if (parentCategory) {
+          setChildCategories(parentCategory.children || []);
+        }
+      }
+
+      if (courseInfo.category?.slug) {
+        setValue("category.slug", courseInfo.category.slug);
+      }
+
       if (courseInfo.thumbnail?.key) {
         setImagePreview(
           process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo.thumbnail.key
         );
       }
     }
-  }, [courseInfo, setValue]);
+  }, [courseInfo, setValue, categoryData]);
 
   const handleGetCategory = async () => {
-    const response = await APIGetCategory({
-      language: "vi",
-      with_children: true,
-    });
-    if (response?.status === 200) {
-      const formattedData = response.data.map((item: any) => ({
-        id: item.slug,
-        value: item.translations[0].name,
-        children: item.children?.map((child: any) => ({
-          id: child.slug,
-          value: child.translations[0].name,
-        })),
-      }));
-      setCategoryData(formattedData);
+    try {
+      const response = await APIGetCategory({
+        language: "vi",
+        with_children: true,
+      });
+      if (response?.status === 200) {
+        const formattedData = response.data.map((item: any) => ({
+          id: item.slug,
+          value: item.translations[0]?.name || item.slug,
+          children:
+            item.children?.map((child: any) => ({
+              id: child.slug,
+              value: child.translations[0]?.name || child.slug,
+            })) || [],
+        }));
+        setCategoryData(formattedData);
+
+        // If we already have course info, update the child categories
+        if (courseInfo.course_id && courseInfo.category?.parent?.slug) {
+          const parentCategory = formattedData.find(
+            (cat: CategoryData) => cat.id === courseInfo.category?.parent?.slug
+          );
+
+          if (parentCategory) {
+            setChildCategories(parentCategory.children || []);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -144,64 +196,71 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentCategory(value);
-    const selectedParent = categoryData.find((cat) => cat.id === value);
+    const selectedParent = categoryData.find(
+      (cat: CategoryData) => cat.id === value
+    );
     setChildCategories(selectedParent?.children || []);
     setValue("category.slug", "");
   };
 
+  const handleChildCategoryChange = (value: string) => {
+    setValue("category.slug", value);
+  };
+
   return (
     <div className="bg-white dark:bg-eerieBlack shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-cosmicCobalt dark:text-white">
-          Thông tin khóa học
-        </h2>
-        <Button
-          type="button"
-          className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black ${
-            isEditingBasic ? "bg-redPigment" : "bg-cosmicCobalt"
-          }`}
-          onClick={() => setIsEditingBasic(!isEditingBasic)}
-        >
-          {isEditingBasic ? "Hủy" : "✍️ Chỉnh sửa"}
-        </Button>
-      </div>
-      {courseInfo && !isEditingBasic ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3 text-cosmicCobalt dark:text-white/90">
-            <p>
-              <strong>Tiêu đề:</strong> {courseInfo.title}
-            </p>
-            <p>
-              <strong>Mô tả ngắn:</strong> {courseInfo.subtitle}
-            </p>
-            <p>
-              <strong>Cấp độ:</strong> {courseInfo.level}
-            </p>
-            <p>
-              <strong>Lĩnh vực:</strong> {courseInfo?.category?.slug}
-            </p>
-            <p>
-              <strong>Giá:</strong> {courseInfo.price} VND
-            </p>
-            <p>
-              <strong>Mô tả:</strong>
-              <div
-                className="ql-content"
+      <div className="flex justify-between items-center ">
+        {courseInfo && !isEditingBasic && (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-bold text-cosmicCobalt dark:text-white">
+              {courseInfo.title}
+            </h2>
+
+            {courseInfo.description && (
+              <text
+                className="font-sans text-xs text-cosmicCobalt/80 dark:text-white/80 ql-content"
                 dangerouslySetInnerHTML={{
-                  __html: courseInfo.description || "",
+                  __html: courseInfo.description,
                 }}
               />
-            </p>
+            )}
           </div>
-          <div className="flex items-start justify-center">
-            {imagePreview && (
+        )}
+        <div className="flex h-full items-start justify-start">
+          <Button
+            type="button"
+            className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black ${
+              isEditingBasic ? " hidden" : "bg-cosmicCobalt"
+            }`}
+            onClick={() => setIsEditingBasic(true)}
+          >
+            ✍️ Chỉnh sửa
+          </Button>
+        </div>
+      </div>
+
+      {courseInfo && !isEditingBasic ? (
+        <div className="space-y-1 text-cosmicCobalt dark:text-white/90">
+          {imagePreview && (
+            <InfoRow label="Ảnh bìa:">
               <img
                 src={imagePreview}
                 alt="Ảnh bìa"
                 className="w-full max-w-xs rounded-xl shadow-lg"
               />
-            )}
-          </div>
+            </InfoRow>
+          )}
+          <InfoRow label="Cấp độ:">{courseInfo.level}</InfoRow>
+          <InfoRow label="Lĩnh vực:">{courseInfo?.category?.slug}</InfoRow>
+          <InfoRow label="Giá:">{courseInfo.price} VND</InfoRow>
+          <InfoRow label="Mô tả:">
+            <div
+              className="ql-content"
+              dangerouslySetInnerHTML={{
+                __html: courseInfo.description || "",
+              }}
+            />
+          </InfoRow>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -251,7 +310,10 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   label="Lĩnh vực"
                   data={childCategories}
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    handleChildCategoryChange(value);
+                  }}
                   disabled={!selectedParentCategory}
                 />
               )}
@@ -274,6 +336,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             render={({ field }) => (
               <div className="space-y-2">
                 <InputRegisterLecture
+                  {...field}
                   labelText="Ảnh bìa"
                   type="file"
                   accept="image/*"
@@ -302,12 +365,27 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               </div>
             )}
           />
-          <Button
-            type="submit"
-            className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
-          >
-            💡Lưu
-          </Button>
+          <div className="flex flex-row gap-4">
+            <Button
+              type="submit"
+              className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
+            >
+              <img
+                src="/icons/icon_save.png"
+                alt="save"
+                className="w-5 h-5 object-fill"
+              />
+              Lưu
+            </Button>
+
+            <Button
+              type="button"
+              className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black bg-redPigment`}
+              onClick={() => setIsEditingBasic(false)}
+            >
+              Hủy
+            </Button>
+          </div>
         </form>
       )}
     </div>

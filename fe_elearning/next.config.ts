@@ -6,11 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/video/:path*",
-        destination: "http://192.168.110.50:9000/video/:path*",
-      },
-      {
-        source: "/video/:path*",
-        destination: "http://localhost:9000/video/:path*",
+        destination: "http://192.168.111.133:9000/video/:path*",
       },
     ];
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller, Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -11,8 +11,9 @@ import { APIInitCourseItem } from "@/utils/course";
 import { uploadToMinIO, getVideoDuration } from "@/utils/storage";
 import AlertSuccess from "@/components/alert/AlertSuccess";
 import AlertError from "@/components/alert/AlertError";
-import { CourseItem, Section } from "@/types/courseType";
+import { CourseItem, Section, VideoType } from "@/types/courseType";
 import { MediaType } from "@/types/mediaType";
+import VideoPlayer from "@/components/courseDetails/videoPlayer";
 
 // ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
@@ -22,16 +23,28 @@ const courseItemSchema = yup.object().shape({
     .object()
     .shape({
       id: yup.string().required("ID của video không được để trống"),
-      key: yup.string().required(),
+      video_duration: yup.number().nullable(),
+      video: yup.object().shape({
+        key: yup.string().required(),
+        status: yup.string().oneOf(["uploaded", "validated", "pending"]),
+        bucket: yup.string(),
+        rejection_reason: yup.string().nullable(),
+      }),
+      version: yup.number(),
     })
     .nullable(),
-  resource_id: yup.array().of(
+  resources: yup.array().of(
     yup.object().shape({
       id: yup.string().required(),
       key: yup.string().required(),
     })
   ),
   is_preview: yup.boolean().default(false),
+  position: yup.string(),
+  section_id: yup.string(),
+  id: yup.string(),
+  status: yup.string().optional(),
+  previous_position: yup.string().optional(),
   video_duration: yup.number().nullable().default(null),
 });
 
@@ -40,6 +53,7 @@ interface CourseItemFormProps {
   section: Section;
   onSave: () => void;
   onCancel: () => void;
+  initialValues?: CourseItem | null;
 }
 
 const CourseItemForm: React.FC<CourseItemFormProps> = ({
@@ -47,19 +61,8 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
   section,
   onSave,
   onCancel,
+  initialValues,
 }) => {
-  const { control, handleSubmit, setValue } = useForm<CourseItem>({
-    resolver: yupResolver(courseItemSchema) as Resolver<CourseItem>,
-    defaultValues: {
-      title: "",
-      description: "",
-      video: null,
-      resources: [],
-      is_preview: false,
-      video_duration: undefined,
-    },
-  });
-
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [description, setDescription] = useState("");
@@ -69,6 +72,30 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
   >([]);
   const [createdItem, setCreatedItem] = useState<CourseItem | null>(null);
 
+  const { control, handleSubmit, setValue } = useForm<CourseItem>({
+    resolver: yupResolver(courseItemSchema) as unknown as Resolver<CourseItem>,
+    defaultValues: {
+      title: initialValues?.title || "",
+      description: initialValues?.description || "",
+      video: initialValues?.video || null,
+      resources: initialValues?.resources || [],
+      is_preview: initialValues?.is_preview || false,
+      video_duration: initialValues?.video_duration || null,
+      position: initialValues?.position || "",
+      section_id: section.id,
+      id: initialValues?.id || "",
+      status: initialValues?.status || "ACTIVE",
+      previous_position: initialValues?.previous_position || undefined,
+    },
+  });
+
+  useEffect(() => {
+    if (initialValues?.video?.video?.key) {
+      setVideoPreview(
+        process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.video.key
+      );
+    }
+  }, [initialValues]);
   const handleAddCourseItem = async (data: CourseItem) => {
     try {
       const payload = {
@@ -79,8 +106,8 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
         video_duration: data.video_duration || null,
         description: data.description,
         resources: data.resources,
-        previous_position: section.lectures?.length
-          ? section.lectures[section.lectures.length - 1].position
+        previous_position: section.items?.length
+          ? section.items[section.items.length - 1].position
           : null,
       };
 
@@ -126,10 +153,9 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             {createdItem.video?.video?.key && (
               <div>
                 <p className="font-semibold">🎥 Video:</p>
-                <video
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem.video.video.key}`}
-                  controls
-                  className="w-full max-w-sm rounded-lg shadow"
+                <VideoPlayer
+                  videoUrl={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem.video.video.key}`}
+                  title={createdItem.title}
                 />
               </div>
             )}
@@ -162,7 +188,10 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit(handleAddCourseItem)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(handleAddCourseItem)}
+        className="space-y-6 py-4"
+      >
         <Controller
           name="title"
           control={control}
@@ -170,7 +199,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             <InputRegisterLecture
               {...field}
               labelText={`Tiêu đề bài ${
-                (section.lectures?.length || 0) + 1
+                (section.items?.length || 0) + 1
               } (Phần ${section.position})`}
             />
           )}
@@ -183,7 +212,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             <TextAreaRegisterLecture
               {...field}
               labelText={`Nội dung bài ${
-                (section.lectures?.length || 0) + 1
+                (section.items?.length || 0) + 1
               } (Phần ${section.position})`}
             />
           )}
@@ -196,7 +225,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             <div className="space-y-2">
               <InputRegisterLecture
                 labelText={`Video bài ${
-                  (section.lectures?.length || 0) + 1
+                  (section.items?.length || 0) + 1
                 } (Phần ${section.position})`}
                 type="file"
                 accept="video/*"
@@ -209,7 +238,17 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                       "video"
                     );
                     const duration = await getVideoDuration(file);
-                    const video: MediaType = { id, key, bucket: "video" };
+                    const video: VideoType = {
+                      id,
+                      video_duration: Math.round(duration),
+                      video: {
+                        key,
+                        status: "uploaded",
+                        bucket: "video",
+                        rejection_reason: null,
+                      },
+                      version: 1,
+                    };
                     setValue("video", video);
                     setValue("video_duration", Math.round(duration));
                     setVideoPreview(
@@ -220,11 +259,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 }}
               />
               {videoPreview && (
-                <video
-                  src={videoPreview}
-                  controls
-                  className="w-full max-w-sm rounded-md border"
-                />
+                <VideoPlayer videoUrl={videoPreview} title="Video Preview" />
               )}
             </div>
           )}
@@ -310,10 +345,16 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
         <div className="flex gap-2">
           <Button
             type="submit"
-            className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
+            className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
           >
-            💡Lưu
+            <img
+              src="/icons/icon_save.png"
+              alt="save"
+              className="w-5 h-5 object-fill"
+            />
+            Lưu
           </Button>
+
           <Button
             type="button"
             className="bg-redPigment text-white hover:text-white dark:hover:text-black"

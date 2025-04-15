@@ -156,12 +156,14 @@ const Header = () => {
           {menuItems.map((item) => (
             <div
               key={item.path}
-              className={`hover:cursor-pointer ${
-                pathname === item.path ? "font-bold text-majorelleBlue" : ""
+              className={`hover:cursor-pointer font-semibold ${
+                pathname === item.path
+                  ? " text-LavenderIndigo dark:text-PaleViolet font-semibold"
+                  : "opacity-80"
               }`}
               onClick={() => router.push(item.path)}
             >
-              <text className="text-[12px] md:text-[16px] lg:text-[18px]">
+              <text className="text-xs md:text-sm lg:text-base font-semibold">
                 {item.label}
               </text>
             </div>
@@ -269,7 +271,7 @@ const Header = () => {
               className="px-4 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium  border rounded-lg hover:brightness-125"
               onClick={() => router.push("/login")}
             >
-              🔓 Đăng nhập
+              Đăng nhập
             </button>
           )}
           {userInfo.id && (
@@ -283,6 +285,7 @@ const Header = () => {
                         userInfo.profile_image?.key
                       }
                       alt={userInfo.username}
+                      className="object-cover"
                     />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>

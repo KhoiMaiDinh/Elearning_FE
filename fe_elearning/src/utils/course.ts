@@ -12,9 +12,22 @@ const APIInitCourse = async (data: any) => {
   }
 };
 
-const APIGetCourseById = async (course_id: string) => {
+const APIGetCourseById = async (
+  course_id: string,
+  params?: {
+    with_instructor?: boolean;
+    with_category?: boolean;
+  }
+) => {
   try {
-    const response = await axiosInstance.get(`/courses/${course_id}`);
+    const filteredParams = Object.fromEntries(
+      Object.entries(params || {}).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+    const response = await axiosInstance.get(`/courses/${course_id}`, {
+      params: filteredParams,
+    });
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
@@ -91,6 +104,85 @@ const APIInitCourseItem = async (data: any) => {
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
+
+const APIGetListCourse = async (params: {
+  page?: number;
+  limit?: number;
+  category_slug?: string;
+  level?: string;
+  min_price?: number;
+  max_price?: number;
+  min_rating?: number;
+  instructor_username?: string;
+  with_instructor?: boolean;
+  with_category?: boolean;
+  include_disabled?: boolean;
+}) => {
+  try {
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+
+    const response = await axiosInstance.get(`/courses`, {
+      params: filteredParams,
+    });
+
+    if (response.status === 200) {
+      return {
+        data: response.data.data,
+        status: response.status,
+        total: response.data.pagination.totalRecords,
+      };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error("Error during get list course:", err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIGetMyCourse = async () => {
+  try {
+    const response = await axiosInstance.get(`/courses/me`);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+  } catch (err) {
+    console.error("Error during get my course:", err);
+  }
+};
+
+const APIChangeCourseStatus = async (course_id: string, data: any) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/courses/${course_id}/status`,
+      data
+    );
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error("Error during change course status:", err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIGetEnrolledCourse = async () => {
+  try {
+    const response = await axiosInstance.get(`/courses/enrolled/me`);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error("Error during get enrolled course:", err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
 export {
   APIInitCourse,
   APIGetCourseById,
@@ -99,4 +191,8 @@ export {
   APIGetFullCourse,
   APIUpdateSection,
   APIInitCourseItem,
+  APIGetListCourse,
+  APIGetMyCourse,
+  APIChangeCourseStatus,
+  APIGetEnrolledCourse,
 };

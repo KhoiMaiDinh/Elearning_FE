@@ -193,7 +193,7 @@ const UploadCourse: React.FC = () => {
   const onSubmitBasic = async (data: CourseForm) => {
     try {
       const dataCourse = {
-        category: { slug: data.category.slug },
+        category: { slug: data.category?.slug },
         title: data.title,
         subtitle: data.subtitle,
         description: data.description,
@@ -273,7 +273,9 @@ const UploadCourse: React.FC = () => {
       {/* Thông tin cơ bản */}
       <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
         <div className="bg-white dark:bg-eerieBlack shadow-md rounded-lg p-3 border">
-          <h2 className="text-lg font-bold">Thông tin khóa học</h2>
+          <h2 className="text-lg font-bold text-cosmicCobalt dark:text-white">
+            Thông tin khóa học
+          </h2>
           {basicInfo && !isEditingBasic ? (
             <div className="p-3">
               <p>
@@ -286,7 +288,7 @@ const UploadCourse: React.FC = () => {
                 <strong>Cấp độ:</strong> {basicInfo.level}
               </p>
               <p>
-                <strong>Lĩnh vực:</strong> {basicInfo.category.slug}
+                <strong>Lĩnh vực:</strong> {basicInfo.category?.slug}
               </p>
               <p>
                 <strong>Giá:</strong> {basicInfo.price} VND
@@ -303,7 +305,7 @@ const UploadCourse: React.FC = () => {
               )}
               <Button
                 type="button"
-                className="mt-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white"
+                className="mt-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:brightness-125"
                 onClick={() => {
                   setIsEditingBasic(true);
                   reset(basicInfo);
@@ -438,9 +440,14 @@ const UploadCourse: React.FC = () => {
               </div>
               <Button
                 type="submit"
-                className="mt-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
+                className="bg-custom-gradient-button-violet mt-2 rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
               >
-                💡Thêm
+                <img
+                  src="/icons/icon_save.png"
+                  alt="save"
+                  className="w-5 h-5 object-fill"
+                />
+                Thêm khóa học
               </Button>
             </form>
           )}

@@ -6,7 +6,10 @@ import { Mail, Star, BookOpen } from "lucide-react";
 import CoursesBlock from "@/components/block/courses-block"; // Đảm bảo import đúng đường dẫn
 import { Badge } from "@/components/ui/badge";
 import AnimateWrapper from "@/components/animations/animateWrapper";
-
+import { useParams } from "next/navigation";
+import { APIGetLectureByUserName } from "@/utils/lecture";
+import { useEffect, useState } from "react";
+import { Lecture } from "@/types/registerLectureFormType";
 // Dữ liệu giả như gọi từ API
 const teacherData = {
   name: "Nguyễn Văn A",
@@ -97,32 +100,72 @@ const dataCourse = [
 ];
 
 const TeacherProfile = () => {
+  const { username } = useParams();
+  const [teacherData, setTeacherData] = useState<Lecture>();
+  const handleGetLectureByUserName = async () => {
+    try {
+      const response = await APIGetLectureByUserName(username as string);
+      if (response && response.data) {
+        setTeacherData(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching lecture data:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetLectureByUserName();
+  }, [username]);
+
   return (
     <div className="container bg-white dark:bg-chineseBlack rounded-xl overflow-hidden mx-auto space-y-10">
       <Card className=" mx-auto bg-white dark:bg-chineseBlack shadow-md ">
         <AnimateWrapper delay={0.2} direction="up">
           <CardHeader className="flex flex-col md:flex-row items-center gap-6">
             <Avatar className="w-32 h-32">
-              <AvatarImage src={teacherData.avatarUrl} alt={teacherData.name} />
+              <AvatarImage
+                src={
+                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                  (teacherData?.user.profile_image?.key || "")
+                }
+                alt={
+                  teacherData?.user.first_name +
+                  " " +
+                  teacherData?.user.last_name
+                }
+                className="object-cover"
+              />
             </Avatar>
             <div className="space-y-2 text-center md:text-left">
               <CardTitle className="text-3xl font-bold">
-                {teacherData.name}
+                {teacherData?.user.first_name +
+                  " " +
+                  teacherData?.user.last_name}
               </CardTitle>
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <Mail className="w-4 h-4" />
                 <span className="text-muted-foreground">
-                  {teacherData.email}
+                  {teacherData?.user.email}
                 </span>
               </div>
               <div className="flex gap-4 justify-center md:justify-start">
                 <div className="flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
-                  <span>{teacherData.postCount} bài giảng</span>
+                  <span>
+                    {teacherData?.user.number_course
+                      ? teacherData?.user.number_course
+                      : "N/A "}
+                    bài giảng
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-yellow-400" />
-                  <span>{teacherData.rating.toFixed(1)}/5</span>
+                  <span>
+                    {teacherData?.user.rating
+                      ? teacherData?.user.rating?.toFixed(1)
+                      : "N/A "}
+                    /5
+                  </span>
                 </div>
               </div>
             </div>
@@ -132,16 +175,19 @@ const TeacherProfile = () => {
           <CardContent className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">Giới thiệu</h3>
-              <p className="text-muted-foreground">{teacherData.description}</p>
+              <p
+                className="text-muted-foreground ql-content"
+                dangerouslySetInnerHTML={{
+                  __html: teacherData?.biography || "",
+                }}
+              />
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
               <div className="flex flex-wrap gap-2">
-                {teacherData.expertise.map((skill, index) => (
-                  <Badge key={index} variant="secondary">
-                    {skill}
-                  </Badge>
-                ))}
+                <Badge variant="secondary">
+                  {teacherData?.category.translations[0].name}
+                </Badge>
               </div>
             </div>
 

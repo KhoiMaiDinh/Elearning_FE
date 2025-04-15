@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
 import { useTheme } from "next-themes";
-
+import { useRouter } from "next/navigation";
 type lecturersBlock = {
   avatar?: string;
   name?: string;
@@ -19,6 +19,7 @@ type lecturersBlock = {
   description?: string;
   numberCourse?: number;
   numberStudent?: number;
+  username?: string;
 };
 const LecturersBlock: React.FC<lecturersBlock> = ({
   avatar,
@@ -28,13 +29,22 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
   description,
   numberCourse,
   numberStudent,
+  username,
 }) => {
   const { theme } = useTheme();
+  const router = useRouter();
   return (
-    <Card className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-cosmicCobalt shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack">
+    <Card
+      className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-cosmicCobalt shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack"
+      onClick={() => router.push(`/lecture/${username}`)}
+    >
       <CardHeader className="flex flex-col items-center gap-4">
         <Avatar className="w-24 h-24 shadow">
-          <AvatarImage src={avatar} alt={name} />
+          <AvatarImage
+            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || "")}
+            alt={name}
+            className="object-cover"
+          />
           <AvatarFallback>
             {name
               ?.split(" ")
@@ -56,28 +66,27 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <p className="text-sm text-darkSilver/70 dark:text-lightSilver/70 text-center line-clamp-3">
-          {description || "Chưa có mô tả"}
-        </p>
+        <p
+          className="text-sm text-darkSilver/70 ql-content dark:text-lightSilver/70 text-center line-clamp-3"
+          dangerouslySetInnerHTML={{
+            __html: description || "Chưa có mô tả",
+          }}
+        ></p>
         <div className="flex justify-around text-sm text-darkSilver/70 dark:text-lightSilver/70">
-          {rating && (
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-Sunglow" />
-              <span>{rating.toFixed(1)}</span>
-            </div>
-          )}
-          {numberCourse && (
-            <div className="flex items-center gap-1">
-              <BookOpen className="w-4 h-4" />
-              <span>{numberCourse} khóa</span>
-            </div>
-          )}
-          {numberStudent && (
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>{numberStudent}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-Sunglow" />
+            <span>{rating ? rating.toFixed(1) : "N/A"}</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <BookOpen className="w-4 h-4" />
+            <span>{numberCourse ? numberCourse : "N/A"} khóa</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4" />
+            <span>{numberStudent ? numberStudent : "N/A"}</span>
+          </div>
         </div>
       </CardContent>
     </Card>

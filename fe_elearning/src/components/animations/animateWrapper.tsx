@@ -21,7 +21,7 @@ export default function AnimateWrapper({
   children,
   delay = 0,
   direction = "up",
-  amount = 0.3,
+  amount = 0,
 }: AnimateWrapperProps) {
   return (
     <motion.div
