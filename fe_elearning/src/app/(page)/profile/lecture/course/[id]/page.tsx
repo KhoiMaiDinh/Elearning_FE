@@ -46,6 +46,11 @@ const CourseDetails: React.FC = () => {
 
   return (
     <div className="w-full h-full gap-4 flex flex-col p-4">
+      {/* <div className="w-full h-full flex items-center justify-end">
+        <button className="bg-custom-gradient-button-violet flex flex-row hover:brightness-125 items-center justify-center dark:bg-custom-gradient-button-blue text-white px-4 py-2 rounded-md">
+          
+        </button>
+      </div> */}
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
         <BasicInfoForm
           courseInfo={courseInfo}

@@ -291,7 +291,7 @@ const Header = () => {
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {userInfo.username}
+                      {userInfo.first_name} {userInfo.last_name}
                     </span>
                     <span className="truncate text-xs">{userInfo.email}</span>
                   </div>
