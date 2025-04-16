@@ -8,6 +8,7 @@ interface AnimateWrapperProps {
   delay?: number;
   direction?: "up" | "down" | "left" | "right";
   amount?: number;
+  className?: string;
 }
 
 const directionVariants = {
@@ -22,6 +23,7 @@ export default function AnimateWrapper({
   delay = 0,
   direction = "up",
   amount = 0,
+  className,
 }: AnimateWrapperProps) {
   return (
     <motion.div
@@ -29,6 +31,7 @@ export default function AnimateWrapper({
       whileInView={{ x: 0, y: 0, opacity: 1 }}
       viewport={{ once: true, amount }}
       transition={{ duration: 0.5, ease: "easeOut", delay }}
+      className={className}
     >
       {children}
     </motion.div>

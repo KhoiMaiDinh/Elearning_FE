@@ -154,7 +154,7 @@ export default function Page() {
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
         const data = response.data.map((item: any) => ({
-          coverPhoto: item?.cover_image?.key || "",
+          coverPhoto: item?.thumbnail?.key || "",
           avatar: item?.instructor?.user?.profile_image?.key || "",
           title: item?.title || "",
           rating: item?.rating || null,
@@ -301,7 +301,7 @@ export default function Page() {
             <Button
               variant="link"
               className="text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-              onClick={() => router.push("/lecturers")}
+              onClick={() => router.push("/lecture")}
             >
               Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
             </Button>
@@ -334,7 +334,7 @@ export default function Page() {
               <Button
                 variant="link"
                 className="text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-                onClick={() => router.push("/courses")}
+                onClick={() => router.push("/course")}
               >
                 Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
               </Button>

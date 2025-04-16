@@ -14,8 +14,10 @@ export interface VideoType {
 }
 
 export interface ResourceType {
-  key: string;
-  id: string;
+  resource_file: {
+    id: string;
+  };
+  name: string;
 }
 
 export interface CourseItem {

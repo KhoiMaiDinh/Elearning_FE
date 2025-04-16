@@ -6,6 +6,9 @@ import CoursesBlock from "../block/courses-block";
 import AnimateWrapper from "../animations/animateWrapper";
 import { useRouter } from "next/navigation";
 import { PlusIcon } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
+import { APIGetMyCourse } from "@/utils/course";
 const dataCourse = [
   {
     coverPhoto: "/images/course1.jpg",
@@ -88,6 +91,22 @@ const CourseLecture = () => {
     // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
   }, []);
+
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
+  const handleGetCourseMe = async () => {
+    try {
+      const response = await APIGetMyCourse();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetCourseMe();
+  }, []);
+
   return (
     <AnimateWrapper delay={0.2} direction="up" amount={0}>
       <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-black50 font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">

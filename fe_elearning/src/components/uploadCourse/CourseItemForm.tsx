@@ -11,9 +11,14 @@ import { APIInitCourseItem } from "@/utils/course";
 import { uploadToMinIO, getVideoDuration } from "@/utils/storage";
 import AlertSuccess from "@/components/alert/AlertSuccess";
 import AlertError from "@/components/alert/AlertError";
-import { CourseItem, Section, VideoType } from "@/types/courseType";
-import { MediaType } from "@/types/mediaType";
+import {
+  CourseItem,
+  Section,
+  VideoType,
+  ResourceType,
+} from "@/types/courseType";
 import VideoPlayer from "@/components/courseDetails/videoPlayer";
+import { Trash2 } from "lucide-react";
 
 // ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
@@ -35,8 +40,10 @@ const courseItemSchema = yup.object().shape({
     .nullable(),
   resources: yup.array().of(
     yup.object().shape({
-      id: yup.string().required(),
-      key: yup.string().required(),
+      resource_file: yup.object().shape({
+        id: yup.string().required(),
+      }),
+      name: yup.string().required(),
     })
   ),
   is_preview: yup.boolean().default(false),
@@ -72,13 +79,18 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
   >([]);
   const [createdItem, setCreatedItem] = useState<CourseItem | null>(null);
 
-  const { control, handleSubmit, setValue } = useForm<CourseItem>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<CourseItem>({
     resolver: yupResolver(courseItemSchema) as unknown as Resolver<CourseItem>,
     defaultValues: {
       title: initialValues?.title || "",
       description: initialValues?.description || "",
       video: initialValues?.video || null,
-      resources: initialValues?.resources || [],
+      resources: initialValues?.resources || undefined,
       is_preview: initialValues?.is_preview || false,
       video_duration: initialValues?.video_duration || null,
       position: initialValues?.position || "",
@@ -88,6 +100,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       previous_position: initialValues?.previous_position || undefined,
     },
   });
+  console.log("🚀 ~ errors:", errors);
 
   useEffect(() => {
     if (initialValues?.video?.video?.key) {
@@ -105,7 +118,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
         video: data.video ? { id: data.video.id } : null,
         video_duration: data.video_duration || null,
         description: data.description,
-        resources: data.resources,
+        resources: data.resources || undefined,
         previous_position: section.items?.length
           ? section.items[section.items.length - 1].position
           : null,
@@ -166,12 +179,12 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                   {createdItem.resources.map((res, i) => (
                     <li key={i}>
                       <a
-                        href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${res.key}`}
+                        href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${res.resource_file.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-LavenderIndigo/80 hover:underline"
                       >
-                        {res.key?.split("/").pop()}
+                        {res.resource_file.id?.split("/").pop()}
                       </a>
                     </li>
                   ))}
@@ -201,6 +214,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
               labelText={`Tiêu đề bài ${
                 (section.items?.length || 0) + 1
               } (Phần ${section.position})`}
+              error={errors.title?.message}
             />
           )}
         />
@@ -214,6 +228,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
               labelText={`Nội dung bài ${
                 (section.items?.length || 0) + 1
               } (Phần ${section.position})`}
+              error={errors.description?.message}
             />
           )}
         />
@@ -224,6 +239,8 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
           render={({ field }) => (
             <div className="space-y-2">
               <InputRegisterLecture
+                {...field}
+                error={errors.video?.message}
                 labelText={`Video bài ${
                   (section.items?.length || 0) + 1
                 } (Phần ${section.position})`}
@@ -271,6 +288,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
           render={({ field }) => (
             <div className="space-y-2">
               <InputRegisterLecture
+                {...field}
                 labelText="Tài liệu bài giảng"
                 type="file"
                 accept=".pdf,.doc,.docx"
@@ -279,16 +297,19 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                   const files = Array.from(
                     (e.target as HTMLInputElement).files || []
                   );
-                  const uploadedResources: MediaType[] = [];
+                  const uploadedResources: ResourceType[] = [];
                   const newPreviews = [];
 
                   for (const file of files) {
-                    const { id, key } = await uploadToMinIO(
+                    const { id } = await uploadToMinIO(
                       file,
                       "resource",
                       "resource_file"
                     );
-                    uploadedResources.push({ id, key });
+                    uploadedResources.push({
+                      resource_file: { id },
+                      name: file.name,
+                    });
                     newPreviews.push({
                       name: file.name,
                       url: URL.createObjectURL(file),
@@ -305,7 +326,10 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                   <p className="font-medium">📎 Tài liệu đã tải lên:</p>
                   <ul className="list-disc pl-5">
                     {documentPreviews.map((doc, index) => (
-                      <li key={index}>
+                      <li
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
                         <a
                           href={doc.url}
                           target="_blank"
@@ -314,6 +338,24 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                         >
                           {doc.name}
                         </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedPreviews = documentPreviews.filter(
+                              (_, i) => i !== index
+                            );
+                            setDocumentPreviews(updatedPreviews);
+
+                            const currentResources = field.value || [];
+                            const updatedResources = currentResources.filter(
+                              (_, i) => i !== index
+                            );
+                            field.onChange(updatedResources);
+                          }}
+                          className="text-redPigment ml-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </li>
                     ))}
                   </ul>

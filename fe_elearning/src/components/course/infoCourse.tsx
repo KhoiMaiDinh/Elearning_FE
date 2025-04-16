@@ -10,6 +10,7 @@ type infoCourse = {
   lecture: string;
   price: number;
   description: string;
+  thumbnail?: string;
 };
 const InfoCourse: React.FC<infoCourse> = ({
   title,
@@ -19,6 +20,7 @@ const InfoCourse: React.FC<infoCourse> = ({
   lecture,
   price,
   description,
+  thumbnail,
 }) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -33,7 +35,7 @@ const InfoCourse: React.FC<infoCourse> = ({
         {/* Hình ảnh khóa học */}
         <div className="relative w-full md:w-1/3">
           <img
-            src="/images/avatar.jpg"
+            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail || "")}
             alt="Khóa học"
             className="w-full h-auto rounded-lg object-cover transition-transform duration-300 hover:scale-105"
           />

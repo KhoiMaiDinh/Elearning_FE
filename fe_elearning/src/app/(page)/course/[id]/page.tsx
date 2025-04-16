@@ -2,7 +2,7 @@
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import InfoBlockCourse from "@/components/course/infoBlockCourse";
 import InfoCourse from "@/components/course/infoCourse";
-import { APIGetCourseById } from "@/utils/course";
+import { APIGetCourseById, APIGetFullCourse } from "@/utils/course";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -91,17 +91,26 @@ const Page = () => {
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
   const [dataCourse, setDataCourse] = useState<any>(null);
+
+  // const handleGetCourseById = async () => {
+  //   const response = await APIGetCourseById(id || "", {
+  //     with_instructor: true,
+  //   });
+  //   if (response && response.data) {
+  //     setDataCourse(response.data);
+  //   }
+  // };
+
+  const handleGetDetailCourse = async () => {
+    const response = await APIGetFullCourse(id || "");
+    if (response && response.data) {
+      setDataCourse(response.data);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await APIGetCourseById(id || "", {
-        with_instructor: true,
-      });
-      if (response && response.data) {
-        setDataCourse(response.data);
-      }
-    };
-    fetchData();
-  }, [id]);
+    // handleGetCourseById();
+    handleGetDetailCourse();
+  }, []);
   return (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
@@ -109,6 +118,7 @@ const Page = () => {
           {/* Main Content */}
           <div className="lg:w-3/4">
             <InfoCourse
+              thumbnail={dataCourse?.thumbnail?.key}
               title={dataCourse?.title}
               rating={dataCourse?.rating}
               numberStudent={dataCourse?.number_student}

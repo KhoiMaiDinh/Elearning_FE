@@ -65,9 +65,9 @@ const CoursesBlock: React.FC<coursesBlock> = ({
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={process.env.NEXT_PUBLIC_API_URL_IMAGE + (coverPhoto || "")}
+            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (coverPhoto || "")}
             alt={title}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-contain rounded-t-lg"
           />
           {status && (
             <Badge className="absolute top-2 right-2" variant="secondary">

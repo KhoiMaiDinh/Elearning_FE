@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import BenefitsBar from "./benefitsBar";
 import RegisterLecture from "./registerLecture";
-
+import AnimateWrapper from "../animations/animateWrapper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 const dataBenefit = [
   {
     description:
@@ -36,7 +38,17 @@ const dataBenefit = [
 ];
 
 const NotRegisteredLecture = () => {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
   const [register, setRegister] = useState(false);
+
+  useEffect(() => {
+    if (userInfo.instructor_profile?.is_approved) {
+      setRegister(true);
+    } else {
+      setRegister(false);
+    }
+  }, [userInfo]);
   return (
     <div>
       {!register && (
@@ -52,13 +64,14 @@ const NotRegisteredLecture = () => {
               Đăng ký
             </Button>
           </div>
-
-          <div className="w-full  flex flex-col gap-3 items-center justify-center p-4">
-            {dataBenefit &&
-              dataBenefit.map((item, index) => (
-                <BenefitsBar key={index} description={item.description} />
-              ))}
-          </div>
+          <AnimateWrapper delay={0.2} direction="up" className="w-full">
+            <div className="w-full  flex flex-col gap-3 items-center justify-center p-4">
+              {dataBenefit &&
+                dataBenefit.map((item, index) => (
+                  <BenefitsBar key={index} description={item.description} />
+                ))}
+            </div>
+          </AnimateWrapper>
         </div>
       )}
 

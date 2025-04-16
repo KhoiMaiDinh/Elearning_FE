@@ -3,8 +3,8 @@ import AnimateWrapper from "@/components/animations/animateWrapper";
 import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
 import courseBlock from "@/types/coursesBlockType";
-import lectureBlock from "@/types/lecturesBlockType";
 import { APIGetListCourse } from "@/utils/course";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const dataCourse = [
@@ -90,19 +90,19 @@ const Page = () => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [filter, setFilter] = useState({
+  const [listFavCourse, setListFavCourse] = useState([]);
+  const [listCourse, setListCourse] = useState([]);
+  const [paramsCourse, setParamsCourse] = useState({
     page: 1,
     limit: 10,
-
     category_slug: undefined,
     level: undefined,
     min_price: undefined,
     max_price: undefined,
     min_rating: undefined,
     instructor_username: undefined,
-    with_instructor: false,
-    with_category: false,
+    with_instructor: true,
+    with_category: true,
     include_disabled: false,
   });
   useEffect(() => {
@@ -114,15 +114,32 @@ const Page = () => {
 
   const handleGetListCourse = async () => {
     try {
-      const response = await APIGetListCourse(filter);
-      setData(response?.data);
-    } catch (error) {
-      console.log(error);
+      const response = await APIGetListCourse(paramsCourse);
+      if (response && response.data) {
+        const data = response.data.map((item: any) => ({
+          coverPhoto: item?.thumbnail?.key || "",
+          avatar: item?.instructor?.user?.profile_image?.key || "",
+          title: item?.title || "",
+          rating: item?.rating || null,
+          level: item?.level || null,
+          numberStudent: item?.number_student || null,
+          description: item?.subtitle || "",
+          name:
+            item?.instructor?.user?.first_name +
+            " " +
+            item?.instructor?.user?.last_name,
+          price: item?.price,
+          id: item?.id,
+        }));
+        setListCourse(data);
+      }
+    } catch (err) {
+      console.error("Error during get list course:", err);
     }
   };
   useEffect(() => {
     handleGetListCourse();
-  }, [filter]);
+  }, [paramsCourse]);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
       {/* header */}
@@ -211,20 +228,8 @@ const Page = () => {
           <FilterBlock />
         </div>{" "}
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
-          {dataCourse.map((course: courseBlock, index: number) => (
-            <CoursesBlock
-              avatar={course.avatar}
-              name={course.name}
-              rating={course.rating}
-              title={course.title}
-              level={course.level}
-              numberStudent={course.numberStudent}
-              description={course.description}
-              progress={course.progress}
-              price={course.price}
-              priceFinal={course.priceFinal}
-              status={course.status}
-            />
+          {listCourse.map((course: courseBlock, index: number) => (
+            <CoursesBlock {...course} />
           ))}
         </div>
       </AnimateWrapper>
