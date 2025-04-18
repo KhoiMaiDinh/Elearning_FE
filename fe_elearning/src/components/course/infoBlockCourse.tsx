@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import {
   Clock3,
@@ -16,6 +16,7 @@ type infoBlockCourse = {
   progress?: number;
   price?: number;
   level?: string;
+  totalLessons?: number;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -23,6 +24,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   progress,
   price,
   level,
+  totalLessons,
 }) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -30,6 +32,18 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       currency: "VND",
     }).format(price);
   };
+
+  const [levelShow, setLevelShow] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (level === "BEGINNER") {
+      setLevelShow("Cơ bản");
+    } else if (level === "INTERMEDIATE") {
+      setLevelShow("Trung bình");
+    } else if (level === "ADVANCED") {
+      setLevelShow("Nâng cao");
+    }
+  }, [level]);
 
   return (
     <div className="flex flex-col lg:w-80 md:w-72 w-full items-center justify-center gap-2 md:gap-4 ">
@@ -81,10 +95,10 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       </div>
 
       <div className="flex flex-col lg:gap-4 md:gap-4 gap-2 w-full">
-        <IconWithText IconComponent={Gauge} title={`Trình độ ${level}`} />
+        <IconWithText IconComponent={Gauge} title={`Trình độ ${levelShow}`} />
         <IconWithText
           IconComponent={TableOfContents}
-          title={`Tổng số ${"22"} bài học`}
+          title={`Tổng số ${totalLessons} bài học`}
         />
         <IconWithText IconComponent={Clock3} title={`Thời lượng ${"dcc"}`} />
         <IconWithText IconComponent={Infinity} title={`Học mọi lúc mọi nơi`} />

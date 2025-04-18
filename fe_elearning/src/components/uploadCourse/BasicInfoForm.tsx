@@ -216,11 +216,11 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               {courseInfo.title}
             </h2>
 
-            {courseInfo.description && (
+            {courseInfo.subtitle && (
               <text
                 className="font-sans text-xs text-cosmicCobalt/80 dark:text-white/80 ql-content"
                 dangerouslySetInnerHTML={{
-                  __html: courseInfo.description,
+                  __html: courseInfo.subtitle,
                 }}
               />
             )}

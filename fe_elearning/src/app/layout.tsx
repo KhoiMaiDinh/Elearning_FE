@@ -1,12 +1,13 @@
 "use client";
 import "./globals.css";
-import store from "@/constants/store";
+import store, { persistor } from "@/constants/store";
 // import { Suspense } from 'react'
 import { Provider } from "react-redux";
 import { metadata } from "./metadata";
 import { Suspense, useEffect } from "react";
 import { Inter } from "next/font/google"; // Import font từ next/font
 import { appWithTranslation } from "next-i18next";
+import { PersistGate } from "redux-persist/integration/react";
 
 // import { PersistGate } from 'redux-persist/integration/react'
 
@@ -32,7 +33,9 @@ const RootLayout = ({ children }: any) => {
       </head>
       <body className={` ${inter.variable}`}>
         <Provider store={store}>
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <PersistGate loading={null} persistor={persistor}>
+            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          </PersistGate>
         </Provider>
       </body>
     </html>

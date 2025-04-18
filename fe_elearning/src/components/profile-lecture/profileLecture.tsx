@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { MediaType } from "@/types/mediaType";
 import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
 import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
 import { Button } from "../ui/button";
@@ -112,7 +113,7 @@ const ProfileLecture = () => {
         key: profile.resume?.key || "",
         bucket: profile.resume?.bucket || "",
         status: profile.resume?.status || "",
-        rejection_reason: profile.resume?.rejected_reason || "",
+        rejection_reason: profile.resume?.rejection_reason || "",
       });
       setValue("website_url", profile.website_url);
       setValue("facebook_url", profile.facebook_url);
@@ -123,18 +124,16 @@ const ProfileLecture = () => {
 
       // Set certificates
       const certKeys =
-        profile.certificates?.map(
-          (cert: FileData) => cert.certificate_file.key
-        ) || [];
+        profile.certificates?.map((cert: MediaType) => cert.key) || [];
       setValue("certificates", profile.certificates);
 
       // Set previews
       setCertificatePreviews(
-        profile.certificates?.map((cert: FileData) => ({
+        profile.certificates?.map((cert: MediaType) => ({
           url:
-            process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT +
-            cert.certificate_file.key,
-          name: cert.certificate_file.key,
+            (process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT || "") +
+            (cert.key || ""),
+          name: cert.key || "",
         })) || []
       );
 
@@ -427,6 +426,7 @@ const ProfileLecture = () => {
                     error={errors.biography?.message}
                     disabled={disable}
                     className="min-h-[180px]"
+                    value={field.value}
                   />
                 )}
               />

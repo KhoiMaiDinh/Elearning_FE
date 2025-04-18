@@ -19,6 +19,8 @@ import {
 } from "@/types/courseType";
 import VideoPlayer from "@/components/courseDetails/videoPlayer";
 import { Trash2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Loader2 } from "lucide-react";
 
 // ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
@@ -78,6 +80,12 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     Array<{ name: string; url: string }>
   >([]);
   const [createdItem, setCreatedItem] = useState<CourseItem | null>(null);
+  const [videoUploadProgress, setVideoUploadProgress] = useState(0);
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [documentUploadProgress, setDocumentUploadProgress] = useState<{
+    [key: string]: number;
+  }>({});
+  const [uploadingDocuments, setUploadingDocuments] = useState<string[]>([]);
 
   const {
     control,
@@ -100,7 +108,6 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       previous_position: initialValues?.previous_position || undefined,
     },
   });
-  console.log("🚀 ~ errors:", errors);
 
   useEffect(() => {
     if (initialValues?.video?.video?.key) {
@@ -109,6 +116,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       );
     }
   }, [initialValues]);
+
   const handleAddCourseItem = async (data: CourseItem) => {
     try {
       const payload = {
@@ -138,6 +146,111 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       setDescription("Không thể thêm bài giảng");
       setTimeout(() => setShowAlertError(false), 3000);
     }
+  };
+
+  const handleVideoUpload = async (file: File) => {
+    try {
+      setIsVideoUploading(true);
+      setVideoUploadProgress(0);
+
+      const progressInterval = setInterval(() => {
+        setVideoUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 500);
+
+      const { id, key } = await uploadToMinIO(file, "lecture-video", "video");
+      const duration = await getVideoDuration(file);
+
+      clearInterval(progressInterval);
+      setVideoUploadProgress(100);
+
+      const video: VideoType = {
+        id,
+        video_duration: Math.round(duration),
+        video: {
+          key,
+          status: "uploaded",
+          bucket: "video",
+          rejection_reason: null,
+        },
+        version: 1,
+      };
+
+      setValue("video", video);
+      setValue("video_duration", Math.round(duration));
+      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key);
+
+      setTimeout(() => {
+        setIsVideoUploading(false);
+        setVideoUploadProgress(0);
+      }, 1000);
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      setIsVideoUploading(false);
+      setVideoUploadProgress(0);
+      setShowAlertError(true);
+      setDescription("Lỗi khi tải lên video");
+      setTimeout(() => setShowAlertError(false), 3000);
+    }
+  };
+
+  const handleDocumentUpload = async (files: File[], field: any) => {
+    const uploadedResources: ResourceType[] = [];
+    const newPreviews = [];
+    const fileNames = files.map((f) => f.name);
+    setUploadingDocuments(fileNames);
+
+    for (const file of files) {
+      try {
+        setDocumentUploadProgress((prev) => ({
+          ...prev,
+          [file.name]: 0,
+        }));
+
+        const progressInterval = setInterval(() => {
+          setDocumentUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: prev[file.name] >= 90 ? 90 : prev[file.name] + 10,
+          }));
+        }, 300);
+
+        const { id } = await uploadToMinIO(file, "resource", "resource_file");
+
+        clearInterval(progressInterval);
+        setDocumentUploadProgress((prev) => ({
+          ...prev,
+          [file.name]: 100,
+        }));
+
+        uploadedResources.push({
+          resource_file: { id },
+          name: file.name,
+        });
+        newPreviews.push({
+          name: file.name,
+          url: URL.createObjectURL(file),
+        });
+      } catch (error) {
+        console.error(`Error uploading document ${file.name}:`, error);
+        setShowAlertError(true);
+        setDescription(`Lỗi khi tải lên tài liệu ${file.name}`);
+        setTimeout(() => setShowAlertError(false), 3000);
+      }
+    }
+
+    const currentResources = field.value || [];
+    field.onChange([...currentResources, ...uploadedResources]);
+    setDocumentPreviews([...documentPreviews, ...newPreviews]);
+
+    setTimeout(() => {
+      setUploadingDocuments([]);
+      setDocumentUploadProgress({});
+    }, 1000);
   };
 
   return (
@@ -246,36 +359,29 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 } (Phần ${section.position})`}
                 type="file"
                 accept="video/*"
+                disabled={isVideoUploading}
                 onChange={async (e) => {
                   const file = (e.target as HTMLInputElement).files?.[0];
                   if (file) {
-                    const { id, key } = await uploadToMinIO(
-                      file,
-                      "lecture-video",
-                      "video"
-                    );
-                    const duration = await getVideoDuration(file);
-                    const video: VideoType = {
-                      id,
-                      video_duration: Math.round(duration),
-                      video: {
-                        key,
-                        status: "uploaded",
-                        bucket: "video",
-                        rejection_reason: null,
-                      },
-                      version: 1,
-                    };
-                    setValue("video", video);
-                    setValue("video_duration", Math.round(duration));
-                    setVideoPreview(
-                      process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key
-                    );
-                    field.onChange(video);
+                    await handleVideoUpload(file);
                   }
                 }}
               />
-              {videoPreview && (
+
+              {isVideoUploading && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Đang tải lên video...</span>
+                  </div>
+                  <Progress value={videoUploadProgress} className="h-2" />
+                  <p className="text-sm text-gray-500">
+                    {videoUploadProgress}%
+                  </p>
+                </div>
+              )}
+
+              {videoPreview && !isVideoUploading && (
                 <VideoPlayer videoUrl={videoPreview} title="Video Preview" />
               )}
             </div>
@@ -293,34 +399,33 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 type="file"
                 accept=".pdf,.doc,.docx"
                 multiple
+                disabled={uploadingDocuments.length > 0}
                 onChange={async (e) => {
                   const files = Array.from(
                     (e.target as HTMLInputElement).files || []
                   );
-                  const uploadedResources: ResourceType[] = [];
-                  const newPreviews = [];
-
-                  for (const file of files) {
-                    const { id } = await uploadToMinIO(
-                      file,
-                      "resource",
-                      "resource_file"
-                    );
-                    uploadedResources.push({
-                      resource_file: { id },
-                      name: file.name,
-                    });
-                    newPreviews.push({
-                      name: file.name,
-                      url: URL.createObjectURL(file),
-                    });
+                  if (files.length > 0) {
+                    await handleDocumentUpload(files, field);
                   }
-
-                  const currentResources = field.value || [];
-                  field.onChange([...currentResources, ...uploadedResources]);
-                  setDocumentPreviews([...documentPreviews, ...newPreviews]);
                 }}
               />
+
+              {uploadingDocuments.map((fileName) => (
+                <div key={fileName} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Đang tải lên {fileName}...</span>
+                  </div>
+                  <Progress
+                    value={documentUploadProgress[fileName] || 0}
+                    className="h-2"
+                  />
+                  <p className="text-sm text-gray-500">
+                    {documentUploadProgress[fileName] || 0}%
+                  </p>
+                </div>
+              ))}
+
               {documentPreviews.length > 0 && (
                 <div>
                   <p className="font-medium">📎 Tài liệu đã tải lên:</p>

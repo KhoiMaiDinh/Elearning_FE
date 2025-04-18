@@ -87,7 +87,7 @@ const Header = () => {
   const handleGetCurrentUser = async () => {
     const response = await APIGetCurrentUser();
     if (response?.status === 200) {
-      dispatch(setUser(response?.data));
+      userInfo !== response?.data && dispatch(setUser(response?.data));
     }
   };
 
@@ -115,7 +115,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    !userInfo.id && handleGetCurrentUser();
+    handleGetCurrentUser();
   }, []);
 
   return (
@@ -313,6 +313,7 @@ const Header = () => {
                           userInfo.profile_image?.key
                         }
                         alt={userInfo.username}
+                        className="object-cover"
                       />
                       {/* <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
                     </Avatar>
@@ -330,21 +331,21 @@ const Header = () => {
                     onClick={() => router.push("/profile/student")}
                   >
                     <BadgeCheck />
-                    Account
+                    Tài khoản
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push("/billing")}>
                     <CreditCard />
-                    Billing
+                    Thanh toán
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Bell />
-                    Notifications
+                    Thông báo
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => handleLogOut()}>
                   <LogOut />
-                  Log out
+                  Đăng xuất
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

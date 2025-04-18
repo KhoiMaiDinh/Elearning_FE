@@ -2,10 +2,10 @@ import axiosInstance from "./axios";
 const APIInitCourse = async (data: any) => {
   try {
     const response = await axiosInstance.post("/courses", data);
-    if (response.status === 200) {
+    if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    // return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error("Error during init course:", err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm

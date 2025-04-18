@@ -11,7 +11,8 @@ import AlertSuccess from "@/components/alert/AlertSuccess";
 import AlertError from "@/components/alert/AlertError";
 import { Section } from "@/types/courseType";
 import AnimateWrapper from "@/components/animations/animateWrapper";
-
+import ToggleSwitchButton from "@/components/button/toggleSwitchButton";
+import { Ban } from "lucide-react";
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
@@ -46,12 +47,24 @@ const CourseDetails: React.FC = () => {
 
   return (
     <div className="w-full h-full gap-4 flex flex-col p-4">
-      {/* <div className="w-full h-full flex items-center justify-end">
-        <button className="bg-custom-gradient-button-violet flex flex-row hover:brightness-125 items-center justify-center dark:bg-custom-gradient-button-blue text-white px-4 py-2 rounded-md">
-          
-        </button>
-      </div> */}
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        {courseInfo.course_id && (
+          <div className="flex items-end w-full justify-end p-4">
+            {courseInfo.status === "BANNED" ? (
+              <div className="flex items-center gap-2">
+                <Ban className="w-4 h-4 text-redPigment" />
+                <p className="text-sm font-sans text-redPigment">
+                  Khóa học đã bị cấm
+                </p>
+              </div>
+            ) : (
+              <ToggleSwitchButton
+                courseId={courseId}
+                status={courseInfo.status}
+              />
+            )}
+          </div>
+        )}
         <BasicInfoForm
           courseInfo={courseInfo}
           courseId={courseId}

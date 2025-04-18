@@ -93,12 +93,12 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
                 {item.resources.map((resource, idx) => (
                   <li key={idx}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.key}`}
+                      href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.resource_file.key}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-majorelleBlue hover:underline"
                     >
-                      {resource.key.split("/").pop()}
+                      {resource.name}
                     </a>
                   </li>
                 ))}

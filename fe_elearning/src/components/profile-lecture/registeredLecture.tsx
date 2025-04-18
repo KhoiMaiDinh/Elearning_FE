@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ProfileLecture from "./profileLecture";
 import CourseLecture from "./courseLecture";
 import StatisticLecture from "./statisticLecture";
-
+import BankAccountLecture from "./bankAccountLecture";
 const RegisteredLecture = () => {
   const [active, setActive] = useState("Hồ sơ");
 
@@ -10,12 +10,14 @@ const RegisteredLecture = () => {
     { id: "Hồ sơ", label: "Hồ sơ" },
     { id: "Khóa học", label: "Khóa học" },
     { id: "Thống kê", label: "Thống kê" },
+    { id: "Tài khoản ngân hàng", label: "Tài khoản ngân hàng" },
   ];
 
   const TabContent = {
     "Hồ sơ": ProfileLecture,
     "Khóa học": CourseLecture,
     "Thống kê": StatisticLecture,
+    "Tài khoản ngân hàng": BankAccountLecture,
   };
 
   const ActiveComponent = TabContent[active as keyof typeof TabContent];

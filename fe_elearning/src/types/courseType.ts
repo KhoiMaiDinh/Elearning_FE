@@ -1,4 +1,5 @@
 import { MediaType } from "./mediaType";
+import { Lecture } from "./registerLectureFormType";
 
 export interface VideoType {
   id: string;
@@ -14,9 +15,7 @@ export interface VideoType {
 }
 
 export interface ResourceType {
-  resource_file: {
-    id: string;
-  };
+  resource_file: MediaType;
   name: string;
 }
 
@@ -80,12 +79,13 @@ export interface CourseForm {
   is_disabled?: boolean;
   status?: string;
   instructor_id?: string;
+  instructor?: Lecture;
   level: string;
-  enrolled_users?: number;
+  number_student?: number;
   thumbnail: MediaType | null;
   is_approved?: boolean;
   price: number;
   priceFinal?: number;
-  course?: Section[];
+  sections?: Section[];
   rating?: number;
 }

@@ -114,7 +114,7 @@ export default function Page() {
     limit: 10,
     search: undefined,
     specialty: undefined,
-    // is_approved: true,
+    is_approved: true,
   });
 
   const [paramsCourse, setParamsCourse] = useState({
@@ -221,7 +221,7 @@ export default function Page() {
           <div className="flex items-center gap-4">
             <Button
               className="bg-custom-gradient-button-violet text-white hover:scale-105 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
-              onClick={() => router.push("/courses")}
+              onClick={() => router.push("/course")}
             >
               Tìm khóa học
               <ArrowRight className="ml-2 w-5 h-5" />

@@ -11,6 +11,7 @@ const initialState = {
     subtitle: "",
     description: "",
     level: "",
+    status: "",
     price: 0,
 
     thumbnail: {
