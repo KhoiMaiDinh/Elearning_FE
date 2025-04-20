@@ -20,6 +20,7 @@ import { signIn } from "next-auth/react";
 import Loader from "@/components/loading/loader";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/constants/userSlice";
+import { APIGetCurrentUser } from "@/utils/user";
 const regexPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 const baseSchema = {
@@ -114,6 +115,13 @@ const Page = () => {
     activeButton === "signup" && (await handleSignup(bodySignUp));
   };
 
+  const handleGetCurrentUser = async () => {
+    const response = await APIGetCurrentUser();
+    if (response?.status === 200) {
+      dispatch(setUser(response.data));
+    }
+  };
+
   const handleLogin = async (data: any) => {
     setLoading(true);
     try {
@@ -126,6 +134,7 @@ const Page = () => {
         // dispatch(setUser(response.data));
 
         setAlertDescription("Đăng nhập thành công");
+        handleGetCurrentUser();
 
         setShowAlertSuccess(true);
 

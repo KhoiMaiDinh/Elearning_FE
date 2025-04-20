@@ -504,7 +504,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
 
           <Button
             type="button"
-            className="bg-redPigment text-white hover:text-white dark:hover:text-black"
+            className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
             variant="outline"
             onClick={onCancel}
           >

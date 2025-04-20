@@ -30,7 +30,7 @@ const RegisteredLecture = () => {
             key={tab.id}
             onClick={() => setActive(tab.id)}
             className={`
-              px-8 py-3 text-sm font-medium transition-all duration-200
+              md:px-8 md:py-3 px-2 py-1 md:text-sm text-xs font-medium transition-all duration-200
               ${
                 active === tab.id
                   ? "bg-white dark:bg-black50 text-majorelleBlue dark:text-white border-b-2 border-majorelleBlue"

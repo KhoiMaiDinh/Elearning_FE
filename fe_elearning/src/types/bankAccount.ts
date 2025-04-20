@@ -1,5 +1,6 @@
 export interface BankAccount {
   id: string;
-  label: string;
-  country_code: string;
+  name: string;
+  bank_code: string;
+  bank_account_number: string;
 }

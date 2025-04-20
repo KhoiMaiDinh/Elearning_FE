@@ -5,8 +5,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   bankAccountInfo: {
     id: "",
-    label: "",
-    country_code: "",
+    name: "",
+    bank_code: "",
+    bank_account_number: "",
   },
 };
 

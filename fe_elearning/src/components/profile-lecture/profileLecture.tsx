@@ -471,7 +471,7 @@ const ProfileLecture = () => {
                           </span>
                         </div>
                         <iframe
-                          src={resumePreview.url}
+                          src={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resumePreview.url}`}
                           className="md:w-1/2 w-full md:h-[200px] h-[100px] rounded"
                           title="CV Preview"
                         />
@@ -525,7 +525,7 @@ const ProfileLecture = () => {
                               )}
                             </div>
                             <iframe
-                              src={preview.url}
+                              src={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${preview.url}`}
                               className="w-full md:h-[400px] h-[100px] rounded"
                               title={`Certificate ${index + 1}`}
                             />

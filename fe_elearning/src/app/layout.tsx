@@ -5,7 +5,7 @@ import store, { persistor } from "@/constants/store";
 import { Provider } from "react-redux";
 import { metadata } from "./metadata";
 import { Suspense, useEffect } from "react";
-import { Inter } from "next/font/google"; // Import font từ next/font
+import { Inter, Nunito, Manrope } from "next/font/google"; // Import font từ next/font
 import { appWithTranslation } from "next-i18next";
 import { PersistGate } from "redux-persist/integration/react";
 
@@ -17,6 +17,11 @@ const inter = Inter({
   // weight: ['400', '500', '700'], // Specify weights you need
 });
 
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  // weight: ['400', '500', '700'], // Specify weights you need
+});
 const RootLayout = ({ children }: any) => {
   useEffect(() => {
     // Scroll to top when the component mounts or route changes
@@ -31,7 +36,7 @@ const RootLayout = ({ children }: any) => {
         {/* <link rel="shortcut icon" href={(metadata.icons as any)?.shortcut} />
         <link rel="apple-touch-icon" href={(metadata.icons as any)?.apple} /> */}
       </head>
-      <body className={` ${inter.variable}`}>
+      <body className={` ${inter.variable} ${manrope.variable}`}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>

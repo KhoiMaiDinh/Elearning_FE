@@ -69,6 +69,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         inter: ["Inter", "sans-serif"],
+        // sans: ["Manrope", "sans-serif"],
       },
 
       keyframes: {
@@ -129,7 +130,7 @@ export default {
       black50: "rgba(0,0,0,0.5)",
       black70: "rgba(0,0,0,0.7)",
       redPigment: "#FF2929",
-      AntiFlashWhite: "#EFF1F4",
+      AntiFlashWhite: "#FAFDFC",
       seoulPurple: "#851291",
       seoulPurple20: "rgba(133, 18, 145,0.2)",
       beautyGreen: "#66A586",
@@ -148,9 +149,15 @@ export default {
       "custom-gradient-dark": "linear-gradient(to  right, #1E293B, #334155)",
       "custom-gradient-light": "linear-gradient(to  right, #E5E7EB, #F3F4F6)",
       "custom-gradient-button-violet":
-        "linear-gradient(to bottom, #B781FF, #8844FF)",
+        "linear-gradient(to left top, #545AE8,#8844FF, #B781FF)",
+      // "custom-gradient-button-blue":
+      //   "linear-gradient(to bottom,#545AE8, #2F327D)",
+
       "custom-gradient-button-blue":
-        "linear-gradient(to bottom,#545AE8, #2F327D)",
+        "linear-gradient(to left top , rgba(0, 0, 255, 0.2),rgba(0, 0, 255, 0.4), rgba(0, 0, 255, 0.6), rgba(0, 0, 255, 0.8))",
+
+      "custom-gradient-button-red":
+        "linear-gradient(to left top, #b91c1c ,#dc2626,#ef4444, #f87171)",
     },
   },
   plugins: [require("tailwindcss-animate")],

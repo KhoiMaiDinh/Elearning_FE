@@ -349,7 +349,7 @@ const ProfileStudent = () => {
           <div className="w-full flex items-center justify-center p-4">
             {disable ? (
               <Button
-                className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
+                className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-semibold text-sm  p-2"
                 onClick={() => setDisable(false)}
               >
                 ✍️ Chỉnh sửa
@@ -357,7 +357,7 @@ const ProfileStudent = () => {
             ) : (
               <div className="flex flex-row w-full gap-3 items-center justify-center">
                 <Button
-                  className="w-32 bg-redPigment text-white dark:hover:shadow-sm dark:hover:shadow-white dark:hover:text-redPigment  rounded-md font-sans font-medium text-[16px] p-2"
+                  className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
                   onClick={() => setDisable(true)}
                 >
                   Hủy

@@ -380,7 +380,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 
             <Button
               type="button"
-              className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black bg-redPigment`}
+              className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
               onClick={() => setIsEditingBasic(false)}
             >
               Hủy

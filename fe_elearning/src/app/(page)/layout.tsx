@@ -42,7 +42,7 @@ export default function RootLayout({
         <div className="flex items-start justify-start bg-AntiFlashWhite dark:bg-eerieBlack">
           <div className="w-full h-full flex flex-col bg-white max-w-[1440px] mx-auto dark:bg-eerieBlack">
             <Header />
-            <div className="w-full h-full p-5 bg-AntiFlashWhite dark:bg-eerieBlack ">
+            <div className="w-full h-full bg-AntiFlashWhite dark:bg-eerieBlack ">
               {children}
             </div>
             <Footer />

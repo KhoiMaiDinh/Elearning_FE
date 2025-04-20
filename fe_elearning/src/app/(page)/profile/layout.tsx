@@ -21,7 +21,7 @@ export default function RootLayout({
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue overflow-auto">
+    <div className="w-full h-full p-4 flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue overflow-auto">
       <div className="flex justify-center gap-2 bg-majorelleBlue50 rounded-full w-fit p-2">
         <Button
           onClick={() => handleButtonClick("student")}

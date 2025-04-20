@@ -18,7 +18,7 @@ const courseData: CourseForm = {
   outcomes: ["jj", "kb", "vuk"],
   is_disabled: false,
   is_approved: true,
-  category: { slug: "8", children: [{ slug: "8" }] },
+  category: { slug: "8", children: [{ slug: "8" }], translations: [] },
   description:
     "Khóa học cung cấp kiến thức từ cơ bản đến nâng cao về lập trình web với JavaScript.",
   course: [
@@ -156,10 +156,10 @@ const LearnPage = () => {
   const [currentCourseItem, setCurrentCourseItem] = useState<
     CourseItem | Section | undefined
   >(
-    courseData?.course
-      ? courseData.course[0].lectures
-        ? courseData.course[0].lectures[0]
-        : courseData.course[0]
+    courseData?.sections
+      ? courseData.sections[0].items
+        ? courseData.sections[0].items[0]
+        : courseData.sections[0]
       : undefined
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -190,9 +190,9 @@ const LearnPage = () => {
               isSidebarOpen ? "w-full lg:w-1/4" : "w-0 lg:w-16"
             } transition-all duration-300 bg-white dark:bg-richBlack rounded-lg shadow-md overflow-hidden`}
           >
-            {currentCourseItem && courseData.course && (
+            {currentCourseItem && courseData.sections && (
               <CourseItemList
-                sections={courseData.course}
+                sections={courseData.sections}
                 currentCourseItemId={currentCourseItem?.title}
                 onCourseItemSelect={(courseItem) =>
                   setCurrentCourseItem(courseItem)
@@ -223,10 +223,10 @@ const LearnPage = () => {
           {courseData && (
             <CourseTabs
               description={courseData.description || ""}
-              sections={courseData.course}
+              sections={courseData.sections}
               lecture={courseData.instructor_id}
               rating={courseData.rating}
-              enrolledStudents={courseData.enrolled_users}
+              enrolledStudents={courseData.number_student}
               price={courseData.price}
               priceFinal={courseData.priceFinal}
             />

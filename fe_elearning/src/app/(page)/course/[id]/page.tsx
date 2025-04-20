@@ -2,96 +2,23 @@
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import InfoBlockCourse from "@/components/course/infoBlockCourse";
 import InfoCourse from "@/components/course/infoCourse";
+import { RootState } from "@/constants/store";
 import { CourseForm } from "@/types/courseType";
 import { APIGetCourseById, APIGetFullCourse } from "@/utils/course";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
-// const dataCourseDetails = {
-//   title: "Lập Trình Web Toàn Diện Với JavaScript",
-//   rating: 4.9,
-//   enrolled_students: 5000,
-//   level: "Trung cấp",
-//   price: 699000,
-//   lecture: "Lê Thị Thu Hiền",
-//   short_description:
-//     "Khóa học cung cấp kiến thức từ cơ bản đến nâng cao về lập trình web với JavaScript, bao gồm cả front-end và back-end.",
-//   course: [
-//     {
-//       section_title: "Giới thiệu về JavaScript",
-//       content: [
-//         {
-//           lesson_title: "JavaScript là gì?",
-//           lesson_content:
-//             "Tìm hiểu cơ bản về JavaScript và vai trò của nó trong lập trình web.",
-//           resources: ["Tài liệu giới thiệu JavaScript.pdf"],
-//           video_url: "https://example.com/video/javascript-introduction.mp4",
-//         },
-//         {
-//           lesson_title: "Thiết lập môi trường làm việc",
-//           lesson_content:
-//             "Hướng dẫn cài đặt và sử dụng trình biên tập mã như VS Code.",
-//           resources: ["Hướng dẫn cài đặt VS Code.pdf"],
-//           video_url: "https://example.com/video/setup-environment.mp4",
-//         },
-//       ],
-//       section_video: "https://example.com/video/course-intro.mp4",
-//       section_description:
-//         "Tổng quan về nội dung khóa học và mục tiêu đạt được.",
-//       section_resources: ["Tài liệu tổng quan khóa học.pdf"],
-//     },
-//     {
-//       section_title: "Lập trình cơ bản với JavaScript",
-//       content: [
-//         {
-//           lesson_title: "Biến và kiểu dữ liệu",
-//           lesson_content:
-//             "Tìm hiểu cách khai báo biến và các kiểu dữ liệu trong JavaScript.",
-//           resources: ["Biến và kiểu dữ liệu trong JavaScript.pdf"],
-//           video_url: "https://example.com/video/variables-and-data-types.mp4",
-//         },
-//         {
-//           lesson_title: "Câu lệnh điều kiện và vòng lặp",
-//           lesson_content:
-//             "Cách sử dụng if-else và các vòng lặp trong lập trình.",
-//           resources: ["Câu lệnh điều kiện và vòng lặp.pdf"],
-//           video_url: "https://example.com/video/loops-and-conditions.mp4",
-//         },
-//       ],
-//       section_video: "https://example.com/video/basic-js.mp4",
-//       section_description:
-//         "Học cách viết mã JavaScript cơ bản thông qua các ví dụ thực tế.",
-//       section_resources: ["Tài liệu lập trình cơ bản.pdf"],
-//     },
-//     {
-//       section_title: "JavaScript Nâng Cao",
-//       content: [
-//         {
-//           lesson_title: "Xử lý sự kiện trong JavaScript",
-//           lesson_content:
-//             "Hướng dẫn sử dụng các sự kiện để tạo tính tương tác cho website.",
-//           resources: ["Tài liệu về sự kiện trong JavaScript.pdf"],
-//           video_url: "https://example.com/video/event-handling.mp4",
-//         },
-//         {
-//           lesson_title: "Làm việc với API",
-//           lesson_content: "Cách sử dụng Fetch API để giao tiếp với server.",
-//           resources: ["Hướng dẫn làm việc với API.pdf"],
-//           video_url: "https://example.com/video/fetch-api.mp4",
-//         },
-//       ],
-//       section_video: "https://example.com/video/advanced-js.mp4",
-//       section_description:
-//         "Nâng cao kỹ năng lập trình JavaScript với các khái niệm chuyên sâu.",
-//       section_resources: ["Tài liệu nâng cao JavaScript.pdf"],
-//     },
-//   ],
-// };
+import { useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 
 const Page = () => {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
   const [dataCourse, setDataCourse] = useState<CourseForm>();
+  const [loading, setLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const router = useRouter();
 
   // const handleGetCourseById = async () => {
   //   const response = await APIGetCourseById(id || "", {
@@ -102,17 +29,35 @@ const Page = () => {
   //   }
   // };
 
+  useEffect(() => {
+    if (userInfo.id) {
+      if (userInfo.id === dataCourse?.instructor?.user?.id) {
+        setIsOwner(true);
+      }
+    }
+  }, [userInfo, dataCourse]);
+
   const handleGetDetailCourse = async () => {
+    setLoading(true);
     const response = await APIGetFullCourse(id || "");
     if (response && response.data) {
       setDataCourse(response.data);
     }
+    setLoading(false);
   };
   useEffect(() => {
     // handleGetCourseById();
     handleGetDetailCourse();
   }, []);
-  return (
+
+  useEffect(() => {
+    if (dataCourse && userInfo) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [dataCourse, userInfo]);
+  return !loading ? (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
         <div className="flex flex-col lg:flex-row gap-8">
@@ -129,23 +74,51 @@ const Page = () => {
               />
             )}
           </div>
+          {isOwner && (
+            <div className="lg:w-1/4">
+              <div className="flex flex-col gap-4">
+                <button
+                  className="bg-custom-gradient-button-violet hover:brightness-125 dark:bg-custom-gradient-button-blue text-white px-4 py-2 rounded-md"
+                  onClick={() => {
+                    router.push(`/profile/lecture/course/${id}`);
+                  }}
+                >
+                  Chỉnh sửa khóa học
+                </button>
+                <button
+                  className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 text-white px-4 py-2 rounded-md"
+                  onClick={() => {
+                    router.push(`/profile/lecture/course`);
+                  }}
+                >
+                  Thêm bài học
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Sidebar */}
-          <div className="lg:w-1/4">
-            <InfoBlockCourse
-              isRegistered={true}
-              price={dataCourse?.price}
-              level={dataCourse?.level || ""}
-              totalLessons={
-                dataCourse?.sections?.reduce(
-                  (total, section) => total + section.items.length,
-                  0
-                ) || 0
-              }
-            />
-          </div>
+          {!isOwner && (
+            <div className="lg:w-1/4">
+              <InfoBlockCourse
+                isRegistered={true}
+                price={dataCourse?.price}
+                level={dataCourse?.level || ""}
+                totalLessons={
+                  dataCourse?.sections?.reduce(
+                    (total, section) => total + section.items.length,
+                    0
+                  ) || 0
+                }
+              />
+            </div>
+          )}
         </div>
       </AnimateWrapper>
+    </div>
+  ) : (
+    <div className="flex justify-center items-center h-screen">
+      <Loader2 className="w-10 h-10 animate-spin" />
     </div>
   );
 };

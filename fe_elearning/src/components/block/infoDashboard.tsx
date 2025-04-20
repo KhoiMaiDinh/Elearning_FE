@@ -7,6 +7,7 @@ type infoDashboard = {
   title: string;
   Icon: React.ElementType;
   color?: string;
+  bgColor?: string;
 };
 
 const InfoDashboard: React.FC<infoDashboard> = ({
@@ -14,14 +15,17 @@ const InfoDashboard: React.FC<infoDashboard> = ({
   title,
   Icon,
   color,
+  bgColor,
 }) => {
   // Khởi tạo AOS cho animation fade-up
 
   return (
-    <div className="flex flex-row rounded-md items-center justify-center gap-2 p-4 bg-white dark:bg-black50 shadow-md hover:shadow-lg transition-shadow">
-      <Icon color={color} size={48} />
-      <div className="flex flex-col font-sans text-black dark:text-AntiFlashWhite leading-snug">
-        <p className="text-[24px] font-bold">
+    <div className="flex flex-row rounded-md items-center justify-center gap-2 p-4 bg-white relative dark:bg-eerieBlack shadow-md hover:shadow-lg transition-shadow">
+      <div className={`p-2 bg-[${bgColor}] z-10`}>
+        <Icon color={color} size={48} />
+      </div>
+      <div className="flex flex-col font-sans z-10 text-black dark:text-AntiFlashWhite leading-snug">
+        <p className="text-lg font-bold">
           <CountUp
             from={0}
             to={number}
@@ -31,7 +35,9 @@ const InfoDashboard: React.FC<infoDashboard> = ({
             className="count-up-text"
           />
         </p>
-        <p className="text-[16px] font-medium">{title}</p>
+        <p className="text-[16px] font-medium text-darkSilver dark:text-lightSilver">
+          {title}
+        </p>
       </div>
     </div>
   );

@@ -119,8 +119,9 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="z-50 w-full p-2 h-11/12 flex items-center justify-between top-0 md:shadow-PaleViolet md:shadow-md dark:md:shadow-cosmicCobalt sticky bg-AntiFlashWhite dark:bg-eerieBlack transition-colors shadow-md">
-      <div className="flex w-full justify-between md:px-4 items-center space-x-4">
+    <div className="z-50 w-full h-16 flex items-center justify-between top-0 md:shadow-PaleViolet/20 md:shadow-md dark:md:shadow-cosmicCobalt/20 sticky  transition-colors shadow-md">
+      <div className="absolute z-0 top-0 left-0 w-full h-full inset-0  supports-backdrop-blur:bg-background/90  border-b border-border bg-white/40 dark:bg-eerieBlack/40 backdrop-blur-lg"></div>
+      <div className="flex w-full z-10 justify-between md:px-4 items-center space-x-4">
         <div className="flex h-full items-center sm:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -156,11 +157,13 @@ const Header = () => {
           {menuItems.map((item) => (
             <div
               key={item.path}
-              className={`hover:cursor-pointer font-semibold ${
-                pathname === item.path
-                  ? " text-LavenderIndigo dark:text-PaleViolet font-semibold"
-                  : "opacity-80"
-              }`}
+              className={`hover:cursor-pointer font-semibold
+                
+                ${
+                  pathname === item.path
+                    ? " text-LavenderIndigo dark:text-PaleViolet font-semibold"
+                    : "opacity-80"
+                }`}
               onClick={() => router.push(item.path)}
             >
               <text className="text-xs md:text-sm lg:text-base font-semibold">
@@ -189,7 +192,7 @@ const Header = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative p-2 rounded-full bg-AntiFlashWhite dark:bg-eerieBlack hover:bg-lightSilver dark:hover:bg-black50 transition-colors"
+                className="relative p-2 rounded-full  transition-colors"
               >
                 <Bell className="h-[1.2rem] w-[1.2rem] text-black dark:text-white" />
                 {notifications.filter((n) => !n.isRead).length > 0 && (
