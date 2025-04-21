@@ -101,7 +101,8 @@ const Page = () => {
           {!isOwner && (
             <div className="lg:w-1/4">
               <InfoBlockCourse
-                isRegistered={true}
+                id={id || ""}
+                isRegistered={false}
                 price={dataCourse?.price}
                 level={dataCourse?.level || ""}
                 totalLessons={

@@ -6,11 +6,12 @@ import storage from "redux-persist/lib/storage"; // Sử dụng localStorage
 import createUserSlice from "./userSlice";
 import createCourseSlice from "./course";
 import createBankAccountSlice from "./bankAccount";
+import createCartSlice from "./cart";
 // Cấu hình persist
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "course", "bankAccount"], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
+  whitelist: ["user", "course", "bankAccount", "cart"], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
 };
 
 // Combine các slice reducer
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   user: createUserSlice,
   course: createCourseSlice,
   bankAccount: createBankAccountSlice,
+  cart: createCartSlice,
 });
 
 // Tạo reducer đã persist

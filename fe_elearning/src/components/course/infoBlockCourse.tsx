@@ -10,8 +10,9 @@ import {
 } from "lucide-react";
 import IconWithText from "./iconWithText";
 import PieChartProgress from "../chart/pieChartProgress";
-
+import { useRouter } from "next/navigation";
 type infoBlockCourse = {
+  id: string;
   isRegistered: boolean;
   progress?: number;
   price?: number;
@@ -20,12 +21,14 @@ type infoBlockCourse = {
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
+  id,
   isRegistered,
   progress,
   price,
   level,
   totalLessons,
 }) => {
+  const router = useRouter();
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -89,9 +92,28 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       )}
 
       <div className="flex flex-col ">
-        <Button className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
-          {isRegistered ? "Tiếp tục" : "Đăng ký"}
-        </Button>
+        {!isRegistered && (
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className="bg-custom-gradient-button-violet w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
+              onClick={() => {
+                router.push(`/checkout/${id}`);
+              }}
+            >
+              Đăng ký ngay
+            </Button>
+
+            <Button className="bg-custom-gradient-button-blue w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
+              Thêm vào giỏ hàng
+            </Button>
+          </div>
+        )}
+
+        {isRegistered && (
+          <Button className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
+            Tiếp tục
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col lg:gap-4 md:gap-4 gap-2 w-full">
