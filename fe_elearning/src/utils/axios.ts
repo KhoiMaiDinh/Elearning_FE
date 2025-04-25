@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
         if (!refreshToken) throw new Error("Missing refresh token");
 
         const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
           { refresh_token: refreshToken }
         );
 

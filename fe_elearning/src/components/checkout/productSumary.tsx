@@ -4,6 +4,14 @@ type Props = {
 };
 
 export default function ProductSummary({ products }: Props) {
+  const formattedPrice = (price: number) => {
+    return !isNaN(price)
+      ? new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(price)
+      : "N/A";
+  };
   return (
     <div className="space-y-2">
       <h2 className="text-lg font-semibold">Khoá học</h2>
@@ -14,7 +22,7 @@ export default function ProductSummary({ products }: Props) {
             className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
           >
             <span>{p.title}</span>
-            <span>{p.price.toLocaleString()}đ</span>
+            <span>{formattedPrice(p.price)}</span>
           </li>
         ))}
       </ul>

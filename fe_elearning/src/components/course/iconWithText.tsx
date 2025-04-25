@@ -9,7 +9,7 @@ const IconWithText: React.FC<iconWithText> = ({
 }) => {
   return (
     <div className="flex flex-row w-full items-center gap-4   justify-center">
-      <div className="flex flex-row items-center px-10 w-72 lg:w-full md:w-full border dark:border-white/20 border-black/20 shadow-sm shadow-majorelleBlue ">
+      <div className="flex flex-row items-center px-10 w-72 lg:w-full md:w-full border dark:border-white/20 border-black/20 shadow-sm  ">
         <div className="flex w-fit p-2 ">
           <Icon
             // color={"#000000"}

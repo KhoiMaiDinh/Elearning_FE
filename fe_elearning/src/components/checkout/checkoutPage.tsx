@@ -5,9 +5,10 @@ import { useState } from "react";
 import ProductSummary from "./productSumary";
 import StudentInfo from "./studentInfo";
 import DiscountInput from "./discountInput";
-import PaymentForm from "./paymentForm";
 import { Card } from "@/components/ui/card";
 import { UserType } from "@/types/userType";
+import { APICreateOrder } from "@/utils/order";
+import { Button } from "../ui/button";
 type Props = {
   mode: "single" | "cart";
   products: { id: string; title: string; price: number }[];
@@ -19,6 +20,25 @@ export default function CheckoutPage({ mode, products, student }: Props) {
 
   const total = products.reduce((sum, p) => sum + p.price, 0);
   const discountedTotal = discount === "GIAM10" ? total * 0.9 : total;
+
+  const formattedPrice = !isNaN(discountedTotal)
+    ? new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(discountedTotal)
+    : "N/A";
+
+  const handlePayment = async (data: any) => {
+    // const response = await APIPo
+    const response = await APICreateOrder(data);
+    if (response?.status === 200) {
+      window.location.href = response?.data?.payment?.payment_url;
+    } else {
+      alert("Thanh toán thất bại");
+    }
+    console.log("🚀 ~ handlePayment ~ response:", response);
+    console.log(response);
+  };
 
   return (
     <div className="min-h-screen bg-AntiFlashWhite dark:bg-zinc-900 text-eerieBlack dark:text-white p-4 flex items-center justify-center">
@@ -33,12 +53,22 @@ export default function CheckoutPage({ mode, products, student }: Props) {
 
         <div className="flex justify-between items-center font-semibold text-lg">
           <span>Tổng cộng:</span>
-          <span className="text-Sunglow">
-            {discountedTotal.toLocaleString()}đ
-          </span>
+          <span className="text-Sunglow">{formattedPrice}</span>
         </div>
 
-        <PaymentForm />
+        <div className="pt-4">
+          <Button
+            className="w-full bg-majorelleBlue text-white hover:bg-majorelleBlue/90"
+            onClick={() =>
+              handlePayment({
+                course_ids: products.map((product) => product.id),
+                ...(discount ? { coupon_code: discount } : {}),
+              })
+            }
+          >
+            Thanh toán ngay
+          </Button>
+        </div>
       </Card>
     </div>
   );

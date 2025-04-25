@@ -20,15 +20,6 @@ const Page = () => {
   const [isOwner, setIsOwner] = useState(false);
   const router = useRouter();
 
-  // const handleGetCourseById = async () => {
-  //   const response = await APIGetCourseById(id || "", {
-  //     with_instructor: true,
-  //   });
-  //   if (response && response.data) {
-  //     setDataCourse(response.data);
-  //   }
-  // };
-
   useEffect(() => {
     if (userInfo.id) {
       if (userInfo.id === dataCourse?.instructor?.user?.id) {
