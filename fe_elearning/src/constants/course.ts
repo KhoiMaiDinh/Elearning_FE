@@ -1,5 +1,5 @@
 // 'use client'
-import { Section } from "@/types/courseType";
+import { CourseProgress, Section } from "@/types/courseType";
 import { Lecture } from "@/types/registerLectureFormType";
 import { FileData, Roles } from "@/types/userType";
 import { createSlice } from "@reduxjs/toolkit";
@@ -39,6 +39,7 @@ const initialState = {
     createdAt: "",
     instructor_profile: <Lecture | null>null,
     sections: <Section[]>[],
+    course_progress: <CourseProgress | null>null,
   },
 };
 

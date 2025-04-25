@@ -148,6 +148,24 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     }
   };
 
+  const getVideoDuration = (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        resolve(video.duration); // duration in seconds
+      };
+
+      video.onerror = (e) => {
+        reject("Không thể đọc thời lượng video");
+      };
+
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleVideoUpload = async (file: File) => {
     try {
       setIsVideoUploading(true);

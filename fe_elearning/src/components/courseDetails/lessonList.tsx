@@ -17,6 +17,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   onCourseItemSelect,
   isExpanded,
 }) => {
+  console.log("🚀 ~ sections:", sections);
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
 
   const toggleSection = (index: number) => {
@@ -28,7 +29,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
 
   // Check nếu có bài con đang active thì section cha cũng sáng
   const isChildActive = (section: Section) =>
-    section.lectures?.some((item) => item.title === currentCourseItemId);
+    section.items?.some((item) => item.title === currentCourseItemId);
 
   return (
     <div className="h-full overflow-y-auto px-2 pb-6">
@@ -69,7 +70,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
 
               {isOpen && (
                 <ul className="space-y-1 mt-2">
-                  {section.lectures?.map((courseItem) => {
+                  {section.items?.map((courseItem) => {
                     const isActive = courseItem.title === currentCourseItemId;
 
                     return (

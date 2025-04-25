@@ -2,15 +2,22 @@
 
 import React from "react";
 import { Pie, PieChart, Label } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const chartData = (value: number) => [
-  { name: "Used", value, fill: "#8844FF" },
-  { name: "Remaining", value: 100 - value, fill: "rgba(136, 68, 255, 0.2)" },
-];
 
 type Props = {
-  percentage: number; // Giá trị phần trăm
+  percentage: number;
+};
+
+const chartData = (value: number) => {
+  const clamped = Math.max(0, Math.min(value, 100));
+
+  return [
+    { name: "Used", value: clamped, fill: "#8844FF" },
+    {
+      name: "Remaining",
+      value: 100 - clamped,
+      fill: "rgba(136, 68, 255, 0.2)",
+    },
+  ];
 };
 
 export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
@@ -22,23 +29,26 @@ export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
           dataKey="value"
           innerRadius={70}
           outerRadius={100}
-          strokeWidth={0}
+          stroke="none"
+          isAnimationActive={false}
         >
           <Label
             content={({ viewBox }) => {
               if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                const { cx, cy } = viewBox;
                 return (
                   <text
-                    x={viewBox.cx}
-                    y={viewBox.cy}
+                    x={cx}
+                    y={cy}
                     textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="fill-foreground font-bold text-2xl"
+                    dominantBaseline="central"
+                    className="fill-foreground font-bold text-2xl leading-none"
                   >
-                    {percentage}%
+                    {Math.max(0, Math.min(percentage, 100))}%
                   </text>
                 );
               }
+              return null;
             }}
           />
         </Pie>
@@ -47,10 +57,16 @@ export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
   );
 };
 
-const PieChartProgress = () => {
+type PieChartProgressProps = {
+  courseProgress: number;
+};
+
+const PieChartProgress: React.FC<PieChartProgressProps> = ({
+  courseProgress,
+}) => {
   return (
-    <div className="">
-      <PercentagePieChart percentage={50} />
+    <div className="w-full max-w-sm mx-auto">
+      <PercentagePieChart percentage={courseProgress} />
     </div>
   );
 };

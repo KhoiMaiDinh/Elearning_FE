@@ -4,11 +4,12 @@ import { Download, MessageSquare, Star, Users, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; // Giả sử bạn có component Input
 import { Section } from "@/types/courseType";
+import { Lecture } from "@/types/registerLectureFormType";
 
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
-  lecture?: string;
+  lecture?: Lecture;
   rating?: number;
   enrolledStudents?: number;
   price: number;
@@ -111,6 +112,23 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     }
   };
 
+  const handleDownload = async (fileUrl: string, fileName: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
@@ -147,9 +165,15 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
           Mô tả khóa học
         </h3>
-        <p className="text-darkSilver dark:text-lightSilver">{description}</p>
+        <p
+          className="text-darkSilver dark:text-lightSilver ql-content"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
         <p className="mt-2 text-darkSilver dark:text-lightSilver">
-          Giảng viên: <span className="text-majorelleBlue">{lecture}</span>
+          Giảng viên:{" "}
+          <span className="text-majorelleBlue">
+            {lecture?.user.first_name + " " + lecture?.user.last_name}
+          </span>
         </p>
         <div className="flex gap-4 mt-2 items-center">
           {rating && (
@@ -200,19 +224,27 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           {sections &&
             sections.flatMap(
               (section) =>
-                section.section_resources &&
-                section.section_resources.map((resource, index) => (
+                section.items &&
+                section.items.map((item, index) => (
                   <li key={index} className="flex items-center justify-between">
-                    <span className="text-darkSilver dark:text-lightSilver">
-                      {resource}
+                    <span className="text-darkSilver  dark:text-lightSilver">
+                      {item.title}
                     </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-majorelleBlue hover:text-majorelleBlue70"
-                    >
-                      <Download size={16} />
-                    </Button>
+                    {item.resources && item.resources.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-majorelleBlue hover:text-majorelleBlue70"
+                        onClick={() =>
+                          handleDownload(
+                            `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${item.resources[0].resource_file.key}`,
+                            item.resources[0].name
+                          )
+                        }
+                      >
+                        <Download size={16} />
+                      </Button>
+                    )}
                   </li>
                 ))
             )}

@@ -4,7 +4,11 @@ import InfoBlockCourse from "@/components/course/infoBlockCourse";
 import InfoCourse from "@/components/course/infoCourse";
 import { RootState } from "@/constants/store";
 import { CourseForm } from "@/types/courseType";
-import { APIGetCourseById, APIGetFullCourse } from "@/utils/course";
+import {
+  APIGetCourseById,
+  APIGetEnrolledCourse,
+  APIGetFullCourse,
+} from "@/utils/course";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -30,16 +34,42 @@ const Page = () => {
 
   const handleGetDetailCourse = async () => {
     setLoading(true);
-    const response = await APIGetFullCourse(id || "");
+    const response = await APIGetCourseById(id || "", {
+      with_sections: true,
+    });
     if (response && response.data) {
       setDataCourse(response.data);
+    }
+    setLoading(false);
+  };
+
+  const handleGetEnrolledCourse = async () => {
+    setLoading(true);
+    const response = await APIGetEnrolledCourse();
+    if (response && response.data) {
+      setIsRegistered(response.data.some((item: any) => item.id === id));
     }
     setLoading(false);
   };
   useEffect(() => {
     // handleGetCourseById();
     handleGetDetailCourse();
+    handleGetEnrolledCourse();
   }, []);
+
+  const handleGetFullCourse = async () => {
+    setLoading(true);
+    const response = await APIGetFullCourse(id || "");
+    if (response && response.data) {
+      setDataCourse(response.data);
+    }
+  };
+
+  useEffect(() => {
+    if (isRegistered) {
+      handleGetFullCourse();
+    }
+  }, [isRegistered]);
 
   useEffect(() => {
     if (dataCourse && userInfo) {
@@ -93,7 +123,7 @@ const Page = () => {
             <div className="lg:w-1/4">
               <InfoBlockCourse
                 id={id || ""}
-                isRegistered={false}
+                isRegistered={isRegistered}
                 price={dataCourse?.price}
                 level={dataCourse?.level || ""}
                 totalLessons={
@@ -102,6 +132,8 @@ const Page = () => {
                     0
                   ) || 0
                 }
+                courseProgress={dataCourse?.course_progress?.progress}
+                // courseProgress={0.00001}
               />
             </div>
           )}

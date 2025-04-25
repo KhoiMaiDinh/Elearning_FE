@@ -32,6 +32,7 @@ export interface CourseItem {
   status?: string;
   previous_position?: string;
   video_duration?: number | null;
+  fileUrl?: string;
 }
 
 export interface Section {
@@ -88,4 +89,11 @@ export interface CourseForm {
   priceFinal?: number;
   sections?: Section[];
   rating?: number;
+  course_progress?: CourseProgress;
+}
+
+export interface CourseProgress {
+  total: number;
+  completed: number;
+  progress: number;
 }

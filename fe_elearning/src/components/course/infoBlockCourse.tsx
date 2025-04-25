@@ -11,6 +11,8 @@ import {
 import IconWithText from "./iconWithText";
 import PieChartProgress from "../chart/pieChartProgress";
 import { useRouter } from "next/navigation";
+import { CourseProgress } from "@/types/courseType";
+import { Card, CardHeader, CardTitle } from "../ui/card";
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -18,6 +20,7 @@ type infoBlockCourse = {
   price?: number;
   level?: string;
   totalLessons?: number;
+  courseProgress?: number;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -27,6 +30,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   price,
   level,
   totalLessons,
+  courseProgress,
 }) => {
   const router = useRouter();
   const formatPrice = (price: number) => {
@@ -49,19 +53,28 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   }, [level]);
 
   return (
-    <div className="flex flex-col lg:w-80 md:w-72 w-full items-center justify-center gap-2 md:gap-4 ">
+    <Card className="flex flex-col lg:w-80 md:w-72 p-4 w-full items-center justify-center gap-2 md:gap-4 ">
       {isRegistered && (
         <div className="flex flex-col w-full">
-          <div className="flex w-full items-center justify-center">
-            <text className="font-sans font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
-              Tiến độ
-            </text>
-          </div>
-          <PieChartProgress />
+          {courseProgress !== 0 && courseProgress && (
+            <CardHeader>
+              <CardTitle className="font-sans text-center font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
+                Tiến độ
+              </CardTitle>
+            </CardHeader>
+          )}
+          {courseProgress !== 0 && courseProgress && (
+            <PieChartProgress courseProgress={courseProgress} />
+          )}
         </div>
       )}
       {!isRegistered && (
         <div className="flex flex-col items-center justify-center rounded-md overflow-hidden">
+          <CardHeader>
+            <CardTitle className="font-sans font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
+              Tiến độ
+            </CardTitle>
+          </CardHeader>
           <div className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden">
             <img
               src="/images/avatar.jpg"
@@ -110,8 +123,13 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
         )}
 
         {isRegistered && (
-          <Button className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
-            Tiếp tục
+          <Button
+            className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
+            onClick={() => {
+              router.push(`/course-details/${id}`);
+            }}
+          >
+            {courseProgress !== 0 && courseProgress ? "Tiếp tục" : "Bắt đầu"}
           </Button>
         )}
       </div>
@@ -125,7 +143,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
         <IconWithText IconComponent={Clock3} title={`Thời lượng ${"dcc"}`} />
         <IconWithText IconComponent={Infinity} title={`Học mọi lúc mọi nơi`} />
       </div>
-    </div>
+    </Card>
   );
 };
 
