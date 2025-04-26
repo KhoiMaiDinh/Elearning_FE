@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, MessageSquare, Star, Users, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; // Giả sử bạn có component Input
-import { Section } from "@/types/courseType";
+import { CourseItem, Section } from "@/types/courseType";
 import { Lecture } from "@/types/registerLectureFormType";
-
+import APIPostComment from "@/utils/comment";
+import InputWithSendButton from "../inputComponent/inputComment";
+import AlertSuccess from "../alert/AlertSuccess";
+import AlertError from "../alert/AlertError";
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -14,6 +17,7 @@ interface CourseTabsProps {
   enrolledStudents?: number;
   price: number;
   priceFinal?: number;
+  currentCourseItem?: CourseItem;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
@@ -24,8 +28,10 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   enrolledStudents,
   price,
   priceFinal,
+  currentCourseItem,
 }) => {
   const [activeTab, setActiveTab] = useState("description");
+  const [newReview, setNewReview] = useState("");
   const [newPost, setNewPost] = useState(""); // Nội dung bài đăng mới
   const [communityPosts, setCommunityPosts] = useState([
     {
@@ -43,6 +49,10 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       style: "currency",
       currency: "VND",
     }).format(amount);
+
+  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+  const [showAlertError, setShowAlertError] = useState(false);
+  const [descriptionAlert, setDescriptionAlert] = useState("");
 
   // Lấy danh sách bài đăng khi component mount (dùng API - hiện tại comment lại)
   /*
@@ -129,6 +139,31 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     }
   };
 
+  const handlePostComment = async () => {
+    try {
+      if (currentCourseItem?.id) {
+        const response = await APIPostComment(currentCourseItem.id, {
+          content: newReview,
+        });
+        if (response?.status === 201) {
+          setNewReview("");
+          setCommunityPosts([response.data, ...communityPosts]);
+          setShowAlertSuccess(true);
+          setDescriptionAlert("Bài đăng đã được đăng thành công");
+          setTimeout(() => {
+            setShowAlertSuccess(false);
+          }, 3000);
+        }
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error);
+      setShowAlertError(true);
+      setDescriptionAlert("Lỗi khi đăng bài");
+      setTimeout(() => {
+        setShowAlertError(false);
+      }, 3000);
+    }
+  };
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
@@ -211,6 +246,20 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             )}
           </div>
         </div>
+
+        {currentCourseItem && (
+          <div>
+            <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
+              {currentCourseItem.title}
+            </h3>
+            <p
+              className="text-darkSilver dark:text-lightSilver ql-content"
+              dangerouslySetInnerHTML={{
+                __html: currentCourseItem.description,
+              }}
+            />
+          </div>
+        )}
       </TabsContent>
 
       <TabsContent
@@ -221,32 +270,34 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           Tài liệu
         </h3>
         <ul className="space-y-2">
-          {sections &&
-            sections.flatMap(
-              (section) =>
-                section.items &&
-                section.items.map((item, index) => (
-                  <li key={index} className="flex items-center justify-between">
-                    <span className="text-darkSilver  dark:text-lightSilver">
-                      {item.title}
-                    </span>
-                    {item.resources && item.resources.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-majorelleBlue hover:text-majorelleBlue70"
-                        onClick={() =>
-                          handleDownload(
-                            `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${item.resources[0].resource_file.key}`,
-                            item.resources[0].name
-                          )
-                        }
-                      >
-                        <Download size={16} />
-                      </Button>
-                    )}
-                  </li>
-                ))
+          {currentCourseItem &&
+            currentCourseItem.resources &&
+            currentCourseItem.resources.length > 0 &&
+            currentCourseItem.resources.map((item, index) => (
+              <li key={index}>
+                <span>{item.name}</span>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-majorelleBlue hover:text-majorelleBlue70"
+                  onClick={() =>
+                    handleDownload(
+                      `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${item.resource_file.key}`,
+                      item.name
+                    )
+                  }
+                >
+                  <Download size={16} />
+                </Button>
+              </li>
+            ))}
+
+          {currentCourseItem?.resources &&
+            currentCourseItem?.resources.length === 0 && (
+              <p className="text-darkSilver dark:text-lightSilver">
+                Không có tài liệu
+              </p>
             )}
         </ul>
       </TabsContent>
@@ -354,7 +405,19 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             </li>
           ))}
         </ul>
+
+        <div className="mt-4 flex gap-2 ">
+          <InputWithSendButton
+            labelText="Đánh giá"
+            placeholder="Viết đánh giá của bạn..."
+            onChange={(e) => setNewReview(e.target.value)}
+            value={newReview}
+            onSubmit={handlePostComment}
+          />
+        </div>
       </TabsContent>
+      {showAlertSuccess && <AlertSuccess description={descriptionAlert} />}
+      {showAlertError && <AlertError description={descriptionAlert} />}
     </Tabs>
   );
 };

@@ -3,7 +3,7 @@ import AnimateWrapper from "@/components/animations/animateWrapper";
 import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
 import courseBlock from "@/types/coursesBlockType";
-import { APIGetListCourse } from "@/utils/course";
+import { APIGetEnrolledCourse, APIGetListCourse } from "@/utils/course";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -92,6 +92,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [listFavCourse, setListFavCourse] = useState([]);
   const [listCourse, setListCourse] = useState([]);
+  const [listCourseOfUser, setListCourseOfUser] = useState<courseBlock[]>([]);
   const [paramsCourse, setParamsCourse] = useState({
     page: 1,
     limit: 10,
@@ -137,8 +138,20 @@ const Page = () => {
       console.error("Error during get list course:", err);
     }
   };
+
+  const handleGetListCourseOfUser = async () => {
+    try {
+      const response = await APIGetEnrolledCourse();
+      if (response && response.data) {
+        setListCourseOfUser(response.data);
+      }
+    } catch (err) {
+      console.error("Error during get list course of user:", err);
+    }
+  };
   useEffect(() => {
     handleGetListCourse();
+    handleGetListCourseOfUser();
   }, [paramsCourse]);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
@@ -213,6 +226,38 @@ const Page = () => {
           </AnimateWrapper>
         </div>
       </section>
+
+      <AnimateWrapper delay={0.3} direction="up">
+        <div className="md:px-6 pt-4 pb-2">
+          <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
+            Khóa học của bạn
+          </h2>
+          <p className="md:text-sm text-xs text-muted-foreground mt-1">
+            Các khóa học mà bạn đã đăng ký
+          </p>
+        </div>
+      </AnimateWrapper>
+
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <div className="w-full h-full flex items-end justify-end">
+          <FilterBlock />
+        </div>{" "}
+        <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
+          {/* {listCourseOfUser.map((course: courseBlock, index: number) => (
+            <CoursesBlock
+              id={course.id}
+              coverPhoto={course.coverPhoto}
+              avatar={course.avatar}
+              title={course.title}
+              rating={course.rating}
+              level={course.level}
+              numberStudent={course.numberStudent}
+              description={course.description}
+            />
+          ))} */}
+        </div>
+      </AnimateWrapper>
+
       <AnimateWrapper delay={0.3} direction="up">
         <div className="md:px-6 pt-4 pb-2">
           <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">

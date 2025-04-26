@@ -133,6 +133,7 @@ const LearnPage = () => {
           <div className="p-4">
             {courseData && (
               <CourseTabs
+                currentCourseItem={currentCourseItem}
                 description={courseData.description || ""}
                 sections={courseData.sections}
                 lecture={courseData.instructor}
