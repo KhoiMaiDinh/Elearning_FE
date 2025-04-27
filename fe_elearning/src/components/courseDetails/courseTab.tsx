@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; // Giả sử bạn có component Input
 import { CourseItem, Section } from "@/types/courseType";
 import { Lecture } from "@/types/registerLectureFormType";
-import APIPostComment from "@/utils/comment";
+import { APIPostComment, APIGetComment } from "@/utils/comment";
 import InputWithSendButton from "../inputComponent/inputComment";
 import AlertSuccess from "../alert/AlertSuccess";
 import AlertError from "../alert/AlertError";
+import { CommentEachItemCourse } from "@/types/commentType";
+import CommentListUser from "./commentListUser";
+import Popup from "./popup"; // Import your Popup component
+
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -43,6 +47,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   ]);
   const [replies, setReplies] = useState<{ [postId: string]: string[] }>({}); // Quản lý trả lời
   const [newReply, setNewReply] = useState(""); // Nội dung trả lời mới
+  const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -53,6 +58,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [descriptionAlert, setDescriptionAlert] = useState("");
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
   // Lấy danh sách bài đăng khi component mount (dùng API - hiện tại comment lại)
   /*
@@ -164,6 +170,20 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       }, 3000);
     }
   };
+
+  const handleGetComment = async () => {
+    if (currentCourseItem?.id) {
+      const response = await APIGetComment(currentCourseItem.id);
+      if (response?.status === 200) {
+        setComments(response?.data?.comments);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleGetComment();
+  }, [currentCourseItem?.id]);
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
@@ -377,45 +397,47 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         value="reviews"
         className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md"
       >
-        <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-          Đánh giá
-        </h3>
-        <ul className="space-y-4">
-          {[
-            {
-              user: "Lê Thị C",
-              rating: 4.8,
-              comment: "Khóa học rất chi tiết!",
-              date: "2025-02-28",
-            },
-          ].map((review, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <Star size={20} className="text-Sunglow fill-Sunglow" />
-              <div>
-                <p className="font-medium text-richBlack dark:text-AntiFlashWhite">
-                  {review.user} - {review.rating}/5
-                </p>
-                <p className="text-darkSilver dark:text-lightSilver">
-                  {review.comment}
-                </p>
-                <p className="text-sm text-darkSilver/70 dark:text-lightSilver/70">
-                  {new Date(review.date).toLocaleDateString("vi-VN")}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-
         <div className="mt-4 flex gap-2 ">
           <InputWithSendButton
-            labelText="Đánh giá"
+            labelText=""
             placeholder="Viết đánh giá của bạn..."
             onChange={(e) => setNewReview(e.target.value)}
             value={newReview}
             onSubmit={handlePostComment}
           />
         </div>
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
+            Đánh giá
+          </h3>
+          {comments.length > 5 && (
+            <text
+              onClick={() => setShowPopup(true)}
+              className="mt-2 text-darkSilver dark:text-lightSilver cursor-pointer text-xs"
+            >
+              Xem tất cả
+            </text>
+          )}
+        </div>
+        <div className="flex flex-col gap-4">
+          {comments.slice(0, 5).map((comment, index) => (
+            <CommentListUser key={index} comments={comment} />
+          ))}
+        </div>
       </TabsContent>
+
+      {/* Popup for displaying all comments */}
+      {showPopup && (
+        <Popup onClose={() => setShowPopup(false)}>
+          <h3 className="text-lg font-semibold">Tất cả đánh giá</h3>
+          <div className="flex flex-col gap-4">
+            {comments.map((comment, index) => (
+              <CommentListUser key={index} comments={comment} />
+            ))}
+          </div>
+        </Popup>
+      )}
+
       {showAlertSuccess && <AlertSuccess description={descriptionAlert} />}
       {showAlertError && <AlertError description={descriptionAlert} />}
     </Tabs>

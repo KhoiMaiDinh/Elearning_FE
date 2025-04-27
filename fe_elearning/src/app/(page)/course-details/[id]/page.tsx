@@ -9,7 +9,7 @@ import CourseItemList from "@/components/courseDetails/lessonList";
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import { APIGetFullCourse } from "@/utils/course";
 import { useParams } from "next/navigation";
-
+import ButtonReview from "@/components/courseDetails/buttonReview";
 // Hàm helper để kiểm tra và lấy video URL
 const getVideoUrl = (
   item: CourseItem | Section | undefined
@@ -59,7 +59,7 @@ const LearnPage = () => {
 
   useEffect(() => {
     handleGetCourseData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (courseData?.sections) {
@@ -145,6 +145,10 @@ const LearnPage = () => {
             )}
           </div>
         </div>
+      )}
+
+      {courseData?.course_id && (
+        <ButtonReview course_id={courseData?.course_id || ""} />
       )}
     </AnimateWrapper>
   );

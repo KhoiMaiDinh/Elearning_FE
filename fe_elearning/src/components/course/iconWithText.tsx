@@ -17,8 +17,8 @@ const IconWithText: React.FC<iconWithText> = ({
             className="dark:text-AntiFlashWhite text-black70"
           />
         </div>
-        <div className="flex">
-          <span className="flex text-black70 dark:text-AntiFlashWhite  font-medium font-sans text-[16px]">
+        <div className="flex w-full">
+          <span className="flex text-black70 dark:text-AntiFlashWhite text-left w-full   font-medium font-sans text-[16px]">
             {title}
           </span>
         </div>
