@@ -11,34 +11,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-type coursesBlock = {
-  id?: string;
-  coverPhoto?: string;
-  avatar?: string;
-  title?: string;
-  rating?: number;
-  level?: string;
-  numberStudent?: number;
-  description?: string;
-  name?: string;
-  status?: string;
-  progress?: number;
-  price?: number;
-  priceFinal?: number;
-};
-const CoursesBlockMe: React.FC<coursesBlock> = ({
-  id,
-  coverPhoto,
-  rating,
+import { CourseForm, CourseItem } from "@/types/courseType";
+
+const CoursesBlockMe: React.FC<CourseForm> = ({
   level,
-  numberStudent,
-  name,
   status,
-  progress,
   title,
-  avatar,
   description,
   price,
+  instructor,
+  course_progress,
+  avg_rating,
+  total_enrolled,
+  thumbnail,
+  id,
   priceFinal,
 }) => {
   const router = useRouter();
@@ -71,7 +57,9 @@ const CoursesBlockMe: React.FC<coursesBlock> = ({
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (coverPhoto || "")}
+            src={
+              process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || "")
+            }
             alt={title}
             className="w-full h-full object-contain rounded-t-lg"
           />
@@ -88,31 +76,37 @@ const CoursesBlockMe: React.FC<coursesBlock> = ({
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
             <AvatarImage
-              alt={name}
-              src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || "")}
+              alt={instructor?.user?.last_name || ""}
+              src={
+                process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                (instructor?.user?.profile_image?.key || "")
+              }
               className="object-cover"
             />
-            <AvatarFallback>{name?.[0]}</AvatarFallback>
+            <AvatarFallback>{instructor?.user?.last_name?.[0]}</AvatarFallback>
 
             {/* <AvatarFallback>{name?.[0]}</AvatarFallback> */}
           </Avatar>
-          <span className="text-sm text-muted-foreground">{name}</span>
+          <span className="text-sm text-muted-foreground">
+            {instructor?.user?.first_name} {instructor?.user?.last_name}
+          </span>
         </div>
 
         <h3 className="font-semibold line-clamp-2">{title}</h3>
 
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {description}
-        </p>
+        <p
+          className="text-sm text-muted-foreground line-clamp-2 ql-content"
+          dangerouslySetInnerHTML={{ __html: description || "" }}
+        ></p>
 
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>{rating ? rating.toFixed(1) : "N/A"}</span>
+            <span>{avg_rating ? avg_rating.toFixed(1) : "N/A"}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
-            <span>{numberStudent || 0}</span>
+            <span>{total_enrolled || 0}</span>
           </div>
           {level && (
             <Badge variant="outline" className="bg-teaGreen dark:text-black">
@@ -121,16 +115,16 @@ const CoursesBlockMe: React.FC<coursesBlock> = ({
           )}
         </div>
 
-        {progress !== undefined && (
+        {course_progress !== undefined && (
           <div className="space-y-1">
             <div className="w-full bg-darkSilver rounded-full h-2">
               <div
                 className="bg-vividMalachite h-2 rounded-full"
-                style={{ width: `${progress}%` }}
+                style={{ width: `${course_progress?.progress}%` }}
               />
             </div>
             <span className="text-xs text-muted-foreground">
-              {progress}% hoàn thành
+              {course_progress?.progress}% hoàn thành
             </span>
           </div>
         )}

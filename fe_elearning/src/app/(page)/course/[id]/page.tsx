@@ -36,6 +36,7 @@ const Page = () => {
     setLoading(true);
     const response = await APIGetCourseById(id || "", {
       with_sections: true,
+      with_thumbnail: true,
     });
     if (response && response.data) {
       setDataCourse(response.data);

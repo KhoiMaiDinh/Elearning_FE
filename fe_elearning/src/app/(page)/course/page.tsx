@@ -3,6 +3,7 @@ import AnimateWrapper from "@/components/animations/animateWrapper";
 import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
 import courseBlock from "@/types/coursesBlockType";
+import { CourseForm } from "@/types/courseType";
 import { APIGetEnrolledCourse, APIGetListCourse } from "@/utils/course";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -91,8 +92,8 @@ const Page = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [listFavCourse, setListFavCourse] = useState([]);
-  const [listCourse, setListCourse] = useState([]);
-  const [listCourseOfUser, setListCourseOfUser] = useState<courseBlock[]>([]);
+  const [listCourse, setListCourse] = useState<CourseForm[]>([]);
+  const [listCourseOfUser, setListCourseOfUser] = useState<CourseForm[]>([]);
   const [paramsCourse, setParamsCourse] = useState({
     page: 1,
     limit: 10,
@@ -105,6 +106,7 @@ const Page = () => {
     with_instructor: true,
     with_category: true,
     include_disabled: false,
+    with_thumbnail: true,
   });
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -117,22 +119,7 @@ const Page = () => {
     try {
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
-        const data = response.data.map((item: any) => ({
-          coverPhoto: item?.thumbnail?.key || "",
-          avatar: item?.instructor?.user?.profile_image?.key || "",
-          title: item?.title || "",
-          rating: item?.rating || null,
-          level: item?.level || null,
-          numberStudent: item?.number_student || null,
-          description: item?.subtitle || "",
-          name:
-            item?.instructor?.user?.first_name +
-            " " +
-            item?.instructor?.user?.last_name,
-          price: item?.price,
-          id: item?.id,
-        }));
-        setListCourse(data);
+        setListCourse(response.data);
       }
     } catch (err) {
       console.error("Error during get list course:", err);
@@ -143,7 +130,10 @@ const Page = () => {
     try {
       const response = await APIGetEnrolledCourse();
       if (response && response.data) {
-        setListCourseOfUser(response.data);
+        const data = listCourse.filter((item: CourseForm) =>
+          response.data.some((item2: CourseForm) => item2.id === item.id)
+        );
+        setListCourseOfUser(data);
       }
     } catch (err) {
       console.error("Error during get list course of user:", err);
@@ -243,18 +233,9 @@ const Page = () => {
           <FilterBlock />
         </div>{" "}
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
-          {/* {listCourseOfUser.map((course: courseBlock, index: number) => (
-            <CoursesBlock
-              id={course.id}
-              coverPhoto={course.coverPhoto}
-              avatar={course.avatar}
-              title={course.title}
-              rating={course.rating}
-              level={course.level}
-              numberStudent={course.numberStudent}
-              description={course.description}
-            />
-          ))} */}
+          {listCourseOfUser.map((course: CourseForm, index: number) => (
+            <CoursesBlock key={index} {...course} />
+          ))}
         </div>
       </AnimateWrapper>
 
@@ -273,8 +254,8 @@ const Page = () => {
           <FilterBlock />
         </div>{" "}
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
-          {listCourse.map((course: courseBlock, index: number) => (
-            <CoursesBlock {...course} />
+          {listCourse.map((course: CourseForm, index: number) => (
+            <CoursesBlock key={index} {...course} />
           ))}
         </div>
       </AnimateWrapper>

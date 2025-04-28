@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,9 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  ThumbsUp,
-  ThumbsDown,
-  Meh,
   BookOpen,
   Code,
   Video,
@@ -28,9 +20,82 @@ import {
   Users,
   MessageSquare,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
+
+// Define interfaces for type safety
+interface Aspect {
+  id: number;
+  name: string;
+  icon: any; // Using any for Lucide icons
+}
+
+interface CommentAspect {
+  comment_aspect_id: string;
+  aspect: string;
+  emotion: string;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+  deletedAt: null;
+}
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  profile_image: {
+    key: string;
+    rejection_reason: null;
+    status: string;
+    bucket: string;
+  };
+}
+
+interface Comment {
+  lecture_comment_id: string;
+  lecture_id: string;
+  user_id: string;
+  content: string;
+  is_solved: boolean;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+  deletedAt: null;
+  aspects: CommentAspect[];
+  user: User;
+}
+
+interface StatisticData {
+  comments: Comment[];
+  statistics: {
+    instructor_quality: {
+      positive: number;
+      neutral: number;
+      negative: number;
+      none: number;
+    };
+    content_quality: {
+      positive: number;
+      neutral: number;
+      negative: number;
+      none: number;
+    };
+    technology: {
+      positive: number;
+      neutral: number;
+      negative: number;
+      none: number;
+    };
+  };
+}
 
 // Define the aspects and emotions
-export const aspects = [
+export const aspects: Aspect[] = [
   { id: 1, name: "Content", icon: BookOpen },
   { id: 2, name: "Code Examples", icon: Code },
   { id: 3, name: "Video Quality", icon: Video },
@@ -39,123 +104,87 @@ export const aspects = [
   { id: 6, name: "Exercises", icon: MessageSquare },
 ];
 
-export const emotions = [
-  {
-    id: 1,
-    name: "Positive",
-    icon: ThumbsUp,
-    color: "bg-green-100 text-green-800",
-  },
-  { id: 2, name: "Neutral", icon: Meh, color: "bg-blue-100 text-blue-800" },
-  {
-    id: 3,
-    name: "Negative",
-    icon: ThumbsDown,
-    color: "bg-red-100 text-red-800",
-  },
-];
+interface CommentCardProps {
+  comment: Comment;
+}
 
-// Sample comments data - now with multiple aspects per comment
-export const commentsData = [
-  {
-    id: 1,
-    user: {
-      name: "Alex Johnson",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "AJ",
-    },
-    content:
-      "The content is very well structured and easy to follow. I especially liked the way complex concepts were broken down.",
-    aspects: [1, 5], // Content and Instructor
-    emotion: 1,
-    timestamp: "2 days ago",
-    likes: 12,
-  },
-  {
-    id: 2,
-    user: {
-      name: "Sam Wilson",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "SW",
-    },
-    content:
-      "Code examples were helpful but some of them didn't work as expected. Would be great to have more detailed explanations.",
-    aspects: [2, 6], // Code Examples and Exercises
-    emotion: 2,
-    timestamp: "1 week ago",
-    likes: 5,
-  },
-  {
-    id: 3,
-    user: {
-      name: "Taylor Kim",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "TK",
-    },
-    content:
-      "The video quality was poor in some lectures, making it difficult to see the code on the screen.",
-    aspects: [3], // Video Quality
-    emotion: 3,
-    timestamp: "3 days ago",
-    likes: 8,
-  },
-  {
-    id: 4,
-    user: {
-      name: "Jordan Lee",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "JL",
-    },
-    content:
-      "The pacing was perfect for me. Not too fast, not too slow. The instructor was very engaging.",
-    aspects: [4, 5], // Pacing and Instructor
-    emotion: 1,
-    timestamp: "5 days ago",
-    likes: 15,
-  },
-  {
-    id: 5,
-    user: {
-      name: "Casey Morgan",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "CM",
-    },
-    content:
-      "The instructor's explanations were clear, but sometimes they moved too quickly through important topics.",
-    aspects: [5, 4], // Instructor and Pacing
-    emotion: 2,
-    timestamp: "1 day ago",
-    likes: 7,
-  },
-  {
-    id: 6,
-    user: {
-      name: "Riley Smith",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "RS",
-    },
-    content:
-      "Exercises were too difficult compared to the lecture material. More scaffolded practice would be helpful. The content itself was good though.",
-    aspects: [6, 1], // Exercises and Content
-    emotion: 3,
-    timestamp: "4 days ago",
-    likes: 9,
-  },
-];
+function CommentCard({ comment }: CommentCardProps) {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage
+                src={comment.user.profile_image?.key || "/placeholder.svg"}
+                alt={`${comment.user.first_name} ${comment.user.last_name}`}
+              />
+              <AvatarFallback>{`${comment.user.first_name[0]}${comment.user.last_name[0]}`}</AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">{`${comment.user.first_name} ${comment.user.last_name}`}</div>
+              <div className="text-xs text-muted-foreground">
+                {new Date(comment.createdAt).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-end">
+            {comment.aspects.map((aspect) => {
+              const emotionColor =
+                aspect.emotion === "positive"
+                  ? "bg-green-100 text-green-800"
+                  : aspect.emotion === "neutral"
+                  ? "bg-blue-100 text-blue-800"
+                  : "bg-red-100 text-red-800";
+              return (
+                <Badge
+                  key={aspect.comment_aspect_id}
+                  variant="outline"
+                  className={`flex items-center gap-1 ${emotionColor}`}
+                >
+                  <span>
+                    {aspect.aspect
+                      .split("_")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
+                  </span>
+                </Badge>
+              );
+            })}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p>{comment.content}</p>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function CommentList() {
+  const statisticData = useSelector<RootState, StatisticData | null>(
+    (state: RootState) =>
+      state.statisticItemCourse.statisticItemCourse as unknown as StatisticData
+  );
+
   const [filter, setFilter] = useState({
     aspect: "all",
     emotion: "all",
   });
 
-  const filteredComments = commentsData.filter((comment) => {
+  if (!statisticData) {
+    return <div>Loading...</div>;
+  }
+
+  const filteredComments = statisticData.comments.filter((comment: Comment) => {
     const aspectMatch =
       filter.aspect === "all" ||
-      comment.aspects.includes(Number.parseInt(filter.aspect));
+      comment.aspects.some((a) => a.aspect === filter.aspect);
     const emotionMatch =
       filter.emotion === "all" ||
-      comment.emotion === Number.parseInt(filter.emotion);
+      comment.aspects.some((a) => a.emotion === filter.emotion);
     return aspectMatch && emotionMatch;
   });
 
@@ -175,11 +204,11 @@ export function CommentList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Aspects</SelectItem>
-              {aspects.map((aspect) => (
-                <SelectItem key={aspect.id} value={aspect.id.toString()}>
-                  {aspect.name}
-                </SelectItem>
-              ))}
+              <SelectItem value="instructor_quality">
+                Instructor Quality
+              </SelectItem>
+              <SelectItem value="content_quality">Content Quality</SelectItem>
+              <SelectItem value="technology">Technology</SelectItem>
             </SelectContent>
           </Select>
           <Select
@@ -191,11 +220,9 @@ export function CommentList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Emotions</SelectItem>
-              {emotions.map((emotion) => (
-                <SelectItem key={emotion.id} value={emotion.id.toString()}>
-                  {emotion.name}
-                </SelectItem>
-              ))}
+              <SelectItem value="positive">Positive</SelectItem>
+              <SelectItem value="neutral">Neutral</SelectItem>
+              <SelectItem value="negative">Negative</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -210,96 +237,41 @@ export function CommentList() {
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
-          {filteredComments.map((comment) => (
-            <CommentCard key={comment.id} comment={comment} />
+          {filteredComments.map((comment: Comment) => (
+            <CommentCard key={comment.lecture_comment_id} comment={comment} />
           ))}
         </TabsContent>
 
         <TabsContent value="positive" className="space-y-4">
           {filteredComments
-            .filter((c) => c.emotion === 1)
-            .map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
+            .filter((c: Comment) =>
+              c.aspects.some((a) => a.emotion === "positive")
+            )
+            .map((comment: Comment) => (
+              <CommentCard key={comment.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
 
         <TabsContent value="neutral" className="space-y-4">
           {filteredComments
-            .filter((c) => c.emotion === 2)
-            .map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
+            .filter((c: Comment) =>
+              c.aspects.some((a) => a.emotion === "neutral")
+            )
+            .map((comment: Comment) => (
+              <CommentCard key={comment.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
 
         <TabsContent value="negative" className="space-y-4">
           {filteredComments
-            .filter((c) => c.emotion === 3)
-            .map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
+            .filter((c: Comment) =>
+              c.aspects.some((a) => a.emotion === "negative")
+            )
+            .map((comment: Comment) => (
+              <CommentCard key={comment.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
       </Tabs>
     </div>
-  );
-}
-
-function CommentCard({ comment }: { comment: any }) {
-  const commentAspects = comment.aspects
-    .map((aspectId: number) => aspects.find((a) => a.id === aspectId))
-    .filter(Boolean);
-
-  const emotion = emotions.find((e) => e.id === comment.emotion);
-  const EmotionIcon = emotion?.icon;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2">
-            <Avatar>
-              <AvatarImage
-                src={comment.user.avatar || "/placeholder.svg"}
-                alt={comment.user.name}
-              />
-              <AvatarFallback>{comment.user.initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="font-medium">{comment.user.name}</div>
-              <div className="text-xs text-muted-foreground">
-                {comment.timestamp}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2 justify-end">
-            {commentAspects.map((aspect: any) => {
-              const AspectIcon = aspect?.icon;
-              return (
-                <Badge
-                  key={aspect.id}
-                  variant="outline"
-                  className="flex items-center gap-1"
-                >
-                  {AspectIcon && <AspectIcon className="h-3 w-3" />}
-                  <span>{aspect?.name}</span>
-                </Badge>
-              );
-            })}
-            <Badge className={`flex items-center gap-1 ${emotion?.color}`}>
-              {EmotionIcon && <EmotionIcon className="h-3 w-3" />}
-              <span>{emotion?.name}</span>
-            </Badge>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p>{comment.content}</p>
-      </CardContent>
-      <CardFooter className="pt-1 text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <ThumbsUp className="h-4 w-4" />
-          <span>{comment.likes}</span>
-        </div>
-      </CardFooter>
-    </Card>
   );
 }

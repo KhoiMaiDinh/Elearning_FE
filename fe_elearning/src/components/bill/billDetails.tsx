@@ -2,13 +2,14 @@ import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { Bill } from "@/types/billType";
+import { OrderResponse } from "@/types/billType";
 
 interface BillDetailsProps {
-  bill: Bill;
+  bill: OrderResponse;
 }
 
 const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
+  console.log("🚀 ~ bill:", bill);
   const detailsRef = useRef<HTMLDivElement>(null);
 
   const formatPrice = (amount: number) =>
@@ -55,19 +56,19 @@ const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
               <span className="font-medium text-richBlack dark:text-AntiFlashWhite">
                 Phương thức thanh toán:
               </span>{" "}
-              {bill.details.paymentMethod}
+              {bill?.provider}
             </p>
             <p>
               <span className="font-medium text-richBlack dark:text-AntiFlashWhite">
                 Mã giao dịch:
               </span>{" "}
-              {bill.details.transactionId}
+              {bill?.transaction_id}
             </p>
             <p>
               <span className="font-medium text-richBlack dark:text-AntiFlashWhite">
-                Email:
+                Tiền tệ:
               </span>{" "}
-              {bill.details.email}
+              {bill?.currency}
             </p>
           </div>
           <div>
@@ -75,11 +76,11 @@ const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
               Khóa học đã mua:
             </p>
             <ul className="list-disc list-inside">
-              {bill.details.courses.map((course, index) => (
+              {bill.details.map((detail, index) => (
                 <li key={index}>
-                  {course.name} -{" "}
+                  {detail.course.title} -{" "}
                   <span className="text-beautyGreen">
-                    {formatPrice(course.price)}
+                    {formatPrice(Number(detail.final_price))}
                   </span>
                 </li>
               ))}
@@ -87,10 +88,10 @@ const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
           </div>
         </div>
         <p className="text-sm italic mt-2">
-          Ngày thanh toán: {new Date(bill.date).toLocaleString("vi-VN")}
+          Ngày thanh toán: {new Date(bill.createdAt).toLocaleString("vi-VN")}
         </p>
         <p className="text-lg font-semibold text-beautyGreen mt-2">
-          Tổng: {formatPrice(bill.amount)}
+          Tổng: {formatPrice(Number(bill.total_amount))}
         </p>
       </div>
 

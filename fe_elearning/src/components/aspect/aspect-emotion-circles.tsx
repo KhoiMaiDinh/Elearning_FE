@@ -2,9 +2,48 @@
 
 import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { aspects, emotions } from "./comment-list";
+import { ThumbsUp, ThumbsDown, Meh } from "lucide-react";
+import { CommentEachItemCourse } from "@/types/commentType";
 
-export function AspectEmotionCircles({ comments }: { comments: any }) {
+interface Emotion {
+  id: string;
+  name: string;
+  icon: any;
+  color: string;
+  bgColor: string;
+}
+
+const emotions: Emotion[] = [
+  {
+    id: "positive",
+    name: "Positive",
+    icon: ThumbsUp,
+    color: "#10b981",
+    bgColor: "bg-green-500",
+  },
+  {
+    id: "neutral",
+    name: "Neutral",
+    icon: Meh,
+    color: "#3b82f6",
+    bgColor: "bg-blue-500",
+  },
+  {
+    id: "negative",
+    name: "Negative",
+    icon: ThumbsDown,
+    color: "#ef4444",
+    bgColor: "bg-red-500",
+  },
+];
+
+const aspectTypes = ["instructor_quality", "content_quality", "technology"];
+
+export function AspectEmotionCircles({
+  comments,
+}: {
+  comments: CommentEachItemCourse[];
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -13,33 +52,35 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
     // Clear any existing canvases
     containerRef.current.innerHTML = "";
 
-    // Create a canvas for each aspect
-    aspects.forEach((aspect) => {
+    // Create a canvas for each aspect type
+    aspectTypes.forEach((aspectType) => {
       // Count comments that include this aspect
-      const aspectComments = comments.filter((comment: any) =>
-        comment.aspects.includes(aspect.id)
+      const aspectComments = comments.filter((comment) =>
+        comment.aspects.some((a) => a.aspect === aspectType)
       );
       const totalComments = aspectComments.length;
 
       // Skip if no comments for this aspect
       if (totalComments === 0) {
-        createEmptyCircle(aspect);
+        createEmptyCircle(aspectType);
         return;
       }
 
       // Count comments by emotion for this aspect
-      const emotionCounts: { [key: number]: number } = {};
+      const emotionCounts: { [key: string]: number } = {};
       emotions.forEach((emotion) => {
-        emotionCounts[emotion.id] = aspectComments.filter(
-          (comment: any) => comment.emotion === emotion.id
+        emotionCounts[emotion.id] = aspectComments.filter((comment) =>
+          comment.aspects.some(
+            (a) => a.aspect === aspectType && a.emotion === emotion.id
+          )
         ).length;
       });
 
-      createCircleCanvas(aspect, emotionCounts, totalComments);
+      createCircleCanvas(aspectType, emotionCounts, totalComments);
     });
   }, [comments]);
 
-  const createEmptyCircle = (aspect: any) => {
+  const createEmptyCircle = (aspectType: string) => {
     if (!containerRef.current) return;
 
     const container = document.createElement("div");
@@ -73,38 +114,13 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Draw aspect icon in the center
-    const AspectIcon = aspect.icon;
-    const iconSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    iconSvg.setAttribute("width", "24");
-    iconSvg.setAttribute("height", "24");
-    iconSvg.setAttribute("viewBox", "0 0 24 24");
-    iconSvg.setAttribute("fill", "none");
-    iconSvg.setAttribute("stroke", "currentColor");
-    iconSvg.setAttribute("stroke-width", "2");
-    iconSvg.setAttribute("stroke-linecap", "round");
-    iconSvg.setAttribute("stroke-linejoin", "round");
-
-    // Convert the icon to a data URL
-    const serializer = new XMLSerializer();
-    const iconString = serializer.serializeToString(iconSvg);
-    const iconUrl = `data:image/svg+xml;base64,${btoa(iconString)}`;
-
-    // Draw the icon
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      ctx.drawImage(img, centerX - 12, centerY - 12, 24, 24);
-    };
-    img.src = iconUrl;
-
     // Add label
     const label = document.createElement("div");
     label.className = "text-sm font-medium";
-    label.textContent = aspect.name;
+    label.textContent = aspectType
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 
     // Add count
     const count = document.createElement("div");
@@ -118,8 +134,8 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
   };
 
   const createCircleCanvas = (
-    aspect: any,
-    emotionCounts: { [key: number]: number },
+    aspectType: string,
+    emotionCounts: { [key: string]: number },
     totalComments: number
   ) => {
     if (!containerRef.current) return;
@@ -154,23 +170,7 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
       ctx.arc(centerX, centerY, radius, startAngle, endAngle);
       ctx.closePath();
 
-      // Set color based on emotion
-      let fillColor;
-      switch (emotion.id) {
-        case 1: // Positive
-          fillColor = "#10b981"; // green-500
-          break;
-        case 2: // Neutral
-          fillColor = "#3b82f6"; // blue-500
-          break;
-        case 3: // Negative
-          fillColor = "#ef4444"; // red-500
-          break;
-        default:
-          fillColor = "#d1d5db"; // gray-300
-      }
-
-      ctx.fillStyle = fillColor;
+      ctx.fillStyle = emotion.color;
       ctx.fill();
       ctx.strokeStyle = "#ffffff";
       ctx.lineWidth = 1;
@@ -188,38 +188,13 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Draw aspect icon in the center
-    const AspectIcon = aspect.icon;
-    const iconSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    iconSvg.setAttribute("width", "24");
-    iconSvg.setAttribute("height", "24");
-    iconSvg.setAttribute("viewBox", "0 0 24 24");
-    iconSvg.setAttribute("fill", "none");
-    iconSvg.setAttribute("stroke", "currentColor");
-    iconSvg.setAttribute("stroke-width", "2");
-    iconSvg.setAttribute("stroke-linecap", "round");
-    iconSvg.setAttribute("stroke-linejoin", "round");
-
-    // Convert the icon to a data URL
-    const serializer = new XMLSerializer();
-    const iconString = serializer.serializeToString(iconSvg);
-    const iconUrl = `data:image/svg+xml;base64,${btoa(iconString)}`;
-
-    // Draw the icon
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      ctx.drawImage(img, centerX - 12, centerY - 12, 24, 24);
-    };
-    img.src = iconUrl;
-
     // Add label
     const label = document.createElement("div");
     label.className = "text-sm font-medium";
-    label.textContent = aspect.name;
+    label.textContent = aspectType
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 
     // Add count
     const count = document.createElement("div");
@@ -243,24 +218,11 @@ export function AspectEmotionCircles({ comments }: { comments: any }) {
         <div className="mb-4 flex justify-center gap-4">
           {emotions.map((emotion) => {
             const EmotionIcon = emotion.icon;
-            let color;
-            switch (emotion.id) {
-              case 1: // Positive
-                color = "bg-green-500";
-                break;
-              case 2: // Neutral
-                color = "bg-blue-500";
-                break;
-              case 3: // Negative
-                color = "bg-red-500";
-                break;
-              default:
-                color = "bg-gray-300";
-            }
-
             return (
               <div key={emotion.id} className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${color}`}></div>
+                <div
+                  className={`w-3 h-3 rounded-full ${emotion.bgColor}`}
+                ></div>
                 <EmotionIcon className="h-4 w-4" />
                 <span className="text-sm">{emotion.name}</span>
               </div>

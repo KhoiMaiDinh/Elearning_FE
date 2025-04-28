@@ -14,7 +14,7 @@ const CommentListUser = ({ comments }: CommentListProps) => {
     return dateObj.toLocaleDateString("vi-VN");
   };
   return (
-    <Card>
+    <Card className="font-sans">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
@@ -33,17 +33,17 @@ const CommentListUser = ({ comments }: CommentListProps) => {
               </AvatarFallback>{" "}
             </Avatar>
             <div>
-              <div className="font-medium">
+              <div className="font-medium font-sans text-sm">
                 {comments.user?.first_name + " " + comments.user?.last_name}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground font-sans ">
                 {formatDate(comments.createdAt || "")}
               </div>
             </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="font-sans text-sm">
         <p>{comments.content}</p>
       </CardContent>
     </Card>

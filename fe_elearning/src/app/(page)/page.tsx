@@ -18,15 +18,14 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import AOS from "aos";
 import SplitText from "@/components/text/splitText";
 import FadeContent from "@/components/animations/fadeContent";
-import Aurora from "@/components/animations/background-aurora";
 import { useRouter } from "next/navigation";
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import { APIGetListLecture } from "@/utils/lecture";
 import { APIGetListCourse } from "@/utils/course";
 import BlurColor from "@/components/blurColor/blurColor";
+import { CourseForm } from "@/types/courseType";
 // const dataCourse = [
 //   {
 //     coverPhoto: "/images/course1.jpg",
@@ -106,7 +105,8 @@ export default function Page() {
   const router = useRouter();
 
   const [listLecture, setListLecture] = useState<lectureBlock[]>([]);
-  const [listCourse, setListCourse] = useState<courseBlock[]>([]);
+  const [listCourse, setListCourse] = useState<CourseForm[]>([]);
+  console.log("🚀 ~ Page ~ listCourse:", listCourse);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paramsLecture, setParamsLecture] = useState({
@@ -153,22 +153,7 @@ export default function Page() {
     try {
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
-        const data = response.data.map((item: any) => ({
-          coverPhoto: item?.thumbnail?.key || "",
-          avatar: item?.instructor?.user?.profile_image?.key || "",
-          title: item?.title || "",
-          rating: item?.rating || null,
-          level: item?.level || null,
-          numberStudent: item?.number_student || null,
-          description: item?.subtitle || "",
-          name:
-            item?.instructor?.user?.first_name +
-            " " +
-            item?.instructor?.user?.last_name,
-          price: item?.price,
-          id: item?.id,
-        }));
-        setListCourse(data);
+        setListCourse(response.data);
       }
     } catch (err) {
       console.error("Error during get list course:", err);

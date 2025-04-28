@@ -1,59 +1,54 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BillsTable from "@/components/bill/billTable";
 import BillsPagination from "@/components/bill/billPaginations";
 import AnimateWrapper from "@/components/animations/animateWrapper";
-
-const billData = [
-  {
-    id: "BILL001",
-    courseTitle: "Lập Trình Web Toàn Diện Với JavaScript",
-    amount: 699000,
-    date: "2025-02-15",
-    status: "completed",
-    invoiceUrl: "/invoices/bill001.pdf",
-    details: {
-      paymentMethod: "Thẻ tín dụng",
-      transactionId: "TXN123456",
-      email: "user@example.com",
-      courses: [
-        { name: "Lập Trình Web Toàn Diện Với JavaScript", price: 699000 },
-      ],
-    },
-  },
-  {
-    id: "BILL002",
-    courseTitle: "Phân tích dữ liệu với Python",
-    amount: 700000,
-    date: "2025-02-10",
-    status: "completed",
-    details: {
-      paymentMethod: "Chuyển khoản ngân hàng",
-      transactionId: "TXN123457",
-      email: "user2@example.com",
-      courses: [{ name: "Phân tích dữ liệu với Python", price: 700000 }],
-    },
-  },
-  // Thêm dữ liệu mẫu khác...
-];
-
+import { Bill, OrderResponse } from "@/types/billType";
+import { APIGetListOrderByMe } from "@/utils/order";
+import { useDispatch, useSelector } from "react-redux";
+import { setOrders } from "@/constants/orderSlice";
+import { RootState } from "@/constants/store";
 const BillsPage = () => {
+  const orders = useSelector((state: RootState) => state.order.orders);
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [isLoading, setIsLoading] = useState(false);
+  const [bills, setBills] = useState<OrderResponse[]>([]);
 
-  const filteredBills = billData.filter(
+  const itemsPerPage = 2;
+
+  const filteredBills = bills.filter(
     (bill) =>
-      bill.courseTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bill.id.toLowerCase().includes(searchTerm.toLowerCase())
+      bill.details.some((detail) =>
+        detail.course.title.toLowerCase().includes(searchTerm.toLowerCase())
+      ) || bill.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredBills.length / itemsPerPage);
-  const paginatedBills = filteredBills.slice(
+  const totalPages = Math.ceil(bills.length / itemsPerPage);
+  const paginatedBills = bills.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const handleGetBills = async () => {
+    try {
+      setIsLoading(true);
+      const response = await APIGetListOrderByMe();
+      if (response?.status === 200) {
+        setBills(response.data);
+        dispatch(setOrders(response.data));
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleGetBills();
+  }, []);
 
   return (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">

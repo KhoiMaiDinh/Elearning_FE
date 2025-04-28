@@ -65,7 +65,7 @@ const basicSchema = yup.object().shape({
 });
 
 interface BasicInfoFormProps {
-  courseInfo: CourseForm;
+  courseInfo: CourseForm | null;
   courseId: string;
   setShowAlertSuccess: (value: boolean) => void;
   setShowAlertError: (value: boolean) => void;
@@ -107,19 +107,19 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   });
 
   useEffect(() => {
-    if (courseInfo.course_id) {
-      setValue("title", courseInfo.title);
-      setValue("subtitle", courseInfo.subtitle);
-      setValue("level", courseInfo.level);
-      setValue("price", courseInfo.price);
-      setValue("description", courseInfo.description || "");
-      setValue("thumbnail", courseInfo.thumbnail);
+    if (courseInfo?.id) {
+      setValue("title", courseInfo?.title);
+      setValue("subtitle", courseInfo?.subtitle);
+      setValue("level", courseInfo?.level);
+      setValue("price", courseInfo?.price);
+      setValue("description", courseInfo?.description || "");
+      setValue("thumbnail", courseInfo?.thumbnail);
 
-      if (courseInfo.category?.parent?.slug) {
-        setSelectedParentCategory(courseInfo.category.parent.slug);
+      if (courseInfo?.category?.parent?.slug) {
+        setSelectedParentCategory(courseInfo?.category?.parent?.slug);
 
         const parentCategory = categoryData.find(
-          (cat: CategoryData) => cat.id === courseInfo.category?.parent?.slug
+          (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
         );
 
         if (parentCategory) {
@@ -127,13 +127,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         }
       }
 
-      if (courseInfo.category?.slug) {
-        setValue("category.slug", courseInfo.category.slug);
+      if (courseInfo?.category?.slug) {
+        setValue("category.slug", courseInfo?.category?.slug);
       }
 
-      if (courseInfo.thumbnail?.key) {
+      if (courseInfo?.thumbnail?.key) {
         setImagePreview(
-          process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo.thumbnail.key
+          process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo?.thumbnail?.key
         );
       }
     }
@@ -158,9 +158,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         setCategoryData(formattedData);
 
         // If we already have course info, update the child categories
-        if (courseInfo.course_id && courseInfo.category?.parent?.slug) {
+        if (courseInfo?.course_id && courseInfo?.category?.parent?.slug) {
           const parentCategory = formattedData.find(
-            (cat: CategoryData) => cat.id === courseInfo.category?.parent?.slug
+            (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
           );
 
           if (parentCategory) {
@@ -251,7 +251,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             </InfoRow>
           )}
           <InfoRow label="Cấp độ:">{courseInfo.level}</InfoRow>
-          <InfoRow label="Lĩnh vực:">{courseInfo?.category?.slug}</InfoRow>
+          <InfoRow label="Lĩnh vực:">
+            {courseInfo?.category?.translations[0].name}
+          </InfoRow>
           <InfoRow label="Giá:">{courseInfo.price} VND</InfoRow>
           <InfoRow label="Mô tả:">
             <div

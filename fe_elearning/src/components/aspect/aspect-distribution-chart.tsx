@@ -13,12 +13,12 @@ import {
 
 // Define the aspects with their colors for the chart
 const aspects = [
-  { id: 1, name: "Content", icon: BookOpen, color: "#4f46e5" },
-  { id: 2, name: "Code Examples", icon: Code, color: "#0ea5e9" },
-  { id: 3, name: "Video Quality", icon: Video, color: "#10b981" },
-  { id: 4, name: "Pacing", icon: Clock, color: "#f59e0b" },
-  { id: 5, name: "Instructor", icon: Users, color: "#ef4444" },
-  { id: 6, name: "Exercises", icon: MessageSquare, color: "#8b5cf6" },
+  { id: 1, name: "instructor_quality", icon: BookOpen, color: "#4f46e5" },
+  { id: 2, name: "content_quality", icon: Code, color: "#0ea5e9" },
+  { id: 3, name: "technology", icon: Video, color: "#10b981" },
+  // { id: 4, name: "Pacing", icon: Clock, color: "#f59e0b" },
+  // { id: 5, name: "Instructor", icon: Users, color: "#ef4444" },
+  // { id: 6, name: "Exercises", icon: MessageSquare, color: "#8b5cf6" },
 ];
 
 export function AspectDistributionChart({ comments }: { comments: any }) {

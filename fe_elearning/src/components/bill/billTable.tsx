@@ -11,10 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import BillDetails from "./billDetails";
-import { Bill } from "@/types/billType";
-
+import { OrderResponse } from "@/types/billType";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 interface BillsTableProps {
-  bills: Bill[];
+  bills: OrderResponse[];
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
@@ -25,6 +26,7 @@ const BillsTable: React.FC<BillsTableProps> = ({
   setSearchTerm,
 }) => {
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
+  // const orders = useSelector((state: RootState) => state.order.orders);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -84,24 +86,34 @@ const BillsTable: React.FC<BillsTableProps> = ({
                   }
                 >
                   <TableCell className="font-medium">{bill.id}</TableCell>
-                  <TableCell>{bill.courseTitle}</TableCell>
+                  <TableCell>
+                    {bill.details.map((detail) => (
+                      <div key={detail.course.id}>{detail.course.title}</div>
+                    ))}
+                  </TableCell>
                   <TableCell className="text-beautyGreen font-semibold">
-                    {formatPrice(bill.amount)}
+                    {formatPrice(Number(bill.total_amount))}
                   </TableCell>
                   <TableCell className="flex items-center gap-2 text-darkSilver dark:text-lightSilver">
                     <Calendar size={16} />
-                    {new Date(bill.date).toLocaleDateString("vi-VN")}
+                    {new Date(bill.createdAt).toLocaleDateString("vi-VN")}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={`${
-                        bill.status === "completed"
+                        bill.payment_status === "SUCCESS"
                           ? "bg-beautyGreen20 text-beautyGreen border-beautyGreen"
                           : "bg-redPigment/20 text-redPigment border-redPigment"
                       }`}
                     >
-                      {bill.status === "completed" ? "Hoàn tất" : bill.status}
+                      {bill.payment_status === "SUCCESS"
+                        ? "Hoàn tất"
+                        : bill.payment_status === "EXPIRED"
+                        ? "Hết hạn"
+                        : bill.payment_status === "FAILED"
+                        ? "Thất bại"
+                        : "Đang chờ"}
                     </Badge>
                   </TableCell>
                   <TableCell>

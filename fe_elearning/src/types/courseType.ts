@@ -82,14 +82,14 @@ export interface CourseForm {
   instructor_id?: string;
   instructor?: Lecture;
   level: string;
-  number_student?: number;
   thumbnail: MediaType | null;
   is_approved?: boolean;
   price: number;
   priceFinal?: number;
   sections?: Section[];
-  rating?: number;
-  course_progress?: CourseProgress;
+  avg_rating?: number;
+  total_enrolled?: number;
+  course_progress?: CourseProgress | null;
 }
 
 export interface CourseProgress {

@@ -17,7 +17,7 @@ const APIGetPaymentAccount = async (id: string) => {
     const response = await axiosInstance.get(`/payments/users/${id}/accounts`);
     if (response.status === 200) {
       return {
-        data: response.data.data,
+        data: response.data,
         status: response.status,
       };
     }

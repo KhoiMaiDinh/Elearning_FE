@@ -30,9 +30,8 @@ const APIGetListOrderByMe = async () => {
     const response = await axiosInstance.get("/orders/me");
     if (response.status === 200) {
       return {
-        data: response.data.data,
+        data: response.data,
         status: response.status,
-        total: response.data.pagination.totalRecords,
       };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm

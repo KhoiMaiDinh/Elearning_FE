@@ -63,7 +63,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
             <div className="flex items-center gap-1 px-2 py-1 bg-champagne dark:bg-black50 rounded-full border border-white min-w-[64px] justify-center">
               <Star size={12} color="#FFCD29" fill="#FFCD29" />
               <span className="text-[10px] text-Sunglow font-medium">
-                {course?.rating ? course?.rating : "N/A"}
+                {course?.avg_rating ? course?.avg_rating : "N/A"}
               </span>
             </div>
 
@@ -78,10 +78,10 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
             <div className="flex items-center gap-1 px-2 py-1 bg-majorelleBlue20 dark:bg-black50 rounded-full border border-white min-w-[64px] justify-center">
               <Users size={16} color="#545ae8" />
               <span className="text-[10px] text-majorelleBlue font-medium">
-                {course?.number_student
-                  ? course?.number_student > 1000
-                    ? `${(course?.number_student / 1000).toFixed(1)}k+`
-                    : `${course?.number_student}+`
+                {course?.total_enrolled
+                  ? course?.total_enrolled > 1000
+                    ? `${(course?.total_enrolled / 1000).toFixed(1)}k+`
+                    : `${course?.total_enrolled}+`
                   : "N/A"}
               </span>
             </div>

@@ -70,7 +70,7 @@ const BankAccountLecture = () => {
   );
 
   useEffect(() => {
-    if (bankAccountInfo) {
+    if (bankAccountInfo.name) {
       setValue("name", bankAccountInfo.name);
       setValue("bank_code", bankAccountInfo.bank_code);
       setValue("bank_account_number", bankAccountInfo.bank_account_number);

@@ -42,7 +42,7 @@ const InputWithSendButton: React.FC<InputWithSendButtonProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-1.5 font-sans font-normal text-black70 dark:text-lightSilver">
+    <div className="w-full  flex flex-col gap-1.5 font-sans font-normal text-black70 dark:text-lightSilver">
       <Label htmlFor={name}>{labelText}</Label>
 
       <div className="flex items-center gap-2">

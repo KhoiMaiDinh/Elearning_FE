@@ -14,7 +14,7 @@ const APIPostComment = async (id: string, data: any) => {
 const APIGetComment = async (
   id: string,
   params?: {
-    aspect: string;
+    aspect?: string;
     emotion?: string;
     is_solved?: boolean;
   }
@@ -29,7 +29,8 @@ const APIGetComment = async (
   });
   if (response.status === 200) {
     return {
-      data: response.data,
+      data: response.data.comments,
+      aspect: response.data.aspect,
       status: response.status,
     };
   }

@@ -7,11 +7,22 @@ import createUserSlice from "./userSlice";
 import createCourseSlice from "./course";
 import createBankAccountSlice from "./bankAccount";
 import createCartSlice from "./cart";
+import createOrderSlice from "./orderSlice";
+import createStatisticItemCourseSlice from "./statisticItemCourse";
+import createCommentSlice from "./comment";
 // Cấu hình persist
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "course", "bankAccount", "cart"], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
+  whitelist: [
+    "user",
+    "course",
+    "bankAccount",
+    "cart",
+    "order",
+    "statisticItemCourse",
+    "comment",
+  ], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
 };
 
 // Combine các slice reducer
@@ -20,6 +31,9 @@ const rootReducer = combineReducers({
   course: createCourseSlice,
   bankAccount: createBankAccountSlice,
   cart: createCartSlice,
+  order: createOrderSlice,
+  statisticItemCourse: createStatisticItemCourseSlice,
+  comment: createCommentSlice,
 });
 
 // Tạo reducer đã persist

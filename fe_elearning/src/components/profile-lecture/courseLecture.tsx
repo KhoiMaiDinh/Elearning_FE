@@ -22,23 +22,9 @@ const CourseLecture = () => {
   const handleGetCourseMe = async () => {
     try {
       const response = await APIGetMyCourse();
-      const data = response?.data.map((item: any) => ({
-        id: item?.id,
-        coverPhoto: item?.thumbnail?.key || "",
-        avatar: item?.instructor?.user?.profile_image?.key || "",
-        title: item?.title || "",
-        rating: item?.rating || null,
-        level: item?.level || null,
-        numberStudent: item?.number_student || null,
-        description: item?.subtitle || "",
-        name:
-          item?.instructor?.user?.first_name +
-          " " +
-          item?.instructor?.user?.last_name,
-        price: item?.price,
-        status: item?.status,
-      }));
-      setDataCourseMe(data);
+      if (response?.status === 200) {
+        setDataCourseMe(response.data);
+      }
     } catch (error) {
       console.log(error);
     }

@@ -18,6 +18,7 @@ const APIGetCourseById = async (
     with_instructor?: boolean;
     with_category?: boolean;
     with_sections?: boolean;
+    with_thumbnail?: boolean;
   }
 ) => {
   try {

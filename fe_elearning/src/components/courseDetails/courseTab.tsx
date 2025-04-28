@@ -12,6 +12,14 @@ import AlertError from "../alert/AlertError";
 import { CommentEachItemCourse } from "@/types/commentType";
 import CommentListUser from "./commentListUser";
 import Popup from "./popup"; // Import your Popup component
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@radix-ui/react-select";
+import SelectFilter from "../selectComponent/selectFilter";
 
 interface CourseTabsProps {
   description: string;
@@ -48,6 +56,8 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [replies, setReplies] = useState<{ [postId: string]: string[] }>({}); // Quản lý trả lời
   const [newReply, setNewReply] = useState(""); // Nội dung trả lời mới
   const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
+
+  const [filterOption, setFilterOption] = useState("all"); // New state for filter option
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -153,7 +163,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         });
         if (response?.status === 201) {
           setNewReview("");
-          setCommunityPosts([response.data, ...communityPosts]);
+          handleGetComment();
           setShowAlertSuccess(true);
           setDescriptionAlert("Bài đăng đã được đăng thành công");
           setTimeout(() => {
@@ -173,9 +183,11 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
   const handleGetComment = async () => {
     if (currentCourseItem?.id) {
-      const response = await APIGetComment(currentCourseItem.id);
+      const response = await APIGetComment(currentCourseItem.id, {
+        is_solved: filterOption === "mostRelevant" ? false : undefined,
+      });
       if (response?.status === 200) {
-        setComments(response?.data?.comments);
+        setComments(response?.data);
       }
     }
   };
@@ -185,7 +197,11 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   }, [currentCourseItem?.id]);
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs
+      value={activeTab}
+      onValueChange={setActiveTab}
+      className="w-full font-sans"
+    >
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
         <TabsTrigger
           value="description"
@@ -395,9 +411,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
       <TabsContent
         value="reviews"
-        className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md"
+        className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md flex flex-col gap-4"
       >
-        <div className="mt-4 flex gap-2 ">
+        <div className="flex gap-2 mb-4 items-center">
           <InputWithSendButton
             labelText=""
             placeholder="Viết đánh giá của bạn..."
@@ -406,6 +422,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             onSubmit={handlePostComment}
           />
         </div>
+
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
             Đánh giá
@@ -419,6 +436,16 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             </text>
           )}
         </div>
+
+        <SelectFilter
+          placeholder={filterOption === "all" ? "Tất cả" : "Phù hợp nhất"}
+          // label="Bộ lọc"
+          data={[
+            { id: "all", value: "Tất cả" },
+            { id: "mostRelevant", value: "Phù hợp nhất" },
+          ]}
+          onChange={(value) => setFilterOption(value)}
+        />
         <div className="flex flex-col gap-4">
           {comments.slice(0, 5).map((comment, index) => (
             <CommentListUser key={index} comments={comment} />

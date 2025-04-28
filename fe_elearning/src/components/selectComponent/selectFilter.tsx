@@ -12,7 +12,7 @@ import {
 import { Label } from "../ui/label";
 
 type selectFilter = {
-  label: string;
+  label?: string;
   disabled?: boolean;
   onChange?: (value: string) => void;
   placeholder?: string;
@@ -30,9 +30,11 @@ const SelectFilter: React.FC<selectFilter> = ({
   return (
     <div className="flex flex-col gap-2 ">
       <div className="flex flex-row ">
-        <Label className="flex flex-row items-center text-[14px] font-bold py-2 font-sans">
-          {label}
-        </Label>
+        {label && (
+          <Label className="flex flex-row items-center text-[14px] font-bold py-2 font-sans">
+            {label}
+          </Label>
+        )}
       </div>
       <Select disabled={disabled} onValueChange={onChange}>
         <SelectTrigger className="w-28 sm:w-28 md:w-32 lg:w-36">

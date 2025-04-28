@@ -6,7 +6,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   courseInfo: {
-    course_id: "",
+    id: "",
     title: "",
     subtitle: "",
     description: "",
@@ -40,6 +40,8 @@ const initialState = {
     instructor_profile: <Lecture | null>null,
     sections: <Section[]>[],
     course_progress: <CourseProgress | null>null,
+    avg_rating: 0,
+    total_enrolled: 0,
   },
 };
 

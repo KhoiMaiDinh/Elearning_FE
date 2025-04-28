@@ -11,32 +11,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-type coursesBlock = {
-  id?: string;
-  coverPhoto?: string;
-  avatar?: string;
-  title?: string;
-  rating?: number;
-  level?: string;
-  numberStudent?: number;
-  description?: string;
-  name?: string;
-  status?: string;
-  progress?: number;
-  price?: number;
-  priceFinal?: number;
-};
-const CoursesBlock: React.FC<coursesBlock> = ({
+import { CourseForm } from "@/types/courseType";
+
+const CoursesBlock: React.FC<CourseForm> = ({
   id,
-  coverPhoto,
-  rating,
+  thumbnail,
+  avg_rating,
   level,
-  numberStudent,
-  name,
-  status,
-  progress,
+  total_enrolled,
   title,
-  avatar,
+  status,
+  course_progress,
+  instructor,
   description,
   price,
   priceFinal,
@@ -65,15 +51,17 @@ const CoursesBlock: React.FC<coursesBlock> = ({
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (coverPhoto || "")}
+            src={
+              process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || "")
+            }
             alt={title}
             className="w-full h-full object-contain rounded-t-lg"
           />
-          {status && (
+          {/* {status && (
             <Badge className="absolute top-2 right-2" variant="secondary">
               {status}
             </Badge>
-          )}
+          )} */}
         </div>
       </CardHeader>
 
@@ -82,31 +70,54 @@ const CoursesBlock: React.FC<coursesBlock> = ({
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
             <AvatarImage
-              alt={name}
-              src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || "")}
+              alt={instructor?.user?.last_name || ""}
+              src={
+                process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                (instructor?.user?.profile_image?.key || "")
+              }
               className="object-cover"
             />
-            <AvatarFallback>{name?.[0]}</AvatarFallback>
+            <AvatarFallback>{instructor?.user?.last_name?.[0]}</AvatarFallback>
 
             {/* <AvatarFallback>{name?.[0]}</AvatarFallback> */}
           </Avatar>
-          <span className="text-sm text-muted-foreground">{name}</span>
+          <span className="text-sm text-muted-foreground">
+            {instructor?.user?.first_name} {instructor?.user?.last_name}
+          </span>
         </div>
 
         <h3 className="font-semibold line-clamp-2">{title}</h3>
 
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {description}
-        </p>
+        <p
+          className="text-sm text-muted-foreground line-clamp-2"
+          dangerouslySetInnerHTML={{ __html: description || "" }}
+        ></p>
 
-        <div className="flex items-center gap-4 text-sm">
+        {/* {course_progress !== undefined && (
+          <div className="space-y-1">
+            <div className="w-full bg-darkSilver rounded-full h-2">
+              <div
+                className="bg-vividMalachite h-2 rounded-full"
+                style={{ width: `${course_progress?.progress}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {course_progress?.progress}% hoàn thành
+            </span>
+          </div>
+        )} */}
+      </CardContent>
+
+      {/* Phần giá & button luôn ở dưới cùng */}
+      <CardFooter className="flex flex-col justify-end w-full  pt-2">
+        <div className="flex items-center gap-4 text-sm w-full">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>{rating ? rating.toFixed(1) : "N/A"}</span>
+            <span>{avg_rating ? avg_rating.toFixed(1) : "N/A"}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
-            <span>{numberStudent || 0}</span>
+            <span>{total_enrolled || 0}</span>
           </div>
           {level && (
             <Badge variant="outline" className="bg-teaGreen dark:text-black">
@@ -115,38 +126,23 @@ const CoursesBlock: React.FC<coursesBlock> = ({
           )}
         </div>
 
-        {progress !== undefined && (
-          <div className="space-y-1">
-            <div className="w-full bg-darkSilver rounded-full h-2">
-              <div
-                className="bg-vividMalachite h-2 rounded-full"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {progress}% hoàn thành
-            </span>
-          </div>
-        )}
-      </CardContent>
-
-      {/* Phần giá & button luôn ở dưới cùng */}
-      <CardFooter className="flex justify-between items-end mt-auto pt-2">
-        <div className="space-x-2">
-          {/* {price && (
+        <div className="flex justify-between items-end mt-auto pt-2 w-full">
+          <div className="space-x-2">
+            {/* {price && (
             <span className="text-muted-foreground line-through">
               {formatPrice(price)}
             </span>
           )} */}
-          {price && (
-            <span className="font-semibold text-primary">
-              {formatPrice(price)}
-            </span>
-          )}
+            {price && (
+              <span className="font-semibold text-primary">
+                {formatPrice(price)}
+              </span>
+            )}
+          </div>
+          {/* <Badge variant="outline" className="text-[10px]">
+            Xem chi tiết
+          </Badge> */}
         </div>
-        <Badge variant="outline" className="text-[10px]">
-          Xem chi tiết
-        </Badge>
       </CardFooter>
     </Card>
   );

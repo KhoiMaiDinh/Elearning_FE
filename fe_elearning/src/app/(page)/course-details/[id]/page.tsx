@@ -137,8 +137,8 @@ const LearnPage = () => {
                 description={courseData.description || ""}
                 sections={courseData.sections}
                 lecture={courseData.instructor}
-                rating={courseData.rating}
-                enrolledStudents={courseData.number_student}
+                rating={courseData.avg_rating}
+                enrolledStudents={courseData.total_enrolled}
                 price={courseData.price}
                 priceFinal={courseData.priceFinal}
               />
@@ -147,9 +147,7 @@ const LearnPage = () => {
         </div>
       )}
 
-      {courseData?.course_id && (
-        <ButtonReview course_id={courseData?.course_id || ""} />
-      )}
+      {courseData?.id && <ButtonReview course_id={courseData?.id || ""} />}
     </AnimateWrapper>
   );
 };
