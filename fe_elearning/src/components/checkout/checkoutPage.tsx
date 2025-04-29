@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { UserType } from "@/types/userType";
 import { APICreateOrder } from "@/utils/order";
 import { Button } from "../ui/button";
+import { formatPrice } from "../formatPrice";
 type Props = {
   mode: "single" | "cart";
   products: { id: string; title: string; price: number }[];
@@ -20,13 +21,6 @@ export default function CheckoutPage({ mode, products, student }: Props) {
 
   const total = products.reduce((sum, p) => sum + p.price, 0);
   const discountedTotal = discount === "GIAM10" ? total * 0.9 : total;
-
-  const formattedPrice = !isNaN(discountedTotal)
-    ? new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(discountedTotal)
-    : "N/A";
 
   const handlePayment = async (data: any) => {
     // const response = await APIPo
@@ -53,7 +47,7 @@ export default function CheckoutPage({ mode, products, student }: Props) {
 
         <div className="flex justify-between items-center font-semibold text-lg">
           <span>Tổng cộng:</span>
-          <span className="text-Sunglow">{formattedPrice}</span>
+          <span className="text-Sunglow">{formatPrice(discountedTotal)}</span>
         </div>
 
         <div className="pt-4">

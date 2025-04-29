@@ -62,7 +62,7 @@ const InputWithSendButton: React.FC<InputWithSendButtonProps> = ({
           disabled={disabled}
           type="button"
           size="sm"
-          className="flex items-center justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+          className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
         >
           <Send size={16} />
           Gửi

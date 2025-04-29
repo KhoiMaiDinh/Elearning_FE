@@ -2,19 +2,13 @@ import { Star, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import CourseMain from "./courseMain";
 import { CourseForm } from "@/types/courseType";
+import { formatPrice } from "../formatPrice";
 
 type infoCourse = {
   lecture: string;
   course: CourseForm;
 };
 const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
-
   const totalLessons = course.sections?.reduce(
     (total, section) => total + section.items.length,
     0

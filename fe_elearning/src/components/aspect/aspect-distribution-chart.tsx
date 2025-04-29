@@ -9,6 +9,7 @@ import {
   Clock,
   Users,
   MessageSquare,
+  Layers,
 } from "lucide-react";
 
 // Define the aspects with their colors for the chart
@@ -16,7 +17,15 @@ const aspects = [
   { id: 1, name: "instructor_quality", icon: BookOpen, color: "#4f46e5" },
   { id: 2, name: "content_quality", icon: Code, color: "#0ea5e9" },
   { id: 3, name: "technology", icon: Video, color: "#10b981" },
-  // { id: 4, name: "Pacing", icon: Clock, color: "#f59e0b" },
+  { id: 4, name: "teaching_pace", icon: Clock, color: "#f59e0b" },
+  { id: 5, name: "study_materials", icon: BookOpen, color: "#0ea5e9" },
+  {
+    id: 6,
+    name: "assignments_practice",
+    icon: MessageSquare,
+    color: "#8b5cf6",
+  },
+  { id: 7, name: "other", icon: Layers, color: "#ef4444" },
   // { id: 5, name: "Instructor", icon: Users, color: "#ef4444" },
   // { id: 6, name: "Exercises", icon: MessageSquare, color: "#8b5cf6" },
 ];
@@ -142,7 +151,23 @@ export function AspectDistributionChart({ comments }: { comments: any }) {
       ctx.font = "12px Arial";
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      ctx.fillText(`${aspect.name} (${count})`, legendX + 25, legendY + 7);
+      const vietnameseName =
+        aspect.name === "teaching_pace"
+          ? "Tốc độ dạy"
+          : aspect.name === "instructor_quality"
+          ? "Chất lượng giảng viên"
+          : aspect.name === "content_quality"
+          ? "Chất lượng nội dung"
+          : aspect.name === "technology"
+          ? "Công nghệ"
+          : aspect.name === "study_materials"
+          ? "Tài liệu học tập"
+          : aspect.name === "assignments_practice"
+          ? "Bài tập và thực hành"
+          : aspect.name === "other"
+          ? "Khác"
+          : aspect.name;
+      ctx.fillText(`${vietnameseName} (${count})`, legendX + 25, legendY + 7);
 
       legendY += 25;
     });
@@ -151,7 +176,7 @@ export function AspectDistributionChart({ comments }: { comments: any }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Comment Distribution by Aspect</CardTitle>
+        <CardTitle>Phân bố đánh giá theo các khía cạnh</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="aspect-square w-full max-w-md mx-auto">
@@ -172,7 +197,23 @@ export function AspectDistributionChart({ comments }: { comments: any }) {
                   style={{ backgroundColor: aspect.color }}
                 ></div>
                 <AspectIcon className="h-4 w-4" />
-                <span className="text-sm">{aspect.name}</span>
+                <span className="text-sm">
+                  {aspect.name === "teaching_pace"
+                    ? "Tốc độ dạy"
+                    : aspect.name === "instructor_quality"
+                    ? "Chất lượng giảng viên"
+                    : aspect.name === "content_quality"
+                    ? "Chất lượng nội dung"
+                    : aspect.name === "technology"
+                    ? "Công nghệ"
+                    : aspect.name === "study_materials"
+                    ? "Tài liệu học tập"
+                    : aspect.name === "assignments_practice"
+                    ? "Bài tập và thực hành"
+                    : aspect.name === "other"
+                    ? "Khác"
+                    : aspect.name}
+                </span>
               </div>
             );
           })}

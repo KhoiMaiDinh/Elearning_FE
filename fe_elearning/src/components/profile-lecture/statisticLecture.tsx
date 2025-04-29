@@ -15,8 +15,10 @@ import { APIGetComment } from "@/utils/comment";
 import ColumnCourse from "../table/ColumnCourse";
 import { clearCourse } from "@/constants/course";
 import { setStatisticItemCourse } from "@/constants/statisticItemCourse";
+import { clearStatisticItemCourse } from "@/constants/statisticItemCourse";
 import StaticDetails from "./staticDetails";
 import { setComment } from "@/constants/comment";
+import { clearComment } from "@/constants/comment";
 // ================== PAGE COMPONENT ==================
 const Page = () => {
   // =============== DECLARE ===============
@@ -28,7 +30,7 @@ const Page = () => {
 
   const [dataTable, setDataTable] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [openItems, setOpenItems] = useState<string[]>([]);
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // =============== FUNCTION ===============
@@ -51,12 +53,14 @@ const Page = () => {
   };
 
   const toggleItem = async (itemId: string) => {
-    const isOpen = openItems.includes(itemId);
+    const isOpen = openItemId === itemId;
     if (!isOpen) {
       // Luôn gọi API để lấy bình luận mỗi khi mở mục
       try {
         const response = await APIGetComment(itemId);
         if (response?.status === 200 && Array.isArray(response.data)) {
+          dispatch(clearStatisticItemCourse({}));
+          dispatch(clearComment({}));
           dispatch(setStatisticItemCourse(response.aspect));
           dispatch(setComment(response.data));
         } else {
@@ -68,9 +72,7 @@ const Page = () => {
         dispatch(setComment([]));
       }
     }
-    setOpenItems((prev) =>
-      isOpen ? prev.filter((id) => id !== itemId) : [...prev, itemId]
-    );
+    setOpenItemId(isOpen ? null : itemId);
   };
   // =============== USE EFFECT ===============
   useEffect(() => {
@@ -91,7 +93,7 @@ const Page = () => {
 
   // =============== RENDER ===============
   return (
-    <div className="bg-white min-h-screen w-full space-y-8 rounded-xl p-6 shadow-lg">
+    <div className="bg-white dark:bg-eerieBlack min-h-screen w-full space-y-8 rounded-xl p-6 shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-gray-800 text-2xl font-bold">Quản lý khóa học</h1>
@@ -117,7 +119,7 @@ const Page = () => {
         <div id="formProduct" className="flex flex-col gap-6">
           {/* Info Card */}
           <div className="bg-gray-50 space-y-6 rounded-2xl p-6 shadow-md">
-            <h2 className="text-xl font-semibold text-PersianRed">
+            <h2 className="text-xl font-semibold text-persianIndigo dark:text-white">
               Thông tin khóa học
             </h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -158,7 +160,7 @@ const Page = () => {
 
           {/* Courses Detail */}
           <div className="bg-gray-50 space-y-6 rounded-2xl p-6 shadow-md">
-            <h2 className="text-xl font-semibold text-PersianRed">
+            <h2 className="text-xl font-semibold text-persianIndigo dark:text-white">
               Chi tiết khoá học
             </h2>
 
@@ -166,7 +168,7 @@ const Page = () => {
               {course.sections?.length > 0 ? (
                 course.sections.map((section) => (
                   <div key={section.id} className="space-y-4">
-                    <h2 className="text-lg font-bold text-gray-700">
+                    <h2 className="text-lg font-bold text-persianIndigo/80 dark:text-white/80">
                       {section.title}
                     </h2>
                     <div className="space-y-2">
@@ -181,20 +183,18 @@ const Page = () => {
                               onClick={() => toggleItem(item.id)}
                             >
                               <span className="font-medium">{item.title}</span>
-                              <div className="flex items-center gap-1 text-sm text-blue-500">
+                              <div className="flex items-center gap-1 text-sm text-blueberry dark:text-lightSilver">
                                 <span>Chi tiết</span>
                                 <ChevronDown
                                   className={`w-4 h-4 transition-transform ${
-                                    openItems.includes(item.id)
-                                      ? "rotate-180"
-                                      : ""
+                                    openItemId === item.id ? "rotate-180" : ""
                                   }`}
                                 />
                               </div>
                             </div>
 
-                            {openItems.includes(item.id) && (
-                              <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-600">
+                            {openItemId === item.id && (
+                              <div className="bg-gray/5 p-3 rounded-md text-sm text-darkSilver dark:text-lightSilver">
                                 {comments?.length > 0 ? (
                                   <StaticDetails />
                                 ) : (
@@ -228,8 +228,12 @@ const Page = () => {
 // ================== REUSABLE COMPONENTS ==================
 const InfoRow = ({ label, value }: { label: string; value: any }) => (
   <div className="flex gap-2">
-    <span className="text-gray-600 w-40 font-semibold">{label}</span>
-    <span className="text-gray-800">{value}</span>
+    <span className="text-persianIndigo/80 dark:text-white/80 w-40 font-semibold">
+      {label}
+    </span>
+    <span className="text-persianIndigo/80 dark:text-white/80 font-normal">
+      {value}
+    </span>
   </div>
 );
 

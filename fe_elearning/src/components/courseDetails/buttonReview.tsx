@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import CourseReviewForm from "./courseReviewForm";
 
 export default function ButtonReview({ course_id }: { course_id: string }) {
-  const [showReview, setShowReview] = useState(true);
+  const [showReview, setShowReview] = useState(false);
 
   return (
     <div className="fixed bottom-24 right-2 z-50 flex flex-col items-end gap-3">

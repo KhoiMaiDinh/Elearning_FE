@@ -3,20 +3,13 @@ import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { OrderResponse } from "@/types/billType";
-
+import { formatPrice } from "../formatPrice";
 interface BillDetailsProps {
   bill: OrderResponse;
 }
 
 const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
-  console.log("🚀 ~ bill:", bill);
   const detailsRef = useRef<HTMLDivElement>(null);
-
-  const formatPrice = (amount: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
 
   const handleDownloadPDF = async () => {
     if (detailsRef.current) {

@@ -4,7 +4,6 @@ import CoursesBlock from "@/components/block/courses-block";
 import InfoDashboard from "@/components/block/infoDashboard";
 import LecturersBlock from "@/components/block/lecturers-block";
 import { Button } from "@/components/ui/button";
-import courseBlock from "@/types/coursesBlockType";
 import lectureBlock from "@/types/lecturesBlockType";
 import {
   ArrowRight,
@@ -106,7 +105,6 @@ export default function Page() {
 
   const [listLecture, setListLecture] = useState<lectureBlock[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
-  console.log("🚀 ~ Page ~ listCourse:", listCourse);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paramsLecture, setParamsLecture] = useState({

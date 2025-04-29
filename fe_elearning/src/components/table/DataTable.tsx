@@ -100,7 +100,7 @@ DataTableProps<TData, TValue>) {
   return (
     <div className="flex w-full flex-col gap-4 rounded-md border border-lightSilver p-4">
       <div className="flex w-full flex-col items-center justify-between pt-4 md:flex-row">
-        <p className="text-md text-LavenderIndigo font-[700] lg:text-[1rem]">
+        <p className="text-md text-LavenderIndigo dark:text-white font-sans lg:text-[1rem]">
           {titleTable}
         </p>
 
@@ -138,7 +138,7 @@ DataTableProps<TData, TValue>) {
                     return (
                       <TableHead
                         key={header.id}
-                        className={`text-center font-sans font-semibold text-White ${
+                        className={`text-center font-sans font-semibold dark:text-white text-persianIndigo ${
                           isLastColumn
                             ? "sticky right-0 top-0 z-20 bg-majorelleBlue20"
                             : "z-10 bg-majorelleBlue20"
@@ -163,7 +163,7 @@ DataTableProps<TData, TValue>) {
                     index === table.getRowModel().rows.length - 1;
                   return (
                     <TableRow
-                      className={`text-center`}
+                      className={`text-center dark:text-white text-persianIndigo font-normal`}
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
                     >
@@ -175,7 +175,7 @@ DataTableProps<TData, TValue>) {
                             key={cell.id}
                             className={`${
                               isLastColumn
-                                ? "sticky right-0 top-0 z-20 bg-White"
+                                ? "sticky right-0 top-0 z-20 bg-white dark:bg-eerieBlack"
                                 : "z-10"
                             }`}
                           >
@@ -225,7 +225,7 @@ DataTableProps<TData, TValue>) {
             </div>
             <div className="flex items-center justify-between lg:w-1/4">
               <div className="item-starts flex">
-                <p className="text-sm text-LavenderIndigo">
+                <p className="text-sm text-LavenderIndigo dark:text-white">
                   Tổng: {totalItems}
                 </p>
               </div>

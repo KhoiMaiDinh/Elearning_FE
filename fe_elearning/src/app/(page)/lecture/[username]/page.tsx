@@ -123,7 +123,7 @@ const TeacherProfile = () => {
               </div>
             </div>
 
-            <div className="">
+            {/* <div className="">
               <h3 className="text-lg font-semibold mb-2">Khoá học tiêu biểu</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {dataCourse.slice(0, 2).map((course, index) => (
@@ -146,7 +146,7 @@ const TeacherProfile = () => {
                   </Card>
                 ))}
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </AnimateWrapper>
       </Card>
@@ -156,22 +156,8 @@ const TeacherProfile = () => {
         <div className="max-w-6xl mx-auto space-y-6 p-2">
           <h2 className="text-2xl font-bold">Các khóa học của giảng viên</h2>
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-            {dataCourse.slice(2, 10).map((course, index) => (
-              <CoursesBlock
-                key={index}
-                avatar={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ""}${
-                  course.thumbnail?.key || ""
-                }`}
-                name={course.title}
-                rating={course.rating}
-                title={course.title}
-                level={course.level}
-                numberStudent={course.number_student}
-                description={course.description}
-                price={course.price}
-                priceFinal={course.priceFinal}
-                status={course.status}
-              />
+            {dataCourse.map((course, index) => (
+              <CoursesBlock key={index} {...course} />
             ))}
           </div>
         </div>

@@ -71,6 +71,30 @@ export interface StatisticsEachItemCourse {
     negative: number;
     none: number;
   };
+  teaching_pace: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    none: number;
+  };
+  study_materials: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    none: number;
+  };
+  other: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    none: number;
+  };
+  assignments_practice: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    none: number;
+  };
 }
 
 export interface StatisticItemCourseResponse {

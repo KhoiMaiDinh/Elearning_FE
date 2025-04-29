@@ -96,16 +96,16 @@ export default function StaticDetails() {
     (state: RootState) => state.comment.comment
   ) as CommentEachItemCourse[];
 
-  // Transform comments to the required format
-  const validComments: Comment[] = commentsData
-    .map(transformComment)
-    .filter((comment): comment is Comment => comment !== null);
+  // // Transform comments to the required format
+  // const validComments: Comment[] = commentsData
+  //   .map(transformComment)
+  //   .filter((comment): comment is Comment => comment !== null);
 
   return (
     <main className="container mx-auto py-8 px-4">
       <div className="space-y-8">
         <AspectEmotionCircles comments={commentsData} />
-        <CommentList />
+        <CommentList comments={commentsData} />
       </div>
     </main>
   );

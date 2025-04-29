@@ -144,6 +144,10 @@ export default {
       persianIndigo: "#371D73",
       yankeesBlue: "#152A43",
       transparent: "transparent",
+
+      greenCrayola: "#10b981",
+      blueberry: "#3b82f6",
+      carminePink: "#ef4444",
     },
     backgroundImage: {
       "custom-gradient-dark": "linear-gradient(to  right, #1E293B, #334155)",

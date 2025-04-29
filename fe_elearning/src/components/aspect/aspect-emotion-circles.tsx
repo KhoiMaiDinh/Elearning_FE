@@ -16,28 +16,36 @@ interface Emotion {
 const emotions: Emotion[] = [
   {
     id: "positive",
-    name: "Positive",
+    name: "Tích cực",
     icon: ThumbsUp,
     color: "#10b981",
-    bgColor: "bg-green-500",
+    bgColor: "#10b981",
   },
   {
     id: "neutral",
-    name: "Neutral",
+    name: "Trung lập",
     icon: Meh,
     color: "#3b82f6",
-    bgColor: "bg-blue-500",
+    bgColor: "#3b82f6",
   },
   {
     id: "negative",
-    name: "Negative",
+    name: "Tiêu cực",
     icon: ThumbsDown,
     color: "#ef4444",
-    bgColor: "bg-red-500",
+    bgColor: "#ef4444",
   },
 ];
 
-const aspectTypes = ["instructor_quality", "content_quality", "technology"];
+const aspectTypes = [
+  "instructor_quality",
+  "content_quality",
+  "technology",
+  "teaching_pace",
+  "study_materials",
+  "assignments_practice",
+  "other",
+];
 
 export function AspectEmotionCircles({
   comments,
@@ -117,15 +125,27 @@ export function AspectEmotionCircles({
     // Add label
     const label = document.createElement("div");
     label.className = "text-sm font-medium";
-    label.textContent = aspectType
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    label.textContent =
+      aspectType === "teaching_pace"
+        ? "Tốc độ dạy"
+        : aspectType === "instructor_quality"
+        ? "Chất lượng giảng viên"
+        : aspectType === "content_quality"
+        ? "Chất lượng nội dung"
+        : aspectType === "technology"
+        ? "Công nghệ"
+        : aspectType === "study_materials"
+        ? "Tài liệu học tập"
+        : aspectType === "assignments_practice"
+        ? "Bài tập và thực hành"
+        : aspectType === "other"
+        ? "Khác"
+        : aspectType;
 
     // Add count
     const count = document.createElement("div");
     count.className = "text-xs text-muted-foreground";
-    count.textContent = "No comments";
+    count.textContent = "Không có bình luận";
 
     container.appendChild(canvas);
     container.appendChild(label);
@@ -191,16 +211,28 @@ export function AspectEmotionCircles({
     // Add label
     const label = document.createElement("div");
     label.className = "text-sm font-medium";
-    label.textContent = aspectType
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    label.textContent =
+      aspectType === "teaching_pace"
+        ? "Tốc độ dạy"
+        : aspectType === "instructor_quality"
+        ? "Chất lượng giảng viên"
+        : aspectType === "content_quality"
+        ? "Chất lượng nội dung"
+        : aspectType === "technology"
+        ? "Công nghệ"
+        : aspectType === "study_materials"
+        ? "Tài liệu học tập"
+        : aspectType === "assignments_practice"
+        ? "Bài tập và thực hành"
+        : aspectType === "other"
+        ? "Khác"
+        : aspectType;
 
     // Add count
     const count = document.createElement("div");
     count.className = "text-xs text-muted-foreground";
-    count.textContent = `${totalComments} comment${
-      totalComments !== 1 ? "s" : ""
+    count.textContent = `${totalComments} bình luận${
+      totalComments !== 1 ? "" : ""
     }`;
 
     container.appendChild(canvas);
@@ -212,7 +244,7 @@ export function AspectEmotionCircles({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Comment Distribution by Aspect & Emotion</CardTitle>
+        <CardTitle>Phân bố đánh giá theo các khía cạnh và cảm xúc</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex justify-center gap-4">
@@ -221,9 +253,12 @@ export function AspectEmotionCircles({
             return (
               <div key={emotion.id} className="flex items-center gap-2">
                 <div
-                  className={`w-3 h-3 rounded-full ${emotion.bgColor}`}
+                  className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
                 ></div>
-                <EmotionIcon className="h-4 w-4" />
+                <EmotionIcon
+                  className={`h-4 w-4 text-${emotion.color}`}
+                  color={emotion.color}
+                />
                 <span className="text-sm">{emotion.name}</span>
               </div>
             );

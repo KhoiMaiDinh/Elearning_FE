@@ -45,15 +45,15 @@ export function CommentForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add Your Feedback</CardTitle>
+        <CardTitle>Thêm bình luận</CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="comment">Your Comment</Label>
+            <Label htmlFor="comment">Bình luận</Label>
             <Textarea
               id="comment"
-              placeholder="Share your thoughts about this course..."
+              placeholder="Chia sẻ suy nghĩ của bạn về khóa học..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               required
@@ -62,7 +62,7 @@ export function CommentForm() {
           </div>
 
           <div className="space-y-3">
-            <Label>Select Aspects (Choose all that apply)</Label>
+            <Label>Chọn các khía cạnh (Chọn tất cả các khía cạnh)</Label>
             <div className="grid grid-cols-2 gap-3">
               {aspects.map((aspect) => {
                 const AspectIcon = aspect.icon;
@@ -79,7 +79,15 @@ export function CommentForm() {
                         className="flex items-center gap-1.5 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         <AspectIcon className="h-4 w-4" />
-                        {aspect.name}
+                        {aspect.name === "teaching_pace"
+                          ? "Tốc độ dạy"
+                          : aspect.name === "instructor_quality"
+                          ? "Chất lượng giảng viên"
+                          : aspect.name === "content_quality"
+                          ? "Chất lượng nội dung"
+                          : aspect.name === "technology"
+                          ? "Công nghệ"
+                          : aspect.name}
                       </Label>
                     </div>
                   </div>
@@ -89,7 +97,7 @@ export function CommentForm() {
           </div>
 
           <div className="space-y-3">
-            <Label>How do you feel?</Label>
+            <Label>Bạn cảm thấy thế nào?</Label>
             <RadioGroup
               value={emotion}
               onValueChange={setEmotion}
@@ -98,19 +106,19 @@ export function CommentForm() {
               <EmotionOption
                 value="1"
                 icon={ThumbsUp}
-                label="Positive"
+                label="Tích cực"
                 className="bg-green-50 border-green-200 data-[state=checked]:border-green-500"
               />
               <EmotionOption
                 value="2"
                 icon={Meh}
-                label="Neutral"
+                label="Trung lập"
                 className="bg-blue-50 border-blue-200 data-[state=checked]:border-blue-500"
               />
               <EmotionOption
                 value="3"
                 icon={ThumbsDown}
-                label="Negative"
+                label="Tiêu cực"
                 className="bg-red-50 border-red-200 data-[state=checked]:border-red-500"
               />
             </RadioGroup>
@@ -122,7 +130,7 @@ export function CommentForm() {
             className="w-full"
             disabled={!comment || selectedAspects.length === 0 || !emotion}
           >
-            Submit Feedback
+            Gửi bình luận
           </Button>
         </CardFooter>
       </form>

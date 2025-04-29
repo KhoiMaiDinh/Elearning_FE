@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CourseForm } from "@/types/courseType";
+import { formatPrice } from "../formatPrice";
 
 const CoursesBlock: React.FC<CourseForm> = ({
   id,
@@ -28,12 +29,6 @@ const CoursesBlock: React.FC<CourseForm> = ({
   priceFinal,
 }) => {
   const router = useRouter();
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
 
   const [levelShow, setLevelShow] = useState<string>("");
   useEffect(() => {

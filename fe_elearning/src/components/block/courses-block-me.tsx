@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CourseForm, CourseItem } from "@/types/courseType";
+import { formatPrice } from "../formatPrice";
 
 const CoursesBlockMe: React.FC<CourseForm> = ({
   level,
@@ -28,12 +29,6 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
   priceFinal,
 }) => {
   const router = useRouter();
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
 
   const [levelShow, setLevelShow] = useState<string>("");
   const [statusShow, setStatusShow] = useState<string>("");
@@ -64,7 +59,14 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
             className="w-full h-full object-contain rounded-t-lg"
           />
           {status && (
-            <Badge className="absolute top-2 right-2" variant="secondary">
+            <Badge
+              className={`absolute top-2 right-2 bg-white dark:bg-eerieBlack ${
+                status === "PUBLISHED"
+                  ? " text-vividMalachite"
+                  : " text-carminePink"
+              }`}
+              variant="secondary"
+            >
               {statusShow}
             </Badge>
           )}
@@ -115,7 +117,7 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
           )}
         </div>
 
-        {course_progress !== undefined && (
+        {/* {course_progress !== undefined && (
           <div className="space-y-1">
             <div className="w-full bg-darkSilver rounded-full h-2">
               <div
@@ -127,7 +129,7 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
               {course_progress?.progress}% hoàn thành
             </span>
           </div>
-        )}
+        )} */}
       </CardContent>
 
       {/* Phần giá & button luôn ở dưới cùng */}

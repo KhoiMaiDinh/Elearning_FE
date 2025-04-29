@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation";
 import { Translation } from "@/types/courseType";
 import { clearCourse, setCourse } from "@/constants/course";
 import { APIGetCourseById, APIGetFullCourse } from "@/utils/course";
-
+import { EyeIcon } from "lucide-react";
+import { formatPrice } from "@/components/formatPrice";
 const ColumnCourse: ColumnDef<{
   course_id?: string;
   id?: string;
@@ -73,7 +74,7 @@ const ColumnCourse: ColumnDef<{
     },
     cell: ({ row }) => {
       return (
-        <div className="w-[200px] text-left font-bold">
+        <div className="w-[200px] text-left ">
           {row.original.level === "BEGINNER"
             ? "Cơ bản"
             : row.original.level === "INTERMEDIATE"
@@ -90,8 +91,8 @@ const ColumnCourse: ColumnDef<{
     },
     cell: ({ row }) => {
       return (
-        <div className="w-[200px] text-left font-bold">
-          {row.original.price} đ
+        <div className="w-[200px] text-left ">
+          {formatPrice(row.original.price)}
         </div>
       ); // Hiển thị số thứ tự
     },
@@ -103,7 +104,15 @@ const ColumnCourse: ColumnDef<{
     },
     cell: ({ row }) => {
       return (
-        <div className="w-[200px] text-left font-bold">
+        <div
+          className={` text-left w-fit px-2 py-1 rounded-md ${
+            row.original.status === "PUBLISHED"
+              ? "bg-vividMalachite/10 text-vividMalachite"
+              : row.original.status === "DRAFT"
+              ? "bg-blueberry/10 text-blueberry"
+              : "bg-redPigment/10 text-redPigment"
+          }`}
+        >
           {row.original.status === "PUBLISHED"
             ? "Hoạt động"
             : row.original.status === "DRAFT"
@@ -135,10 +144,10 @@ const ColumnCourse: ColumnDef<{
       return (
         <div className="flex w-full flex-wrap items-center justify-center gap-1 lg:w-24">
           <button
-            className="bg-white flex h-7 w-7 items-center justify-center rounded-md shadow-lg hover:bg-[#e8ebf0]"
+            className=" text-eerieBlack dark:text-white flex h-7 w-7 items-center justify-center rounded-md shadow-lg hover:brightness-125"
             onClick={() => row.original.id && handleViewMode(row.original.id)}
           >
-            <img src={"/icons/ic_show.png"} alt="View" className="h-4 w-4" />
+            <EyeIcon className="h-4 w-4" />
           </button>
           {/* <Trash2
             className="h-4 w-4 cursor-pointer text-PersianRed"

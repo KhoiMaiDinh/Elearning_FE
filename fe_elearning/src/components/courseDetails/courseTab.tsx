@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@radix-ui/react-select";
 import SelectFilter from "../selectComponent/selectFilter";
+import { formatPrice } from "../formatPrice";
 
 interface CourseTabsProps {
   description: string;
@@ -58,12 +59,6 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
 
   const [filterOption, setFilterOption] = useState("all"); // New state for filter option
-
-  const formatPrice = (amount: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
 
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);

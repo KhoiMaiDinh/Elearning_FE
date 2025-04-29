@@ -14,6 +14,7 @@ import BillDetails from "./billDetails";
 import { OrderResponse } from "@/types/billType";
 import { useSelector } from "react-redux";
 import { RootState } from "@/constants/store";
+import { formatPrice } from "../formatPrice";
 interface BillsTableProps {
   bills: OrderResponse[];
   searchTerm: string;
@@ -27,12 +28,6 @@ const BillsTable: React.FC<BillsTableProps> = ({
 }) => {
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   // const orders = useSelector((state: RootState) => state.order.orders);
-
-  const formatPrice = (amount: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
 
   return (
     <div className="bg-white dark:bg-richBlack rounded-lg shadow-md">

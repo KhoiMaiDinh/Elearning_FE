@@ -13,6 +13,7 @@ import PieChartProgress from "../chart/pieChartProgress";
 import { useRouter } from "next/navigation";
 import { CourseProgress } from "@/types/courseType";
 import { Card, CardHeader, CardTitle } from "../ui/card";
+import { formatPrice } from "../formatPrice";
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -33,12 +34,6 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   courseProgress,
 }) => {
   const router = useRouter();
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
 
   const [levelShow, setLevelShow] = useState<string | null>(null);
 
