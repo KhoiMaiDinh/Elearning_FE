@@ -42,7 +42,7 @@ const APIPostReview = async (course_id: string, data: any) => {
     `/courses/${course_id}/review`,
     data
   );
-  if (response.status === 200) {
+  if (response.status === 201) {
     return {
       data: response.data,
       status: response.status,

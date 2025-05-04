@@ -108,7 +108,11 @@ const CoursesBlock: React.FC<CourseForm> = ({
         <div className="flex items-center gap-4 text-sm w-full">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>{avg_rating ? avg_rating.toFixed(1) : "N/A"}</span>
+            <span>
+              {avg_rating
+                ? (Math.round(avg_rating * 10) / 10).toFixed(1)
+                : "N/A"}
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, UploadCloud } from "lucide-react";
 
 type InputRegisterLectureProps = {
-  labelText: string;
+  labelText?: string;
   type?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;

@@ -8,7 +8,7 @@ const ReactQuill = dynamic(() => import("react-quill-new"), {
 });
 
 type TextAreaRegisterLectureProps = {
-  labelText: string;
+  labelText?: string;
   name?: string;
   placeholder?: string;
   value?: string;

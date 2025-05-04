@@ -23,13 +23,20 @@ const CourseReviewForm: React.FC<Review> = ({ course_id }) => {
         rating_comment: data?.rating_comment,
       };
       const response = await APIPostReview(course_id, dataSubmit);
-      if (response?.status === 200) {
+      if (response?.status === 201) {
         setShowAlertSuccess(true);
         setDescription("Đánh giá đã được gửi thành công");
         reset();
 
         setTimeout(() => {
           setShowAlertSuccess(false);
+          setDescription("");
+        }, 3000);
+      } else {
+        setShowAlertError(true);
+        setDescription("Đánh giá không thành công");
+        setTimeout(() => {
+          setShowAlertError(false);
           setDescription("");
         }, 3000);
       }

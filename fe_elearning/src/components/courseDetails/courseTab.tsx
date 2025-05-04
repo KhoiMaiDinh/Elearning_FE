@@ -12,16 +12,19 @@ import AlertError from "../alert/AlertError";
 import { CommentEachItemCourse } from "@/types/commentType";
 import CommentListUser from "./commentListUser";
 import Popup from "./popup"; // Import your Popup component
-import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
+
 import SelectFilter from "../selectComponent/selectFilter";
 import { formatPrice } from "../formatPrice";
-
+import {
+  APIGetThread,
+  APIPostThread,
+  APIPostThreadReply,
+  APIGetThreadReply,
+} from "@/utils/communityThread";
+import { CommunityThread } from "@/types/communotyThreadType";
+import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
+import { Textarea } from "../ui/textarea";
+import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -45,15 +48,11 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("description");
   const [newReview, setNewReview] = useState("");
-  const [newPost, setNewPost] = useState(""); // Nội dung bài đăng mới
-  const [communityPosts, setCommunityPosts] = useState([
-    {
-      id: "1", // Thêm id để dễ quản lý khi dùng API sau này
-      user: "Nguyễn Văn A",
-      content: "Bài học rất dễ hiểu!",
-      date: "2025-03-01",
-    },
-  ]);
+  const [newTitle, setNewTitle] = useState("");
+  const [newContent, setNewContent] = useState("");
+  const [expandedThreadId, setExpandedThreadId] = useState<string | null>(null);
+
+  const [communityPosts, setCommunityPosts] = useState<CommunityThread[]>([]);
   const [replies, setReplies] = useState<{ [postId: string]: string[] }>({}); // Quản lý trả lời
   const [newReply, setNewReply] = useState(""); // Nội dung trả lời mới
   const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
@@ -65,71 +64,87 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [descriptionAlert, setDescriptionAlert] = useState("");
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
-  // Lấy danh sách bài đăng khi component mount (dùng API - hiện tại comment lại)
-  /*
-  useEffect(() => {
-    fetch("https://your-api-endpoint/community-posts")
-      .then((response) => response.json())
-      .then((data) => setCommunityPosts(data))
-      .catch((error) => console.error("Error fetching posts:", error));
-  }, []);
-  */
-
-  // Xử lý đăng bài mới
-  const handlePostSubmit = () => {
-    if (newPost.trim()) {
-      const newCommunityPost = {
-        id: Date.now().toString(), // Tạo id tạm thời khi dùng state
-        user: "Người dùng hiện tại", // Thay bằng thông tin thực tế khi có hệ thống xác thực
-        content: newPost,
-        date: new Date().toISOString().split("T")[0],
-      };
-      setCommunityPosts([newCommunityPost, ...communityPosts]);
-      setNewPost("");
-
-      // Phần gọi API (comment lại)
-      /*
-      fetch("https://your-api-endpoint/community-posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCommunityPost),
-      })
-        .then((response) => response.json())
-        .then((savedPost) => {
-          setCommunityPosts([savedPost, ...communityPosts]);
-          setNewPost("");
-        })
-        .catch((error) => console.error("Error posting:", error));
-      */
+  const handlePostThread = async () => {
+    const newPostData = {
+      title: newTitle,
+      content: newContent,
+      lecture_id: currentCourseItem?.id, // hoặc lecture đang xem
+    };
+    try {
+      const response = await APIPostThread(newPostData);
+      if (response?.status === 201) {
+        setNewTitle("");
+        setNewContent("");
+        handleGetThread();
+        setShowAlertSuccess(true);
+        setDescriptionAlert("Bài viết đã được đăng thành công");
+        setTimeout(() => {
+          setShowAlertSuccess(false);
+        }, 3000);
+      } else {
+        setShowAlertError(true);
+        setDescriptionAlert("Lỗi khi đăng bài");
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
+      }
+    } catch (error) {
+      setShowAlertError(true);
+      setDescriptionAlert("Lỗi khi đăng bài");
+      setTimeout(() => {
+        setShowAlertError(false);
+      }, 3000);
     }
   };
 
-  // Xử lý trả lời bài đăng
-  const handleReplySubmit = (postId: string) => {
-    if (newReply.trim()) {
-      setReplies((prev) => ({
-        ...prev,
-        [postId]: [...(prev[postId] || []), newReply],
-      }));
-      setNewReply("");
+  const handleGetThread = async () => {
+    if (currentCourseItem?.id) {
+      try {
+        const response = await APIGetThread(currentCourseItem.id);
+        if (response?.status === 200) {
+          setCommunityPosts(response?.data);
+        }
+      } catch (error) {
+        console.error("Error getting thread:", error);
+      }
+    }
+  };
 
-      // Phần gọi API (comment lại)
-      /*
-      fetch(`https://your-api-endpoint/community-posts/${postId}/replies`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newReply }),
-      })
-        .then((response) => response.json())
-        .then((newReplyData) => {
-          setReplies((prev) => ({
-            ...prev,
-            [postId]: [...(prev[postId] || []), newReplyData.content],
-          }));
-          setNewReply("");
-        })
-        .catch((error) => console.error("Error replying:", error));
-      */
+  const handleReplySubmit = async (threadId: string) => {
+    const newReplyData = {
+      content: newReply,
+    };
+    try {
+      const response = await APIPostThreadReply(threadId, newReplyData);
+
+      if (response?.status === 201) {
+        setNewReply("");
+        handleGetThread();
+        setShowAlertSuccess(true);
+        setDescriptionAlert("Trả lời đã được đăng thành công");
+        setTimeout(() => {
+          setShowAlertSuccess(false);
+        }, 3000);
+      } else {
+        setShowAlertError(true);
+        setDescriptionAlert("Lỗi khi trả lời");
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
+      }
+    } catch (error) {
+      setShowAlertError(true);
+      setDescriptionAlert("Lỗi khi trả lời");
+      setTimeout(() => {
+        setShowAlertError(false);
+      }, 3000);
+    }
+  };
+
+  const handleGetReply = async (threadId: string) => {
+    const response = await APIGetThreadReply(threadId);
+    if (response?.status === 200) {
+      setReplies(response?.data);
     }
   };
 
@@ -189,7 +204,14 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
   useEffect(() => {
     handleGetComment();
+    handleGetThread();
   }, [currentCourseItem?.id]);
+
+  useEffect(() => {
+    if (expandedThreadId) {
+      handleGetReply(expandedThreadId);
+    }
+  }, [expandedThreadId]);
 
   return (
     <Tabs
@@ -246,7 +268,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             <div className="flex items-center gap-1">
               <Star size={16} className="text-Sunglow fill-Sunglow" />
               <span className="text-darkSilver dark:text-lightSilver">
-                {rating}
+                {rating ? (Math.round(rating * 10) / 10).toFixed(1) : "N/A"}
               </span>
             </div>
           )}
@@ -337,71 +359,115 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         value="community"
         className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md"
       >
-        <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-          Cộng đồng
-        </h3>
         {/* Form đăng bài mới */}
-        <div className="mb-4 flex gap-2">
-          <Input
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
-            placeholder="Viết bài đăng của bạn..."
-            className="flex-1"
-          />
-          <Button
-            onClick={handlePostSubmit}
-            className="flex items-center gap-1"
-          >
-            <Send size={16} /> Đăng
-          </Button>
+        <div className="bg-antiFlashWhite dark:bg-eerieBlack p-4 rounded-lg shadow mb-6">
+          <h4 className="text-lg font-semibold mb-2 text-richBlack dark:text-lightSilver">
+            Đăng bài mới
+          </h4>
+          <div className="space-y-3">
+            <InputRegisterLecture
+              value={newTitle}
+              onChange={(value) => setNewTitle(value.target.value)}
+              placeholder="Tiêu đề bài viết (bắt buộc)"
+            />
+            <TextAreaRegisterLecture
+              value={newContent}
+              onChange={(value) => setNewContent(value)}
+              placeholder="Nội dung chi tiết..."
+              className="min-h-[100px]"
+              disabled={!newTitle.trim()}
+            />
+            <div className="text-right">
+              <Button
+                onClick={handlePostThread}
+                disabled={!newTitle.trim() || !newContent.trim()}
+                type="button"
+                size="sm"
+                className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+              >
+                <Send size={16} />
+                Gửi
+              </Button>
+            </div>
+          </div>
         </div>
+
         {/* Danh sách bài đăng */}
-        <ul className="space-y-4">
-          {communityPosts.map((post) => (
-            <li key={post.id} className="flex items-start gap-2">
-              <MessageSquare size={20} className="text-majorelleBlue" />
-              <div className="flex-1">
-                <p className="font-medium text-richBlack dark:text-AntiFlashWhite">
-                  {post.user}
-                </p>
-                <p className="text-darkSilver dark:text-lightSilver">
-                  {post.content}
-                </p>
-                <p className="text-sm text-darkSilver/70 dark:text-lightSilver/70">
-                  {new Date(post.date).toLocaleDateString("vi-VN")}
-                </p>
-                {/* Form trả lời */}
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    value={newReply}
-                    onChange={(e) => setNewReply(e.target.value)}
-                    placeholder="Viết câu trả lời..."
-                    className="flex-1"
-                  />
+        <div className="space-y-6">
+          {communityPosts.map((post) => {
+            const isExpanded = expandedThreadId === post.id;
+
+            return (
+              <div
+                key={post.id}
+                className="border border-gray-200 dark:border-darkSilver/30 rounded-lg p-4 shadow-sm bg-white dark:bg-eerieBlack"
+              >
+                <div className="flex justify-between items-start">
+                  <h4 className="text-xl font-semibold text-majorelleBlue">
+                    {post.title}
+                  </h4>
                   <Button
-                    onClick={() => handleReplySubmit(post.id)}
-                    className="flex items-center gap-1"
+                    variant="link"
+                    className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
+                    onClick={() =>
+                      setExpandedThreadId(isExpanded ? null : post.id)
+                    }
                   >
-                    <Send size={16} /> Gửi
+                    {isExpanded ? "Ẩn chi tiết" : "Chi tiết"}
                   </Button>
                 </div>
-                {/* Hiển thị danh sách trả lời */}
-                {replies[post.id]?.length > 0 && (
-                  <ul className="mt-2 space-y-2">
-                    {replies[post.id].map((reply, index) => (
-                      <li
-                        key={index}
-                        className="text-darkSilver dark:text-lightSilver ml-6"
-                      >
-                        - {reply}
-                      </li>
-                    ))}
-                  </ul>
+
+                {isExpanded && (
+                  <div className="mt-2">
+                    {/* Nội dung bài viết */}
+                    <p
+                      className="text-richBlack dark:text-lightSilver mb-2 ql-content"
+                      dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                    {/* <p className="text-sm text-darkSilver/70 dark:text-lightSilver/50 italic">
+              Đăng ngày {new Date(post.date).toLocaleDateString("vi-VN")}
+            </p> */}
+
+                    {/* Phần trả lời */}
+                    <div className="mt-4 border-t pt-3">
+                      <h5 className="text-sm font-semibold text-cosmicCobalt dark:text-lightSilver mb-2">
+                        Trả lời
+                      </h5>
+
+                      {replies[post.id]?.map((reply, index) => (
+                        <p
+                          key={index}
+                          className="text-darkSilver dark:text-lightSilver pl-4 border-l border-majorelleBlue mb-2"
+                        >
+                          {reply}
+                        </p>
+                      ))}
+
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          value={newReply}
+                          onChange={(e) => setNewReply(e.target.value)}
+                          placeholder="Thêm câu trả lời..."
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={() => handleReplySubmit(post.id)}
+                          disabled={!newReply.trim()}
+                          type="button"
+                          size="sm"
+                          className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+                        >
+                          <Send size={16} />
+                          Gửi
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       </TabsContent>
 
       <TabsContent

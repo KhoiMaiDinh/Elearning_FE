@@ -17,6 +17,7 @@ export type RegisterLectureForm = {
 };
 
 export type Lecture = RegisterLectureForm & {
+  total_courses: number;
   category: Category;
   is_approved: boolean;
   user: {

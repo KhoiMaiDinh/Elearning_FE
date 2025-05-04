@@ -171,6 +171,13 @@ const Page = () => {
       console.error("Error during get list course of user:", err);
     }
   };
+
+  const handleScrollToCourse = () => {
+    const courseSection = document.getElementById("course");
+    if (courseSection) {
+      courseSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   useEffect(() => {
     handleGetListCourse();
     handleGetListCourseOfUser();
@@ -188,7 +195,7 @@ const Page = () => {
           />
         </div>
         <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white ">
-          <AnimateWrapper delay={0.3} direction="right">
+          <AnimateWrapper delay={0} direction="right">
             <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
               <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
                 Khám phá các{" "}
@@ -202,10 +209,16 @@ const Page = () => {
                 năng theo từng bước.
               </p>
               <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
-                <button className="bg-custom-gradient-button-violet text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition">
+                <button
+                  className="bg-custom-gradient-button-violet text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition"
+                  onClick={handleScrollToCourse}
+                >
                   Xem tất cả khóa học
                 </button>
-                <button className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition">
+                <button
+                  className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition"
+                  onClick={handleScrollToCourse}
+                >
                   Đăng ký học thử
                 </button>
               </div>
@@ -215,7 +228,7 @@ const Page = () => {
       </div>
       {/* Giang vien uu tu */}
       <section className="py-12  overflow-hidden">
-        <AnimateWrapper delay={0.3} direction="up">
+        <AnimateWrapper delay={0} direction="up">
           <div className="text-center mb-8">
             <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
               Khóa học nổi bật{" "}
@@ -228,7 +241,7 @@ const Page = () => {
         </AnimateWrapper>
 
         <div className="relative w-full whitespace-nowrap">
-          <AnimateWrapper delay={0.3} direction="up">
+          <AnimateWrapper delay={0} direction="up">
             <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
               {listCourse
                 .concat(listCourse)
@@ -252,7 +265,7 @@ const Page = () => {
       </section>
 
       {listCourseOfUser.length > 0 && (
-        <AnimateWrapper delay={0.3} direction="up">
+        <AnimateWrapper delay={0} direction="up">
           <div className="md:px-6 pt-4 pb-2">
             <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
               Khóa học của bạn
@@ -264,7 +277,7 @@ const Page = () => {
         </AnimateWrapper>
       )}
 
-      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+      <AnimateWrapper delay={0} direction="up" amount={0.01}>
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {listCourseOfUser.map((course: CourseForm, index: number) => (
             <CoursesBlock key={index} {...course} />
@@ -272,8 +285,8 @@ const Page = () => {
         </div>
       </AnimateWrapper>
 
-      <AnimateWrapper delay={0.3} direction="up">
-        <div className="md:px-6 pt-4 pb-2">
+      <AnimateWrapper delay={0} direction="up">
+        <div className="md:px-6 pt-4 pb-2" id="course">
           <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
             Danh sách khóa học
           </h2>
@@ -282,11 +295,11 @@ const Page = () => {
           </p>
         </div>
       </AnimateWrapper>
-      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+      <AnimateWrapper delay={0} direction="up" amount={0.01} className="">
         <div className="w-full h-full flex items-end justify-end">
           <FilterBlock />
         </div>{" "}
-        <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
+        <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 pb-2 ">
           {listCourse.map((course: CourseForm, index: number) => (
             <CoursesBlock key={index} {...course} />
           ))}

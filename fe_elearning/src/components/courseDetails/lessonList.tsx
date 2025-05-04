@@ -17,7 +17,6 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   onCourseItemSelect,
   isExpanded,
 }) => {
-  console.log("🚀 ~ sections:", sections);
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
 
   const toggleSection = (index: number) => {
