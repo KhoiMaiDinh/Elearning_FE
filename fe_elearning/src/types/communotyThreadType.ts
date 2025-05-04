@@ -13,3 +13,10 @@ export interface CommunityThread {
     };
   };
 }
+
+export interface CommunityThreadReply {
+  id: string;
+  content: string;
+  createdAt: string;
+  vote_count: number;
+}

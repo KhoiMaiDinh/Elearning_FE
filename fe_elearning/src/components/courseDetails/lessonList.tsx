@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { PlayCircle, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  PlayCircle,
+  ChevronDown,
+  ChevronRight,
+  CheckCircle,
+} from "lucide-react";
 import { CourseItem, Section } from "@/types/courseType";
 
 interface CourseItemListProps {
@@ -76,29 +81,42 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                       <li
                         key={courseItem.title}
                         onClick={() => onCourseItemSelect(courseItem)}
-                        className={`group px-3 py-2 flex items-center gap-3 rounded-md cursor-pointer transition-colors ${
+                        className={`group px-3 py-2 flex items-center justify-between rounded-md cursor-pointer transition-colors ${
                           isActive
                             ? "bg-majorelleBlue/20 dark:bg-majorelleBlue/30"
                             : "hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10"
                         }`}
                       >
-                        <PlayCircle
-                          size={20}
-                          className={`text-majorelleBlue flex-shrink-0 transition-opacity group-hover:opacity-90 ${
-                            isActive ? "opacity-100" : "opacity-80"
-                          }`}
-                        />
-                        {isExpanded && (
-                          <span
-                            className={`text-sm ${
-                              isActive
-                                ? "font-semibold text-majorelleBlue"
-                                : "text-darkSilver dark:text-lightSilver"
+                        <div className="flex items-center gap-3">
+                          <PlayCircle
+                            size={20}
+                            className={`text-majorelleBlue flex-shrink-0 transition-opacity group-hover:opacity-90 ${
+                              isActive ? "opacity-100" : "opacity-80"
                             }`}
-                          >
-                            {courseItem.title}
-                          </span>
-                        )}
+                          />
+                          {isExpanded && (
+                            <span
+                              className={`text-sm ${
+                                isActive
+                                  ? "font-semibold text-majorelleBlue"
+                                  : "text-darkSilver dark:text-lightSilver"
+                              }`}
+                            >
+                              {courseItem.title}
+                            </span>
+                          )}
+                        </div>
+                        {/* ✅ Green checkmark if progress > 80% */}
+                        {isExpanded &&
+                          courseItem.progresses &&
+                          courseItem.progresses[0]?.watch_time_in_percentage &&
+                          courseItem.progresses[0]?.watch_time_in_percentage >
+                            80 && (
+                            <CheckCircle
+                              size={16}
+                              className="text-vividMalachite flex-shrink-0"
+                            />
+                          )}
                       </li>
                     );
                   })}

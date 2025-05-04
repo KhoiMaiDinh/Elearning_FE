@@ -51,4 +51,20 @@ const APIPostReview = async (course_id: string, data: any) => {
   return null;
 };
 
-export { APIPostComment, APIGetComment, APIPostReview };
+const APIGetReview = async (course_id: string) => {
+  try {
+    const response = await axiosInstance.get(`/courses/${course_id}/reviews`);
+    if (response.status === 200) {
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export { APIPostComment, APIGetComment, APIPostReview, APIGetReview };

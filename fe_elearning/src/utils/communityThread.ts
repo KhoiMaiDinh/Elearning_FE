@@ -22,7 +22,7 @@ const APIPostThreadReply = async (thread_id: string, data: any) => {
       `/threads/${thread_id}/replies`,
       data
     );
-    if (response.status === 201) {
+    if (response.status === 200) {
       return {
         data: response.data,
         status: response.status,

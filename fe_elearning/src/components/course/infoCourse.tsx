@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import CourseMain from "./courseMain";
 import { CourseForm } from "@/types/courseType";
 import { formatPrice } from "../formatPrice";
-
+import Popup from "../courseDetails/popup";
+import ReviewListUser from "./reviewListUser";
+import { APIGetReview } from "@/utils/comment";
 type infoCourse = {
   lecture: string;
   course: CourseForm;
@@ -21,6 +23,26 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
   );
 
   const [levelShow, setLevelShow] = useState<string | null>(null);
+  const [showReviews, setShowReviews] = useState(false); // State for reviews popup
+
+  const [reviews, setReviews] = useState<any[]>([]);
+  const handleGetReviews = async (id: string) => {
+    try {
+      const response = await APIGetReview(id);
+      if (response?.status === 200) {
+        setReviews(response.data);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (course.id) {
+      handleGetReviews(course.id);
+    }
+  }, [course.id]);
+
   useEffect(() => {
     if (course?.level === "BEGINNER") {
       setLevelShow("Cơ bản");
@@ -88,6 +110,14 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
           <p className="text-sm md:text-base text-black70 dark:text-AntiFlashWhite">
             <strong>Giá:</strong> {formatPrice(Number(course?.price))}
           </p>
+          <div className="flex flex-col w-full text-left font-sans gap-2">
+            <text
+              onClick={() => setShowReviews(true)} // Open reviews popup
+              className="text-blueberry underline"
+            >
+              Xem đánh giá
+            </text>
+          </div>
         </div>
       </div>
       <div className="flex flex-col font-sans">
@@ -119,6 +149,17 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
           <CourseMain course={course} />
         </div>
       </div>
+
+      {showReviews && (
+        <Popup onClose={() => setShowReviews(false)}>
+          <h3 className="text-lg font-semibold">Tất cả đánh giá</h3>
+          <div className="flex flex-col gap-4">
+            {reviews.map((review, index) => (
+              <ReviewListUser key={index} reviews={review} />
+            ))}
+          </div>
+        </Popup>
+      )}
     </div>
   );
 };

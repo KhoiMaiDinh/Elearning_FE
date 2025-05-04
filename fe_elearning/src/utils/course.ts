@@ -185,6 +185,18 @@ const APIGetEnrolledCourse = async () => {
   }
 };
 
+const APIUpsertProgressItemCourse = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(`/lectures/${id}/progress`, data);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error("Error during upsert progress:", err);
+  }
+};
+
 export {
   APIInitCourse,
   APIGetCourseById,
@@ -197,4 +209,5 @@ export {
   APIGetMyCourse,
   APIChangeCourseStatus,
   APIGetEnrolledCourse,
+  APIUpsertProgressItemCourse,
 };

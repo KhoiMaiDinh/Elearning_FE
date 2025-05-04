@@ -120,6 +120,10 @@ const LearnPage = () => {
                   videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoUrl} // videoUrl đã được đảm bảo là string nhờ kiểm tra
                   title={currentCourseItem.title}
                   coverPhoto={courseData?.thumbnail?.key}
+                  lecture_id={currentCourseItem.id}
+                  progress={
+                    currentCourseItem.progresses?.[0]?.watch_time_in_percentage
+                  }
                 />
               ) : (
                 <div className="p-4 text-center">

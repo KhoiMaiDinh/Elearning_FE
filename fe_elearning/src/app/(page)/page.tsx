@@ -4,7 +4,6 @@ import CoursesBlock from "@/components/block/courses-block";
 import InfoDashboard from "@/components/block/infoDashboard";
 import LecturersBlock from "@/components/block/lecturers-block";
 import { Button } from "@/components/ui/button";
-import lectureBlock from "@/types/lecturesBlockType";
 import {
   ArrowRight,
   ArrowRightCircle,
@@ -14,6 +13,7 @@ import {
   GraduationCap,
   Headset,
   IdCard,
+  Loader2,
   UsersRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -25,6 +25,7 @@ import { APIGetListLecture } from "@/utils/lecture";
 import { APIGetListCourse } from "@/utils/course";
 import BlurColor from "@/components/blurColor/blurColor";
 import { CourseForm } from "@/types/courseType";
+import { Lecture } from "@/types/registerLectureFormType";
 // const dataCourse = [
 //   {
 //     coverPhoto: "/images/course1.jpg",
@@ -103,7 +104,7 @@ import { CourseForm } from "@/types/courseType";
 export default function Page() {
   const router = useRouter();
 
-  const [listLecture, setListLecture] = useState<lectureBlock[]>([]);
+  const [listLecture, setListLecture] = useState<Lecture[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,34 +127,34 @@ export default function Page() {
 
   const handleGetListLecture = async () => {
     try {
+      setIsLoading(true);
       const response = await APIGetListLecture(paramsLecture);
       if (response && response.data) {
-        const data = response.data.map((item: any) => ({
-          username: item?.user?.username,
-          avatar: item?.user?.profile_image?.key,
-          name: item?.user?.first_name + " " + item?.user?.last_name,
-          rating: item?.rating || null,
-          major: item?.category?.translations[0]?.name,
-          description: item?.biography,
-          numberCourse: item?.total_courses || null,
-          numberStudent: item?.number_student || null,
-        }));
-        setListLecture(data);
+        setIsLoading(false);
+        setListLecture(response.data);
       } else {
+        setIsLoading(false);
         setError("Không tìm thấy dữ liệu");
       }
     } catch (err) {
+      setIsLoading(false);
       console.error("Error during get list lecture:", err);
     }
   };
 
   const handleGetListCourse = async () => {
     try {
+      setIsLoading(true);
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
         setListCourse(response.data);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setError("Không tìm thấy dữ liệu");
       }
     } catch (err) {
+      setIsLoading(false);
       console.error("Error during get list course:", err);
     }
   };
@@ -162,7 +163,11 @@ export default function Page() {
     handleGetListCourse();
   }, []);
 
-  return (
+  return isLoading ? (
+    <div className="w-full h-full flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  ) : (
     <div className="w-full min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite font-sans overflow-x-hidden">
       {/* Hero Section */}
 
@@ -361,7 +366,18 @@ export default function Page() {
                       initialOpacity={0}
                       className="transform transition-all hover:-translate-y-2"
                     >
-                      <LecturersBlock {...lecture} />
+                      <LecturersBlock
+                        avatar={lecture?.user?.profile_image?.key}
+                        name={
+                          lecture.user.first_name + " " + lecture.user.last_name
+                        }
+                        rating={lecture.user.rating}
+                        major={lecture.category.translations[0].name}
+                        numberCourse={lecture.total_courses}
+                        numberStudent={lecture.user.number_student}
+                        description={lecture.biography}
+                        username={lecture?.user?.username}
+                      />{" "}
                     </FadeContent>
                   ))}
                 </div>

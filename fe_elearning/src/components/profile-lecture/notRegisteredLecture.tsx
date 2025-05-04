@@ -54,11 +54,11 @@ const NotRegisteredLecture = () => {
       {!register && (
         <div>
           <div className="w-full flex flex-col items-center justify-center gap-7">
-            <text className="font-sans font-bold text-[24px] text-majorelleBlue flex-wrap text-center">
+            <text className="font-sans font-bold text-[24px] text-majorelleBlue dark:text-white flex-wrap text-center">
               Đăng ký ngay để trở thành giảng viên tại E-Learning!
             </text>
             <Button
-              className="w-32 hover:bg-majorelleBlue70 p-3 font-sans font-medium text-[16px] hover:shadow-md text-white bg-majorelleBlue"
+              className="w-32 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 p-3 font-sans font-medium text-[16px]  text-white "
               onClick={() => setRegister(true)}
             >
               Đăng ký

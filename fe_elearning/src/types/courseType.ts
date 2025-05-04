@@ -1,9 +1,10 @@
+import { User } from "next-auth";
 import { MediaType } from "./mediaType";
 import { Lecture } from "./registerLectureFormType";
 
 export interface VideoType {
   id: string;
-  video_duration?: number | null;
+  duration_in_seconds?: number | null;
 
   video: {
     key: string;
@@ -31,8 +32,8 @@ export interface CourseItem {
   section_id: string;
   status?: string;
   previous_position?: string;
-  video_duration?: number | null;
   fileUrl?: string;
+  progresses?: ProgressItem[];
 }
 
 export interface Section {
@@ -96,4 +97,19 @@ export interface CourseProgress {
   total: number;
   completed: number;
   progress: number;
+}
+
+export interface ProgressItem {
+  user_lesson_progress_id?: string;
+  user_id?: string;
+  lecture_id?: string;
+  course_id?: string;
+  watch_time_in_percentage?: number;
+  completed?: boolean;
+  createdAt?: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
+  deletedAt?: string | null;
+  user?: User;
 }

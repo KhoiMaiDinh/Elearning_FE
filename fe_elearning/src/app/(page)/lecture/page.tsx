@@ -11,6 +11,7 @@ import AnimateWrapper from "@/components/animations/animateWrapper";
 import { APIGetListLecture } from "@/utils/lecture";
 import { Lecture } from "@/types/registerLectureFormType";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 // const dataLecture: lectureBlock[] = [
 //   {
 //     avatar: "/images/avatar.jpg",
@@ -126,13 +127,17 @@ const Page = () => {
     handleGetLecture();
     window.scrollTo(0, 0);
   }, []);
-  return (
+  return loading ? (
+    <div className="w-full h-full flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  ) : (
     <div className="w-full h-full flex flex-col p-6  gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
       {/* header */}
       <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
         {" "}
         <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white ">
-          <AnimateWrapper delay={0.3} direction="left">
+          <AnimateWrapper direction="left">
             <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
               <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
                 Gặp gỡ đội ngũ{" "}
@@ -173,7 +178,7 @@ const Page = () => {
 
       {/* Giang vien uu tu */}
       <section className="py-12  overflow-hidden">
-        <AnimateWrapper delay={0.3} direction="up">
+        <AnimateWrapper direction="up">
           <div className="text-center mb-8">
             <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
               Gương mặt ưu tú
@@ -185,7 +190,7 @@ const Page = () => {
         </AnimateWrapper>
 
         <div className="relative w-full whitespace-nowrap">
-          <AnimateWrapper delay={0.3} direction="up">
+          <AnimateWrapper direction="up">
             <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
               {lecture.concat(lecture).map((lecture: Lecture, idx: number) => (
                 <div
@@ -205,7 +210,7 @@ const Page = () => {
       </section>
 
       {/* Danh sach giang vien */}
-      <AnimateWrapper delay={0.3} direction="up">
+      <AnimateWrapper direction="up">
         <div className="md:px-6 pt-4 pb-2" id="lecture">
           <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
             Danh sách giảng viên
@@ -216,7 +221,7 @@ const Page = () => {
           </p>
         </div>
       </AnimateWrapper>
-      <AnimateWrapper delay={0.3} direction="up" amount={0.01}>
+      <AnimateWrapper direction="up" amount={0.01}>
         <div className="w-full h-full flex items-end justify-end">
           <FilterBlock />
         </div>
@@ -230,6 +235,7 @@ const Page = () => {
               numberCourse={lecture.total_courses}
               numberStudent={lecture.user.number_student}
               description={lecture.biography}
+              username={lecture?.user?.username}
             />
           ))}
         </div>

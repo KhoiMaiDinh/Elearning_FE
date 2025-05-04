@@ -30,7 +30,7 @@ const courseItemSchema = yup.object().shape({
     .object()
     .shape({
       id: yup.string().required("ID của video không được để trống"),
-      video_duration: yup.number().nullable(),
+      duration_in_seconds: yup.number().nullable(),
       video: yup.object().shape({
         key: yup.string().required(),
         status: yup.string().oneOf(["uploaded", "validated", "pending"]),
@@ -54,7 +54,6 @@ const courseItemSchema = yup.object().shape({
   id: yup.string(),
   status: yup.string().optional(),
   previous_position: yup.string().optional(),
-  video_duration: yup.number().nullable().default(null),
 });
 
 interface CourseItemFormProps {
@@ -100,7 +99,6 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       video: initialValues?.video || null,
       resources: initialValues?.resources || undefined,
       is_preview: initialValues?.is_preview || false,
-      video_duration: initialValues?.video_duration || null,
       position: initialValues?.position || "",
       section_id: section.id,
       id: initialValues?.id || "",
@@ -123,8 +121,12 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
         title: data.title,
         is_preview: data.is_preview,
         section: { id: section.id },
-        video: data.video ? { id: data.video.id } : null,
-        video_duration: data.video_duration || null,
+        video: data.video
+          ? {
+              id: data.video.id,
+              duration_in_seconds: data.video.duration_in_seconds,
+            }
+          : null,
         description: data.description,
         resources: data.resources || undefined,
         previous_position: section.items?.length
@@ -189,7 +191,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
 
       const video: VideoType = {
         id,
-        video_duration: Math.round(duration),
+        duration_in_seconds: Math.round(duration),
         video: {
           key,
           status: "uploaded",
@@ -200,7 +202,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       };
 
       setValue("video", video);
-      setValue("video_duration", Math.round(duration));
+      setValue("video.duration_in_seconds", Math.round(duration));
       setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key);
 
       setTimeout(() => {

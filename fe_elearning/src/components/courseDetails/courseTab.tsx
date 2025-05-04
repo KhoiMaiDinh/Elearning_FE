@@ -21,7 +21,10 @@ import {
   APIPostThreadReply,
   APIGetThreadReply,
 } from "@/utils/communityThread";
-import { CommunityThread } from "@/types/communotyThreadType";
+import {
+  CommunityThread,
+  CommunityThreadReply,
+} from "@/types/communotyThreadType";
 import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
 import { Textarea } from "../ui/textarea";
 import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
@@ -53,7 +56,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [expandedThreadId, setExpandedThreadId] = useState<string | null>(null);
 
   const [communityPosts, setCommunityPosts] = useState<CommunityThread[]>([]);
-  const [replies, setReplies] = useState<{ [postId: string]: string[] }>({}); // Quản lý trả lời
+  const [replies, setReplies] = useState<CommunityThreadReply[]>([]); // Quản lý trả lời
   const [newReply, setNewReply] = useState(""); // Nội dung trả lời mới
   const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
 
@@ -117,7 +120,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     try {
       const response = await APIPostThreadReply(threadId, newReplyData);
 
-      if (response?.status === 201) {
+      if (response?.status === 200) {
         setNewReply("");
         handleGetThread();
         setShowAlertSuccess(true);
@@ -403,7 +406,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                 className="border border-gray-200 dark:border-darkSilver/30 rounded-lg p-4 shadow-sm bg-white dark:bg-eerieBlack"
               >
                 <div className="flex justify-between items-start">
-                  <h4 className="text-xl font-semibold text-majorelleBlue">
+                  <h4 className="text-xl font-semibold text-majorelleBlue dark:text-white">
                     {post.title}
                   </h4>
                   <Button
@@ -434,13 +437,10 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                         Trả lời
                       </h5>
 
-                      {replies[post.id]?.map((reply, index) => (
-                        <p
-                          key={index}
-                          className="text-darkSilver dark:text-lightSilver pl-4 border-l border-majorelleBlue mb-2"
-                        >
-                          {reply}
-                        </p>
+                      {replies.map((reply, index) => (
+                        <div key={index}>
+                          <p>{reply.content}</p>
+                        </div>
                       ))}
 
                       <div className="flex gap-2 mt-2">

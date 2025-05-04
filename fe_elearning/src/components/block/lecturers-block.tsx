@@ -31,6 +31,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
   numberStudent,
   username,
 }) => {
+  console.log("🚀 ~ username:", username);
   const { theme } = useTheme();
   const router = useRouter();
   return (

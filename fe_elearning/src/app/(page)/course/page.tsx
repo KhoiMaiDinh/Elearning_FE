@@ -7,6 +7,7 @@ import { CourseForm } from "@/types/courseType";
 import { APIGetEnrolledCourse, APIGetListCourse } from "@/utils/course";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 // const dataCourse = [
 //   {
@@ -149,17 +150,21 @@ const Page = () => {
 
   const handleGetListCourse = async () => {
     try {
+      setIsLoading(true);
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
         setListCourse(response.data);
       }
+      setIsLoading(false);
     } catch (err) {
       console.error("Error during get list course:", err);
+      setIsLoading(false);
     }
   };
 
   const handleGetListCourseOfUser = async () => {
     try {
+      setIsLoading(true);
       const response = await APIGetEnrolledCourse();
       if (response && response.data) {
         const data = listCourse.filter((item: CourseForm) =>
@@ -167,8 +172,10 @@ const Page = () => {
         );
         setListCourseOfUser(data);
       }
+      setIsLoading(false);
     } catch (err) {
       console.error("Error during get list course of user:", err);
+      setIsLoading(false);
     }
   };
 
@@ -184,6 +191,11 @@ const Page = () => {
   }, [paramsCourse]);
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
+      {isLoading && (
+        <div className="w-full h-full flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      )}
       {/* header */}
       <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
         {" "}
