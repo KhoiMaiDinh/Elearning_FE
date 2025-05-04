@@ -124,7 +124,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   return (
     <div className="relative bg-white dark:bg-richBlack rounded-lg shadow-md p-4">
-      <h2 className="text-xl font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-4">
+      <h2 className="text-xl font-semibold text-cosmicCobalt dark:text-AntiFlashWhite/80 mb-4">
         {title}
       </h2>
       <div className="relative aspect-video">

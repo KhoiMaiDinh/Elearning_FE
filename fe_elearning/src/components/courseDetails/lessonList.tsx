@@ -38,7 +38,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   return (
     <div className="h-full overflow-y-auto px-2 pb-6">
       <h3
-        className={`py-4 px-3 text-lg font-semibold text-majorelleBlue ${
+        className={`py-4 px-3 text-lg font-semibold text-majorelleBlue dark:text-white/80 ${
           !isExpanded ? "text-center" : ""
         }`}
       >

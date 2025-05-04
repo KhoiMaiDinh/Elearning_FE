@@ -10,6 +10,7 @@ import AnimateWrapper from "@/components/animations/animateWrapper";
 import { APIGetFullCourse } from "@/utils/course";
 import { useParams } from "next/navigation";
 import ButtonReview from "@/components/courseDetails/buttonReview";
+import ButtonMore from "@/components/courseDetails/buttonMore";
 // Hàm helper để kiểm tra và lấy video URL
 const getVideoUrl = (
   item: CourseItem | Section | undefined
@@ -80,9 +81,12 @@ const LearnPage = () => {
           <Loader2 className="animate-spin" size={24} />
         </div>
       ) : (
-        <div className="min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite">
+        <div className="min-h-screen bg-AntiFlashWhite p-4 gap-4 flex flex-col dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite ">
+          <div className="flex flex-col lg:flex-row gap-4 ">
+            <p className="text-2xl font-bold">{courseData?.title}</p>
+          </div>
           {/* Video và Danh mục bài học */}
-          <div className="flex flex-col lg:flex-row gap-4 p-4">
+          <div className="flex flex-col lg:flex-row gap-4 ">
             {/* Nút mở/thu nhỏ sidebar */}
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -134,7 +138,7 @@ const LearnPage = () => {
           </div>
 
           {/* Tabs */}
-          <div className="p-4">
+          <div className="">
             {courseData && (
               <CourseTabs
                 currentCourseItem={currentCourseItem}
@@ -152,6 +156,7 @@ const LearnPage = () => {
       )}
 
       {courseData?.id && <ButtonReview course_id={courseData?.id || ""} />}
+      {courseData?.id && <ButtonMore course_id={courseData?.id || ""} />}
     </AnimateWrapper>
   );
 };
