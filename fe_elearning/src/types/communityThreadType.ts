@@ -1,3 +1,5 @@
+import { UserType } from "./userType";
+
 export interface CommunityThread {
   id: string;
   title: string;
@@ -17,6 +19,8 @@ export interface CommunityThread {
 export interface CommunityThreadReply {
   id: string;
   content: string;
+  author: UserType;
   createdAt: string;
   vote_count: number;
+  has_upvoted?: boolean;
 }

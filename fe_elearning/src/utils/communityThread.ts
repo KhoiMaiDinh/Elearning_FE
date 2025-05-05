@@ -67,4 +67,43 @@ const APIGetThread = async (lecture_id: string) => {
   }
 };
 
-export { APIPostThread, APIPostThreadReply, APIGetThreadReply, APIGetThread };
+const APILikeThreadReply = async (reply_id: string) => {
+  try {
+    const response = await axiosInstance.post(`/replies/${reply_id}/upvote`);
+    if (response.status === 204) {
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error during like thread reply:", error);
+    throw error;
+  }
+};
+
+const APIUnLikeThreadReply = async (reply_id: string) => {
+  try {
+    const response = await axiosInstance.delete(`/replies/${reply_id}/upvote`);
+    if (response.status === 204) {
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error during un like thread reply:", error);
+    throw error;
+  }
+};
+
+export {
+  APIPostThread,
+  APIPostThreadReply,
+  APIGetThreadReply,
+  APIGetThread,
+  APILikeThreadReply,
+  APIUnLikeThreadReply,
+};

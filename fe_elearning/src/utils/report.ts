@@ -2,7 +2,7 @@ import axiosInstance from "./axios";
 const APICreateReport = async (data: any) => {
   try {
     const response = await axiosInstance.post("/reports", data);
-    if (response.status === 200) {
+    if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm

@@ -3,27 +3,40 @@ import { Flag, Star, X } from "lucide-react";
 import { APICreateReport } from "@/utils/report";
 import AlertSuccess from "../alert/AlertSuccess";
 import AlertError from "../alert/AlertError";
+import { useForm, Controller, Resolver } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object({
+  content: yup.string().required("Nội dung báo cáo không được để trống"),
+});
 
 export default function ButtonMore({ course_id }: { course_id: string }) {
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<any>({
+    resolver: yupResolver(schema) as unknown as Resolver<any>,
+    defaultValues: {
+      content: "",
+    },
+  });
+
   const [showMore, setShowMore] = useState(false);
   const [showReport, setShowReport] = useState(false);
-  const [content, setContent] = useState("");
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [alertDescription, setAlertDescription] = useState("");
 
-  const handleCreateReport = async () => {
-    const data = {
-      type: "COURSE",
-      content_id: course_id,
-      reason: content,
-    };
+  const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
-    if (response?.status === 200) {
+    if (response?.status === 201) {
       setShowReport(false);
-      setContent("");
       setShowAlertSuccess(true);
       setAlertDescription("Báo cáo đã được gửi thành công");
+      handleClearData();
       setTimeout(() => {
         setShowAlertSuccess(false);
       }, 3000);
@@ -34,6 +47,19 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
         setShowAlertError(false);
       }, 3000);
     }
+  };
+
+  const onSubmit = async (data: any) => {
+    const dataReport = {
+      type: "COURSE",
+      content_id: course_id,
+      reason: data.content,
+    };
+    await handleCreateReport(dataReport);
+  };
+
+  const handleClearData = () => {
+    setValue("content", "");
   };
 
   return (
@@ -88,21 +114,23 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
               Gửi báo cáo khóa học
             </h2>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Submit logic ở đây
-                setShowReport(false);
-              }}
+              onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-4"
             >
-              <textarea
-                required
-                placeholder="Nội dung báo cáo..."
-                className="min-h-[100px] w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-majorelleBlue dark:bg-black dark:text-white"
+              <Controller
+                control={control}
+                name="content"
+                render={({ field }: { field: any }) => (
+                  <textarea
+                    {...field}
+                    required
+                    placeholder="Nội dung báo cáo..."
+                    className="min-h-[100px] w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-majorelleBlue dark:bg-black dark:text-white"
+                  />
+                )}
               />
               <button
                 type="submit"
-                onClick={handleCreateReport}
                 className="self-end rounded bg-majorelleBlue px-4 py-2 text-white hover:bg-opacity-80"
               >
                 Gửi báo cáo

@@ -24,10 +24,11 @@ import {
 import {
   CommunityThread,
   CommunityThreadReply,
-} from "@/types/communotyThreadType";
+} from "@/types/communityThreadType";
 import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
 import { Textarea } from "../ui/textarea";
 import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
+import ReplyList from "./replyList";
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -438,9 +439,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                       </h5>
 
                       {replies.map((reply, index) => (
-                        <div key={index}>
-                          <p>{reply.content}</p>
-                        </div>
+                        <ReplyList key={index} replies={reply} />
                       ))}
 
                       <div className="flex gap-2 mt-2">
