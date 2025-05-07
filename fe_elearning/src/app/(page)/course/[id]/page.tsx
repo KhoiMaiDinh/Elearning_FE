@@ -115,6 +115,15 @@ const Page = () => {
                 >
                   Thêm bài học
                 </button>
+
+                <button
+                  className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 text-white px-4 py-2 rounded-md"
+                  onClick={() => {
+                    router.push(`/course-details/${id}`);
+                  }}
+                >
+                  Xem khóa học
+                </button>
               </div>
             </div>
           )}

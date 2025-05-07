@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, MessageSquare, Star, Users, Send } from "lucide-react";
+import {
+  Download,
+  MessageSquare,
+  Star,
+  Users,
+  Send,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; // Giả sử bạn có component Input
 import { CourseItem, Section } from "@/types/courseType";
@@ -29,6 +37,7 @@ import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
 import { Textarea } from "../ui/textarea";
 import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
 import ReplyList from "./replyList";
+import ReportButton from "./report";
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -410,15 +419,23 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                   <h4 className="text-xl font-semibold text-majorelleBlue dark:text-white">
                     {post.title}
                   </h4>
-                  <Button
-                    variant="link"
-                    className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
-                    onClick={() =>
-                      setExpandedThreadId(isExpanded ? null : post.id)
-                    }
-                  >
-                    {isExpanded ? "Ẩn chi tiết" : "Chi tiết"}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="link"
+                      className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
+                      onClick={() =>
+                        setExpandedThreadId(isExpanded ? null : post.id)
+                      }
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="w-6 h-6" />
+                      ) : (
+                        <ChevronRight className="w-6 h-6" />
+                      )}
+                    </Button>
+
+                    <ReportButton course_id={post.id} type="THREAD" />
+                  </div>
                 </div>
 
                 {isExpanded && (

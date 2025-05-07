@@ -4,14 +4,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Eye } from "lucide-react";
 
 // ================== IMPORT COMPONENTS ==================
 import { DataTable } from "@/components/table/DataTable";
 import SkeletonTable from "@/components/skeleton/SkeletonTable";
 import { RootState } from "@/constants/store";
 import { APIGetMyCourse } from "@/utils/course";
-import { APIGetComment } from "@/utils/comment";
+import { APIGetComment, APIGetReview } from "@/utils/comment";
 import ColumnCourse from "../table/ColumnCourse";
 import { clearCourse } from "@/constants/course";
 import { setStatisticItemCourse } from "@/constants/statisticItemCourse";
@@ -19,6 +19,11 @@ import { clearStatisticItemCourse } from "@/constants/statisticItemCourse";
 import StaticDetails from "./staticDetails";
 import { setComment } from "@/constants/comment";
 import { clearComment } from "@/constants/comment";
+import { formatPrice } from "../formatPrice";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import Popup from "../courseDetails/popup";
+import ReviewListUser from "../course/reviewListUser";
 // ================== PAGE COMPONENT ==================
 const Page = () => {
   // =============== DECLARE ===============
@@ -26,12 +31,12 @@ const Page = () => {
   const searchParams = useSearchParams();
   const course = useSelector((state: RootState) => state.course.courseInfo);
   const comments = useSelector((state: RootState) => state.comment.comment);
-  console.log("🚀 ~ Page ~ comments:", comments);
-
+  const router = useRouter();
   const [dataTable, setDataTable] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showReviews, setShowReviews] = useState(false); // State for reviews popup
 
   // =============== FUNCTION ===============
   const handleGetCourseMe = async () => {
@@ -49,6 +54,18 @@ const Page = () => {
       setError("Không thể tải dữ liệu khoá học.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [reviews, setReviews] = useState<any[]>([]);
+  const handleGetReviews = async (id: string) => {
+    try {
+      const response = await APIGetReview(id);
+      if (response?.status === 200) {
+        setReviews(response.data);
+      }
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -88,6 +105,7 @@ const Page = () => {
           formElement.getBoundingClientRect().top + window.pageYOffset - 100;
         window.scrollTo({ top: offsetTop, behavior: "smooth" });
       }
+      handleGetReviews(course.id);
     }
   }, [course?.id]);
 
@@ -141,7 +159,9 @@ const Page = () => {
               />
               <InfoRow
                 label="Giá:"
-                value={course?.price ? `${course.price} đ` : "Miễn phí"}
+                value={
+                  course?.price ? `${formatPrice(course.price)}` : "Miễn phí"
+                }
               />
               <InfoRow
                 label="Trạng thái:"
@@ -155,6 +175,33 @@ const Page = () => {
                     : "Không xác định"
                 }
               />
+
+              <InfoRow
+                label="Số lượng học viên:"
+                value={course?.total_enrolled}
+              />
+              <InfoRow
+                label="Đánh giá trung bình:"
+                value={`${course?.avg_rating} / 5`}
+              />
+            </div>
+
+            <div className="flex flex-row gap-2">
+              <Button
+                variant="outline"
+                className="bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
+                onClick={() => router.push(`/course-details/${course?.id}`)}
+              >
+                <Eye />
+                Chế độ xem
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
+                onClick={() => setShowReviews(true)} // Open reviews popup
+              >
+                Xem đánh giá
+              </Button>
             </div>
           </div>
 
@@ -220,6 +267,17 @@ const Page = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showReviews && (
+        <Popup onClose={() => setShowReviews(false)}>
+          <h3 className="text-lg font-semibold">Tất cả đánh giá</h3>
+          <div className="flex flex-col gap-4">
+            {reviews.map((review, index) => (
+              <ReviewListUser key={index} reviews={review} />
+            ))}
+          </div>
+        </Popup>
       )}
     </div>
   );

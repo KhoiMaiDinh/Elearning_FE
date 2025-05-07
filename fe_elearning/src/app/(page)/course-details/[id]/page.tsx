@@ -49,15 +49,29 @@ const LearnPage = () => {
   >(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
 
   // Lấy video URL từ currentCourseItem
   // const videoUrl = getVideoUrl(currentCourseItem);
+
+  useEffect(() => {
+    if (userInfo.id) {
+      if (userInfo.id === courseData?.instructor?.user?.id) {
+        setIsOwner(true);
+      }
+    }
+  }, [userInfo, courseData]);
 
   const handleGetCourseData = async () => {
     setIsLoading(true);
     const response = await APIGetFullCourse(id as string);
     if (response?.status === 200) {
       setCourseData(response?.data);
+      const sortedSections = response.data.sections.sort(
+        (a: Section, b: Section) => a.position.localeCompare(b.position)
+      );
+      setSections(sortedSections);
     }
     setIsLoading(false);
   };
@@ -67,10 +81,10 @@ const LearnPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (courseData?.sections) {
-      setCurrentCourseItem(courseData?.sections[0].items[0]);
+    if (courseData?.sections && sections) {
+      setCurrentCourseItem(sections[0].items[0]);
     }
-  }, [courseData]);
+  }, [courseData, sections]);
 
   useEffect(() => {
     if (currentCourseItem?.video) {
@@ -167,8 +181,12 @@ const LearnPage = () => {
         </div>
       )}
 
-      {courseData?.id && <ButtonReview course_id={courseData?.id || ""} />}
-      {courseData?.id && <ButtonMore course_id={courseData?.id || ""} />}
+      {courseData?.id && !isOwner && (
+        <ButtonReview course_id={courseData?.id || ""} />
+      )}
+      {courseData?.id && !isOwner && (
+        <ButtonMore course_id={courseData?.id || ""} />
+      )}
     </AnimateWrapper>
   );
 };

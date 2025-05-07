@@ -90,6 +90,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CourseItem>({
     resolver: yupResolver(courseItemSchema) as unknown as Resolver<CourseItem>,
@@ -97,7 +98,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       title: initialValues?.title || "",
       description: initialValues?.description || "",
       video: initialValues?.video || null,
-      resources: initialValues?.resources || undefined,
+      resources: initialValues?.resources || [],
       is_preview: initialValues?.is_preview || false,
       position: initialValues?.position || "",
       section_id: section.id,
@@ -107,13 +108,35 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     },
   });
 
+  // Watch for video changes
+  const currentVideo = watch("video");
+
   useEffect(() => {
+    // Set initial video preview if exists
     if (initialValues?.video?.video?.key) {
       setVideoPreview(
         process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.video.key
       );
     }
+
+    // Set initial document previews if exists
+    if (initialValues?.resources?.length) {
+      const previews = initialValues.resources.map((resource) => ({
+        name: resource.name,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.resource_file.id}`,
+      }));
+      setDocumentPreviews(previews);
+    }
   }, [initialValues]);
+
+  // Update video preview when video changes
+  useEffect(() => {
+    if (currentVideo?.video?.key) {
+      setVideoPreview(
+        process.env.NEXT_PUBLIC_BASE_URL_VIDEO + currentVideo.video.key
+      );
+    }
+  }, [currentVideo]);
 
   const handleAddCourseItem = async (data: CourseItem) => {
     try {
@@ -128,24 +151,35 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             }
           : null,
         description: data.description,
-        resources: data.resources || undefined,
-        previous_position: section.items?.length
-          ? section.items[section.items.length - 1].position
-          : null,
+        resources: data.resources || [],
+        previous_position:
+          initialValues?.position ||
+          (section.items?.length
+            ? section.items[section.items.length - 1].position
+            : null),
+        id: initialValues?.id, // Include id for editing mode
       };
 
       const response = await APIInitCourseItem(payload);
-      if (response?.status === 201) {
+      if (response?.status === 201 || response?.status === 200) {
         setShowAlertSuccess(true);
-        setDescription("Bài giảng đã được thêm thành công!");
+        setDescription(
+          initialValues
+            ? "Bài giảng đã được cập nhật thành công!"
+            : "Bài giảng đã được thêm thành công!"
+        );
         setTimeout(() => setShowAlertSuccess(false), 3000);
         setCreatedItem(response.data);
         onSave();
       }
     } catch (error) {
-      console.error("Error adding course item:", error);
+      console.error("Error handling course item:", error);
       setShowAlertError(true);
-      setDescription("Không thể thêm bài giảng");
+      setDescription(
+        initialValues
+          ? "Không thể cập nhật bài giảng"
+          : "Không thể thêm bài giảng"
+      );
       setTimeout(() => setShowAlertError(false), 3000);
     }
   };
@@ -371,12 +405,72 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
           control={control}
           render={({ field }) => (
             <div className="space-y-2">
+              {currentVideo && (
+                <div className="mb-4">
+                  <p className="font-medium mb-2">Video hiện tại:</p>
+                  {currentVideo.video.status === "validated" &&
+                    videoPreview && (
+                      <>
+                        <VideoPlayer
+                          videoUrl={videoPreview}
+                          title="Video Preview"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setValue("video", null);
+                            setVideoPreview(null);
+                          }}
+                          className="mt-2 bg-redPigment text-white hover:bg-redPigment/80"
+                        >
+                          Xóa video
+                        </Button>
+                      </>
+                    )}
+
+                  {currentVideo.video.status === "pending" && (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-yellow-700">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <p>Video đang được xử lý...</p>
+                      </div>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setValue("video", null);
+                          setVideoPreview(null);
+                        }}
+                        className="mt-2 bg-redPigment text-white hover:bg-redPigment/80"
+                      >
+                        Xóa video
+                      </Button>
+                    </div>
+                  )}
+
+                  {currentVideo.video.status === "rejected" && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-red-700">
+                        <p className="text-sm text-red-600">
+                          ⛔ Video đã bị từ chối
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <InputRegisterLecture
                 {...field}
                 error={errors.video?.message}
-                labelText={`Video bài ${
-                  (section.items?.length || 0) + 1
-                } (Phần ${section.position})`}
+                labelText={`${
+                  currentVideo
+                    ? currentVideo.video.status === "rejected"
+                      ? "Upload lại video"
+                      : "Thay thế video"
+                    : "Thêm video"
+                } bài ${(section.items?.length || 0) + 1} (Phần ${
+                  section.position
+                })`}
                 type="file"
                 accept="video/*"
                 disabled={isVideoUploading}
@@ -400,10 +494,6 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                   </p>
                 </div>
               )}
-
-              {videoPreview && !isVideoUploading && (
-                <VideoPlayer videoUrl={videoPreview} title="Video Preview" />
-              )}
             </div>
           )}
         />
@@ -415,7 +505,9 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
             <div className="space-y-2">
               <InputRegisterLecture
                 {...field}
-                labelText="Tài liệu bài giảng"
+                labelText={`${
+                  field.value?.length ? "Thêm tài liệu" : "Tài liệu bài giảng"
+                }`}
                 type="file"
                 accept=".pdf,.doc,.docx"
                 multiple
@@ -446,36 +538,34 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 </div>
               ))}
 
-              {documentPreviews.length > 0 && (
+              {field.value?.length > 0 && (
                 <div>
                   <p className="font-medium">📎 Tài liệu đã tải lên:</p>
                   <ul className="list-disc pl-5">
-                    {documentPreviews.map((doc, index) => (
+                    {field.value.map((resource, index) => (
                       <li
                         key={index}
                         className="flex justify-between items-center"
                       >
                         <a
-                          href={doc.url}
+                          href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.resource_file.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-LavenderIndigo/80 hover:underline"
                         >
-                          {doc.name}
+                          {resource.name}
                         </a>
                         <button
                           type="button"
                           onClick={() => {
+                            const updatedResources = field.value.filter(
+                              (_, i) => i !== index
+                            );
+                            field.onChange(updatedResources);
                             const updatedPreviews = documentPreviews.filter(
                               (_, i) => i !== index
                             );
                             setDocumentPreviews(updatedPreviews);
-
-                            const currentResources = field.value || [];
-                            const updatedResources = currentResources.filter(
-                              (_, i) => i !== index
-                            );
-                            field.onChange(updatedResources);
                           }}
                           className="text-redPigment ml-2"
                         >

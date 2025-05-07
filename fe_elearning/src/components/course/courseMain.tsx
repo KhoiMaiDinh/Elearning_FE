@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -14,10 +14,20 @@ type CourseMainProps = {
 
 // Component chính
 const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
+  const [sections, setSections] = useState<Section[]>([]);
+
+  useEffect(() => {
+    if (course?.sections) {
+      const sortedSections = course.sections.sort((a: Section, b: Section) =>
+        a.position.localeCompare(b.position)
+      );
+      setSections(sortedSections);
+    }
+  }, [course?.sections]);
   return (
     <div className="p-4">
       <Accordion type="multiple" className="space-y-4 font-sans">
-        {course.sections?.map((section, sectionIndex) => (
+        {sections?.map((section, sectionIndex) => (
           <AccordionItem
             key={sectionIndex}
             value={`section-${sectionIndex}`}

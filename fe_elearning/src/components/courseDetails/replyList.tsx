@@ -8,6 +8,7 @@ import {
   APIUnLikeThreadReply,
 } from "@/utils/communityThread";
 import { Heart } from "lucide-react";
+import ReportButton from "./report";
 interface ReplyListProps {
   replies: CommunityThreadReply;
 }
@@ -43,7 +44,7 @@ const ReplyList = ({ replies }: ReplyListProps) => {
 
   return (
     <Card className="font-sans">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 justify-between items-center flex flex-row">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
             <Avatar>
@@ -71,6 +72,8 @@ const ReplyList = ({ replies }: ReplyListProps) => {
             </div>
           </div>
         </div>
+
+        <ReportButton course_id={replies.id} type="REPLY" />
       </CardHeader>
 
       <CardContent className="font-sans text-sm">

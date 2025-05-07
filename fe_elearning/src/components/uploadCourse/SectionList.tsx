@@ -68,20 +68,18 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
                 />
               ) : item.video.video.status === "uploaded" ? (
                 <div>
-                  <div className="w-full max-w-sm bg-gray-200 rounded-full h-2.5">
+                  <div className="w-full max-w-sm bg-gray/20 rounded-full h-2.5">
                     <div
                       className="bg-blue-600 h-2.5 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray/60 mt-1">
                     ⏳ Đang xử lý video...
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-red-600">
-                  ⛔ Video đang được kiểm duyệt
-                </p>
+                <p className="text-sm text-red-600">⛔ Video đã bị từ chối</p>
               )}
             </div>
           )}
@@ -234,7 +232,7 @@ const SectionList: React.FC<SectionListProps> = ({
                     className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
                     onClick={() => setIsAddingCourseItem(index)}
                   >
-                    ➕ Thêm bài giảng
+                    + Thêm bài giảng
                   </Button>
                 )}
               </div>

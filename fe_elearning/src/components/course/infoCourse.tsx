@@ -1,7 +1,7 @@
 import { Star, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import CourseMain from "./courseMain";
-import { CourseForm } from "@/types/courseType";
+import { CourseForm, Section } from "@/types/courseType";
 import { formatPrice } from "../formatPrice";
 import Popup from "../courseDetails/popup";
 import ReviewListUser from "./reviewListUser";
@@ -18,7 +18,10 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
   const totalDuration = course.sections?.reduce(
     (total, section) =>
       total +
-      section.items.reduce((sum, item) => sum + (item.video_duration || 0), 0),
+      section.items.reduce(
+        (sum, item) => sum + (item.video?.duration_in_seconds || 0),
+        0
+      ),
     0
   );
 
@@ -52,6 +55,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
       setLevelShow("Nâng cao");
     }
   }, [course?.level]);
+
   return (
     <div className="flex flex-col w-full md:gap-8 gap-4">
       <div className="flex flex-col md:flex-row gap-4 w-full">

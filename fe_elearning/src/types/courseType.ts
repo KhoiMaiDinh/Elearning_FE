@@ -9,7 +9,7 @@ export interface VideoType {
 
   video: {
     key: string;
-    status: "uploaded" | "validated" | "pending";
+    status: "uploaded" | "validated" | "pending" | "rejected";
     bucket: string;
     rejection_reason: string | null;
   };
