@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { CourseProgress } from "@/types/courseType";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { formatPrice } from "../formatPrice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -34,6 +36,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   courseProgress,
 }) => {
   const router = useRouter();
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const [levelShow, setLevelShow] = useState<string | null>(null);
 
@@ -105,7 +108,9 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             <Button
               className="bg-custom-gradient-button-violet w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
               onClick={() => {
-                router.push(`/checkout/${id}`);
+                userInfo.id
+                  ? router.push(`/checkout/${id}`)
+                  : router.push("/login");
               }}
             >
               Đăng ký ngay

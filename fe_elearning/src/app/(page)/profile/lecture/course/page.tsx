@@ -156,7 +156,7 @@ const UploadCourse: React.FC = () => {
       level: "",
       price: 0,
       thumbnail: null,
-      course: [],
+      sections: [],
     },
   });
 
@@ -215,10 +215,10 @@ const UploadCourse: React.FC = () => {
     if (response?.status === 200) {
       const formattedData = response.data.map((item: any) => ({
         id: item.slug,
-        value: item.translations[0].name,
+        value: item?.translations[0]?.name,
         children: item.children?.map((child: any) => ({
           id: child.slug,
-          value: child.translations[0].name,
+          value: child?.translations[0]?.name,
         })),
       }));
       setCategoryData(formattedData);

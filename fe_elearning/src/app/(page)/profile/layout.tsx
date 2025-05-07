@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -12,6 +13,7 @@ export default function RootLayout({
   const router = useRouter();
   const pathname = usePathname();
 
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   // Xác định nút nào đang active dựa trên đường dẫn
   const isStudentActive = pathname.includes("/profile/student");
   const isLectureActive = pathname.includes("/profile/lecture");
@@ -19,6 +21,14 @@ export default function RootLayout({
   const handleButtonClick = (type: string) => {
     router.push(`/profile/${type === "student" ? "student" : "lecture"}`);
   };
+
+  useEffect(() => {
+    if (userInfo.id) {
+      router.push("/profile/student");
+    } else {
+      router.push("/login");
+    }
+  }, [userInfo.id]);
 
   return (
     <div className="w-full h-full p-4 flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue overflow-auto">

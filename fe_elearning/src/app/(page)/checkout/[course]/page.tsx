@@ -8,7 +8,7 @@ import { APIGetFullCourse } from "@/utils/course";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 export default function CheckoutSinglePage({
   params,
 }: {
@@ -26,12 +26,17 @@ export default function CheckoutSinglePage({
       setLoading(false);
     }
   };
-  useEffect(() => {
-    handleGetDetailCourse();
-  }, []);
 
+  const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
+  useEffect(() => {
+    if (userInfo.id) {
+      handleGetDetailCourse();
+    } else {
+      router.push("/login");
+    }
+  }, [userInfo.id]);
   return !loading ? (
     <CheckoutPage
       mode="single"

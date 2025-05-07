@@ -369,13 +369,15 @@ export default function Page() {
                       <LecturersBlock
                         avatar={lecture?.user?.profile_image?.key}
                         name={
-                          lecture.user.first_name + " " + lecture.user.last_name
+                          lecture?.user?.first_name +
+                          " " +
+                          lecture?.user?.last_name
                         }
-                        rating={lecture.user.rating}
-                        major={lecture.category.translations[0].name}
-                        numberCourse={lecture.total_courses}
-                        numberStudent={lecture.user.number_student}
-                        description={lecture.biography}
+                        rating={lecture?.user?.rating}
+                        major={lecture?.category?.translations[0]?.name}
+                        numberCourse={lecture?.total_courses}
+                        numberStudent={lecture?.user?.number_student}
+                        description={lecture?.biography}
                         username={lecture?.user?.username}
                       />{" "}
                     </FadeContent>

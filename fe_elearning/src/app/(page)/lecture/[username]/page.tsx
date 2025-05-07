@@ -118,7 +118,7 @@ const TeacherProfile = () => {
               <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">
-                  {teacherData?.category.translations[0].name}
+                  {teacherData?.category?.translations[0]?.name}
                 </Badge>
               </div>
             </div>

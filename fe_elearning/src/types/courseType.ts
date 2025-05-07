@@ -1,6 +1,7 @@
 import { User } from "next-auth";
 import { MediaType } from "./mediaType";
 import { Lecture } from "./registerLectureFormType";
+import { UserType } from "./userType";
 
 export interface VideoType {
   id: string;
@@ -111,5 +112,5 @@ export interface ProgressItem {
   updatedAt?: string;
   updatedBy?: string;
   deletedAt?: string | null;
-  user?: User;
+  user?: UserType;
 }

@@ -2,30 +2,38 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 const VnpayReturnPage = () => {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [result, setResult] = useState<"success" | "fail" | null>(null);
   const [message, setMessage] = useState("Đang xử lý...");
 
   useEffect(() => {
-    const transactionStatus = searchParams.get("vnp_TransactionStatus");
-    const responseCode = searchParams.get("vnp_ResponseCode");
+    if (userInfo.id) {
+      setIsLoading(true);
+      const transactionStatus = searchParams.get("vnp_TransactionStatus");
+      const responseCode = searchParams.get("vnp_ResponseCode");
 
-    if (transactionStatus === "00" && responseCode === "00") {
-      setResult("success");
-      setMessage("🎉 Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ.");
+      if (transactionStatus === "00" && responseCode === "00") {
+        setResult("success");
+        setMessage("🎉 Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ.");
+      } else {
+        setResult("fail");
+        const reason = getFailReason(responseCode);
+        setMessage(`❌ Thanh toán không thành công. Lý do: ${reason}`);
+      }
     } else {
-      setResult("fail");
-      const reason = getFailReason(responseCode);
-      setMessage(`❌ Thanh toán không thành công. Lý do: ${reason}`);
+      router.push("/login");
     }
-  }, [searchParams]);
+  }, [searchParams, userInfo.id]);
 
   const getFailReason = (code: string | null) => {
     const reasons: Record<string, string> = {
@@ -48,7 +56,7 @@ const VnpayReturnPage = () => {
 
   const getParam = (key: string) => searchParams.get(key) || "";
 
-  return (
+  return !isLoading ? (
     <div className="min-h-screen bg-gradient-to-tr from-[#f0f4ff] via-white to-[#e6f7ff] dark:from-eerieBlack dark:via-black dark:to-eerieBlack flex items-center justify-center px-4 py-10">
       <div className="relative w-full max-w-2xl bg-card shadow-2xl rounded-3xl p-6 md:p-10 border border-border space-y-6">
         <div className="absolute top-4 left-4">
@@ -108,6 +116,10 @@ const VnpayReturnPage = () => {
           </Button>
         </div>
       </div>
+    </div>
+  ) : (
+    <div className="flex justify-center items-center h-screen">
+      <Loader2 className="w-10 h-10 animate-spin" />
     </div>
   );
 };

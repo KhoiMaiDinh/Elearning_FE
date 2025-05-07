@@ -24,7 +24,7 @@ const createUserSlice = createSlice({
     setUser: (state, action) => {
       state.userInfo = action.payload ?? state.userInfo;
     },
-    clearUser: (state, action) => {
+    clearUser: (state) => {
       state.userInfo = initialState.userInfo;
     },
   },

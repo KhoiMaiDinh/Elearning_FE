@@ -15,7 +15,7 @@ import {
 import { useTheme } from "next-themes";
 import { APIGetCurrentUser } from "@/utils/user";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "@/constants/userSlice";
+import { setUser, clearUser } from "@/constants/userSlice";
 import { RootState } from "@/constants/store";
 import { usePathname, useRouter } from "next/navigation";
 // import io from "socket.io-client"; // Comment lại vì chưa có Socket.IO
@@ -96,6 +96,7 @@ const Header = () => {
     localStorage.setItem("access_token", "");
     localStorage.setItem("refresh_token", "");
     localStorage.setItem("expires_at", "");
+    dispatch(clearUser());
   };
 
   // Đánh dấu thông báo là đã xem
@@ -113,7 +114,6 @@ const Header = () => {
       prev.map((notif) => ({ ...notif, isRead: true }))
     );
   };
-
   useEffect(() => {
     handleGetCurrentUser();
   }, []);

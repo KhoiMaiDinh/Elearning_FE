@@ -37,6 +37,17 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (error.response) {
+      const { status, data } = error.response;
+
+      // Check for banned user
+      if (status === 401 && data.errorCode === "auth.error.banned") {
+        // Show a popup or redirect to a banned page
+        window.alert(data.message); // You can replace this with a redirect if needed
+        return Promise.reject(error);
+      }
+    }
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -87,7 +98,7 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
 
-        window.location.href = "/login";
+        // window.location.href = "/login";
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

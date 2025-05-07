@@ -148,11 +148,11 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       if (response?.status === 200) {
         const formattedData = response.data.map((item: any) => ({
           id: item.slug,
-          value: item.translations[0]?.name || item.slug,
+          value: item?.translations[0]?.name || item.slug,
           children:
             item.children?.map((child: any) => ({
               id: child.slug,
-              value: child.translations[0]?.name || child.slug,
+              value: child?.translations[0]?.name || child.slug,
             })) || [],
         }));
         setCategoryData(formattedData);

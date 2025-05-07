@@ -21,6 +21,7 @@ import Loader from "@/components/loading/loader";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/constants/userSlice";
 import { APIGetCurrentUser } from "@/utils/user";
+import AlertBan from "@/components/alert/AlertBan";
 const regexPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 const baseSchema = {
@@ -79,7 +80,9 @@ const Page = () => {
 
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
+  const [showAlertBan, setShowAlertBan] = useState(false);
   const [alertDescription, setAlertDescription] = useState("");
+  const [alertBanNote, setAlertBanNote] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -141,15 +144,28 @@ const Page = () => {
         setTimeout(() => {
           setShowAlertSuccess(false);
         }, 3000);
-        router.push("/");
-        setLoading(false);
+
+        // Redirect to the previous page or home page
+        if (document.referrer) {
+          router.back(); // Go back to the previous page
+        } else {
+          router.push("/"); // Go to home page
+        }
       } else {
-        setAlertDescription("Đăng nhập thất bại");
-        setShowAlertError(true);
-        setTimeout(() => {
-          setShowAlertError(false);
-        }, 3000);
-        setLoading(false);
+        if (response?.status === 401) {
+          console.log("🚀 ~ handleLogin ~ response:", response);
+          setAlertBanNote(response?.data?.message);
+          setShowAlertBan(true);
+          setTimeout(() => {
+            setShowAlertBan(false);
+          }, 3000);
+        } else {
+          setAlertDescription("Đăng nhập thất bại");
+          setShowAlertError(true);
+          setTimeout(() => {
+            setShowAlertError(false);
+          }, 3000);
+        }
       }
     } catch (err) {
       setAlertDescription("Đăng nhập thất bại");
@@ -157,30 +173,37 @@ const Page = () => {
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleSignup = async (data: any) => {
     setLoading(true);
-    const response = await APIRegisterEmail(data);
-    if (response?.status === 201) {
-      setAlertDescription("Đăng ký thành công");
-      setShowAlertSuccess(true);
-      await handleLogin(data);
+    try {
+      const response = await APIRegisterEmail(data);
+      if (response?.status === 201) {
+        setAlertDescription("Đăng ký thành công");
+        setShowAlertSuccess(true);
+        await handleLogin(data);
 
-      setTimeout(() => {
-        setShowAlertSuccess(false);
-      }, 3000);
-      await handleLogin(data);
-
-      // router.push('/cau-hinh/thong-tin-cua-hang');
-    } else {
+        setTimeout(() => {
+          setShowAlertSuccess(false);
+        }, 3000);
+      } else {
+        setAlertDescription("Đăng ký thất bại");
+        setShowAlertError(true);
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
+      }
+    } catch (err) {
       setAlertDescription("Đăng ký thất bại");
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
+    } finally {
       setLoading(false);
     }
   };
@@ -527,6 +550,7 @@ const Page = () => {
       </div>
       {showAlertSuccess && <AlertSuccess description={alertDescription} />}
       {showAlertError && <AlertError description={alertDescription} />}
+      {showAlertBan && <AlertBan note={alertBanNote} />}
     </div>
   );
 };

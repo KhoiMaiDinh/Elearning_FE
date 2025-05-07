@@ -98,13 +98,13 @@ const FilterBlock = () => {
         categories.forEach((category) => {
           // Add parent category
           result.push({
-            id: category.slug,
-            value: category.translations[0]?.name,
+            id: category?.slug,
+            value: category?.translations[0]?.name,
           });
 
           // Add children categories if they exist
-          if (category.children && category.children.length > 0) {
-            const childrenCategories = flattenCategories(category.children);
+          if (category?.children && category?.children?.length > 0) {
+            const childrenCategories = flattenCategories(category?.children);
             result = [...result, ...childrenCategories];
           }
         });

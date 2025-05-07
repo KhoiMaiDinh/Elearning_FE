@@ -8,9 +8,11 @@ import { CourseForm, CourseItem, Section } from "@/types/courseType";
 import CourseItemList from "@/components/courseDetails/lessonList";
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import { APIGetFullCourse } from "@/utils/course";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ButtonReview from "@/components/courseDetails/buttonReview";
 import ButtonMore from "@/components/courseDetails/buttonMore";
+import { useSelector } from "react-redux";
+import { RootState } from "@/constants/store";
 // Hàm helper để kiểm tra và lấy video URL
 const getVideoUrl = (
   item: CourseItem | Section | undefined
@@ -35,6 +37,8 @@ const getVideoUrl = (
 
 const LearnPage = () => {
   const { id } = useParams();
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const router = useRouter();
   const [courseData, setCourseData] = useState<CourseForm | undefined>(
     undefined
   );
@@ -73,6 +77,14 @@ const LearnPage = () => {
       setVideoUrl(currentCourseItem?.video?.video?.key);
     }
   }, [currentCourseItem]);
+
+  useEffect(() => {
+    if (userInfo.id) {
+      router.push(`/course-details/${id}`);
+    } else {
+      router.push("/login");
+    }
+  }, [userInfo.id]);
 
   return (
     <AnimateWrapper delay={0.2} direction="up">

@@ -37,7 +37,11 @@ const SectionForm: React.FC<SectionFormProps> = ({
   onCancel,
   courseId,
 }) => {
-  const { control, handleSubmit } = useForm<Section>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Section>({
     resolver: yupResolver(sectionSchema) as unknown as Resolver<Section>,
     defaultValues: {
       title: section.title || "",
@@ -49,7 +53,6 @@ const SectionForm: React.FC<SectionFormProps> = ({
   const sections = useSelector(
     (state: RootState) => state.course.courseInfo?.sections || []
   );
-  const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
@@ -59,7 +62,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
 
   const handleGetCourseInfo = async () => {
     try {
-      const response = await APIGetFullCourse(courseInfo.course_id!);
+      const response = await APIGetFullCourse(courseId);
       if (response?.status === 200) {
         dispatch(setCourse(response.data));
       }
@@ -80,6 +83,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
             : null,
       };
       const response = await APIInitSection(payload);
+      console.log("🚀 ~ handleCreateSection ~ response:", response);
       if (response?.status === 201) {
         const newSection: Section = {
           ...section,
@@ -145,6 +149,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
           <InputRegisterLecture
             {...field}
             labelText={`Tiêu đề phần ${section.position}`}
+            error={errors.title?.message}
           />
         )}
       />
@@ -155,6 +160,11 @@ const SectionForm: React.FC<SectionFormProps> = ({
           <TextAreaRegisterLecture
             {...field}
             labelText={`Mô tả phần ${section.position}`}
+            error={errors.description?.message}
+            onChange={(e) => {
+              field.onChange(e);
+              setDescription(e);
+            }}
           />
         )}
       />
