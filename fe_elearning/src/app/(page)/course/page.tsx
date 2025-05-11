@@ -2,7 +2,6 @@
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
-import courseBlock from "@/types/coursesBlockType";
 import { CourseForm } from "@/types/courseType";
 import { APIGetEnrolledCourse, APIGetListCourse } from "@/utils/course";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -97,6 +96,8 @@ const Page = () => {
   const [listFavCourse, setListFavCourse] = useState([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
   const [listCourseOfUser, setListCourseOfUser] = useState<CourseForm[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(false);
+  const [isLoadingUserCourses, setIsLoadingUserCourses] = useState(false);
 
   // Initialize params from URL
   const [paramsCourse, setParamsCourse] = useState({
@@ -120,12 +121,60 @@ const Page = () => {
     with_thumbnail: true,
   });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+  const handleGetListCourse = async () => {
+    try {
+      setIsLoadingCourses(true);
+      const response = await APIGetListCourse(paramsCourse);
+      if (response && response.data) {
+        setListCourse(response.data);
+      }
+    } catch (err) {
+      console.error("Error during get list course:", err);
+    } finally {
+      setIsLoadingCourses(false);
+    }
+  };
 
-    // Add filter change event listener
+  const handleGetListCourseOfUser = async () => {
+    try {
+      setIsLoadingUserCourses(true);
+      const response = await APIGetEnrolledCourse();
+      if (response && response.data) {
+        const data = listCourse
+          .filter((item: CourseForm) =>
+            response.data.some((item2: CourseForm) => item2.id === item.id)
+          )
+          .map((item: CourseForm) => {
+            const matched = response.data.find(
+              (item2: CourseForm) => item2.id === item.id
+            );
+            console.log("🚀 ~ handleGetListCourseOfUser ~ matched:", matched);
+            return {
+              ...item,
+              progress: matched?.course_progress || {}, // hoặc để nguyên matched?.progress nếu không cần mặc định
+            };
+          });
+
+        setListCourseOfUser(data);
+      }
+      console.log(
+        "🚀 ~ handleGetListCourseOfUser ~ setListCourseOfUser:",
+        listCourseOfUser
+      );
+    } catch (err) {
+      console.error("Error during get list course of user:", err);
+    } finally {
+      setIsLoadingUserCourses(false);
+    }
+  };
+
+  // Update loading state based on both API calls
+  useEffect(() => {
+    setIsLoading(isLoadingCourses || isLoadingUserCourses);
+  }, [isLoadingCourses, isLoadingUserCourses]);
+
+  // Remove the initial loading timeout effect since we'll use actual API states
+  useEffect(() => {
     const handleFilterChange = (event: CustomEvent) => {
       const filterParams = event.detail;
       setParamsCourse((prev) => ({
@@ -140,44 +189,12 @@ const Page = () => {
     );
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener(
         "filterChange",
         handleFilterChange as EventListener
       );
     };
   }, []);
-
-  const handleGetListCourse = async () => {
-    try {
-      setIsLoading(true);
-      const response = await APIGetListCourse(paramsCourse);
-      if (response && response.data) {
-        setListCourse(response.data);
-      }
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error during get list course:", err);
-      setIsLoading(false);
-    }
-  };
-
-  const handleGetListCourseOfUser = async () => {
-    try {
-      setIsLoading(true);
-      const response = await APIGetEnrolledCourse();
-      if (response && response.data) {
-        const data = listCourse.filter((item: CourseForm) =>
-          response.data.some((item2: CourseForm) => item2.id === item.id)
-        );
-        setListCourseOfUser(data);
-      }
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error during get list course of user:", err);
-      setIsLoading(false);
-    }
-  };
 
   const handleScrollToCourse = () => {
     const courseSection = document.getElementById("course");
@@ -189,13 +206,13 @@ const Page = () => {
     handleGetListCourse();
     handleGetListCourseOfUser();
   }, [paramsCourse]);
-  return (
+  return isLoading ? (
+    <div className="w-full h-full flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  ) : (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      )}
+      {/* header */}
       {/* header */}
       <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
         {" "}
@@ -292,7 +309,11 @@ const Page = () => {
       <AnimateWrapper delay={0} direction="up" amount={0.01}>
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {listCourseOfUser.map((course: CourseForm, index: number) => (
-            <CoursesBlock key={index} {...course} />
+            <CoursesBlock
+              key={index}
+              {...course}
+              course_progress={course.course_progress}
+            />
           ))}
         </div>
       </AnimateWrapper>

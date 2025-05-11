@@ -20,9 +20,12 @@ const BillsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [bills, setBills] = useState<OrderResponse[]>([]);
-
-  const itemsPerPage = 2;
-
+  const [filter, setFilter] = useState<{
+    payment_status?: string;
+  }>({
+    payment_status: "SUCCESS",
+  });
+  const itemsPerPage = 10;
   const filteredBills = bills.filter(
     (bill) =>
       bill.details.some((detail) =>
@@ -39,7 +42,7 @@ const BillsPage = () => {
   const handleGetBills = async () => {
     try {
       setIsLoading(true);
-      const response = await APIGetListOrderByMe();
+      const response = await APIGetListOrderByMe(filter);
       if (response?.status === 200) {
         setBills(response.data);
         dispatch(setOrders(response.data));

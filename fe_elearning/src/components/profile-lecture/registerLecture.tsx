@@ -53,9 +53,6 @@ const schema = yup.object().shape({
   website_url: yup.string().nullable(),
   facebook_url: yup.string().nullable(),
   linkedin_url: yup.string().nullable(),
-  bankAccount: yup.string().required("Số tài khoản không được để trống"),
-  bankName: yup.string().required("Ngân hàng không được để trống"),
-  accountHolder: yup.string().required("Tên chủ tài khoản không được để trống"),
 }) as yup.ObjectSchema<RegisterLectureForm>;
 
 const RegisterLecture = () => {
@@ -77,9 +74,7 @@ const RegisterLecture = () => {
       resume: { key: "", id: "" },
       website_url: null,
       certificates: [] as Array<{ key: string; id: string }>,
-      bankAccount: "",
-      bankName: "",
-      accountHolder: "",
+
       facebook_url: null,
       linkedin_url: null,
     },
@@ -547,47 +542,6 @@ const RegisterLecture = () => {
                   </div>
                 )}
               </div>
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-eerieBlack w-full h-full  shadow-md rounded-lg  p-3 border">
-        <text className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
-          Thông tin tài khoản
-        </text>
-        <div className=" grid  grid-cols-1 md:grid-cols-2 w-full h-full p-3 gap-3">
-          <Controller
-            name="bankAccount"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Số tài khoản"
-                error={errors.bankAccount?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-          <Controller
-            name="bankName"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Ngân hàng"
-                error={errors.bankName?.message} // Hiển thị lỗi nếu có
-              />
-            )}
-          />
-          <Controller
-            name="accountHolder"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture
-                {...field} // Truyền các props từ field vào component
-                labelText="Tên chủ tài khoản"
-                error={errors.accountHolder?.message} // Hiển thị lỗi nếu có
-              />
             )}
           />
         </div>

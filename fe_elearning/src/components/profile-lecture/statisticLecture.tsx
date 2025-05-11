@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Popup from "../courseDetails/popup";
 import ReviewListUser from "../course/reviewListUser";
+import { Section } from "@/types/courseType";
 // ================== PAGE COMPONENT ==================
 const Page = () => {
   // =============== DECLARE ===============
@@ -37,6 +38,7 @@ const Page = () => {
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showReviews, setShowReviews] = useState(false); // State for reviews popup
+  const [sections, setSections] = useState<Section[]>([]);
 
   // =============== FUNCTION ===============
   const handleGetCourseMe = async () => {
@@ -68,6 +70,16 @@ const Page = () => {
       throw error;
     }
   };
+
+  useEffect(() => {
+    if (course?.sections) {
+      // Create a new sorted array instead of sorting in place
+      const sortedSections = [...course.sections].sort(
+        (a: Section, b: Section) => a.position.localeCompare(b.position)
+      );
+      setSections(sortedSections);
+    }
+  }, [course?.sections]);
 
   const toggleItem = async (itemId: string) => {
     const isOpen = openItemId === itemId;
@@ -212,8 +224,8 @@ const Page = () => {
             </h2>
 
             <div className="space-y-6">
-              {course.sections?.length > 0 ? (
-                course.sections.map((section) => (
+              {sections?.length > 0 ? (
+                sections.map((section) => (
                   <div key={section.id} className="space-y-4">
                     <h2 className="text-lg font-bold text-persianIndigo/80 dark:text-white/80">
                       {section.title}

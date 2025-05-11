@@ -175,6 +175,7 @@ const LearnPage = () => {
                 enrolledStudents={courseData.total_enrolled}
                 price={courseData.price}
                 priceFinal={courseData.priceFinal}
+                isOwner={isOwner}
               />
             )}
           </div>

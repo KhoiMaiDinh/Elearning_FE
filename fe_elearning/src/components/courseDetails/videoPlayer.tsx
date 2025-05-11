@@ -9,6 +9,7 @@ interface VideoPlayerProps {
   coverPhoto?: string;
   lecture_id?: string;
   progress?: number; // percent (0 - 100)
+  isOwner?: boolean;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -17,6 +18,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   coverPhoto,
   lecture_id,
   progress,
+  isOwner,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hls, setHls] = useState<Hls | null>(null);
@@ -25,12 +27,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   >([]);
   const [selectedQuality, setSelectedQuality] = useState<number>(-1);
   const [showQualityMenu, setShowQualityMenu] = useState<boolean>(false);
-
   // Lưu tiến độ
   const saveProgress = () => {
     const video = videoRef.current;
     if (!video || !lecture_id || !video.duration) return;
     const percent = Math.floor((video.currentTime / video.duration) * 100);
+    if (isOwner) return;
     APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
   };
 
@@ -45,10 +47,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       hlsInstance.attachMedia(video);
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-        const levels = hlsInstance.levels.map((level, index) => ({
-          id: index,
-          label: `${level.height}p (${Math.round(level.bitrate / 1000)}kbps)`,
-        }));
+        const levels = hlsInstance.levels.map((level, index) => {
+          return {
+            id: index,
+            label: level.bitrate === 1000000 ? "480p" : "1080p",
+          };
+        });
         setQualityLevels(levels);
         setHls(hlsInstance);
       });

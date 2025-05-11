@@ -25,9 +25,16 @@ const APIGetOrderById = async (id: string) => {
   }
 };
 
-const APIGetListOrderByMe = async () => {
+const APIGetListOrderByMe = async (params: { payment_status?: string }) => {
   try {
-    const response = await axiosInstance.get("/orders/me");
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+    const response = await axiosInstance.get("/orders/me", {
+      params: filteredParams,
+    });
     if (response.status === 200) {
       return {
         data: response.data,

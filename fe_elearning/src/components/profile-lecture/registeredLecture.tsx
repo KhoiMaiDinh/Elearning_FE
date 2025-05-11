@@ -3,8 +3,13 @@ import ProfileLecture from "./profileLecture";
 import CourseLecture from "./courseLecture";
 import StatisticLecture from "./statisticLecture";
 import BankAccountLecture from "./bankAccountLecture";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 const RegisteredLecture = () => {
-  const [active, setActive] = useState("Hồ sơ");
+  const query = useSearchParams();
+  const tab = query.get("tab");
+  const router = useRouter();
+  const [active, setActive] = useState(tab || "Hồ sơ");
 
   const tabs = [
     { id: "Hồ sơ", label: "Hồ sơ" },
@@ -28,7 +33,10 @@ const RegisteredLecture = () => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActive(tab.id)}
+            onClick={() => {
+              setActive(tab.id);
+              router.push(`/profile/lecture?tab=${tab.id}`);
+            }}
             className={`
               md:px-8 md:py-3 px-2 py-1 md:text-sm text-xs font-medium transition-all duration-200
               ${

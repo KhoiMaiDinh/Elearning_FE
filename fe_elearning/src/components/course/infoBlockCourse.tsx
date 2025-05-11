@@ -129,7 +129,11 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
               router.push(`/course-details/${id}`);
             }}
           >
-            {courseProgress !== 0 && courseProgress ? "Tiếp tục" : "Bắt đầu"}
+            {courseProgress !== 0 && courseProgress
+              ? "Tiếp tục"
+              : courseProgress === 100 && courseProgress
+              ? "Đã hoàn thành"
+              : "Bắt đầu"}
           </Button>
         )}
       </div>

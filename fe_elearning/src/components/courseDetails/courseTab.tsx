@@ -47,6 +47,7 @@ interface CourseTabsProps {
   price: number;
   priceFinal?: number;
   currentCourseItem?: CourseItem;
+  isOwner?: boolean;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
@@ -58,6 +59,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   price,
   priceFinal,
   currentCourseItem,
+  isOwner,
 }) => {
   const [activeTab, setActiveTab] = useState("description");
   const [newReview, setNewReview] = useState("");
@@ -235,27 +237,33 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
         <TabsTrigger
           value="description"
-          className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
+          className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
         >
           Mô tả
         </TabsTrigger>
         <TabsTrigger
           value="resources"
-          className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
+          className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
         >
           Tài liệu
         </TabsTrigger>
         <TabsTrigger
           value="community"
-          className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
+          className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
         >
           Cộng đồng
         </TabsTrigger>
         <TabsTrigger
           value="reviews"
-          className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
+          // className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
+          className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
         >
-          Đánh giá
+          Cảm nhận
+          <img
+            src={"/icons/open-gift.gif"}
+            alt="gift"
+            className="w-4 h-4 ml-2 mb-1 "
+          />{" "}
         </TabsTrigger>
       </TabsList>
 
@@ -373,37 +381,39 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md"
       >
         {/* Form đăng bài mới */}
-        <div className="bg-antiFlashWhite dark:bg-eerieBlack p-4 rounded-lg shadow mb-6">
-          <h4 className="text-lg font-semibold mb-2 text-richBlack dark:text-lightSilver">
-            Đăng bài mới
-          </h4>
-          <div className="space-y-3">
-            <InputRegisterLecture
-              value={newTitle}
-              onChange={(value) => setNewTitle(value.target.value)}
-              placeholder="Tiêu đề bài viết (bắt buộc)"
-            />
-            <TextAreaRegisterLecture
-              value={newContent}
-              onChange={(value) => setNewContent(value)}
-              placeholder="Nội dung chi tiết..."
-              className="min-h-[100px]"
-              disabled={!newTitle.trim()}
-            />
-            <div className="text-right">
-              <Button
-                onClick={handlePostThread}
-                disabled={!newTitle.trim() || !newContent.trim()}
-                type="button"
-                size="sm"
-                className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
-              >
-                <Send size={16} />
-                Gửi
-              </Button>
+        {!isOwner && (
+          <div className="bg-antiFlashWhite dark:bg-eerieBlack p-4 rounded-lg shadow mb-6">
+            <h4 className="text-lg font-semibold mb-2 text-richBlack dark:text-lightSilver">
+              Đăng bài mới
+            </h4>
+            <div className="space-y-3">
+              <InputRegisterLecture
+                value={newTitle}
+                onChange={(value) => setNewTitle(value.target.value)}
+                placeholder="Tiêu đề bài viết (bắt buộc)"
+              />
+              <TextAreaRegisterLecture
+                value={newContent}
+                onChange={(value) => setNewContent(value)}
+                placeholder="Nội dung chi tiết..."
+                className="min-h-[100px]"
+                disabled={!newTitle.trim()}
+              />
+              <div className="text-right">
+                <Button
+                  onClick={handlePostThread}
+                  disabled={!newTitle.trim() || !newContent.trim()}
+                  type="button"
+                  size="sm"
+                  className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+                >
+                  <Send size={16} />
+                  Gửi
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Danh sách bài đăng */}
         <div className="space-y-6">
@@ -459,24 +469,26 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                         <ReplyList key={index} replies={reply} />
                       ))}
 
-                      <div className="flex gap-2 mt-2">
-                        <Input
-                          value={newReply}
-                          onChange={(e) => setNewReply(e.target.value)}
-                          placeholder="Thêm câu trả lời..."
-                          className="flex-1"
-                        />
-                        <Button
-                          onClick={() => handleReplySubmit(post.id)}
-                          disabled={!newReply.trim()}
-                          type="button"
-                          size="sm"
-                          className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
-                        >
-                          <Send size={16} />
-                          Gửi
-                        </Button>
-                      </div>
+                      {!isOwner && (
+                        <div className="flex gap-2 mt-2">
+                          <Input
+                            value={newReply}
+                            onChange={(e) => setNewReply(e.target.value)}
+                            placeholder="Thêm câu trả lời..."
+                            className="flex-1"
+                          />
+                          <Button
+                            onClick={() => handleReplySubmit(post.id)}
+                            disabled={!newReply.trim()}
+                            type="button"
+                            size="sm"
+                            className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+                          >
+                            <Send size={16} />
+                            Gửi
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -490,19 +502,21 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         value="reviews"
         className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md flex flex-col gap-4"
       >
-        <div className="flex gap-2 mb-4 items-center">
-          <InputWithSendButton
-            labelText=""
-            placeholder="Viết đánh giá của bạn..."
-            onChange={(e) => setNewReview(e.target.value)}
-            value={newReview}
-            onSubmit={handlePostComment}
-          />
-        </div>
+        {!isOwner && (
+          <div className="flex gap-2 mb-4 items-center">
+            <InputWithSendButton
+              labelText=""
+              placeholder="Viết cảm nhận của bạn..."
+              onChange={(e) => setNewReview(e.target.value)}
+              value={newReview}
+              onSubmit={handlePostComment}
+            />
+          </div>
+        )}
 
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-            Đánh giá
+            Cảm nhận
           </h3>
           {comments.length > 5 && (
             <text
@@ -515,25 +529,33 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         </div>
 
         <SelectFilter
-          placeholder={filterOption === "all" ? "Tất cả" : "Phù hợp nhất"}
+          placeholder={filterOption === "all" ? "Tất cả" : "Mới nhất"}
           // label="Bộ lọc"
           data={[
             { id: "all", value: "Tất cả" },
-            { id: "mostRelevant", value: "Phù hợp nhất" },
+            { id: "mostRelevant", value: "Mới nhất" },
           ]}
           onChange={(value) => setFilterOption(value)}
         />
         <div className="flex flex-col gap-4">
-          {comments.slice(0, 5).map((comment, index) => (
-            <CommentListUser key={index} comments={comment} />
-          ))}
+          {comments.length > 0 ? (
+            comments
+              .slice(0, 5)
+              .map((comment, index) => (
+                <CommentListUser key={index} comments={comment} />
+              ))
+          ) : (
+            <p className="text-darkSilver dark:text-lightSilver ">
+              Chưa có dữ liệu
+            </p>
+          )}
         </div>
       </TabsContent>
 
       {/* Popup for displaying all comments */}
       {showPopup && (
         <Popup onClose={() => setShowPopup(false)}>
-          <h3 className="text-lg font-semibold">Tất cả đánh giá</h3>
+          <h3 className="text-lg font-semibold">Tất cả cảm nhận</h3>
           <div className="flex flex-col gap-4">
             {comments.map((comment, index) => (
               <CommentListUser key={index} comments={comment} />

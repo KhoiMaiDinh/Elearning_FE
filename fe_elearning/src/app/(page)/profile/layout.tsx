@@ -24,7 +24,11 @@ export default function RootLayout({
 
   useEffect(() => {
     if (userInfo.id) {
-      router.push("/profile/student");
+      if (isStudentActive) {
+        router.push("/profile/student");
+      } else {
+        router.push("/profile/lecture");
+      }
     } else {
       router.push("/login");
     }

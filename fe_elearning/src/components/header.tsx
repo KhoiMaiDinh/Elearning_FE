@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -19,7 +20,6 @@ import { setUser, clearUser } from "@/constants/userSlice";
 import { RootState } from "@/constants/store";
 import { usePathname, useRouter } from "next/navigation";
 // import io from "socket.io-client"; // Comment lại vì chưa có Socket.IO
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -30,11 +30,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { NotificationCenter } from "./notifications/notificationComponent";
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const pathname = usePathname();
+
   const menuItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Khóa học", path: "/course" },
@@ -64,8 +65,7 @@ const Header = () => {
   ]);
 
   // Socket.IO (comment lại vì chưa có)
-  /*
-  useEffect(() => {
+  /* useEffect(() => {
     const socket = io("https://your-socket-server-url");
     socket.on("newNotification", (newNotification) => {
       setNotifications((prev) => [
@@ -73,12 +73,10 @@ const Header = () => {
         ...prev,
       ]);
     });
-
     return () => {
       socket.disconnect();
     };
-  }, []);
-  */
+  }, []); */
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -114,28 +112,32 @@ const Header = () => {
       prev.map((notif) => ({ ...notif, isRead: true }))
     );
   };
+
   useEffect(() => {
     handleGetCurrentUser();
   }, []);
 
   return (
-    <div className="z-50 w-full h-16 flex items-center justify-between top-0 md:shadow-PaleViolet/20 md:shadow-md dark:md:shadow-cosmicCobalt/20 sticky  transition-colors shadow-md">
-      <div className="absolute z-0 top-0 left-0 w-full h-full inset-0  supports-backdrop-blur:bg-background/90  border-b border-border bg-white/40 dark:bg-eerieBlack/40 backdrop-blur-lg"></div>
-      <div className="flex w-full z-10 justify-between md:px-4 items-center space-x-4">
-        <div className="flex h-full items-center sm:hidden">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="px-4 flex h-16 items-center justify-between">
+        {/* Mobile Menu */}
+        <div className="flex items-center sm:hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <button className="rounded p-2">
-                <Menu size={24} className="text-black dark:text-white" />
-              </button>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-black font-sans font-medium text-white">
+            <DropdownMenuContent align="start" className="w-56 rounded-xl">
               {menuItems.map((item) => (
                 <DropdownMenuItem
-                  onClick={() => router.push(item.path)}
                   key={item.path}
-                  className={`hover:cursor-pointer ${
-                    pathname === item.path ? "font-bold text-majorelleBlue" : ""
+                  onClick={() => router.push(item.path)}
+                  className={`${
+                    pathname === item.path
+                      ? "bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet"
+                      : ""
                   }`}
                 >
                   {item.label}
@@ -144,188 +146,94 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="hidden md:flex h-full flex-grow-0 items-center justify-center sm:flex-grow-0 md:w-1/5 md:justify-start">
+
+        {/* Logo */}
+        <div className="flex items-center">
           <img
-            src={"/images/logo.png"}
-            alt="logo"
-            className="h-16 w-auto"
+            src="/images/logo.png"
+            alt="Logo"
+            className="h-10 w-auto cursor-pointer"
             onClick={() => router.push("/")}
           />
         </div>
 
-        <div className="z-20 md:flex items-center justify-center hidden gap-6 md:gap-10 lg:gap-16">
+        {/* Desktop Navigation */}
+        <nav className="hidden sm:flex items-center space-x-8">
           {menuItems.map((item) => (
-            <div
+            <button
               key={item.path}
-              className={`hover:cursor-pointer font-semibold
-                
-                ${
-                  pathname === item.path
-                    ? " text-LavenderIndigo dark:text-PaleViolet font-semibold"
-                    : "opacity-80"
-                }`}
               onClick={() => router.push(item.path)}
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                pathname === item.path
+                  ? "text-LavenderIndigo dark:text-PaleViolet font-semibold"
+                  : "text-muted-foreground"
+              }`}
             >
-              <text className="text-xs md:text-sm lg:text-base font-semibold">
-                {item.label}
-              </text>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-row gap-2 items-center">
-          <div>
-            <button
-              className="outline-none p-2 rounded-full bg-gray-200 dark:bg-eerieBlack hover:bg-lightSilver dark:hover:bg-black50 transition-colors"
-              onClick={toggleTheme}
-            >
-              {theme === "light" ? (
-                <Sun className="h-[1.2rem] w-[1.2rem] text-black transition-transform" />
-              ) : (
-                <Moon className="h-[1.2rem] w-[1.2rem] text-white transition-transform" />
-              )}
+              {item.label}
             </button>
-          </div>
+          ))}
+        </nav>
 
-          {/* Mục thông báo */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative p-2 rounded-full  transition-colors"
-              >
-                <Bell className="h-[1.2rem] w-[1.2rem] text-black dark:text-white" />
-                {notifications.filter((n) => !n.isRead).length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-redPigment text-white text-xs rounded-full">
-                    {notifications.filter((n) => !n.isRead).length}
-                  </span>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-80 rounded-lg bg-white dark:bg-richBlack shadow-lg border border-gray-200 dark:border-gray-700"
-              align="end"
-              sideOffset={8}
-            >
-              <DropdownMenuLabel className="font-semibold text-cosmicCobalt dark:text-AntiFlashWhite px-4 py-2 flex items-center justify-between">
-                <span>Thông báo</span>
-                <Button
-                  variant="link"
-                  className="text-majorelleBlue p-0 h-auto text-sm"
-                  onClick={markAllAsRead} // Chỉ đánh dấu tất cả là đã xem
-                >
-                  Xem tất cả
-                </Button>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-darkSilver/10 dark:bg-darkSilver/70" />
-              <div className="max-h-64 overflow-y-auto">
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <DropdownMenuItem
-                      key={notification.id}
-                      className={`flex items-start gap-2 p-3 cursor-pointer hover:bg-darkSilver/10 dark:hover:bg-darkSilver/80 ${
-                        !notification.isRead
-                          ? "bg-majorelleBlue/50 dark:bg-majorelleBlue/90"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        markAsRead(notification.id);
-                        router.push(notification.link);
-                      }}
-                    >
-                      <div className="flex-1">
-                        <p
-                          className={`text-sm ${
-                            notification.isRead
-                              ? "text-darkSilver dark:text-lightSilver"
-                              : "text-cosmicCobalt dark:text-AntiFlashWhite font-medium"
-                          }`}
-                        >
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-darkSilver/70 dark:text-lightSilver/70">
-                          {new Date(notification.date).toLocaleDateString(
-                            "vi-VN"
-                          )}
-                        </p>
-                      </div>
-                      <Eye
-                        size={16}
-                        className={`${
-                          notification.isRead
-                            ? "text-gray-400"
-                            : "text-majorelleBlue"
-                        }`}
-                      />
-                    </DropdownMenuItem>
-                  ))
-                ) : (
-                  <DropdownMenuItem className="text-darkSilver dark:text-lightSilver p-3">
-                    Không có thông báo nào
-                  </DropdownMenuItem>
-                )}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Right Side Actions */}
+        <div className="flex items-center space-x-3">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="rounded-full bg-muted/50 hover:bg-muted"
+          >
+            {theme === "light" ? (
+              <Sun className="h-5 w-5 transition-all" />
+            ) : (
+              <Moon className="h-5 w-5 transition-all" />
+            )}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
 
-          {/* Nút đăng nhập */}
-          {!userInfo.id && (
-            <button
-              className="px-4 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white text-[12px] lg:text-[16px] md:text-[16px] font-sans font-medium  border rounded-lg hover:brightness-125"
+          {/* Notifications */}
+          <NotificationCenter />
+
+          {/* User Menu or Login Button */}
+          {!userInfo.id ? (
+            <Button
+              className="bg-gradient-to-r from-LavenderIndigo to-majorelleBlue hover:brightness-110 text-white"
               onClick={() => router.push("/login")}
             >
               Đăng nhập
-            </button>
-          )}
-          {userInfo.id && (
+            </Button>
+          ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <Avatar className="h-8 w-8 rounded-lg">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-8 w-8 rounded-full border-2 border-muted">
                     <AvatarImage
                       src={
                         process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                        userInfo.profile_image?.key
+                          userInfo.profile_image?.key || "/placeholder.svg"
                       }
-                      alt={userInfo.username}
+                      alt={userInfo.username || "User"}
                       className="object-cover"
                     />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="text-xs">
+                      {userInfo.first_name?.[0]}
+                      {userInfo.last_name?.[0]}
+                    </AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {userInfo.first_name} {userInfo.last_name}
-                    </span>
-                    <span className="truncate text-xs">{userInfo.email}</span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </div>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                side={"bottom"}
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={
-                          process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                          userInfo.profile_image?.key
-                        }
-                        alt={userInfo.username}
-                        className="object-cover"
-                      />
-                      {/* <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {userInfo.username}
-                      </span>
-                      <span className="truncate text-xs">{userInfo.email}</span>
-                    </div>
+              <DropdownMenuContent className="w-56 rounded-xl" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {userInfo.first_name} {userInfo.last_name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {userInfo.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -333,29 +241,32 @@ const Header = () => {
                   <DropdownMenuItem
                     onClick={() => router.push("/profile/student")}
                   >
-                    <BadgeCheck />
-                    Tài khoản
+                    <BadgeCheck className="mr-2 h-4 w-4" />
+                    <span>Tài khoản</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push("/billing")}>
-                    <CreditCard />
-                    Thanh toán
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    <span>Thanh toán</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Bell />
-                    Thông báo
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Thông báo</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleLogOut()}>
-                  <LogOut />
-                  Đăng xuất
+                <DropdownMenuItem
+                  className="text-carminePink focus:text-carminePink"
+                  onClick={handleLogOut}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Đăng xuất</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
