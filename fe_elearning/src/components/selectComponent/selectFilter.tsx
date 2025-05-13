@@ -18,6 +18,7 @@ type selectFilter = {
   placeholder?: string;
   data: { id: string; value: any }[];
   error?: string;
+  value?: string;
 };
 const SelectFilter: React.FC<selectFilter> = ({
   label,
@@ -26,6 +27,7 @@ const SelectFilter: React.FC<selectFilter> = ({
   onChange,
   data,
   error,
+  value,
 }) => {
   return (
     <div className="flex flex-col gap-2 ">
@@ -36,8 +38,8 @@ const SelectFilter: React.FC<selectFilter> = ({
           </Label>
         )}
       </div>
-      <Select disabled={disabled} onValueChange={onChange}>
-        <SelectTrigger className="w-28 sm:w-28 md:w-32 lg:w-36">
+      <Select disabled={disabled} onValueChange={onChange} value={value}>
+        <SelectTrigger className="w-fit">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

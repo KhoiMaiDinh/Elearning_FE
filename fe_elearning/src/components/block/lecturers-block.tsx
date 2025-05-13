@@ -31,7 +31,6 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
   numberStudent,
   username,
 }) => {
-  console.log("🚀 ~ username:", username);
   const { theme } = useTheme();
   const router = useRouter();
   return (
@@ -66,7 +65,7 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-col justify-between space-y-4 h-40">
         <p
           className="text-sm text-darkSilver/70 ql-content dark:text-lightSilver/70 text-center line-clamp-3"
           dangerouslySetInnerHTML={{
@@ -76,20 +75,25 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
         <div className="flex justify-around text-sm text-darkSilver/70 dark:text-lightSilver/70">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>{rating ? rating.toFixed(1) : "N/A"}</span>
+            <span>{rating || rating === 0 ? rating : "N/A"}</span>
           </div>
 
           <div className="flex items-center gap-1">
             <BookOpen className="w-4 h-4" />
-            <span>{numberCourse ? numberCourse : "N/A"} khóa</span>
+            <span>
+              {numberCourse || numberCourse === 0 ? numberCourse : "N/A"} khóa
+            </span>
           </div>
 
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
-            <span>{numberStudent ? numberStudent : "N/A"}</span>
+            <span>
+              {numberStudent || numberStudent === 0 ? numberStudent : "N/A"}
+            </span>
           </div>
         </div>
       </CardContent>
+      <CardFooter className="">{/* Footer content goes here */}</CardFooter>
     </Card>
   );
 };

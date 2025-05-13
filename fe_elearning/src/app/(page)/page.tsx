@@ -373,10 +373,10 @@ export default function Page() {
                           " " +
                           lecture?.user?.last_name
                         }
-                        rating={lecture?.user?.rating}
+                        rating={lecture?.avg_rating}
                         major={lecture?.category?.translations[0]?.name}
                         numberCourse={lecture?.total_courses}
-                        numberStudent={lecture?.user?.number_student}
+                        numberStudent={lecture?.total_students}
                         description={lecture?.biography}
                         username={lecture?.user?.username}
                       />{" "}

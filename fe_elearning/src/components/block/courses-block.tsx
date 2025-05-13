@@ -28,7 +28,6 @@ const CoursesBlock: React.FC<CourseForm> = ({
   price,
   priceFinal,
 }) => {
-  console.log("🚀 ~ course_progress:", course_progress);
   const router = useRouter();
 
   const [levelShow, setLevelShow] = useState<string>("");
@@ -114,19 +113,6 @@ const CoursesBlock: React.FC<CourseForm> = ({
 
         <div className="flex  justify-between items-end mt-auto pt-2 w-full">
           <div className="space-x-2">
-            {course_progress !== undefined && (
-              <div className="space-y-1">
-                <div className="w-full bg-darkSilver rounded-full h-2">
-                  <div
-                    className="bg-vividMalachite h-2 rounded-full"
-                    style={{ width: `${course_progress?.progress}%` }}
-                  />
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {course_progress?.progress}% hoàn thành
-                </span>
-              </div>
-            )}
             {/* {price && (
             <span className="text-muted-foreground line-through">
               {formatPrice(price)}
@@ -139,6 +125,19 @@ const CoursesBlock: React.FC<CourseForm> = ({
             )}
           </div>
         </div>
+        {course_progress !== undefined && (
+          <div className="space-y-1 w-full py-2">
+            <div className="w-full bg-darkSilver rounded-full h-2">
+              <div
+                className="bg-vividMalachite h-2 rounded-full"
+                style={{ width: `${course_progress?.progress}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {course_progress?.progress}% hoàn thành
+            </span>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

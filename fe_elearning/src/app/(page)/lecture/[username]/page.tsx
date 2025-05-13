@@ -83,18 +83,13 @@ const TeacherProfile = () => {
               <div className="flex gap-4 justify-center md:justify-start">
                 <div className="flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
-                  <span>
-                    {teacherData?.user.number_course
-                      ? teacherData?.user.number_course
-                      : "N/A "}
-                    bài giảng
-                  </span>
+                  <span>{teacherData?.total_courses} bài giảng</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-yellow-400" />
                   <span>
-                    {teacherData?.user.rating
-                      ? teacherData?.user.rating?.toFixed(1)
+                    {teacherData?.avg_rating || teacherData?.avg_rating === 0
+                      ? teacherData?.avg_rating?.toFixed(1)
                       : "N/A "}
                     /5
                   </span>

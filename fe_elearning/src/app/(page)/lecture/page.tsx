@@ -12,6 +12,7 @@ import { APIGetListLecture } from "@/utils/lecture";
 import { Lecture } from "@/types/registerLectureFormType";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import LectureFilter from "@/components/filter/filterLecture";
 // const dataLecture: lectureBlock[] = [
 //   {
 //     avatar: "/images/avatar.jpg",
@@ -223,17 +224,22 @@ const Page = () => {
       </AnimateWrapper>
       <AnimateWrapper direction="up" amount={0.01}>
         <div className="w-full h-full flex items-end justify-end">
-          <FilterBlock />
+          {/* <LectureFilter
+            paramsLecture={filter}
+            setParamsLecture={setFilter}
+            router={router}
+            category={[]}
+          /> */}
         </div>
         <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {lecture.map((lecture: Lecture, index: number) => (
             <LecturersBlock
               avatar={lecture?.user?.profile_image?.key}
               name={lecture?.user?.first_name + " " + lecture?.user?.last_name}
-              rating={lecture?.user?.rating}
+              rating={lecture?.avg_rating}
               major={lecture?.category?.translations[0]?.name}
               numberCourse={lecture?.total_courses}
-              numberStudent={lecture?.user?.number_student}
+              numberStudent={lecture?.total_students}
               description={lecture?.biography}
               username={lecture?.user?.username}
             />
