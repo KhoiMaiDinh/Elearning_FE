@@ -4,11 +4,11 @@ import { RootState } from "@/constants/store";
 import { useEffect } from "react";
 import { CourseForm } from "@/types/courseType";
 import { UserType } from "@/types/userType";
-import { APIGetFullCourse } from "@/utils/course";
+import { APIGetFullCourse, APIGetCourseById } from "@/utils/course";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 export default function CheckoutSinglePage({
   params,
 }: {
@@ -19,7 +19,10 @@ export default function CheckoutSinglePage({
 
   const handleGetDetailCourse = async () => {
     setLoading(true);
-    const response = await APIGetFullCourse(params.course || "");
+    const response = await APIGetCourseById(params.course || "", {
+      with_sections: true,
+      with_thumbnail: true,
+    });
     if (response?.status === 200) {
       const course = response.data;
       setDataCourse(course);

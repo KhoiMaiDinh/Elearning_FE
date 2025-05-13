@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronRight,
   CheckCircle,
+  Lock,
 } from "lucide-react";
 import { CourseItem, Section } from "@/types/courseType";
 
@@ -14,13 +15,15 @@ interface CourseItemListProps {
   currentCourseItemId: string;
   onCourseItemSelect: (courseItem: CourseItem) => void;
   isExpanded: boolean;
+  isRegistered: boolean;
 }
 
 const CourseItemList: React.FC<CourseItemListProps> = ({
-  sections,
+  sections = [],
   currentCourseItemId,
   onCourseItemSelect,
   isExpanded,
+  isRegistered,
 }) => {
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
 
@@ -33,7 +36,18 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
 
   // Check nếu có bài con đang active thì section cha cũng sáng
   const isChildActive = (section: Section) =>
-    section.items?.some((item) => item.title === currentCourseItemId);
+    section?.items?.some((item) => item?.title === currentCourseItemId) ||
+    false;
+
+  if (!sections || sections.length === 0) {
+    return (
+      <div className="h-full overflow-y-auto px-2 pb-6">
+        <h3 className="py-4 px-3 text-lg font-semibold text-majorelleBlue dark:text-white/80">
+          Không có bài học nào
+        </h3>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full overflow-y-auto px-2 pb-6">
@@ -47,6 +61,8 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
 
       <div className="space-y-4">
         {sections.map((section, sectionIndex) => {
+          if (!section) return null;
+
           const isOpen = openSections[sectionIndex] ?? true;
           const sectionActive = isChildActive(section);
 
@@ -72,19 +88,30 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                 </div>
               )}
 
-              {isOpen && (
+              {isOpen && section.items && section.items.length > 0 && (
                 <ul className="space-y-1 mt-2">
-                  {section.items?.map((courseItem) => {
+                  {section.items.map((courseItem) => {
+                    if (!courseItem) return null;
+
                     const isActive = courseItem.title === currentCourseItemId;
+                    const isLocked = !isRegistered && !courseItem.is_preview;
 
                     return (
                       <li
                         key={courseItem.title}
-                        onClick={() => onCourseItemSelect(courseItem)}
-                        className={`group px-3 py-2 flex items-center justify-between rounded-md cursor-pointer transition-colors ${
+                        onClick={() =>
+                          !isLocked && onCourseItemSelect(courseItem)
+                        }
+                        className={`group px-3 py-2 flex items-center justify-between rounded-md ${
+                          isLocked
+                            ? "cursor-not-allowed opacity-60"
+                            : "cursor-pointer"
+                        } transition-colors ${
                           isActive
                             ? "bg-majorelleBlue/20 dark:bg-majorelleBlue/30"
-                            : "hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10"
+                            : !isLocked
+                            ? "hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10"
+                            : ""
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -108,6 +135,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                         </div>
                         {/* ✅ Green checkmark if progress > 80% */}
                         {isExpanded &&
+                          isRegistered &&
                           courseItem.progresses &&
                           courseItem.progresses[0]?.watch_time_in_percentage &&
                           courseItem.progresses[0]?.watch_time_in_percentage >
@@ -117,6 +145,13 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                               className="text-vividMalachite flex-shrink-0"
                             />
                           )}
+                        {/* 🔒 Lock icon for non-preview lessons when not registered */}
+                        {isExpanded && isLocked && (
+                          <Lock
+                            size={16}
+                            className="text-gray-400 flex-shrink-0"
+                          />
+                        )}
                       </li>
                     );
                   })}

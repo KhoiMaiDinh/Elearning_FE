@@ -10,6 +10,7 @@ import { UserType } from "@/types/userType";
 import { APICreateOrder } from "@/utils/order";
 import { Button } from "../ui/button";
 import { formatPrice } from "../formatPrice";
+import { useRouter } from "next/navigation";
 type Props = {
   mode: "single" | "cart";
   products: { id: string; title: string; price: number }[];
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export default function CheckoutPage({ mode, products, student }: Props) {
+  const router = useRouter();
   const [discount, setDiscount] = useState("");
 
   const total = products.reduce((sum, p) => sum + p.price, 0);
@@ -29,9 +31,8 @@ export default function CheckoutPage({ mode, products, student }: Props) {
       window.location.href = response?.data?.payment?.payment_url;
     } else {
       alert("Thanh toán thất bại");
+      console.log(response);
     }
-    console.log("🚀 ~ handlePayment ~ response:", response);
-    console.log(response);
   };
 
   return (
@@ -50,9 +51,17 @@ export default function CheckoutPage({ mode, products, student }: Props) {
           <span className="text-Sunglow">{formatPrice(discountedTotal)}</span>
         </div>
 
-        <div className="pt-4">
+        <div className="pt-4 flex gap-4 justify-between">
           <Button
-            className="w-full bg-majorelleBlue text-white hover:bg-majorelleBlue/90"
+            className="w-full bg-custom-gradient-button-red text-white hover:brightness-125"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Quay lại
+          </Button>
+          <Button
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
             onClick={() =>
               handlePayment({
                 course_ids: products.map((product) => product.id),

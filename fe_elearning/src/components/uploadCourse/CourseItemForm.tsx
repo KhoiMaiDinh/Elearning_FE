@@ -21,6 +21,7 @@ import VideoPlayer from "@/components/courseDetails/videoPlayer";
 import { Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
+import { z } from "zod";
 
 // ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
@@ -56,6 +57,19 @@ const courseItemSchema = yup.object().shape({
   previous_position: yup.string().optional(),
 });
 
+// --- Khai báo schema với Zod ---
+const CourseItemSchema = z.object({
+  title: z.string().min(1, "Tiêu đề không được bỏ trống"),
+  description: z.string().optional(),
+  video: z
+    .any()
+    .refine(
+      (file) => typeof file === "string" || file instanceof File,
+      "Video là bắt buộc"
+    ),
+  resources: z.array(z.any()).optional(),
+});
+
 interface CourseItemFormProps {
   sectionIndex: number;
   section: Section;
@@ -64,16 +78,16 @@ interface CourseItemFormProps {
   initialValues?: CourseItem | null;
 }
 
-const CourseItemForm: React.FC<CourseItemFormProps> = ({
+const CourseItemForm = ({
   sectionIndex,
   section,
   onSave,
   onCancel,
   initialValues,
-}) => {
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [description, setDescription] = useState("");
+}: CourseItemFormProps): JSX.Element => {
+  const [showAlertSuccess, setShowAlertSuccess] = useState<boolean>(false);
+  const [showAlertError, setShowAlertError] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [documentPreviews, setDocumentPreviews] = useState<
     Array<{ name: string; url: string }>
@@ -202,10 +216,14 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     });
   };
 
-  const handleVideoUpload = async (file: File) => {
+  const handleVideoUpload = async (file: File): Promise<void> => {
     try {
       setIsVideoUploading(true);
       setVideoUploadProgress(0);
+
+      // Show immediate preview using local URL
+      const localPreviewUrl = URL.createObjectURL(file);
+      setVideoPreview(localPreviewUrl);
 
       const progressInterval = setInterval(() => {
         setVideoUploadProgress((prev) => {
@@ -238,6 +256,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       setValue("video", video);
       setValue("video.duration_in_seconds", Math.round(duration));
       setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key);
+      URL.revokeObjectURL(localPreviewUrl);
 
       setTimeout(() => {
         setIsVideoUploading(false);
@@ -253,9 +272,12 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
     }
   };
 
-  const handleDocumentUpload = async (files: File[], field: any) => {
+  const handleDocumentUpload = async (
+    files: File[],
+    field: { value: ResourceType[]; onChange: (value: ResourceType[]) => void }
+  ): Promise<void> => {
     const uploadedResources: ResourceType[] = [];
-    const newPreviews = [];
+    const newPreviews: Array<{ name: string; url: string }> = [];
     const fileNames = files.map((f) => f.name);
     setUploadingDocuments(fileNames);
 
@@ -297,14 +319,43 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
       }
     }
 
-    const currentResources = field.value || [];
-    field.onChange([...currentResources, ...uploadedResources]);
+    field.onChange([...field.value, ...uploadedResources]);
     setDocumentPreviews([...documentPreviews, ...newPreviews]);
 
     setTimeout(() => {
       setUploadingDocuments([]);
       setDocumentUploadProgress({});
     }, 1000);
+  };
+
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "video" | "resources"
+  ): Promise<void> => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      if (field === "video") {
+        await handleVideoUpload(file);
+      } else {
+        const files = Array.from(e.target.files || []);
+        if (files.length > 0) {
+          const currentResources = watch("resources") || [];
+          await handleDocumentUpload(files, {
+            value: currentResources,
+            onChange: (value: ResourceType[]) => {
+              setValue("resources", value);
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling file change:", error);
+      setShowAlertError(true);
+      setDescription("Lỗi khi tải lên file");
+      setTimeout(() => setShowAlertError(false), 3000);
+    }
   };
 
   return (
@@ -412,7 +463,10 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                     videoPreview && (
                       <>
                         <VideoPlayer
-                          videoUrl={videoPreview}
+                          videoUrl={
+                            process.env.NEXT_PUBLIC_BASE_URL_VIDEO +
+                            videoPreview
+                          }
                           title="Video Preview"
                         />
                         <Button
@@ -474,15 +528,10 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 type="file"
                 accept="video/*"
                 disabled={isVideoUploading}
-                onChange={async (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) {
-                    await handleVideoUpload(file);
-                  }
-                }}
+                onChange={(e) => handleFileChange(e, "video")}
               />
 
-              {isVideoUploading && (
+              {isVideoUploading ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -493,6 +542,14 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                     {videoUploadProgress}%
                   </p>
                 </div>
+              ) : (
+                <VideoPlayer
+                  videoUrl={
+                    process.env.NEXT_PUBLIC_BASE_URL_VIDEO +
+                    (videoPreview || "")
+                  }
+                  title="Video Preview"
+                />
               )}
             </div>
           )}
@@ -512,14 +569,7 @@ const CourseItemForm: React.FC<CourseItemFormProps> = ({
                 accept=".pdf,.doc,.docx"
                 multiple
                 disabled={uploadingDocuments.length > 0}
-                onChange={async (e) => {
-                  const files = Array.from(
-                    (e.target as HTMLInputElement).files || []
-                  );
-                  if (files.length > 0) {
-                    await handleDocumentUpload(files, field);
-                  }
-                }}
+                onChange={(e) => handleFileChange(e, "resources")}
               />
 
               {uploadingDocuments.map((fileName) => (
