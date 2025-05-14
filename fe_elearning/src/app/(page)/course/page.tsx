@@ -2,90 +2,17 @@
 import AnimateWrapper from "@/components/animations/animateWrapper";
 import CoursesBlock from "@/components/block/courses-block";
 import FilterBlock from "@/components/filter/filter-block";
-import courseBlock from "@/types/coursesBlockType";
 import { CourseForm } from "@/types/courseType";
 import { APIGetEnrolledCourse, APIGetListCourse } from "@/utils/course";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-
-// const dataCourse = [
-//   {
-//     coverPhoto: "/images/course1.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Lập trình ReactJS cơ bản",
-//     rating: 4.9,
-//     level: "Cơ bản",
-//     numberStudent: 1200,
-//     description:
-//       "Khóa học dành cho người mới bắt đầu muốn tìm hiểu về ReactJS.",
-//     name: "Nguyễn Văn A",
-//     status: "Chưa đăng ký",
-//     progress: 45, // Đã hoàn thành 45% khóa học
-//     price: 500000,
-//     priceFinal: 450000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course2.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Phân tích dữ liệu với Python",
-//     rating: 4.8,
-//     level: "Trung cấp",
-//     numberStudent: 800,
-//     description:
-//       "Học cách phân tích dữ liệu và trực quan hóa với Python. Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
-
-//     name: "Lê Thị B",
-//     status: "Chưa đăng ký",
-//     progress: 100, // Đã hoàn thành khóa học
-//     price: 700000,
-//     priceFinal: 700000, // Không giảm giá
-//   },
-//   {
-//     coverPhoto: "/images/course3.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Thiết kế giao diện với Figma",
-//     rating: 4.7,
-//     level: "Cơ bản",
-//     numberStudent: 650,
-//     description: "Khóa học cung cấp kiến thức cơ bản về thiết kế UI/UX.",
-//     name: "Trần Minh C",
-//     status: "Chưa đăng ký",
-//     progress: 0, // Chưa bắt đầu
-//     price: 400000,
-//     priceFinal: 350000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course4.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Lập trình Backend với Node.js",
-//     rating: 4.6,
-//     level: "Nâng cao",
-//     numberStudent: 1550,
-//     description: "Nâng cao kỹ năng lập trình backend với Node.js và Express.",
-//     name: "Phạm Duy D",
-//     status: "Chưa đăng ký",
-//     progress: 60, // Đã hoàn thành 60% khóa học
-//     price: 600000,
-//     priceFinal: 500000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course5.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Phát triển ứng dụng di động với Flutter",
-//     rating: 4.9,
-//     level: "Trung cấp",
-//     numberStudent: 1100,
-//     description:
-//       "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
-//     name: "Hoàng Văn E",
-//     status: "Chưa đăng ký",
-//     progress: 100, // Đã hoàn thành khóa học
-//     price: 800000,
-//     priceFinal: 750000, // Giá sau giảm
-//   },
-// ];
+import SelectFilter from "@/components/selectComponent/selectFilter";
+import { dataLevel, priceRanges } from "@/constants/selectData";
+import { APIGetCategory } from "@/utils/category";
+import CourseFilter from "@/components/filter/filterCourse";
 const Page = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -93,10 +20,12 @@ const Page = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [isLoading, setIsLoading] = useState(true);
   const [listFavCourse, setListFavCourse] = useState([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
   const [listCourseOfUser, setListCourseOfUser] = useState<CourseForm[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(false);
+  const [isLoadingUserCourses, setIsLoadingUserCourses] = useState(false);
+  const [category, setCategory] = useState<any[]>([]);
 
   // Initialize params from URL
   const [paramsCourse, setParamsCourse] = useState({
@@ -120,62 +49,70 @@ const Page = () => {
     with_thumbnail: true,
   });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    // Add filter change event listener
-    const handleFilterChange = (event: CustomEvent) => {
-      const filterParams = event.detail;
-      setParamsCourse((prev) => ({
-        ...prev,
-        ...filterParams,
-      }));
-    };
-
-    window.addEventListener(
-      "filterChange",
-      handleFilterChange as EventListener
-    );
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener(
-        "filterChange",
-        handleFilterChange as EventListener
-      );
-    };
-  }, []);
-
   const handleGetListCourse = async () => {
     try {
-      setIsLoading(true);
+      setIsLoadingCourses(true);
       const response = await APIGetListCourse(paramsCourse);
       if (response && response.data) {
         setListCourse(response.data);
       }
-      setIsLoading(false);
     } catch (err) {
       console.error("Error during get list course:", err);
-      setIsLoading(false);
+    } finally {
+      setIsLoadingCourses(false);
     }
   };
 
   const handleGetListCourseOfUser = async () => {
     try {
-      setIsLoading(true);
+      setIsLoadingUserCourses(true);
       const response = await APIGetEnrolledCourse();
       if (response && response.data) {
-        const data = listCourse.filter((item: CourseForm) =>
-          response.data.some((item2: CourseForm) => item2.id === item.id)
-        );
-        setListCourseOfUser(data);
+        setListCourseOfUser(response?.data);
       }
-      setIsLoading(false);
     } catch (err) {
       console.error("Error during get list course of user:", err);
-      setIsLoading(false);
+    } finally {
+      setIsLoadingUserCourses(false);
+    }
+  };
+
+  const handleGetCategory = async () => {
+    try {
+      const response = await APIGetCategory({
+        language: "vi",
+        with_children: true,
+      });
+
+      // Function to extract only children categories (bỏ cha)
+      const extractChildrenOnly = (categories: any[]): any[] => {
+        let result: any[] = [];
+
+        categories.forEach((category) => {
+          // Nếu có children thì xử lý tiếp
+          if (category?.children && category?.children.length > 0) {
+            category.children.forEach((child: any) => {
+              result.push({
+                id: child?.slug,
+                value: child?.translations[0]?.name,
+              });
+
+              // Nếu con cũng có children thì xử lý tiếp (deep children)
+              if (child.children && child.children.length > 0) {
+                const deeper = extractChildrenOnly([child]);
+                result = [...result, ...deeper];
+              }
+            });
+          }
+        });
+
+        return result;
+      };
+
+      const childrenCategories = extractChildrenOnly(response?.data || []);
+      setCategory(childrenCategories);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -185,17 +122,19 @@ const Page = () => {
       courseSection.scrollIntoView({ behavior: "smooth" });
     }
   };
+
   useEffect(() => {
     handleGetListCourse();
-    handleGetListCourseOfUser();
   }, [paramsCourse]);
+
+  useEffect(() => {
+    handleGetListCourseOfUser();
+    handleGetCategory();
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      )}
+      {/* header */}
       {/* header */}
       <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
         {" "}
@@ -275,24 +214,33 @@ const Page = () => {
           </AnimateWrapper>
         </div>
       </section>
-
-      {listCourseOfUser.length > 0 && (
-        <AnimateWrapper delay={0} direction="up">
-          <div className="md:px-6 pt-4 pb-2">
-            <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
-              Khóa học của bạn
-            </h2>
-            <p className="md:text-sm text-xs text-muted-foreground mt-1">
-              Các khóa học mà bạn đã đăng ký
-            </p>
-          </div>
-        </AnimateWrapper>
+      {isLoadingUserCourses ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      ) : (
+        listCourseOfUser.length > 0 && (
+          <AnimateWrapper delay={0} direction="up">
+            <div className="md:px-6 pt-4 pb-2">
+              <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
+                Khóa học của bạn
+              </h2>
+              <p className="md:text-sm text-xs text-muted-foreground mt-1">
+                Các khóa học mà bạn đã đăng ký
+              </p>
+            </div>
+          </AnimateWrapper>
+        )
       )}
 
       <AnimateWrapper delay={0} direction="up" amount={0.01}>
         <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {listCourseOfUser.map((course: CourseForm, index: number) => (
-            <CoursesBlock key={index} {...course} />
+            <CoursesBlock
+              key={index}
+              {...course}
+              course_progress={course.course_progress}
+            />
           ))}
         </div>
       </AnimateWrapper>
@@ -306,16 +254,29 @@ const Page = () => {
             Khám phá các khóa học được thiết kế tâm huyết bởi những chuyên gia
           </p>
         </div>
-      </AnimateWrapper>
-      <AnimateWrapper delay={0} direction="up" amount={0.01} className="">
-        <div className="w-full h-full flex items-end justify-end">
-          <FilterBlock />
-        </div>{" "}
-        <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 pb-2 ">
-          {listCourse.map((course: CourseForm, index: number) => (
-            <CoursesBlock key={index} {...course} />
-          ))}
+
+        <div className="md:px-6 pt-4 pb-2">
+          <CourseFilter
+            paramsCourse={paramsCourse}
+            setParamsCourse={setParamsCourse}
+            router={router}
+            category={category}
+          />
         </div>
+      </AnimateWrapper>
+
+      <AnimateWrapper delay={0} direction="up" amount={0.01}>
+        {isLoadingCourses ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin" />
+          </div>
+        ) : (
+          <div className="w-full h-full md:px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 pb-2 ">
+            {listCourse.map((course: CourseForm, index: number) => (
+              <CoursesBlock key={index} {...course} />
+            ))}
+          </div>
+        )}
       </AnimateWrapper>
     </div>
   );

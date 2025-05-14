@@ -153,7 +153,6 @@ const Page = () => {
         }
       } else {
         if (response?.status === 401) {
-          console.log("🚀 ~ handleLogin ~ response:", response);
           setAlertBanNote(response?.data?.message);
           setShowAlertBan(true);
           setTimeout(() => {

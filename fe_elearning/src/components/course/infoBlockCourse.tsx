@@ -24,6 +24,7 @@ type infoBlockCourse = {
   level?: string;
   totalLessons?: number;
   courseProgress?: number;
+  thumbnail?: any;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -34,6 +35,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   level,
   totalLessons,
   courseProgress,
+  thumbnail,
 }) => {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -73,9 +75,16 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
               Tiến độ
             </CardTitle>
           </CardHeader>
-          <div className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden">
+          <div
+            className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden"
+            onClick={() => {
+              router.push(`/course-details/${id}`);
+            }}
+          >
             <img
-              src="/images/avatar.jpg"
+              src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ""}${
+                thumbnail || ""
+              }`}
               alt="Học thử"
               className="w-full  relative transition-transform duration-300 ease-in-out group-hover:scale-105"
             />
@@ -129,7 +138,11 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
               router.push(`/course-details/${id}`);
             }}
           >
-            {courseProgress !== 0 && courseProgress ? "Tiếp tục" : "Bắt đầu"}
+            {courseProgress !== 0 && courseProgress
+              ? "Tiếp tục"
+              : courseProgress === 100 && courseProgress
+              ? "Đã hoàn thành"
+              : "Bắt đầu"}
           </Button>
         )}
       </div>

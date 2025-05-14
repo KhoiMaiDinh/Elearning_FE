@@ -73,6 +73,11 @@ export default {
       },
 
       keyframes: {
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-5px)" },
+          "40%, 80%": { transform: "translateX(5px)" },
+        },
         marquee: {
           "0%": { transform: "translateX(0%)" },
           "100%": { transform: "translateX(-50%)" },
@@ -98,6 +103,7 @@ export default {
         marquee: "marquee 30s linear infinite", // 30s là thời gian chạy của marquee , vong lap chay
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shake: "shake 0.6s ease-in-out",
       },
     },
     colors: {
@@ -162,6 +168,7 @@ export default {
 
       "custom-gradient-button-red":
         "linear-gradient(to left top, #b91c1c ,#dc2626,#ef4444, #f87171)",
+      "gradient-144": "linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)",
     },
   },
   plugins: [require("tailwindcss-animate")],

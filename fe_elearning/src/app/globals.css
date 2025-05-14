@@ -14,6 +14,24 @@ body {
   color: transparent;
 }
 
+@keyframes shadowBlink {
+  0% {
+    box-shadow: 0 4px 15px #cc3333;
+    background-color: #cc3333;
+  }
+  50% {
+    box-shadow: 0 4px 15px #2a435d;
+    background-color: #2a435d;
+  }
+  100% {
+    box-shadow: 0 4px 15px #cc3333;
+    background-color: #cc3333;
+  }
+}
+.shadow-blink {
+  animation: shadowBlink 1s infinite;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

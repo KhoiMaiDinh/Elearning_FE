@@ -49,7 +49,6 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
               ✍️ Chỉnh sửa
             </Button>
           </div>
-
           <p className="mb-1">
             <strong>📄 Nội dung:</strong>{" "}
             <span
@@ -57,7 +56,6 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
               dangerouslySetInnerHTML={{ __html: item.description }}
             />
           </p>
-
           {item.video && (
             <div className="mt-3">
               <p className="font-semibold mb-1">🎥 Video:</p>
@@ -83,7 +81,6 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
               )}
             </div>
           )}
-
           {item.resources?.length > 0 && (
             <div className="mt-3">
               <p className="font-semibold mb-1">📎 Tài liệu:</p>
@@ -103,7 +100,6 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
               </ul>
             </div>
           )}
-
           <p className="mt-3 text-sm">
             <strong>👁️ Xem trước:</strong> {item.is_preview ? "Có" : "Không"}
           </p>

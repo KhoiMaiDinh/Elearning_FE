@@ -87,20 +87,6 @@ const CoursesBlock: React.FC<CourseForm> = ({
           className="text-sm text-muted-foreground line-clamp-2"
           dangerouslySetInnerHTML={{ __html: description || "" }}
         ></p>
-
-        {/* {course_progress !== undefined && (
-          <div className="space-y-1">
-            <div className="w-full bg-darkSilver rounded-full h-2">
-              <div
-                className="bg-vividMalachite h-2 rounded-full"
-                style={{ width: `${course_progress?.progress}%` }}
-              />
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {course_progress?.progress}% hoàn thành
-            </span>
-          </div>
-        )} */}
       </CardContent>
 
       {/* Phần giá & button luôn ở dưới cùng */}
@@ -125,7 +111,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
           )}
         </div>
 
-        <div className="flex justify-between items-end mt-auto pt-2 w-full">
+        <div className="flex  justify-between items-end mt-auto pt-2 w-full">
           <div className="space-x-2">
             {/* {price && (
             <span className="text-muted-foreground line-through">
@@ -138,10 +124,20 @@ const CoursesBlock: React.FC<CourseForm> = ({
               </span>
             )}
           </div>
-          {/* <Badge variant="outline" className="text-[10px]">
-            Xem chi tiết
-          </Badge> */}
         </div>
+        {course_progress !== undefined && (
+          <div className="space-y-1 w-full py-2">
+            <div className="w-full bg-darkSilver rounded-full h-2">
+              <div
+                className="bg-vividMalachite h-2 rounded-full"
+                style={{ width: `${course_progress?.progress}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {course_progress?.progress}% hoàn thành
+            </span>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

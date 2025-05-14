@@ -83,7 +83,6 @@ const SectionForm: React.FC<SectionFormProps> = ({
             : null,
       };
       const response = await APIInitSection(payload);
-      console.log("🚀 ~ handleCreateSection ~ response:", response);
       if (response?.status === 201) {
         const newSection: Section = {
           ...section,

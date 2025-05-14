@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type { Metadata } from "next";
 import "../globals.css";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   SidebarInset,
   SidebarProvider,
@@ -18,6 +18,8 @@ import { useTheme } from "next-themes";
 import Aurora from "@/components/animations/background-aurora";
 import { Inter } from "next/font/google";
 import Footer from "@/components/footer";
+import { connectSocket } from "@/constants/socketSlice";
+import { RootState } from "@/constants/store";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,11 +27,19 @@ export default function RootLayout({
 }>) {
   const dispatch = useDispatch();
   const { theme, setTheme } = useTheme(); // Sử dụng hook từ `next-themes`
+  const token = localStorage.getItem("access_token");
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   useEffect(() => {
     // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(connectSocket({ token, user_id: userInfo.id }));
+    }
+  }, [token]);
 
   return (
     <body className="bg-AntiFlashWhite dark:bg-eerieBlack">
