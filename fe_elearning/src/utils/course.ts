@@ -1,13 +1,13 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 const APIInitCourse = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/courses", data);
+    const response = await axiosInstance.post('/courses', data);
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
     // return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during init course:", err);
+    console.error('Error during init course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -23,9 +23,7 @@ const APIGetCourseById = async (
 ) => {
   try {
     const filteredParams = Object.fromEntries(
-      Object.entries(params || {}).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
+      Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
     );
     const response = await axiosInstance.get(`/courses/${course_id}`, {
       params: filteredParams,
@@ -35,7 +33,7 @@ const APIGetCourseById = async (
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get course by id:", err);
+    console.error('Error during get course by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -48,7 +46,7 @@ const APIUpdateCourse = async (course_id: string, data: any) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during update course:", err);
+    console.error('Error during update course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -61,22 +59,20 @@ const APIInitSection = async (data: any) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during init section:", err);
+    console.error('Error during init section:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
 
 const APIGetFullCourse = async (course_id: string) => {
   try {
-    const response = await axiosInstance.get(
-      `/courses/${course_id}/curriculums`
-    );
+    const response = await axiosInstance.get(`/courses/${course_id}/curriculums`);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get full course:", err);
+    console.error('Error during get full course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -89,7 +85,7 @@ const APIUpdateSection = async (section_id: string, data: any) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during update section:", err);
+    console.error('Error during update section:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -102,7 +98,7 @@ const APIInitCourseItem = async (data: any) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during init course item:", err);
+    console.error('Error during init course item:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -122,9 +118,7 @@ const APIGetListCourse = async (params: {
 }) => {
   try {
     const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
+      Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
     );
 
     const response = await axiosInstance.get(`/courses`, {
@@ -140,7 +134,7 @@ const APIGetListCourse = async (params: {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get list course:", err);
+    console.error('Error during get list course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -152,22 +146,19 @@ const APIGetMyCourse = async () => {
       return { data: response.data, status: response.status };
     }
   } catch (err) {
-    console.error("Error during get my course:", err);
+    console.error('Error during get my course:', err);
   }
 };
 
 const APIChangeCourseStatus = async (course_id: string, data: any) => {
   try {
-    const response = await axiosInstance.patch(
-      `/courses/${course_id}/status`,
-      data
-    );
+    const response = await axiosInstance.patch(`/courses/${course_id}/status`, data);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during change course status:", err);
+    console.error('Error during change course status:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -180,7 +171,7 @@ const APIGetEnrolledCourse = async () => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get enrolled course:", err);
+    console.error('Error during get enrolled course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -193,7 +184,7 @@ const APIUpsertProgressItemCourse = async (id: string, data: any) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during upsert progress:", err);
+    console.error('Error during upsert progress:', err);
   }
 };
 

@@ -1,14 +1,8 @@
-"use client";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle } from "lucide-react";
-import { useRouter } from "next/navigation";
+'use client';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 export default function BannedNotice({ note }: { note: string }) {
   const router = useRouter();
   return (
@@ -22,8 +16,8 @@ export default function BannedNotice({ note }: { note: string }) {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-sm text-gray/60 dark:text-gray/30">
-            Chúng tôi đã phát hiện hành vi vi phạm điều khoản sử dụng. Tài khoản
-            của bạn hiện không thể đăng nhập hoặc sử dụng dịch vụ.
+            Chúng tôi đã phát hiện hành vi vi phạm điều khoản sử dụng. Tài khoản của bạn hiện không
+            thể đăng nhập hoặc sử dụng dịch vụ.
           </p>
           <p className="text-sm text-gray/60 dark:text-gray/30">{note}</p>
           <p className="text-sm text-gray/60 dark:text-gray/30">
@@ -32,11 +26,7 @@ export default function BannedNotice({ note }: { note: string }) {
         </CardContent>
 
         <CardFooter>
-          <Button
-            variant="destructive"
-            className="w-full"
-            onClick={() => router.push("/")}
-          >
+          <Button variant="destructive" className="w-full" onClick={() => router.push('/')}>
             Quay lại trang chủ
           </Button>
         </CardFooter>

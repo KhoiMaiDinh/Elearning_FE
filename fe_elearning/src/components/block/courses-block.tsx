@@ -1,18 +1,13 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Star, Users, BookOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { CourseForm } from "@/types/courseType";
-import { formatPrice } from "../formatPrice";
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Star, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CourseForm } from '@/types/courseType';
+import { formatPrice } from '../formatPrice';
 
 const CoursesBlock: React.FC<CourseForm> = ({
   id,
@@ -21,22 +16,30 @@ const CoursesBlock: React.FC<CourseForm> = ({
   level,
   total_enrolled,
   title,
-  status,
+  // status,
   course_progress,
   instructor,
   description,
   price,
-  priceFinal,
+  // priceFinal,
 }) => {
   const router = useRouter();
 
-  const [levelShow, setLevelShow] = useState<string>("");
+  const [levelShow, setLevelShow] = useState<string>('');
   useEffect(() => {
-    level === "BEGINNER"
-      ? setLevelShow("Cơ bản")
-      : level === "INTERMEDIATE"
-      ? setLevelShow("Trung bình")
-      : setLevelShow("Nâng cao");
+    switch (level) {
+      case 'BEGINNER':
+        setLevelShow('Cơ bản');
+        break;
+      case 'INTERMEDIATE':
+        setLevelShow('Trung bình');
+        break;
+      case 'ADVANCED':
+        setLevelShow('Nâng cao');
+        break;
+      default:
+        setLevelShow('Không xác định');
+    }
   }, [level]);
   return (
     <Card
@@ -46,9 +49,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={
-              process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || "")
-            }
+            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '')}
             alt={title}
             className="w-full h-full object-contain rounded-t-lg"
           />
@@ -65,10 +66,10 @@ const CoursesBlock: React.FC<CourseForm> = ({
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
             <AvatarImage
-              alt={instructor?.user?.last_name || ""}
+              alt={instructor?.user?.last_name || ''}
               src={
                 process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                (instructor?.user?.profile_image?.key || "")
+                (instructor?.user?.profile_image?.key || '')
               }
               className="object-cover"
             />
@@ -85,7 +86,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
 
         <p
           className="text-sm text-muted-foreground line-clamp-2"
-          dangerouslySetInnerHTML={{ __html: description || "" }}
+          dangerouslySetInnerHTML={{ __html: description || '' }}
         ></p>
       </CardContent>
 
@@ -94,11 +95,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
         <div className="flex items-center gap-4 text-sm w-full">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>
-              {avg_rating
-                ? (Math.round(avg_rating * 10) / 10).toFixed(1)
-                : "N/A"}
-            </span>
+            <span>{avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
@@ -118,11 +115,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
               {formatPrice(price)}
             </span>
           )} */}
-            {price && (
-              <span className="font-semibold text-primary">
-                {formatPrice(price)}
-              </span>
-            )}
+            {price && <span className="font-semibold text-primary">{formatPrice(price)}</span>}
           </div>
         </div>
         {course_progress !== undefined && (

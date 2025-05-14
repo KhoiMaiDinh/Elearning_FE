@@ -1,7 +1,6 @@
-import { User } from "next-auth";
-import { MediaType } from "./mediaType";
-import { Lecture } from "./registerLectureFormType";
-import { UserType } from "./userType";
+import { MediaType } from './mediaType';
+import { Lecture } from './registerLectureFormType';
+import { UserType } from './userType';
 
 export interface VideoType {
   id: string;
@@ -9,7 +8,7 @@ export interface VideoType {
 
   video: {
     key: string;
-    status: "uploaded" | "validated" | "pending" | "rejected";
+    status: 'uploaded' | 'validated' | 'pending' | 'rejected';
     bucket: string;
     rejection_reason: string | null;
   };

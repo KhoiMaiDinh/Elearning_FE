@@ -1,7 +1,7 @@
-"use client";
-import { Filter, Star } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+'use client';
+import { Filter, Star } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import {
   Sheet,
@@ -12,17 +12,17 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "../ui/button";
-import FilterRadioGroup from "./filter-radioGroup";
-import SelectFilter from "../selectComponent/selectFilter";
-import { useTheme } from "next-themes";
-import { APIGetCategory } from "@/utils/category";
+} from '@/components/ui/sheet';
+import { Button } from '../ui/button';
+import FilterRadioGroup from './filter-radioGroup';
+import SelectFilter from '../selectComponent/selectFilter';
+import { useTheme } from 'next-themes';
+import { APIGetCategory } from '@/utils/category';
 
 const dataLevel = [
-  { id: "BEGINNER", value: "Cơ bản" },
-  { id: "INTERMEDIATE", value: "Trung bình" },
-  { id: "ADVANCED", value: "Nâng cao" },
+  { id: 'BEGINNER', value: 'Cơ bản' },
+  { id: 'INTERMEDIATE', value: 'Trung bình' },
+  { id: 'ADVANCED', value: 'Nâng cao' },
 ];
 
 const stars = Array.from({ length: 5 }, (_, index) => ({
@@ -37,11 +37,11 @@ const stars = Array.from({ length: 5 }, (_, index) => ({
 }));
 
 const priceRanges = [
-  { id: "all", value: "Tất cả" },
-  { id: "0,500000", value: "0đ - 500,000đ" },
-  { id: "500000,1000000", value: "500,000đ - 1,000,000đ" },
-  { id: "1000000,2000000", value: "1,000,000đ - 2,000,000đ" },
-  { id: "2000000,", value: "Trên 2,000,000đ" },
+  { id: 'all', value: 'Tất cả' },
+  { id: '0,500000', value: '0đ - 500,000đ' },
+  { id: '500000,1000000', value: '500,000đ - 1,000,000đ' },
+  { id: '1000000,2000000', value: '1,000,000đ - 2,000,000đ' },
+  { id: '2000000,', value: 'Trên 2,000,000đ' },
 ];
 
 interface CategoryOption {
@@ -53,39 +53,34 @@ const FilterBlock = () => {
   const { theme } = useTheme();
   const searchParams = useSearchParams();
   const [category, setCategory] = useState<CategoryOption[]>([]);
-  const [filterCategory, setFilterCategory] = useState({
-    language: "vi",
+  const [filterCategory, _setFilterCategory] = useState({
+    language: 'vi',
     with_children: true,
   });
 
   const [filters, setFilters] = useState({
-    reviewValue: searchParams.get("min_rating") || "all",
-    fieldValue: searchParams.get("category_slug") || "all",
-    levelValue: searchParams.get("level") || "all",
+    reviewValue: searchParams.get('min_rating') || 'all',
+    fieldValue: searchParams.get('category_slug') || 'all',
+    levelValue: searchParams.get('level') || 'all',
     priceRange:
-      getPriceRangeFromParams(
-        searchParams.get("min_price"),
-        searchParams.get("max_price")
-      ) || "all",
+      getPriceRangeFromParams(searchParams.get('min_price'), searchParams.get('max_price')) ||
+      'all',
   });
 
   // Function to get price range from URL parameters
-  function getPriceRangeFromParams(
-    minPrice: string | null,
-    maxPrice: string | null
-  ): string {
-    if (!minPrice && !maxPrice) return "all";
+  function getPriceRangeFromParams(minPrice: string | null, maxPrice: string | null): string {
+    if (!minPrice && !maxPrice) return 'all';
 
     const min = minPrice ? parseInt(minPrice) : undefined;
     const max = maxPrice ? parseInt(maxPrice) : undefined;
 
     // Match with our price range options
-    if (min === 0 && max === 500000) return "0,500000";
-    if (min === 500000 && max === 1000000) return "500000,1000000";
-    if (min === 1000000 && max === 2000000) return "1000000,2000000";
-    if (min === 2000000 && !max) return "2000000,";
+    if (min === 0 && max === 500000) return '0,500000';
+    if (min === 500000 && max === 1000000) return '500000,1000000';
+    if (min === 1000000 && max === 2000000) return '1000000,2000000';
+    if (min === 2000000 && !max) return '2000000,';
 
-    return "all";
+    return 'all';
   }
 
   const handleGetCategory = async () => {
@@ -128,7 +123,7 @@ const FilterBlock = () => {
         url.searchParams.set(key, params[key]);
       }
     });
-    window.history.pushState({}, "", url);
+    window.history.pushState({}, '', url);
   };
 
   // Function to handle filter changes and emit to parent
@@ -143,19 +138,14 @@ const FilterBlock = () => {
       min_price?: number;
       max_price?: number;
     } = {
-      min_rating:
-        newFilters.reviewValue === "all"
-          ? undefined
-          : parseInt(newFilters.reviewValue),
-      category_slug:
-        newFilters.fieldValue === "all" ? undefined : newFilters.fieldValue,
-      level:
-        newFilters.levelValue === "all" ? undefined : newFilters.levelValue,
+      min_rating: newFilters.reviewValue === 'all' ? undefined : parseInt(newFilters.reviewValue),
+      category_slug: newFilters.fieldValue === 'all' ? undefined : newFilters.fieldValue,
+      level: newFilters.levelValue === 'all' ? undefined : newFilters.levelValue,
     };
 
     // Handle price range
-    if (newFilters.priceRange !== "all") {
-      const [min, max] = newFilters.priceRange.split(",");
+    if (newFilters.priceRange !== 'all') {
+      const [min, max] = newFilters.priceRange.split(',');
       apiParams.min_price = min ? parseInt(min) : undefined;
       apiParams.max_price = max ? parseInt(max) : undefined;
     }
@@ -165,7 +155,7 @@ const FilterBlock = () => {
 
     // Emit filter changes to parent component
     if (window) {
-      const event = new CustomEvent("filterChange", { detail: apiParams });
+      const event = new CustomEvent('filterChange', { detail: apiParams });
       window.dispatchEvent(event);
     }
   };
@@ -174,13 +164,10 @@ const FilterBlock = () => {
     handleGetCategory();
   }, [filterCategory]);
 
-  const initialDataFilterCategory = [
-    { id: "all", value: "Tất cả" },
-    ...category,
-  ];
-  const initialDataFilterLevel = [{ id: "all", value: "Tất cả" }, ...dataLevel];
+  const initialDataFilterCategory = [{ id: 'all', value: 'Tất cả' }, ...category];
+  const initialDataFilterLevel = [{ id: 'all', value: 'Tất cả' }, ...dataLevel];
 
-  const initialDataFilterReview = [{ id: "all", value: "Tất cả" }, ...stars];
+  const initialDataFilterReview = [{ id: 'all', value: 'Tất cả' }, ...stars];
 
   return (
     <div className="flex flex-row items-center justify-between py-3 px-4">
@@ -188,8 +175,8 @@ const FilterBlock = () => {
         <SheetTrigger asChild>
           <div className="flex flex-row items-center gap-2 text-black dark:text-white cursor-pointer">
             <Filter
-              color={theme === "light" ? "#000000" : "#ffffff"}
-              fill={theme === "light" ? "#000000" : "#ffffff"}
+              color={theme === 'light' ? '#000000' : '#ffffff'}
+              fill={theme === 'light' ? '#000000' : '#ffffff'}
               size={16}
             />
             <p className="text-sm font-medium">Bộ lọc</p>

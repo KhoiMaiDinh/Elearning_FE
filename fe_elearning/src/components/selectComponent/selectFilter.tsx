@@ -1,15 +1,14 @@
-import * as React from "react";
+import * as React from 'react';
 
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "../ui/label";
+} from '@/components/ui/select';
+import { Label } from '../ui/label';
 
 type selectFilter = {
   label?: string;
@@ -53,11 +52,7 @@ const SelectFilter: React.FC<selectFilter> = ({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {error && (
-        <div className="text-[12px] font-sans font-normal text-redPigment">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-[12px] font-sans font-normal text-redPigment">{error}</div>}
     </div>
   );
 };

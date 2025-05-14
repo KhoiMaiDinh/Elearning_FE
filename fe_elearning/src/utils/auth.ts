@@ -1,46 +1,46 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 const APILoginEmail = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/auth/email/login", data);
+    const response = await axiosInstance.post('/auth/email/login', data);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during login email:", err);
+    console.error('Error during login email:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
 
 const APIRegisterEmail = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/auth/email/register", data);
+    const response = await axiosInstance.post('/auth/email/register', data);
 
     return { data: response.data, status: response.status };
   } catch (err) {
-    console.error("Error during register email:", err);
+    console.error('Error during register email:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
 
 const APILoginGoogle = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/auth/google/login", data);
+    const response = await axiosInstance.post('/auth/google/login', data);
 
     return { data: response.data, status: response.status };
   } catch (err) {
-    console.error("Error during login google:", err);
+    console.error('Error during login google:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
 
 const APIRegisterGoogle = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/auth/google/register", data);
+    const response = await axiosInstance.post('/auth/google/register', data);
 
     return { data: response.data, status: response.status };
   } catch (err) {
-    console.error("Error during register google:", err);
+    console.error('Error during register google:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };

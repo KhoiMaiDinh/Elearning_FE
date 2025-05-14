@@ -1,4 +1,4 @@
-import { UserType } from "./userType";
+import { UserType } from './userType';
 
 export interface CommunityThread {
   id: string;

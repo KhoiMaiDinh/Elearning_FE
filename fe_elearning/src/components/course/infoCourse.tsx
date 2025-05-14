@@ -1,27 +1,20 @@
-import { Star, Users } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import CourseMain from "./courseMain";
-import { CourseForm, Section } from "@/types/courseType";
-import { formatPrice } from "../formatPrice";
-import Popup from "../courseDetails/popup";
-import ReviewListUser from "./reviewListUser";
-import { APIGetReview } from "@/utils/comment";
+import { Star, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import CourseMain from './courseMain';
+import { CourseForm } from '@/types/courseType';
+import { formatPrice } from '../formatPrice';
+import Popup from '../courseDetails/popup';
+import ReviewListUser from './reviewListUser';
+import { APIGetReview } from '@/utils/comment';
 type infoCourse = {
   lecture: string;
   course: CourseForm;
 };
 const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
-  const totalLessons = course.sections?.reduce(
-    (total, section) => total + section.items.length,
-    0
-  );
+  const totalLessons = course.sections?.reduce((total, section) => total + section.items.length, 0);
   const totalDuration = course.sections?.reduce(
     (total, section) =>
-      total +
-      section.items.reduce(
-        (sum, item) => sum + (item.video?.duration_in_seconds || 0),
-        0
-      ),
+      total + section.items.reduce((sum, item) => sum + (item.video?.duration_in_seconds || 0), 0),
     0
   );
 
@@ -36,6 +29,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
         setReviews(response.data);
       }
     } catch (error) {
+      console.log(error);
       throw error;
     }
   };
@@ -47,12 +41,12 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
   }, [course.id]);
 
   useEffect(() => {
-    if (course?.level === "BEGINNER") {
-      setLevelShow("Cơ bản");
-    } else if (course?.level === "INTERMEDIATE") {
-      setLevelShow("Trung bình");
-    } else if (course?.level === "ADVANCED") {
-      setLevelShow("Nâng cao");
+    if (course?.level === 'BEGINNER') {
+      setLevelShow('Cơ bản');
+    } else if (course?.level === 'INTERMEDIATE') {
+      setLevelShow('Trung bình');
+    } else if (course?.level === 'ADVANCED') {
+      setLevelShow('Nâng cao');
     }
   }, [course?.level]);
 
@@ -62,9 +56,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
         {/* Hình ảnh khóa học */}
         <div className="relative w-full md:w-1/3">
           <img
-            src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ""}${
-              course?.thumbnail?.key || ""
-            }`}
+            src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${course?.thumbnail?.key || ''}`}
             alt="Khóa học"
             className="w-full h-auto rounded-lg object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -83,15 +75,13 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
             <div className="flex items-center gap-1 px-2 py-1 bg-champagne dark:bg-black50 rounded-full border border-white min-w-[64px] justify-center">
               <Star size={12} color="#FFCD29" fill="#FFCD29" />
               <span className="text-[10px] text-Sunglow font-medium">
-                {course?.avg_rating ? course?.avg_rating : "N/A"}
+                {course?.avg_rating ? course?.avg_rating : 'N/A'}
               </span>
             </div>
 
             {/* Trình độ */}
             <div className="flex items-center gap-1 px-2 py-1 bg-teaGreen dark:bg-black50 rounded-full border border-white min-w-[80px] justify-center">
-              <span className="text-[10px] text-goGreen font-medium">
-                {levelShow}
-              </span>
+              <span className="text-[10px] text-goGreen font-medium">{levelShow}</span>
             </div>
 
             {/* Học viên */}
@@ -102,7 +92,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
                   ? course?.total_enrolled > 1000
                     ? `${(course?.total_enrolled / 1000).toFixed(1)}k+`
                     : `${course?.total_enrolled}+`
-                  : "N/A"}
+                  : 'N/A'}
               </span>
             </div>
           </div>
@@ -136,7 +126,7 @@ const InfoCourse: React.FC<infoCourse> = ({ lecture, course }) => {
         </text>
         <text
           className="font-normal text-black ql-content  italic dark:text-AntiFlashWhite md:text-[16px] text-[14px]"
-          dangerouslySetInnerHTML={{ __html: course?.description || "" }}
+          dangerouslySetInnerHTML={{ __html: course?.description || '' }}
         ></text>
       </div>
 

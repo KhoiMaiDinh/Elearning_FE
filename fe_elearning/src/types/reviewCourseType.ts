@@ -1,4 +1,4 @@
-import { MediaType } from "./mediaType";
+import { MediaType } from './mediaType';
 
 export interface ReviewCourseType {
   course_id?: string;

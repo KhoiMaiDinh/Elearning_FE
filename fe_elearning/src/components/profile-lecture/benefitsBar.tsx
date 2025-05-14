@@ -1,6 +1,5 @@
-import { CircleCheck } from "lucide-react";
-import React from "react";
-import AnimateWrapper from "../animations/animateWrapper";
+import { CircleCheck } from 'lucide-react';
+import React from 'react';
 
 type benefitBar = {
   description: string;

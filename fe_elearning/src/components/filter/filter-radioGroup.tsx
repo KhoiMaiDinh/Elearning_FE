@@ -1,7 +1,7 @@
-"use client";
-import React, { useState } from "react";
-import { Label } from "../ui/label";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+'use client';
+import React from 'react';
+import { Label } from '../ui/label';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 type filterGroup = {
   title: string;
@@ -10,12 +10,7 @@ type filterGroup = {
   onChange: (value: string) => void;
 };
 
-const FilterRadioGroup: React.FC<filterGroup> = ({
-  title,
-  data,
-  value,
-  onChange,
-}) => (
+const FilterRadioGroup: React.FC<filterGroup> = ({ title, data, value, onChange }) => (
   <div>
     <Label className="flex flex-row items-center text-[14px] font-bold py-2 font-sans">
       {title}

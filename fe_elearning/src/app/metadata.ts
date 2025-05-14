@@ -1,4 +1,4 @@
 export const metadata = {
-  title: "E-Learning",
-  description: "E-Learning",
+  title: 'E-Learning',
+  description: 'E-Learning',
 };

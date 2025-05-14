@@ -1,13 +1,13 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 const APIRegisterLecture = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/instructors", data);
+    const response = await axiosInstance.post('/instructors', data);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during register lecture:", err);
+    console.error('Error during register lecture:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -20,7 +20,7 @@ const APIGetLectureByUserName = async (user_name: string) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get lecture by id:", err);
+    console.error('Error during get lecture by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -35,12 +35,10 @@ const APIGetListLecture = async (params: {
 }) => {
   try {
     const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
+      Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
     );
 
-    const response = await axiosInstance.get("/instructors", {
+    const response = await axiosInstance.get('/instructors', {
       params: filteredParams,
     });
     if (response.status === 200) {
@@ -52,7 +50,7 @@ const APIGetListLecture = async (params: {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get list lecture:", err);
+    console.error('Error during get list lecture:', err);
     throw err;
   }
 };

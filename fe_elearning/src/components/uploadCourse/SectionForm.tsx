@@ -1,27 +1,23 @@
-"use client";
-import React, { useState } from "react";
-import { useForm, Controller, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/constants/store";
-import { setCourse } from "@/constants/course";
-import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
-import TextAreaRegisterLecture from "@/components/inputComponent/textAreaRegisterLecture";
-import { Button } from "@/components/ui/button";
-import {
-  APIInitSection,
-  APIUpdateSection,
-  APIGetFullCourse,
-} from "@/utils/course";
-import AlertSuccess from "@/components/alert/AlertSuccess";
-import AlertError from "@/components/alert/AlertError";
-import { Section } from "@/types/courseType";
+'use client';
+import React, { useState } from 'react';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { setCourse } from '@/constants/course';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
+import { Button } from '@/components/ui/button';
+import { APIInitSection, APIUpdateSection, APIGetFullCourse } from '@/utils/course';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import AlertError from '@/components/alert/AlertError';
+import { Section } from '@/types/courseType';
 
 const sectionSchema = yup.object().shape({
-  title: yup.string().required("Tiêu đề phần không được để trống"),
+  title: yup.string().required('Tiêu đề phần không được để trống'),
   description: yup.string().required(),
-  position: yup.string().required("Thứ tự phần không được để trống"),
+  position: yup.string().required('Thứ tự phần không được để trống'),
 });
 
 interface SectionFormProps {
@@ -31,12 +27,7 @@ interface SectionFormProps {
   courseId: string;
 }
 
-const SectionForm: React.FC<SectionFormProps> = ({
-  section,
-  onSave,
-  onCancel,
-  courseId,
-}) => {
+const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, courseId }) => {
   const {
     control,
     handleSubmit,
@@ -44,19 +35,17 @@ const SectionForm: React.FC<SectionFormProps> = ({
   } = useForm<Section>({
     resolver: yupResolver(sectionSchema) as unknown as Resolver<Section>,
     defaultValues: {
-      title: section.title || "",
-      description: section.description || "",
-      position: section.position || "",
+      title: section.title || '',
+      description: section.description || '',
+      position: section.position || '',
     },
   });
 
-  const sections = useSelector(
-    (state: RootState) => state.course.courseInfo?.sections || []
-  );
+  const sections = useSelector((state: RootState) => state.course.courseInfo?.sections || []);
   const dispatch = useDispatch();
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
 
   const isNewSection = !section.id;
 
@@ -67,7 +56,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
         dispatch(setCourse(response.data));
       }
     } catch (error) {
-      console.error("Error fetching course details:", error);
+      console.error('Error fetching course details:', error);
     }
   };
 
@@ -94,14 +83,14 @@ const SectionForm: React.FC<SectionFormProps> = ({
         };
         onSave(newSection);
         setShowAlertSuccess(true);
-        setDescription("Tạo phần bài giảng thành công");
+        setDescription('Tạo phần bài giảng thành công');
         setTimeout(() => setShowAlertSuccess(false), 3000);
         await handleGetCourseInfo();
       }
     } catch (error) {
-      console.error("Error creating section:", error);
+      console.error('Error creating section:', error);
       setShowAlertError(true);
-      setDescription("Không thể tạo phần bài giảng");
+      setDescription('Không thể tạo phần bài giảng');
       setTimeout(() => setShowAlertError(false), 3000);
       throw error;
     }
@@ -109,7 +98,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
 
   const handleUpdateSection = async (data: Section) => {
     try {
-      const response = await APIUpdateSection(section.id || "", {
+      const response = await APIUpdateSection(section.id || '', {
         title: data.title,
         description: data.description,
       });
@@ -123,9 +112,9 @@ const SectionForm: React.FC<SectionFormProps> = ({
         await handleGetCourseInfo();
       }
     } catch (error) {
-      console.error("Error updating section:", error);
+      console.error('Error updating section:', error);
       setShowAlertError(true);
-      setDescription("Không thể cập nhật phần bài giảng");
+      setDescription('Không thể cập nhật phần bài giảng');
       setTimeout(() => setShowAlertError(false), 3000);
       throw error;
     }
@@ -172,7 +161,7 @@ const SectionForm: React.FC<SectionFormProps> = ({
           type="submit"
           className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
         >
-          {isNewSection ? "💡Tạo mới" : "💡Cập nhật"}
+          {isNewSection ? '💡Tạo mới' : '💡Cập nhật'}
         </Button>
         <Button
           type="button"

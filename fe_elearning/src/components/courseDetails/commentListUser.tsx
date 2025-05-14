@@ -1,8 +1,8 @@
-import React from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import React from 'react';
+import { Card, CardHeader, CardContent } from '../ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
-import { CommentEachItemCourse } from "@/types/commentType";
+import { CommentEachItemCourse } from '@/types/commentType';
 
 interface CommentListProps {
   comments: CommentEachItemCourse;
@@ -11,7 +11,7 @@ interface CommentListProps {
 const CommentListUser = ({ comments }: CommentListProps) => {
   const formatDate = (date: string) => {
     const dateObj = new Date(date);
-    return dateObj.toLocaleDateString("vi-VN");
+    return dateObj.toLocaleDateString('vi-VN');
   };
   return (
     <Card className="font-sans">
@@ -22,22 +22,21 @@ const CommentListUser = ({ comments }: CommentListProps) => {
               <AvatarImage
                 src={
                   process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                    (comments.user?.profile_image?.key || "default-key.jpg") ||
-                  "/placeholder.svg"
+                    (comments.user?.profile_image?.key || 'default-key.jpg') || '/placeholder.svg'
                 }
-                alt={comments.user?.first_name + " " + comments.user?.last_name}
+                alt={comments.user?.first_name + ' ' + comments.user?.last_name}
               />
               <AvatarFallback>
-                {comments.user?.first_name?.charAt(0) || "?"}
-                {comments.user?.last_name?.charAt(0) || "?"}
-              </AvatarFallback>{" "}
+                {comments.user?.first_name?.charAt(0) || '?'}
+                {comments.user?.last_name?.charAt(0) || '?'}
+              </AvatarFallback>{' '}
             </Avatar>
             <div>
               <div className="font-medium font-sans text-sm">
-                {comments.user?.first_name + " " + comments.user?.last_name}
+                {comments.user?.first_name + ' ' + comments.user?.last_name}
               </div>
               <div className="text-xs text-muted-foreground font-sans ">
-                {formatDate(comments.createdAt || "")}
+                {formatDate(comments.createdAt || '')}
               </div>
             </div>
           </div>

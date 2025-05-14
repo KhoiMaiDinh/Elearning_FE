@@ -1,40 +1,35 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useForm, Controller, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
-import TextAreaRegisterLecture from "@/components/inputComponent/textAreaRegisterLecture";
-import { Button } from "@/components/ui/button";
-import { APIInitCourseItem } from "@/utils/course";
-import { uploadToMinIO, getVideoDuration } from "@/utils/storage";
-import AlertSuccess from "@/components/alert/AlertSuccess";
-import AlertError from "@/components/alert/AlertError";
-import {
-  CourseItem,
-  Section,
-  VideoType,
-  ResourceType,
-} from "@/types/courseType";
-import VideoPlayer from "@/components/courseDetails/videoPlayer";
-import { Trash2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Loader2 } from "lucide-react";
-import { z } from "zod";
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
+import { Button } from '@/components/ui/button';
+import { APIInitCourseItem } from '@/utils/course';
+import { uploadToMinIO } from '@/utils/storage';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import AlertError from '@/components/alert/AlertError';
+import { CourseItem, Section, VideoType, ResourceType } from '@/types/courseType';
+import VideoPlayer from '@/components/courseDetails/videoPlayer';
+import { Trash2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
 // ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
-  title: yup.string().required("Tiêu đề bài học không được để trống"),
-  description: yup.string().required("Nội dung bài học không được để trống"),
+  title: yup.string().required('Tiêu đề bài học không được để trống'),
+  description: yup.string().required('Nội dung bài học không được để trống'),
   video: yup
     .object()
     .shape({
-      id: yup.string().required("ID của video không được để trống"),
+      id: yup.string().required('ID của video không được để trống'),
       duration_in_seconds: yup.number().nullable(),
       video: yup.object().shape({
         key: yup.string().required(),
-        status: yup.string().oneOf(["uploaded", "validated", "pending"]),
+        status: yup.string().oneOf(['uploaded', 'validated', 'pending']),
         bucket: yup.string(),
         rejection_reason: yup.string().nullable(),
       }),
@@ -58,15 +53,12 @@ const courseItemSchema = yup.object().shape({
 });
 
 // --- Khai báo schema với Zod ---
-const CourseItemSchema = z.object({
-  title: z.string().min(1, "Tiêu đề không được bỏ trống"),
+const _CourseItemSchema = z.object({
+  title: z.string().min(1, 'Tiêu đề không được bỏ trống'),
   description: z.string().optional(),
   video: z
     .any()
-    .refine(
-      (file) => typeof file === "string" || file instanceof File,
-      "Video là bắt buộc"
-    ),
+    .refine((file) => typeof file === 'string' || file instanceof File, 'Video là bắt buộc'),
   resources: z.array(z.any()).optional(),
 });
 
@@ -79,7 +71,7 @@ interface CourseItemFormProps {
 }
 
 const CourseItemForm = ({
-  sectionIndex,
+  // _sectionIndex,
   section,
   onSave,
   onCancel,
@@ -87,11 +79,11 @@ const CourseItemForm = ({
 }: CourseItemFormProps): JSX.Element => {
   const [showAlertSuccess, setShowAlertSuccess] = useState<boolean>(false);
   const [showAlertError, setShowAlertError] = useState<boolean>(false);
-  const [description, setDescription] = useState<string>("");
+  const [description, setDescription] = useState<string>('');
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
-  const [documentPreviews, setDocumentPreviews] = useState<
-    Array<{ name: string; url: string }>
-  >([]);
+  const [documentPreviews, setDocumentPreviews] = useState<Array<{ name: string; url: string }>>(
+    []
+  );
   const [createdItem, setCreatedItem] = useState<CourseItem | null>(null);
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
@@ -109,28 +101,26 @@ const CourseItemForm = ({
   } = useForm<CourseItem>({
     resolver: yupResolver(courseItemSchema) as unknown as Resolver<CourseItem>,
     defaultValues: {
-      title: initialValues?.title || "",
-      description: initialValues?.description || "",
+      title: initialValues?.title || '',
+      description: initialValues?.description || '',
       video: initialValues?.video || null,
       resources: initialValues?.resources || [],
       is_preview: initialValues?.is_preview || false,
-      position: initialValues?.position || "",
+      position: initialValues?.position || '',
       section_id: section.id,
-      id: initialValues?.id || "",
-      status: initialValues?.status || "ACTIVE",
+      id: initialValues?.id || '',
+      status: initialValues?.status || 'ACTIVE',
       previous_position: initialValues?.previous_position || undefined,
     },
   });
 
   // Watch for video changes
-  const currentVideo = watch("video");
+  const currentVideo = watch('video');
 
   useEffect(() => {
     // Set initial video preview if exists
     if (initialValues?.video?.video?.key) {
-      setVideoPreview(
-        process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.video.key
-      );
+      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.video.key);
     }
 
     // Set initial document previews if exists
@@ -146,9 +136,7 @@ const CourseItemForm = ({
   // Update video preview when video changes
   useEffect(() => {
     if (currentVideo?.video?.key) {
-      setVideoPreview(
-        process.env.NEXT_PUBLIC_BASE_URL_VIDEO + currentVideo.video.key
-      );
+      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + currentVideo.video.key);
     }
   }, [currentVideo]);
 
@@ -168,9 +156,7 @@ const CourseItemForm = ({
         resources: data.resources || [],
         previous_position:
           initialValues?.position ||
-          (section.items?.length
-            ? section.items[section.items.length - 1].position
-            : null),
+          (section.items?.length ? section.items[section.items.length - 1].position : null),
         id: initialValues?.id, // Include id for editing mode
       };
 
@@ -179,37 +165,33 @@ const CourseItemForm = ({
         setShowAlertSuccess(true);
         setDescription(
           initialValues
-            ? "Bài giảng đã được cập nhật thành công!"
-            : "Bài giảng đã được thêm thành công!"
+            ? 'Bài giảng đã được cập nhật thành công!'
+            : 'Bài giảng đã được thêm thành công!'
         );
         setTimeout(() => setShowAlertSuccess(false), 3000);
         setCreatedItem(response.data);
         onSave();
       }
     } catch (error) {
-      console.error("Error handling course item:", error);
+      console.error('Error handling course item:', error);
       setShowAlertError(true);
-      setDescription(
-        initialValues
-          ? "Không thể cập nhật bài giảng"
-          : "Không thể thêm bài giảng"
-      );
+      setDescription(initialValues ? 'Không thể cập nhật bài giảng' : 'Không thể thêm bài giảng');
       setTimeout(() => setShowAlertError(false), 3000);
     }
   };
 
   const getVideoDuration = (file: File): Promise<number> => {
     return new Promise((resolve, reject) => {
-      const video = document.createElement("video");
-      video.preload = "metadata";
+      const video = document.createElement('video');
+      video.preload = 'metadata';
 
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
         resolve(video.duration); // duration in seconds
       };
 
-      video.onerror = (e) => {
-        reject("Không thể đọc thời lượng video");
+      video.onerror = (_e) => {
+        reject('Không thể đọc thời lượng video');
       };
 
       video.src = URL.createObjectURL(file);
@@ -235,7 +217,7 @@ const CourseItemForm = ({
         });
       }, 500);
 
-      const { id, key } = await uploadToMinIO(file, "lecture-video", "video");
+      const { id, key } = await uploadToMinIO(file, 'lecture-video', 'video');
       const duration = await getVideoDuration(file);
 
       clearInterval(progressInterval);
@@ -246,15 +228,15 @@ const CourseItemForm = ({
         duration_in_seconds: Math.round(duration),
         video: {
           key,
-          status: "uploaded",
-          bucket: "video",
+          status: 'uploaded',
+          bucket: 'video',
           rejection_reason: null,
         },
         version: 1,
       };
 
-      setValue("video", video);
-      setValue("video.duration_in_seconds", Math.round(duration));
+      setValue('video', video);
+      setValue('video.duration_in_seconds', Math.round(duration));
       setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key);
       URL.revokeObjectURL(localPreviewUrl);
 
@@ -263,11 +245,11 @@ const CourseItemForm = ({
         setVideoUploadProgress(0);
       }, 1000);
     } catch (error) {
-      console.error("Error uploading video:", error);
+      console.error('Error uploading video:', error);
       setIsVideoUploading(false);
       setVideoUploadProgress(0);
       setShowAlertError(true);
-      setDescription("Lỗi khi tải lên video");
+      setDescription('Lỗi khi tải lên video');
       setTimeout(() => setShowAlertError(false), 3000);
     }
   };
@@ -295,7 +277,7 @@ const CourseItemForm = ({
           }));
         }, 300);
 
-        const { id } = await uploadToMinIO(file, "resource", "resource_file");
+        const { id } = await uploadToMinIO(file, 'resource', 'resource_file');
 
         clearInterval(progressInterval);
         setDocumentUploadProgress((prev) => ({
@@ -330,30 +312,30 @@ const CourseItemForm = ({
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "video" | "resources"
+    field: 'video' | 'resources'
   ): Promise<void> => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      if (field === "video") {
+      if (field === 'video') {
         await handleVideoUpload(file);
       } else {
         const files = Array.from(e.target.files || []);
         if (files.length > 0) {
-          const currentResources = watch("resources") || [];
+          const currentResources = watch('resources') || [];
           await handleDocumentUpload(files, {
             value: currentResources,
             onChange: (value: ResourceType[]) => {
-              setValue("resources", value);
+              setValue('resources', value);
             },
           });
         }
       }
     } catch (error) {
-      console.error("Error handling file change:", error);
+      console.error('Error handling file change:', error);
       setShowAlertError(true);
-      setDescription("Lỗi khi tải lên file");
+      setDescription('Lỗi khi tải lên file');
       setTimeout(() => setShowAlertError(false), 3000);
     }
   };
@@ -365,15 +347,11 @@ const CourseItemForm = ({
           <h4 className="font-semibold text-lg mb-3">📝 Bài giảng vừa tạo:</h4>
           <div className="space-y-3 text-sm">
             <p>
-              <strong className="text-eerieBlack dark:text-white/80">
-                Tiêu đề:
-              </strong>{" "}
+              <strong className="text-eerieBlack dark:text-white/80">Tiêu đề:</strong>{' '}
               {createdItem.title}
             </p>
             <p>
-              <strong className="text-eerieBlack dark:text-white/80">
-                Nội dung:
-              </strong>{" "}
+              <strong className="text-eerieBlack dark:text-white/80">Nội dung:</strong>{' '}
               <span
                 className="ql-content"
                 dangerouslySetInnerHTML={{
@@ -402,7 +380,7 @@ const CourseItemForm = ({
                         rel="noopener noreferrer"
                         className="text-LavenderIndigo/80 hover:underline"
                       >
-                        {res.resource_file.id?.split("/").pop()}
+                        {res.resource_file.id?.split('/').pop()}
                       </a>
                     </li>
                   ))}
@@ -410,19 +388,14 @@ const CourseItemForm = ({
               </div>
             )}
             <p>
-              <strong className="text-eerieBlack dark:text-white/80">
-                Xem trước:
-              </strong>{" "}
-              {createdItem.is_preview ? "✅ Có" : "❌ Không"}
+              <strong className="text-eerieBlack dark:text-white/80">Xem trước:</strong>{' '}
+              {createdItem.is_preview ? '✅ Có' : '❌ Không'}
             </p>
           </div>
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit(handleAddCourseItem)}
-        className="space-y-6 py-4"
-      >
+      <form onSubmit={handleSubmit(handleAddCourseItem)} className="space-y-6 py-4">
         <Controller
           name="title"
           control={control}
@@ -459,30 +432,26 @@ const CourseItemForm = ({
               {currentVideo && (
                 <div className="mb-4">
                   <p className="font-medium mb-2">Video hiện tại:</p>
-                  {currentVideo.video.status === "validated" &&
-                    videoPreview && (
-                      <>
-                        <VideoPlayer
-                          videoUrl={
-                            process.env.NEXT_PUBLIC_BASE_URL_VIDEO +
-                            videoPreview
-                          }
-                          title="Video Preview"
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            setValue("video", null);
-                            setVideoPreview(null);
-                          }}
-                          className="mt-2 bg-redPigment text-white hover:bg-redPigment/80"
-                        >
-                          Xóa video
-                        </Button>
-                      </>
-                    )}
+                  {currentVideo.video.status === 'validated' && videoPreview && (
+                    <>
+                      <VideoPlayer
+                        videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoPreview}
+                        title="Video Preview"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setValue('video', null);
+                          setVideoPreview(null);
+                        }}
+                        className="mt-2 bg-redPigment text-white hover:bg-redPigment/80"
+                      >
+                        Xóa video
+                      </Button>
+                    </>
+                  )}
 
-                  {currentVideo.video.status === "pending" && (
+                  {currentVideo.video.status === 'pending' && (
                     <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                       <div className="flex items-center gap-2 text-yellow-700">
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -491,7 +460,7 @@ const CourseItemForm = ({
                       <Button
                         type="button"
                         onClick={() => {
-                          setValue("video", null);
+                          setValue('video', null);
                           setVideoPreview(null);
                         }}
                         className="mt-2 bg-redPigment text-white hover:bg-redPigment/80"
@@ -501,12 +470,10 @@ const CourseItemForm = ({
                     </div>
                   )}
 
-                  {currentVideo.video.status === "rejected" && (
+                  {currentVideo.video.status === 'rejected' && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                       <div className="flex items-center gap-2 text-red-700">
-                        <p className="text-sm text-red-600">
-                          ⛔ Video đã bị từ chối
-                        </p>
+                        <p className="text-sm text-red-600">⛔ Video đã bị từ chối</p>
                       </div>
                     </div>
                   )}
@@ -518,17 +485,15 @@ const CourseItemForm = ({
                 error={errors.video?.message}
                 labelText={`${
                   currentVideo
-                    ? currentVideo.video.status === "rejected"
-                      ? "Upload lại video"
-                      : "Thay thế video"
-                    : "Thêm video"
-                } bài ${(section.items?.length || 0) + 1} (Phần ${
-                  section.position
-                })`}
+                    ? currentVideo.video.status === 'rejected'
+                      ? 'Upload lại video'
+                      : 'Thay thế video'
+                    : 'Thêm video'
+                } bài ${(section.items?.length || 0) + 1} (Phần ${section.position})`}
                 type="file"
                 accept="video/*"
                 disabled={isVideoUploading}
-                onChange={(e) => handleFileChange(e, "video")}
+                onChange={(e) => handleFileChange(e, 'video')}
               />
 
               {isVideoUploading ? (
@@ -538,16 +503,11 @@ const CourseItemForm = ({
                     <span className="text-sm">Đang tải lên video...</span>
                   </div>
                   <Progress value={videoUploadProgress} className="h-2" />
-                  <p className="text-sm text-gray-500">
-                    {videoUploadProgress}%
-                  </p>
+                  <p className="text-sm text-gray-500">{videoUploadProgress}%</p>
                 </div>
               ) : (
                 <VideoPlayer
-                  videoUrl={
-                    process.env.NEXT_PUBLIC_BASE_URL_VIDEO +
-                    (videoPreview || "")
-                  }
+                  videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + (videoPreview || '')}
                   title="Video Preview"
                 />
               )}
@@ -562,14 +522,12 @@ const CourseItemForm = ({
             <div className="space-y-2">
               <InputRegisterLecture
                 {...field}
-                labelText={`${
-                  field.value?.length ? "Thêm tài liệu" : "Tài liệu bài giảng"
-                }`}
+                labelText={`${field.value?.length ? 'Thêm tài liệu' : 'Tài liệu bài giảng'}`}
                 type="file"
                 accept=".pdf,.doc,.docx"
                 multiple
                 disabled={uploadingDocuments.length > 0}
-                onChange={(e) => handleFileChange(e, "resources")}
+                onChange={(e) => handleFileChange(e, 'resources')}
               />
 
               {uploadingDocuments.map((fileName) => (
@@ -578,13 +536,8 @@ const CourseItemForm = ({
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span className="text-sm">Đang tải lên {fileName}...</span>
                   </div>
-                  <Progress
-                    value={documentUploadProgress[fileName] || 0}
-                    className="h-2"
-                  />
-                  <p className="text-sm text-gray-500">
-                    {documentUploadProgress[fileName] || 0}%
-                  </p>
+                  <Progress value={documentUploadProgress[fileName] || 0} className="h-2" />
+                  <p className="text-sm text-gray-500">{documentUploadProgress[fileName] || 0}%</p>
                 </div>
               ))}
 
@@ -593,10 +546,7 @@ const CourseItemForm = ({
                   <p className="font-medium">📎 Tài liệu đã tải lên:</p>
                   <ul className="list-disc pl-5">
                     {field.value.map((resource, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-center"
-                      >
+                      <li key={index} className="flex justify-between items-center">
                         <a
                           href={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resource.resource_file.id}`}
                           target="_blank"
@@ -608,13 +558,9 @@ const CourseItemForm = ({
                         <button
                           type="button"
                           onClick={() => {
-                            const updatedResources = field.value.filter(
-                              (_, i) => i !== index
-                            );
+                            const updatedResources = field.value.filter((_, i) => i !== index);
                             field.onChange(updatedResources);
-                            const updatedPreviews = documentPreviews.filter(
-                              (_, i) => i !== index
-                            );
+                            const updatedPreviews = documentPreviews.filter((_, i) => i !== index);
                             setDocumentPreviews(updatedPreviews);
                           }}
                           className="text-redPigment ml-2"
@@ -654,11 +600,7 @@ const CourseItemForm = ({
             type="submit"
             className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
           >
-            <img
-              src="/icons/icon_save.png"
-              alt="save"
-              className="w-5 h-5 object-fill"
-            />
+            <img src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
             Lưu
           </Button>
 

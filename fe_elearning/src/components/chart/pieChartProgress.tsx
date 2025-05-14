@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Pie, PieChart, Label } from "recharts";
+import React from 'react';
+import { Pie, PieChart, Label } from 'recharts';
 
 type Props = {
   percentage: number;
@@ -11,11 +11,11 @@ const chartData = (value: number) => {
   const clamped = Math.max(0, Math.min(value, 100));
 
   return [
-    { name: "Used", value: clamped, fill: "#8844FF" },
+    { name: 'Used', value: clamped, fill: '#8844FF' },
     {
-      name: "Remaining",
+      name: 'Remaining',
       value: 100 - clamped,
-      fill: "rgba(136, 68, 255, 0.2)",
+      fill: 'rgba(136, 68, 255, 0.2)',
     },
   ];
 };
@@ -34,7 +34,7 @@ export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
         >
           <Label
             content={({ viewBox }) => {
-              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+              if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                 const { cx, cy } = viewBox;
                 return (
                   <text
@@ -61,9 +61,7 @@ type PieChartProgressProps = {
   courseProgress: number;
 };
 
-const PieChartProgress: React.FC<PieChartProgressProps> = ({
-  courseProgress,
-}) => {
+const PieChartProgress: React.FC<PieChartProgressProps> = ({ courseProgress }) => {
   return (
     <div className="w-full max-w-sm mx-auto">
       <PercentagePieChart percentage={courseProgress} />

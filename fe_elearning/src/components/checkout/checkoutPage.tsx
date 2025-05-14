@@ -1,28 +1,28 @@
 // ✅ CheckoutPage.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import ProductSummary from "./productSumary";
-import StudentInfo from "./studentInfo";
-import DiscountInput from "./discountInput";
-import { Card } from "@/components/ui/card";
-import { UserType } from "@/types/userType";
-import { APICreateOrder } from "@/utils/order";
-import { Button } from "../ui/button";
-import { formatPrice } from "../formatPrice";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import ProductSummary from './productSumary';
+import StudentInfo from './studentInfo';
+import DiscountInput from './discountInput';
+import { Card } from '@/components/ui/card';
+import { UserType } from '@/types/userType';
+import { APICreateOrder } from '@/utils/order';
+import { Button } from '../ui/button';
+import { formatPrice } from '../formatPrice';
+import { useRouter } from 'next/navigation';
 type Props = {
-  mode: "single" | "cart";
+  mode: 'single' | 'cart';
   products: { id: string; title: string; price: number }[];
   student: UserType;
 };
 
 export default function CheckoutPage({ mode, products, student }: Props) {
   const router = useRouter();
-  const [discount, setDiscount] = useState("");
+  const [discount, setDiscount] = useState('');
 
   const total = products.reduce((sum, p) => sum + p.price, 0);
-  const discountedTotal = discount === "GIAM10" ? total * 0.9 : total;
+  const discountedTotal = discount === 'GIAM10' ? total * 0.9 : total;
 
   const handlePayment = async (data: any) => {
     // const response = await APIPo
@@ -30,7 +30,7 @@ export default function CheckoutPage({ mode, products, student }: Props) {
     if (response?.status === 200) {
       window.location.href = response?.data?.payment?.payment_url;
     } else {
-      alert("Thanh toán thất bại");
+      alert('Thanh toán thất bại');
       console.log(response);
     }
   };
@@ -39,7 +39,7 @@ export default function CheckoutPage({ mode, products, student }: Props) {
     <div className="min-h-screen bg-AntiFlashWhite dark:bg-zinc-900 text-eerieBlack dark:text-white p-4 flex items-center justify-center">
       <Card className="w-full max-w-3xl rounded-2xl shadow-xl dark:shadow-md bg-white dark:bg-zinc-800 p-6 space-y-6">
         <h1 className="text-2xl font-bold">
-          {mode === "single" ? "Thanh toán khóa học" : "Thanh toán giỏ hàng"}
+          {mode === 'single' ? 'Thanh toán khóa học' : 'Thanh toán giỏ hàng'}
         </h1>
 
         <ProductSummary products={products} />

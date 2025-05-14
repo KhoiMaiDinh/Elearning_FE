@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Flag, Star, X } from "lucide-react";
-import { APICreateReport } from "@/utils/report";
-import AlertSuccess from "../alert/AlertSuccess";
-import AlertError from "../alert/AlertError";
-import { useForm, Controller, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { useState } from 'react';
+import { Flag, Star, X } from 'lucide-react';
+import { APICreateReport } from '@/utils/report';
+import AlertSuccess from '../alert/AlertSuccess';
+import AlertError from '../alert/AlertError';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const schema = yup.object({
-  content: yup.string().required("Nội dung báo cáo không được để trống"),
+  content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
 
 export default function ButtonMore({ course_id }: { course_id: string }) {
@@ -16,11 +16,11 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<any>({
     resolver: yupResolver(schema) as unknown as Resolver<any>,
     defaultValues: {
-      content: "",
+      content: '',
     },
   });
 
@@ -28,21 +28,21 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
   const [showReport, setShowReport] = useState(false);
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
 
   const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
     if (response?.status === 201) {
       setShowReport(false);
       setShowAlertSuccess(true);
-      setAlertDescription("Báo cáo đã được gửi thành công");
+      setAlertDescription('Báo cáo đã được gửi thành công');
       handleClearData();
       setTimeout(() => {
         setShowAlertSuccess(false);
       }, 3000);
     } else {
       setShowAlertError(true);
-      setAlertDescription("Báo cáo không thành công");
+      setAlertDescription('Báo cáo không thành công');
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
@@ -51,7 +51,7 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
 
   const onSubmit = async (data: any) => {
     const dataReport = {
-      type: "COURSE",
+      type: 'COURSE',
       content_id: course_id,
       reason: data.content,
     };
@@ -59,7 +59,7 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
   };
 
   const handleClearData = () => {
-    setValue("content", "");
+    setValue('content', '');
   };
 
   return (
@@ -113,10 +113,7 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
             <h2 className="mb-4 text-lg font-semibold text-eerieBlack dark:text-white">
               Gửi báo cáo khóa học
             </h2>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <Controller
                 control={control}
                 name="content"

@@ -1,17 +1,18 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useForm, Controller, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
-import { Button } from "@/components/ui/button";
-import SelectRegister from "@/components/selectComponent/selectRegister";
-import TextAreaRegisterLecture from "@/components/inputComponent/textAreaRegisterLecture";
-import { APIUpdateCourse } from "@/utils/course";
-import { uploadToMinIO } from "@/utils/storage";
-import { CourseForm } from "@/types/courseType";
-import { MediaType } from "@/types/mediaType";
-import { APIGetCategory } from "@/utils/category";
+'use client';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import { Button } from '@/components/ui/button';
+import SelectRegister from '@/components/selectComponent/selectRegister';
+import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
+import { APIUpdateCourse } from '@/utils/course';
+import { uploadToMinIO } from '@/utils/storage';
+import { CourseForm } from '@/types/courseType';
+import { MediaType } from '@/types/mediaType';
+import { APIGetCategory } from '@/utils/category';
+import Image from 'next/image';
 
 // Define interfaces for category data
 interface CategoryChild {
@@ -26,32 +27,27 @@ interface CategoryData {
 }
 
 // 🧩 Tạo component hiển thị dòng nội dung
-const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
-  label,
-  children,
-}) => {
+const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => {
   return (
     <div className="flex flex-col gap-2 py-2">
-      <div className="font-semibold text-base text-cosmicCobalt dark:text-white ">
-        {label}
-      </div>
+      <div className="font-semibold text-base text-cosmicCobalt dark:text-white ">{label}</div>
       <div className="text-sm text-black dark:text-white/80">{children}</div>
     </div>
   );
 };
 
 const data = [
-  { id: "BEGINNER", value: "Sơ cấp" },
-  { id: "INTERMEDIATE", value: "Trung cấp" },
-  { id: "ADVANCED", value: "Nâng cao" },
+  { id: 'BEGINNER', value: 'Sơ cấp' },
+  { id: 'INTERMEDIATE', value: 'Trung cấp' },
+  { id: 'ADVANCED', value: 'Nâng cao' },
 ];
 
 const basicSchema = yup.object().shape({
-  title: yup.string().required("Tiêu đề khóa học không được để trống"),
-  subtitle: yup.string().required("Mô tả ngắn không được để trống"),
+  title: yup.string().required('Tiêu đề khóa học không được để trống'),
+  subtitle: yup.string().required('Mô tả ngắn không được để trống'),
   description: yup.string().required(),
-  level: yup.string().required("Cấp độ không được để trống"),
-  price: yup.number().required("Giá không được để trống"),
+  level: yup.string().required('Cấp độ không được để trống'),
+  price: yup.number().required('Giá không được để trống'),
   thumbnail: yup
     .object()
     .shape({
@@ -60,7 +56,7 @@ const basicSchema = yup.object().shape({
     })
     .nullable(),
   category: yup.object().shape({
-    slug: yup.string().required("Lĩnh vực không được để trống"),
+    slug: yup.string().required('Lĩnh vực không được để trống'),
   }),
 });
 
@@ -82,8 +78,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   const [isEditingBasic, setIsEditingBasic] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [selectedParentCategory, setSelectedParentCategory] =
-    useState<string>("");
+  const [selectedParentCategory, setSelectedParentCategory] = useState<string>('');
   const [childCategories, setChildCategories] = useState<CategoryChild[]>([]);
 
   const {
@@ -94,11 +89,11 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   } = useForm<CourseForm>({
     resolver: yupResolver(basicSchema) as unknown as Resolver<CourseForm>,
     defaultValues: {
-      category: { slug: "" },
-      title: "",
-      subtitle: "",
-      description: "",
-      level: "",
+      category: { slug: '' },
+      title: '',
+      subtitle: '',
+      description: '',
+      level: '',
       price: 0,
       thumbnail: null,
       outcomes: [],
@@ -108,12 +103,12 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 
   useEffect(() => {
     if (courseInfo?.id) {
-      setValue("title", courseInfo?.title);
-      setValue("subtitle", courseInfo?.subtitle);
-      setValue("level", courseInfo?.level);
-      setValue("price", courseInfo?.price);
-      setValue("description", courseInfo?.description || "");
-      setValue("thumbnail", courseInfo?.thumbnail);
+      setValue('title', courseInfo?.title);
+      setValue('subtitle', courseInfo?.subtitle);
+      setValue('level', courseInfo?.level);
+      setValue('price', courseInfo?.price);
+      setValue('description', courseInfo?.description || '');
+      setValue('thumbnail', courseInfo?.thumbnail);
 
       if (courseInfo?.category?.parent?.slug) {
         setSelectedParentCategory(courseInfo?.category?.parent?.slug);
@@ -128,54 +123,53 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       }
 
       if (courseInfo?.category?.slug) {
-        setValue("category.slug", courseInfo?.category?.slug);
+        setValue('category.slug', courseInfo?.category?.slug);
       }
 
       if (courseInfo?.thumbnail?.key) {
-        setImagePreview(
-          process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo?.thumbnail?.key
-        );
+        setImagePreview(process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo?.thumbnail?.key);
       }
     }
   }, [courseInfo, setValue, categoryData]);
 
-  const handleGetCategory = async () => {
+  const handleGetCategory = useCallback(async () => {
     try {
       const response = await APIGetCategory({
-        language: "vi",
+        language: 'vi',
         with_children: true,
       });
-      if (response?.status === 200) {
-        const formattedData = response.data.map((item: any) => ({
-          id: item.slug,
-          value: item?.translations[0]?.name || item.slug,
-          children:
-            item.children?.map((child: any) => ({
-              id: child.slug,
-              value: child?.translations[0]?.name || child.slug,
-            })) || [],
-        }));
-        setCategoryData(formattedData);
 
-        // If we already have course info, update the child categories
-        if (courseInfo?.course_id && courseInfo?.category?.parent?.slug) {
-          const parentCategory = formattedData.find(
-            (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
-          );
+      if (response?.status !== 200) return;
 
-          if (parentCategory) {
-            setChildCategories(parentCategory.children || []);
-          }
+      const formattedData = response.data.map((item: any) => ({
+        id: item.slug,
+        value: item?.translations[0]?.name || item.slug,
+        children:
+          item.children?.map((child: any) => ({
+            id: child.slug,
+            value: child?.translations[0]?.name || child.slug,
+          })) || [],
+      }));
+
+      setCategoryData(formattedData);
+
+      if (courseInfo?.course_id && courseInfo?.category?.parent?.slug) {
+        const parentCategory = formattedData.find(
+          (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
+        );
+
+        if (parentCategory?.children) {
+          setChildCategories(parentCategory.children);
         }
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error('Error fetching categories:', error);
     }
-  };
+  }, [courseInfo]);
 
   useEffect(() => {
     handleGetCategory();
-  }, []);
+  }, [handleGetCategory]);
 
   const onSubmit = async (data: CourseForm) => {
     try {
@@ -183,28 +177,26 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       if (response?.status === 200) {
         setIsEditingBasic(false);
         setShowAlertSuccess(true);
-        setDescription("Thông tin khóa học đã được cập nhật thành công!");
+        setDescription('Thông tin khóa học đã được cập nhật thành công!');
         setTimeout(() => setShowAlertSuccess(false), 3000);
       }
     } catch (error) {
-      console.error("Error updating course:", error);
+      console.error('Error updating course:', error);
       setShowAlertError(true);
-      setDescription("Không thể cập nhật thông tin khóa học");
+      setDescription('Không thể cập nhật thông tin khóa học');
       setTimeout(() => setShowAlertError(false), 3000);
     }
   };
 
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentCategory(value);
-    const selectedParent = categoryData.find(
-      (cat: CategoryData) => cat.id === value
-    );
+    const selectedParent = categoryData.find((cat: CategoryData) => cat.id === value);
     setChildCategories(selectedParent?.children || []);
-    setValue("category.slug", "");
+    setValue('category.slug', '');
   };
 
   const handleChildCategoryChange = (value: string) => {
-    setValue("category.slug", value);
+    setValue('category.slug', value);
   };
 
   return (
@@ -230,7 +222,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <Button
             type="button"
             className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black ${
-              isEditingBasic ? " hidden" : "bg-cosmicCobalt"
+              isEditingBasic ? ' hidden' : 'bg-cosmicCobalt'
             }`}
             onClick={() => setIsEditingBasic(true)}
           >
@@ -243,7 +235,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         <div className="space-y-1 text-cosmicCobalt dark:text-white/90">
           {imagePreview && (
             <InfoRow label="Ảnh bìa:">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Ảnh bìa"
                 className="w-full max-w-xs rounded-xl shadow-lg"
@@ -251,15 +243,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             </InfoRow>
           )}
           <InfoRow label="Cấp độ:">{courseInfo.level}</InfoRow>
-          <InfoRow label="Lĩnh vực:">
-            {courseInfo?.category?.translations[0].name}
-          </InfoRow>
+          <InfoRow label="Lĩnh vực:">{courseInfo?.category?.translations[0].name}</InfoRow>
           <InfoRow label="Giá:">{courseInfo.price} VND</InfoRow>
           <InfoRow label="Mô tả:">
             <div
               className="ql-content"
               dangerouslySetInnerHTML={{
-                __html: courseInfo.description || "",
+                __html: courseInfo.description || '',
               }}
             />
           </InfoRow>
@@ -269,30 +259,22 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <Controller
             name="title"
             control={control}
-            render={({ field }) => (
-              <InputRegisterLecture {...field} labelText="Tiêu đề khóa học" />
-            )}
+            render={({ field }) => <InputRegisterLecture {...field} labelText="Tiêu đề khóa học" />}
           />
           <Controller
             name="subtitle"
             control={control}
-            render={({ field }) => (
-              <InputRegisterLecture {...field} labelText="Mô tả ngắn" />
-            )}
+            render={({ field }) => <InputRegisterLecture {...field} labelText="Mô tả ngắn" />}
           />
           <Controller
             name="description"
             control={control}
-            render={({ field }) => (
-              <TextAreaRegisterLecture {...field} labelText="Mô tả" />
-            )}
+            render={({ field }) => <TextAreaRegisterLecture {...field} labelText="Mô tả" />}
           />
           <Controller
             name="level"
             control={control}
-            render={({ field }) => (
-              <SelectRegister {...field} label="Cấp độ" data={data} />
-            )}
+            render={({ field }) => <SelectRegister {...field} label="Cấp độ" data={data} />}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectRegister
@@ -325,11 +307,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             name="price"
             control={control}
             render={({ field }) => (
-              <InputRegisterLecture
-                {...field}
-                labelText="Giá (VND)"
-                type="number"
-              />
+              <InputRegisterLecture {...field} labelText="Giá (VND)" type="number" />
             )}
           />
           <Controller
@@ -346,19 +324,15 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   onChange={async (e) => {
                     const file = (e.target as HTMLInputElement).files?.[0];
                     if (file) {
-                      const { key, id } = await uploadToMinIO(
-                        file,
-                        "course",
-                        "thumbnail"
-                      );
+                      const { key, id } = await uploadToMinIO(file, 'course', 'thumbnail');
                       const thumbnail: MediaType = { id, key };
-                      setValue("thumbnail", thumbnail);
+                      setValue('thumbnail', thumbnail);
                       setImagePreview(URL.createObjectURL(file));
                     }
                   }}
                 />
                 {imagePreview && (
-                  <img
+                  <Image
                     src={imagePreview}
                     alt="Ảnh bìa"
                     className="w-full max-w-xs rounded-lg shadow"
@@ -372,11 +346,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               type="submit"
               className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
             >
-              <img
-                src="/icons/icon_save.png"
-                alt="save"
-                className="w-5 h-5 object-fill"
-              />
+              <Image src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
               Lưu
             </Button>
 

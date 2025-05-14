@@ -1,52 +1,41 @@
-"use client";
-import "./login.css";
-import AlertError from "@/components/alert/AlertError";
-import AlertSuccess from "@/components/alert/AlertSuccess";
-import { Button } from "@/components/ui/button";
-import {
-  APILoginEmail,
-  APILoginGoogle,
-  APIRegisterEmail,
-  APIRegisterGoogle,
-} from "@/utils/auth";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import * as Yup from "yup";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
-import Loader from "@/components/loading/loader";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/constants/userSlice";
-import { APIGetCurrentUser } from "@/utils/user";
-import AlertBan from "@/components/alert/AlertBan";
+'use client';
+import './login.css';
+import AlertError from '@/components/alert/AlertError';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import { Button } from '@/components/ui/button';
+import { APILoginEmail, APIRegisterEmail, APIRegisterGoogle } from '@/utils/auth';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import * as Yup from 'yup';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import Loader from '@/components/loading/loader';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/constants/userSlice';
+import { APIGetCurrentUser } from '@/utils/user';
+import AlertBan from '@/components/alert/AlertBan';
 const regexPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 const baseSchema = {
-  email: Yup.string()
-    .required("Email không được bỏ trống")
-    .email("Email không hợp lệ"),
+  email: Yup.string().required('Email không được bỏ trống').email('Email không hợp lệ'),
   password: Yup.string()
-    .required("Mật khẩu không được bỏ trống")
+    .required('Mật khẩu không được bỏ trống')
     .matches(
       regexPassword,
-      "Tối thiểu tám ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường và một số"
+      'Tối thiểu tám ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường và một số'
     ),
 };
 
 const signupSchema = Yup.object().shape({
   ...baseSchema,
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), undefined], "Mật khẩu không trùng khớp")
-    .required("Xác nhận mật khẩu không được bỏ trống"),
-  first_name: Yup.string()
-    .required("Họ không được bỏ trống")
-    .max(60, "Tối đa 60 ký tự"),
-  last_name: Yup.string()
-    .required("Tên không được bỏ trống")
-    .max(60, "Tối đa 60 ký tự"),
+    .oneOf([Yup.ref('password'), undefined], 'Mật khẩu không trùng khớp')
+    .required('Xác nhận mật khẩu không được bỏ trống'),
+  first_name: Yup.string().required('Họ không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
+  last_name: Yup.string().required('Tên không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
 });
 
 const loginSchema = Yup.object().shape({
@@ -57,32 +46,30 @@ const loginSchema = Yup.object().shape({
 });
 
 const Page = () => {
-  const [activeButton, setActiveButton] = useState("login");
+  const [activeButton, setActiveButton] = useState('login');
   const router = useRouter();
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
+    // getValues,
   } = useForm({
-    resolver: yupResolver(
-      activeButton === "login" ? loginSchema : signupSchema
-    ),
+    resolver: yupResolver(activeButton === 'login' ? loginSchema : signupSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-      first_name: "",
-      last_name: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
+      first_name: '',
+      last_name: '',
     },
   });
 
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [showAlertBan, setShowAlertBan] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
-  const [alertBanNote, setAlertBanNote] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
+  const [alertBanNote, setAlertBanNote] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -90,11 +77,11 @@ const Page = () => {
 
   const handleClearData = () => {
     setLoading(false);
-    setValue("email", "");
-    setValue("password", "");
-    setValue("confirmPassword", "");
-    setValue("first_name", "");
-    setValue("last_name", "");
+    setValue('email', '');
+    setValue('password', '');
+    setValue('confirmPassword', '');
+    setValue('first_name', '');
+    setValue('last_name', '');
   };
 
   const handleButtonClick = async (type: string) => {
@@ -114,8 +101,9 @@ const Page = () => {
       first_name: data.first_name,
     };
 
-    activeButton === "login" && handleLogin(body);
-    activeButton === "signup" && (await handleSignup(bodySignUp));
+    if (activeButton === 'login') handleLogin(body);
+
+    if (activeButton === 'signup') await handleSignup(bodySignUp);
   };
 
   const handleGetCurrentUser = async () => {
@@ -130,13 +118,13 @@ const Page = () => {
     try {
       const response = await APILoginEmail(data);
       if (response?.status === 200) {
-        localStorage.setItem("access_token", response?.data?.access_token);
-        localStorage.setItem("refresh_token", response?.data?.refresh_token);
-        localStorage.setItem("expires_at", response?.data?.exp_token); // Thời gian hết hạn
+        localStorage.setItem('access_token', response?.data?.access_token);
+        localStorage.setItem('refresh_token', response?.data?.refresh_token);
+        localStorage.setItem('expires_at', response?.data?.exp_token); // Thời gian hết hạn
 
         // dispatch(setUser(response.data));
 
-        setAlertDescription("Đăng nhập thành công");
+        setAlertDescription('Đăng nhập thành công');
         handleGetCurrentUser();
 
         setShowAlertSuccess(true);
@@ -149,7 +137,7 @@ const Page = () => {
         if (document.referrer) {
           router.back(); // Go back to the previous page
         } else {
-          router.push("/"); // Go to home page
+          router.push('/'); // Go to home page
         }
       } else {
         if (response?.status === 401) {
@@ -159,7 +147,7 @@ const Page = () => {
             setShowAlertBan(false);
           }, 3000);
         } else {
-          setAlertDescription("Đăng nhập thất bại");
+          setAlertDescription('Đăng nhập thất bại');
           setShowAlertError(true);
           setTimeout(() => {
             setShowAlertError(false);
@@ -167,7 +155,8 @@ const Page = () => {
         }
       }
     } catch (err) {
-      setAlertDescription("Đăng nhập thất bại");
+      console.log(err);
+      setAlertDescription('Đăng nhập thất bại');
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
@@ -182,7 +171,7 @@ const Page = () => {
     try {
       const response = await APIRegisterEmail(data);
       if (response?.status === 201) {
-        setAlertDescription("Đăng ký thành công");
+        setAlertDescription('Đăng ký thành công');
         setShowAlertSuccess(true);
         await handleLogin(data);
 
@@ -190,14 +179,15 @@ const Page = () => {
           setShowAlertSuccess(false);
         }, 3000);
       } else {
-        setAlertDescription("Đăng ký thất bại");
+        setAlertDescription('Đăng ký thất bại');
         setShowAlertError(true);
         setTimeout(() => {
           setShowAlertError(false);
         }, 3000);
       }
     } catch (err) {
-      setAlertDescription("Đăng ký thất bại");
+      console.log(err);
+      setAlertDescription('Đăng ký thất bại');
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
@@ -207,34 +197,34 @@ const Page = () => {
     }
   };
 
-  const handleLoginByGoogle = async () => {
+  const _handleLoginByGoogle = async () => {
     try {
       // Remove any "use server" directive; call signIn directly.
-      console.log("hi");
-      signIn("google", {
-        callbackUrl: "http://localhost:3000/login",
+      console.log('hi');
+      signIn('google', {
+        callbackUrl: 'http://localhost:3000/login',
       });
       // console.log("Google login response:", response);
     } catch (error) {
-      console.error("Google login error:", error);
+      console.error('Google login error:', error);
     }
   };
 
-  const handleRegisterByGoogle = async (data: any) => {
-    const response = await APIRegisterGoogle(data);
+  const _handleRegisterByGoogle = async (data: any) => {
+    const _response = await APIRegisterGoogle(data);
   };
   return (
     <div className="flex h-full w-screen flex-col items-center justify-center bg-[url(/images/img_background.png)] bg-cover bg-center bg-no-repeat p-0 ">
       <div className=" dark:bg-black50 bg-black/0 h-full w-full z-0 lg:p-6 p-0">
-        {" "}
+        {' '}
         <div className="flex h-full w-full lg:h-2/3 md:h-full sm:h-full z-10  bg-white dark:bg-black items-center mx-12 lg:ml-auto lg:w-1/3  lg:bg-white bg-white/50 p-5 rounded-lg">
-          {" "}
+          {' '}
           {/* Form nằm bên phải */}
           <div className="flex w-full flex-col items-center gap-6 rounded-lg p-8 ">
-            {" "}
+            {' '}
             {/* Header */}
             <div className="flex flex-row items-center gap-2 justify-center">
-              {" "}
+              {' '}
               <h1 className="text-2xl font-bold text-LavenderIndigo dark:text-white">
                 Chào mừng đến với ...!
               </h1>
@@ -248,24 +238,24 @@ const Page = () => {
             </div>
             {/* Tab Đăng nhập / Đăng ký */}
             <div className="flex justify-center gap-6 bg-majorelleBlue50 dark:bg-black50 rounded-full w-fit p-2">
-              {" "}
+              {' '}
               <Button
-                onClick={() => handleButtonClick("login")}
+                onClick={() => handleButtonClick('login')}
                 className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
-                  activeButton === "login"
-                    ? "bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-majorelleBlue dark:hover:bg-black"
-                    : " text-LavenderIndigo dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:text-white dark:hover:bg-custom-gradient-button-blue"
+                  activeButton === 'login'
+                    ? 'bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-majorelleBlue dark:hover:bg-black'
+                    : ' text-LavenderIndigo dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:text-white dark:hover:bg-custom-gradient-button-blue'
                 } hover:shadow-lg`}
               >
                 Đăng nhập
               </Button>
               {/* Nút Đăng ký */}
               <Button
-                onClick={() => handleButtonClick("signup")}
+                onClick={() => handleButtonClick('signup')}
                 className={`lg:w-36 md:w-28 sm:w-24 w-24 rounded-full ${
-                  activeButton === "signup"
-                    ? "bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-majorelleBlue dark:hover:bg-black"
-                    : " text-LavenderIndigo dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:text-white dark:hover:bg-custom-gradient-button-blue"
+                  activeButton === 'signup'
+                    ? 'bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-majorelleBlue dark:hover:bg-black'
+                    : ' text-LavenderIndigo dark:text-black bg-white hover:bg-majorelleBlue70 hover:text-white dark:hover:text-white dark:hover:bg-custom-gradient-button-blue'
                 } hover:shadow-lg`}
               >
                 Đăng ký
@@ -278,7 +268,7 @@ const Page = () => {
               onSubmit={handleSubmit(onSubmit)}
             >
               {/* ten */}
-              {activeButton === "signup" && (
+              {activeButton === 'signup' && (
                 <div className="flex flex-row justify-between items-center">
                   <Controller
                     name="first_name"
@@ -364,9 +354,7 @@ const Page = () => {
                     </div>
 
                     {errors.email?.message && (
-                      <p className="p-1 px-4 text-xs text-redPigment">
-                        {errors.email?.message}
-                      </p>
+                      <p className="p-1 px-4 text-xs text-redPigment">{errors.email?.message}</p>
                     )}
                   </div>
                 )}
@@ -387,7 +375,7 @@ const Page = () => {
                       <Lock size={20} />
                       <input
                         {...field}
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Nhập mật khẩu"
                         className="ml-2.5 rounded-[10px] border-none w-[85%] h-full focus:outline-none placeholder:font-sans"
                       />
@@ -396,24 +384,18 @@ const Page = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="ml-auto"
                       >
-                        {showPassword ? (
-                          <EyeOff size={20} />
-                        ) : (
-                          <Eye size={20} />
-                        )}
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
                     {errors.password?.message && (
-                      <p className="p-1 px-4 text-xs text-redPigment">
-                        {errors.password?.message}
-                      </p>
+                      <p className="p-1 px-4 text-xs text-redPigment">{errors.password?.message}</p>
                     )}
                   </div>
                 )}
               />
 
               {/* Password Field */}
-              {activeButton === "signup" && (
+              {activeButton === 'signup' && (
                 <Controller
                   name="confirmPassword"
                   control={control}
@@ -428,22 +410,16 @@ const Page = () => {
                         <Lock size={20} />
                         <input
                           {...field}
-                          type={showConfirmPassword ? "text" : "password"}
+                          type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="Xác nhận mật khẩu"
                           className="ml-2.5 rounded-[10px] border-none w-[85%] h-full focus:outline-none placeholder:font-sans"
                         />
                         <button
                           type="button"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           className="ml-auto"
                         >
-                          {showConfirmPassword ? (
-                            <EyeOff size={20} />
-                          ) : (
-                            <Eye size={20} />
-                          )}
+                          {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       </div>
                       {errors.confirmPassword?.message && (
@@ -477,13 +453,7 @@ const Page = () => {
                 type="submit"
                 className="mt-5 mb-2.5 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white text-[15px] font-medium rounded-[10px] h-[50px] w-full cursor-pointer self-end"
               >
-                {loading ? (
-                  <Loader />
-                ) : activeButton === "login" ? (
-                  "Đăng nhập"
-                ) : (
-                  "Đăng ký"
-                )}
+                {loading ? <Loader /> : activeButton === 'login' ? 'Đăng nhập' : 'Đăng ký'}
               </button>
 
               {/* Sign Up Link */}
@@ -494,9 +464,7 @@ const Page = () => {
               </span>
             </p> */}
 
-              <p className="text-center text-black dark:text-white text-[14px] my-[5px]">
-                Hoặc
-              </p>
+              <p className="text-center text-black dark:text-white text-[14px] my-[5px]">Hoặc</p>
 
               {/* Social Login Buttons */}
               <div className="flex flex-row items-center gap-2.5 justify-between">
@@ -504,7 +472,7 @@ const Page = () => {
                 <button
                   type="button"
                   className="mt-2.5 w-full h-[50px] text-black rounded-[10px] flex items-center justify-center gap-2.5 border border-[#ededef] bg-white cursor-pointer transition duration-200 ease-in-out hover:border-[#2d79f3]"
-                  onClick={() => signIn("google")}
+                  onClick={() => signIn('google')}
                 >
                   <svg height="20" width="20" viewBox="0 0 512 512">
                     <path

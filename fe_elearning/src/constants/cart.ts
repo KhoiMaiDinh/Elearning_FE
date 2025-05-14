@@ -1,25 +1,22 @@
 // 'use client'
-import { Section } from "@/types/courseType";
-import { Lecture } from "@/types/registerLectureFormType";
-import { FileData, Roles } from "@/types/userType";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   products: [],
   student: {
-    username: "",
-    email: "",
+    username: '',
+    email: '',
   },
 };
 
 const createCartSlice = createSlice({
-  name: "cartSlice",
+  name: 'cartSlice',
   initialState,
   reducers: {
     setProducts: (state, action) => {
       state.products = action.payload ?? state.products;
     },
-    clearProducts: (state, action) => {
+    clearProducts: (state, _action) => {
       state.products = initialState.products;
     },
   },

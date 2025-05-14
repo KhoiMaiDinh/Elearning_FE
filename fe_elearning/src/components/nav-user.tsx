@@ -1,15 +1,8 @@
-"use client";
+'use client';
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,16 +11,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
+} from '@/components/ui/sidebar';
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 
 export function NavUser({
   user,
@@ -43,10 +36,10 @@ export function NavUser({
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const handleLogOut = () => {
-    router.push("/login");
-    localStorage.setItem("access_token", "");
-    localStorage.setItem("refresh_token", "");
-    localStorage.setItem("expires_at", ""); // Thời gian hết hạn
+    router.push('/login');
+    localStorage.setItem('access_token', '');
+    localStorage.setItem('refresh_token', '');
+    localStorage.setItem('expires_at', ''); // Thời gian hết hạn
   };
   return (
     <SidebarMenu>
@@ -67,9 +60,7 @@ export function NavUser({
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {userInfo.username}
-                  </span>
+                  <span className="truncate font-semibold">{userInfo.username}</span>
                   <span className="truncate text-xs">{userInfo.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -77,7 +68,7 @@ export function NavUser({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-              side={isMobile ? "bottom" : "right"}
+              side={isMobile ? 'bottom' : 'right'}
               align="end"
               sideOffset={4}
             >
@@ -88,9 +79,7 @@ export function NavUser({
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {userInfo.username}
-                    </span>
+                    <span className="truncate font-semibold">{userInfo.username}</span>
                     <span className="truncate text-xs">{userInfo.email}</span>
                   </div>
                 </div>
@@ -104,13 +93,11 @@ export function NavUser({
             </DropdownMenuGroup> */}
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => router.push("/profile/student")}
-                >
+                <DropdownMenuItem onClick={() => router.push('/profile/student')}>
                   <BadgeCheck />
                   Account
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/billing")}>
+                <DropdownMenuItem onClick={() => router.push('/billing')}>
                   <CreditCard />
                   Billing
                 </DropdownMenuItem>

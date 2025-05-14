@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useRef } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { useRef } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Send } from 'lucide-react';
 
 type InputWithSendButtonProps = {
   labelText: string;
@@ -19,7 +19,7 @@ type InputWithSendButtonProps = {
 
 const InputWithSendButton: React.FC<InputWithSendButtonProps> = ({
   labelText,
-  placeholder = "",
+  placeholder = '',
   value,
   onChange,
   onSubmit,
@@ -30,14 +30,14 @@ const InputWithSendButton: React.FC<InputWithSendButtonProps> = ({
   const sendButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendButtonRef.current?.click();
     }
   };
 
   const handleClick = () => {
-    if (value.trim() === "") return;
+    if (value.trim() === '') return;
     onSubmit();
   };
 

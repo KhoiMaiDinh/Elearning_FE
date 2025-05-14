@@ -1,5 +1,5 @@
 // components/ProductSummary.tsx
-import { formatPrice } from "../formatPrice";
+import { formatPrice } from '../formatPrice';
 type Props = {
   products: { id: string; title: string; price: number }[];
 };

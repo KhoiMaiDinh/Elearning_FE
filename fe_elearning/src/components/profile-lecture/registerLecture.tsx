@@ -1,55 +1,49 @@
-"use client";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  useForm,
-  Controller,
-  FieldValues,
-  ControllerRenderProps,
-} from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
-import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
-import { Button } from "../ui/button";
-import { RegisterLectureForm } from "@/types/registerLectureFormType";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/constants/store";
-import { X } from "lucide-react";
-import { APIRegisterLecture } from "@/utils/lecture";
-import { APIGetPresignedUrl } from "@/utils/storage";
-import axios from "axios";
-import { APIGetCategory } from "@/utils/category";
-import { Category } from "@/types/categoryType";
-import SelectRegister from "../selectComponent/selectRegister";
-import AlertSuccess from "../alert/AlertSuccess";
-import AlertError from "../alert/AlertError";
-import { setUser } from "@/constants/userSlice";
-import RegisteredLecture from "./registeredLecture";
-import { MediaType } from "@/types/mediaType";
+'use client';
+import React, { useEffect, useRef, useState } from 'react';
+import { useForm, Controller, FieldValues } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
+import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
+import { Button } from '../ui/button';
+import { RegisterLectureForm } from '@/types/registerLectureFormType';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { X } from 'lucide-react';
+import { APIRegisterLecture } from '@/utils/lecture';
+import { APIGetPresignedUrl } from '@/utils/storage';
+import axios from 'axios';
+import { APIGetCategory } from '@/utils/category';
+import { Category } from '@/types/categoryType';
+import SelectRegister from '../selectComponent/selectRegister';
+import AlertSuccess from '../alert/AlertSuccess';
+import AlertError from '../alert/AlertError';
+import { setUser } from '@/constants/userSlice';
+import RegisteredLecture from './registeredLecture';
 // Schema validation với Yup
 const schema = yup.object().shape({
   category: yup.object().shape({
-    slug: yup.string().required("Lĩnh vực chuyên môn không được để trống"),
+    slug: yup.string().required('Lĩnh vực chuyên môn không được để trống'),
   }),
-  biography: yup.string().required("Mô tả kinh nghiệm không được để trống"),
+  biography: yup.string().required('Mô tả kinh nghiệm không được để trống'),
   certificates: yup
     .array()
     .of(
       yup.object().shape({
-        key: yup.string().required("Key của chứng chỉ không được để trống"),
-        id: yup.string().required("ID của chứng chỉ không được để trống"),
+        key: yup.string().required('Key của chứng chỉ không được để trống'),
+        id: yup.string().required('ID của chứng chỉ không được để trống'),
       })
     )
-    .required("Bằng cấp/chứng chỉ không được để trống")
-    .min(1, "Bằng cấp/chứng chỉ không được để trống"),
-  headline: yup.string().required("Tiêu đề không được để trống"),
+    .required('Bằng cấp/chứng chỉ không được để trống')
+    .min(1, 'Bằng cấp/chứng chỉ không được để trống'),
+  headline: yup.string().required('Tiêu đề không được để trống'),
   resume: yup
     .object()
     .shape({
-      key: yup.string().required("Key của CV không được để trống"),
-      id: yup.string().required("ID của CV không được để trống"),
+      key: yup.string().required('Key của CV không được để trống'),
+      id: yup.string().required('ID của CV không được để trống'),
     })
-    .required("CV không được để trống"),
+    .required('CV không được để trống'),
   website_url: yup.string().nullable(),
   facebook_url: yup.string().nullable(),
   linkedin_url: yup.string().nullable(),
@@ -67,11 +61,11 @@ const RegisterLecture = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       category: {
-        slug: "",
+        slug: '',
       },
-      biography: "",
-      headline: "",
-      resume: { key: "", id: "" },
+      biography: '',
+      headline: '',
+      resume: { key: '', id: '' },
       website_url: null,
       certificates: [] as Array<{ key: string; id: string }>,
 
@@ -85,7 +79,7 @@ const RegisterLecture = () => {
   const [loading, setLoading] = useState(false);
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
   const [category, setCategory] = useState<{ id: string; value: string }[]>([]);
   const [resumePreview, setResumePreview] = useState<{
     url: string;
@@ -95,10 +89,10 @@ const RegisterLecture = () => {
   const [certificatePreviews, setCertificatePreviews] = useState<
     Array<{ url: string; name: string; file: File; key: string; id: string }>
   >([]);
-  const certificateNames = watch("certificates");
-  const resumeName = watch("resume");
+  const certificateNames = watch('certificates');
+  const resumeName = watch('resume');
 
-  const categorySlug = watch("category.slug");
+  const categorySlug = watch('category.slug');
 
   const resumeInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,21 +101,21 @@ const RegisterLecture = () => {
   // Validate lại khi category.slug thay đổi
   useEffect(() => {
     if (categorySlug) {
-      trigger("category.slug");
+      trigger('category.slug');
     }
   }, [categorySlug, trigger]);
 
   // Validate lại khi resume thay đổi
   useEffect(() => {
     if (resumePreview?.file) {
-      trigger("resume");
+      trigger('resume');
     }
   }, [resumePreview, trigger]);
 
   // Validate lại khi certificates thay đổi
   useEffect(() => {
     if (certificatePreviews.length > 0) {
-      trigger("certificates");
+      trigger('certificates');
     }
   }, [certificatePreviews, trigger]);
 
@@ -130,22 +124,22 @@ const RegisterLecture = () => {
     const updatedPreviews = certificatePreviews.filter((_, i) => i !== index);
     setCertificatePreviews(updatedPreviews);
     setValue(
-      "certificates",
+      'certificates',
       updatedPreviews.map((preview) => preview)
     );
-    trigger("certificates");
+    trigger('certificates');
     if (certificateInputRef.current) {
-      certificateInputRef.current.value = ""; // Reset giá trị input file
+      certificateInputRef.current.value = ''; // Reset giá trị input file
     }
   };
 
   // Xóa file resume
   const removeResume = () => {
     setResumePreview(null);
-    setValue("resume", { key: "", id: "" });
-    trigger("resume");
+    setValue('resume', { key: '', id: '' });
+    trigger('resume');
     if (resumeInputRef.current) {
-      resumeInputRef.current.value = ""; // Reset giá trị input file
+      resumeInputRef.current.value = ''; // Reset giá trị input file
     }
   };
 
@@ -161,7 +155,7 @@ const RegisterLecture = () => {
         entity: entity, // Tên entity
         entity_property: entity_property, // Tên thuộc tính của entity
       });
-      const { postURL, formData } = presignedData?.data?.result;
+      const { postURL, formData } = presignedData?.data?.result ?? {};
       const id = presignedData?.data?.id; // Lấy id từ API
 
       const uploadFormData = new FormData();
@@ -169,24 +163,24 @@ const RegisterLecture = () => {
       Object.entries(formData).forEach(([key, value]) => {
         uploadFormData.append(key, value as string);
       });
-      uploadFormData.append("file", file);
-      uploadFormData.append("id", id);
+      uploadFormData.append('file', file);
+      uploadFormData.append('id', id);
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 204 || response.status === 200) {
-        const key = uploadFormData.get("key");
-        if (!key) throw new Error("Missing key in form data");
+        const key = uploadFormData.get('key');
+        if (!key) throw new Error('Missing key in form data');
         return { key: key.toString(), id }; // Trả về cả key và id
       } else {
-        throw new Error("Upload thất bại");
+        throw new Error('Upload thất bại');
       }
     } catch (error) {
-      console.error("Error uploading to MinIO:", error);
+      console.error('Error uploading to MinIO:', error);
       throw error;
     }
   };
@@ -205,12 +199,13 @@ const RegisterLecture = () => {
       reader.readAsDataURL(file);
 
       // Upload file và lấy cả key và id
-      const { key, id } = await uploadToMinIO(file, "instructor", "resume");
+      const { key, id } = await uploadToMinIO(file, 'instructor', 'resume');
       // Lưu cả key và id vào form
-      setValue("resume", { key, id }); // Lưu dưới dạng chuỗi JSON
-      trigger("resume");
+      setValue('resume', { key, id }); // Lưu dưới dạng chuỗi JSON
+      trigger('resume');
     } catch (error) {
-      setAlertDescription("Không thể upload CV");
+      console.log(error);
+      setAlertDescription('Không thể upload CV');
       setShowAlertError(true);
       setTimeout(() => setShowAlertError(false), 3000);
     }
@@ -224,14 +219,10 @@ const RegisterLecture = () => {
       try {
         const reader = new FileReader();
         reader.onload = async (e) => {
-          const { key, id } = await uploadToMinIO(
-            file,
-            "certificate",
-            "certificate_file"
-          );
+          const { key, id } = await uploadToMinIO(file, 'certificate', 'certificate_file');
           // Thêm object chứa key và id vào mảng certificates
           currentCertificates.push({ key, id });
-          setValue("certificates", currentCertificates);
+          setValue('certificates', currentCertificates);
           setCertificatePreviews((prev) => [
             ...prev,
             {
@@ -242,11 +233,12 @@ const RegisterLecture = () => {
               id: id,
             },
           ]);
-          trigger("certificates");
+          trigger('certificates');
         };
         reader.readAsDataURL(file);
       } catch (error) {
-        setAlertDescription("Không thể upload chứng chỉ");
+        console.log(error);
+        setAlertDescription('Không thể upload chứng chỉ');
         setShowAlertError(true);
         setTimeout(() => setShowAlertError(false), 3000);
         return;
@@ -255,7 +247,7 @@ const RegisterLecture = () => {
   };
 
   const handleGetCategory = async () => {
-    const response = await APIGetCategory({ language: "vi" });
+    const response = await APIGetCategory({ language: 'vi' });
     if (response?.status === 200) {
       const data = response?.data?.map((item: Category) => ({
         id: item.slug,
@@ -270,7 +262,7 @@ const RegisterLecture = () => {
     try {
       const response = await APIRegisterLecture(data);
       if (response?.status === 200) {
-        setAlertDescription("Đăng ký thành công");
+        setAlertDescription('Đăng ký thành công');
         setShowAlertSuccess(true);
         setLoading(false);
 
@@ -284,7 +276,7 @@ const RegisterLecture = () => {
           setShowAlertSuccess(false);
         }, 3000);
       } else {
-        setAlertDescription("Đăng ký thất bại");
+        setAlertDescription('Đăng ký thất bại');
         setShowAlertError(true);
         setTimeout(() => {
           setShowAlertError(false);
@@ -292,7 +284,8 @@ const RegisterLecture = () => {
         setLoading(false);
       }
     } catch (err) {
-      setAlertDescription("Đăng ký thất bại");
+      console.log(err);
+      setAlertDescription('Đăng ký thất bại');
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
@@ -304,12 +297,12 @@ const RegisterLecture = () => {
   const onSubmit = async (data: FieldValues) => {
     if (!resumeName || certificateNames.length === 0) {
       if (!resumeName) {
-        setAlertDescription("Vui lòng upload CV");
+        setAlertDescription('Vui lòng upload CV');
         setShowAlertError(true);
         setTimeout(() => setShowAlertError(false), 3000);
       }
       if (certificateNames.length === 0) {
-        setAlertDescription("Vui lòng upload ít nhất một chứng chỉ");
+        setAlertDescription('Vui lòng upload ít nhất một chứng chỉ');
         setShowAlertError(true);
         setTimeout(() => setShowAlertError(false), 3000);
       }
@@ -327,7 +320,8 @@ const RegisterLecture = () => {
 
       await handleRegisterLecture(dataSubmit);
     } catch (error) {
-      setAlertDescription("Đăng ký thất bại");
+      console.log(error);
+      setAlertDescription('Đăng ký thất bại');
       setShowAlertError(true);
       setTimeout(() => setShowAlertError(false), 3000);
       setLoading(false);
@@ -339,10 +333,7 @@ const RegisterLecture = () => {
   }, []);
 
   return !userInfo.instructor_profile ? (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="w-full h-full gap-2 flex flex-col "
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full gap-2 flex flex-col ">
       {/* Thông tin cá nhân */}
       <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
         <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
@@ -351,14 +342,10 @@ const RegisterLecture = () => {
         <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
           <InputRegisterLecture
             labelText="Họ và tên"
-            value={userInfo?.first_name + " " + userInfo?.last_name}
+            value={userInfo?.first_name + ' ' + userInfo?.last_name}
             disabled={true}
           />
-          <InputRegisterLecture
-            labelText="Email"
-            value={userInfo?.email}
-            disabled={true}
-          />
+          <InputRegisterLecture labelText="Email" value={userInfo?.email} disabled={true} />
         </div>
       </div>
 
@@ -379,8 +366,8 @@ const RegisterLecture = () => {
                   error={errors.category?.slug?.message}
                   data={category}
                   onValueChange={(e) => {
-                    setValue("category.slug", e);
-                    trigger("category.slug");
+                    setValue('category.slug', e);
+                    trigger('category.slug');
                   }}
                 />
               )}
@@ -431,9 +418,7 @@ const RegisterLecture = () => {
                   {resumePreview && (
                     <div className="mt-2 border rounded p-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-gray-600">
-                          {resumePreview.name}
-                        </span>
+                        <span className="text-sm text-gray-600">{resumePreview.name}</span>
                       </div>
                       <iframe
                         src={resumePreview.url}
@@ -552,7 +537,7 @@ const RegisterLecture = () => {
           type="submit"
           className="w-32 bg-custom-gradient-button-violet  dark:shadow-majorelleBlue50 dark:shadow-md text-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
         >
-          {loading ? "Đang gửi..." : "Gửi xét duyệt"}
+          {loading ? 'Đang gửi...' : 'Gửi xét duyệt'}
         </Button>
       </div>
       {showAlertSuccess && <AlertSuccess description={alertDescription} />}

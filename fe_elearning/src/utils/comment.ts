@@ -1,4 +1,4 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 
 const APIPostComment = async (id: string, data: any) => {
   const response = await axiosInstance.post(`/lectures/${id}/comments`, data);
@@ -20,9 +20,7 @@ const APIGetComment = async (
   }
 ) => {
   const filteredParams = Object.fromEntries(
-    Object.entries(params || {}).filter(
-      ([_, value]) => value !== undefined && value !== null
-    )
+    Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
   );
   const response = await axiosInstance.get(`/lectures/${id}/comments`, {
     params: filteredParams,
@@ -38,10 +36,7 @@ const APIGetComment = async (
 };
 
 const APIPostReview = async (course_id: string, data: any) => {
-  const response = await axiosInstance.post(
-    `/courses/${course_id}/review`,
-    data
-  );
+  const response = await axiosInstance.post(`/courses/${course_id}/review`, data);
   if (response.status === 201) {
     return {
       data: response.data,

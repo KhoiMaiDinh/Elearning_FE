@@ -1,6 +1,6 @@
-import { RocketIcon } from "@radix-ui/react-icons";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import React from "react";
+import { RocketIcon } from '@radix-ui/react-icons';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import React from 'react';
 
 type AlertType = {
   description?: string;

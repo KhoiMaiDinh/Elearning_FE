@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Facebook, Linkedin, Twitter, Youtube } from "lucide-react";
-import Link from "next/link";
-import AnimateWrapper from "./animations/animateWrapper";
+import { Facebook, Linkedin, Twitter, Youtube } from 'lucide-react';
+import Link from 'next/link';
+import AnimateWrapper from './animations/animateWrapper';
 
 const Footer = () => {
   return (
@@ -15,8 +15,7 @@ const Footer = () => {
               NovaLearn
             </h2>
             <p className="text-sm text-muted-foreground">
-              Nền tảng học tập tiên tiến giúp bạn phát triển kỹ năng và nâng cao
-              tri thức mỗi ngày.
+              Nền tảng học tập tiên tiến giúp bạn phát triển kỹ năng và nâng cao tri thức mỗi ngày.
             </p>
           </div>
 
@@ -75,28 +74,16 @@ const Footer = () => {
             &copy; 2025 NovaLearn. All rights reserved.
           </p>
           <div className="flex space-x-4 text-xl text-muted-foreground">
-            <a
-              href="#"
-              className="dark:hover:text-white hover:text-black transition"
-            >
+            <a href="#" className="dark:hover:text-white hover:text-black transition">
               <Facebook />
             </a>
-            <a
-              href="#"
-              className="dark:hover:text-white hover:text-black transition"
-            >
+            <a href="#" className="dark:hover:text-white hover:text-black transition">
               <Twitter />
             </a>
-            <a
-              href="#"
-              className="dark:hover:text-white hover:text-black transition"
-            >
+            <a href="#" className="dark:hover:text-white hover:text-black transition">
               <Linkedin />
             </a>
-            <a
-              href="#"
-              className="dark:hover:text-white hover:text-black transition"
-            >
+            <a href="#" className="dark:hover:text-white hover:text-black transition">
               <Youtube />
             </a>
           </div>

@@ -1,7 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import * as RechartsPrimitive from 'recharts';
+import {
+  ResponsiveContainer,
+  LineChart as RechartsLineChart,
+  BarChart as RechartsBarChart,
+  AreaChart as RechartsAreaChart,
+  PieChart as RechartsPieChart,
+  Line,
+  Bar,
+  Area,
+  Pie,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Cell,
+  type LegendProps,
+} from 'recharts';
 
 import { cn } from '@/lib/utils';
 
@@ -38,7 +55,7 @@ const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
     config: ChartConfig;
-    children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children'];
+    children: React.ComponentProps<typeof ResponsiveContainer>['children'];
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
@@ -56,7 +73,7 @@ const ChartContainer = React.forwardRef<
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+        <ResponsiveContainer>{children}</ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   );
@@ -64,7 +81,7 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = 'Chart';
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color);
+  const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
 
   if (!colorConfig.length) {
     return null;
@@ -92,11 +109,11 @@ ${colorConfig
   );
 };
 
-const ChartTooltip = RechartsPrimitive.Tooltip;
+const ChartTooltip = Tooltip;
 
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+  React.ComponentProps<typeof Tooltip> &
     React.ComponentProps<'div'> & {
       hideLabel?: boolean;
       hideIndicator?: boolean;
@@ -238,12 +255,12 @@ const ChartTooltipContent = React.forwardRef<
 );
 ChartTooltipContent.displayName = 'ChartTooltip';
 
-const ChartLegend = RechartsPrimitive.Legend;
+const ChartLegend = Legend;
 
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> &
-    Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+    Pick<LegendProps, 'payload' | 'verticalAlign'> & {
       hideIcon?: boolean;
       nameKey?: string;
     }
@@ -317,6 +334,206 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];
+}
+
+interface ChartProps {
+  type: 'bar' | 'line' | 'area' | 'pie';
+  data: any[];
+  index: string;
+  categories?: string[];
+  category?: string;
+  colors?: string[];
+  valueFormatter?: (value: number) => string;
+  showLegend?: boolean;
+  showGridLines?: boolean;
+  startEndOnly?: boolean;
+  showXAxis?: boolean;
+  showYAxis?: boolean;
+  className?: string;
+}
+
+export function Chart({
+  type,
+  data,
+  index,
+  categories = ['value'],
+  category,
+  colors = ['#0ea5e9', '#10b981', '#6366f1', '#f59e0b', '#ef4444'],
+  valueFormatter = (value) => `${value}`,
+  showLegend = true,
+  showGridLines = true,
+  startEndOnly = false,
+  showXAxis = true,
+  showYAxis = true,
+  className,
+}: ChartProps) {
+  const COLORS = colors;
+
+  const renderLineChart = () => (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsLineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        {showGridLines && <CartesianGrid strokeDasharray="3 3" vertical={false} />}
+        {showXAxis && (
+          <XAxis
+            dataKey={index}
+            tick={{ fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={
+              startEndOnly
+                ? (value, i) => (i === 0 || i === data.length - 1 ? value : '')
+                : undefined
+            }
+          />
+        )}
+        {showYAxis && <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />}
+        <Tooltip
+          formatter={(value: number) => [valueFormatter(value), '']}
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          }}
+        />
+        {showLegend && <Legend />}
+        {categories.map((category, index) => (
+          <Line
+            key={category}
+            type="monotone"
+            dataKey={category}
+            stroke={colors[index % colors.length]}
+            strokeWidth={2}
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        ))}
+      </RechartsLineChart>
+    </ResponsiveContainer>
+  );
+
+  const renderBarChart = () => (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsBarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        {showGridLines && <CartesianGrid strokeDasharray="3 3" vertical={false} />}
+        {showXAxis && (
+          <XAxis
+            dataKey={index}
+            tick={{ fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={
+              startEndOnly
+                ? (value, i) => (i === 0 || i === data.length - 1 ? value : '')
+                : undefined
+            }
+          />
+        )}
+        {showYAxis && <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />}
+        <Tooltip
+          formatter={(value: number) => [valueFormatter(value), '']}
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          }}
+        />
+        {showLegend && <Legend />}
+        {categories.map((category, index) => (
+          <Bar
+            key={category}
+            dataKey={category}
+            fill={colors[index % colors.length]}
+            radius={[4, 4, 0, 0]}
+          />
+        ))}
+      </RechartsBarChart>
+    </ResponsiveContainer>
+  );
+
+  const renderAreaChart = () => (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsAreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        {showGridLines && <CartesianGrid strokeDasharray="3 3" vertical={false} />}
+        {showXAxis && (
+          <XAxis
+            dataKey={index}
+            tick={{ fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={
+              startEndOnly
+                ? (value, i) => (i === 0 || i === data.length - 1 ? value : '')
+                : undefined
+            }
+          />
+        )}
+        {showYAxis && <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />}
+        <Tooltip
+          formatter={(value: number) => [valueFormatter(value), '']}
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          }}
+        />
+        {showLegend && <Legend />}
+        {categories.map((category, index) => (
+          <Area
+            key={category}
+            type="monotone"
+            dataKey={category}
+            fill={colors[index % colors.length]}
+            stroke={colors[index % colors.length]}
+            fillOpacity={0.3}
+          />
+        ))}
+      </RechartsAreaChart>
+    </ResponsiveContainer>
+  );
+
+  const renderPieChart = () => (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsPieChart margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey={category || 'value'}
+          nameKey={index}
+          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          formatter={(value: number) => [valueFormatter(value), '']}
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          }}
+        />
+        {showLegend && <Legend />}
+      </RechartsPieChart>
+    </ResponsiveContainer>
+  );
+
+  switch (type) {
+    case 'bar':
+      return renderBarChart();
+    case 'line':
+      return renderLineChart();
+    case 'area':
+      return renderAreaChart();
+    case 'pie':
+      return renderPieChart();
+    default:
+      return renderBarChart();
+  }
 }
 
 export {
