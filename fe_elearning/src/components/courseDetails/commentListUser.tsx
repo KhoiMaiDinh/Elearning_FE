@@ -2,10 +2,10 @@ import React from 'react';
 import { Card, CardHeader, CardContent } from '../ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 
 interface CommentListProps {
-  comments: CommentEachItemCourse;
+  comments: LectureComment;
 }
 
 const CommentListUser = ({ comments }: CommentListProps) => {

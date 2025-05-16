@@ -4,7 +4,7 @@ import { CommentList } from '@/components/aspect/comment-list';
 import { AspectEmotionCircles } from '@/components/aspect/aspect-emotion-circles';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 
 interface CommentAspect {
   comment_aspect_id: string;
@@ -44,7 +44,7 @@ interface Comment {
   };
 }
 
-function _transformComment(comment: CommentEachItemCourse): Comment | null {
+function _transformComment(comment: LectureComment): Comment | null {
   if (
     !comment.lecture_comment_id ||
     !comment.lecture_id ||
@@ -91,9 +91,7 @@ function _transformComment(comment: CommentEachItemCourse): Comment | null {
 }
 
 export default function StaticDetails() {
-  const commentsData = useSelector(
-    (state: RootState) => state.comment.comment
-  ) as CommentEachItemCourse[];
+  const commentsData = useSelector((state: RootState) => state.comment.comment) as LectureComment[];
 
   return (
     <main className="container mx-auto py-8 px-4">

@@ -21,7 +21,7 @@ import {
   UserRoundCheckIcon,
   BookCheck,
 } from 'lucide-react';
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 
 // Define interfaces for type safety
 interface Aspect {
@@ -42,7 +42,7 @@ export const aspects: Aspect[] = [
 ];
 
 interface CommentCardProps {
-  comment: CommentEachItemCourse;
+  comment: LectureComment;
 }
 
 function CommentCard({ comment }: CommentCardProps) {
@@ -113,7 +113,7 @@ function CommentCard({ comment }: CommentCardProps) {
   );
 }
 
-export function CommentList({ comments }: { comments: CommentEachItemCourse[] }) {
+export function CommentList({ comments }: { comments: LectureComment[] }) {
   const [filter, setFilter] = useState({
     aspect: 'all',
     emotion: 'all',
@@ -123,7 +123,7 @@ export function CommentList({ comments }: { comments: CommentEachItemCourse[] })
     return <div>Không có bình luận</div>;
   }
 
-  const filteredComments = comments.filter((comment: CommentEachItemCourse) => {
+  const filteredComments = comments.filter((comment: LectureComment) => {
     const aspectMatch =
       filter.aspect === 'all' || comment.aspects.some((a) => a.aspect === filter.aspect);
     const emotionMatch =
@@ -180,31 +180,31 @@ export function CommentList({ comments }: { comments: CommentEachItemCourse[] })
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
-          {filteredComments.map((comment: CommentEachItemCourse) => (
+          {filteredComments.map((comment: LectureComment) => (
             <CommentCard key={comment?.lecture_comment_id} comment={comment} />
           ))}
         </TabsContent>
 
         <TabsContent value="positive" className="space-y-4">
           {filteredComments
-            .filter((c: CommentEachItemCourse) => c.aspects.some((a) => a.emotion === 'positive'))
-            .map((comment: CommentEachItemCourse) => (
+            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'positive'))
+            .map((comment: LectureComment) => (
               <CommentCard key={comment?.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
 
         <TabsContent value="neutral" className="space-y-4">
           {filteredComments
-            .filter((c: CommentEachItemCourse) => c.aspects.some((a) => a.emotion === 'neutral'))
-            .map((comment: CommentEachItemCourse) => (
+            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'neutral'))
+            .map((comment: LectureComment) => (
               <CommentCard key={comment?.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
 
         <TabsContent value="negative" className="space-y-4">
           {filteredComments
-            .filter((c: CommentEachItemCourse) => c.aspects.some((a) => a.emotion === 'negative'))
-            .map((comment: CommentEachItemCourse) => (
+            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'negative'))
+            .map((comment: LectureComment) => (
               <CommentCard key={comment?.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>

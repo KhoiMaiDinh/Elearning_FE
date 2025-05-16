@@ -14,6 +14,13 @@ export interface CommunityThread {
       key: string;
     };
   };
+  lecture:{
+    section: {
+      course: {
+        title: string;
+      }
+    }
+  }
 }
 
 export interface CommunityThreadReply {

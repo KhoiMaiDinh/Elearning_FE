@@ -9,7 +9,7 @@ import { APIPostComment, APIGetComment } from '@/utils/comment';
 import InputWithSendButton from '../inputComponent/inputComment';
 import AlertSuccess from '../alert/AlertSuccess';
 import AlertError from '../alert/AlertError';
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 import CommentListUser from './commentListUser';
 import Popup from './popup'; // Import your Popup component
 
@@ -58,7 +58,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [communityPosts, setCommunityPosts] = useState<CommunityThread[]>([]);
   const [replies, setReplies] = useState<CommunityThreadReply[]>([]); // Quản lý trả lời
   const [newReply, setNewReply] = useState(''); // Nội dung trả lời mới
-  const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
+  const [comments, setComments] = useState<LectureComment[]>([]);
 
   const [filterOption, setFilterOption] = useState('all'); // New state for filter option
 

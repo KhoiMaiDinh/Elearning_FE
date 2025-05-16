@@ -1,9 +1,9 @@
 // 'use client'
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  comment: <CommentEachItemCourse[]>{},
+  comment: <LectureComment[]>{},
 };
 
 const createCommentSlice = createSlice({

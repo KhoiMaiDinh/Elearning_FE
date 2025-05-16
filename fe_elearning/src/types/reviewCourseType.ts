@@ -11,12 +11,15 @@ export interface ReviewCourseType {
   updatedAt?: string;
   updatedBy?: string;
   deletedAt?: string | null;
-  user?: {
+  user: {
     id?: string;
     username?: string;
     email?: string;
     first_name?: string;
     last_name?: string;
     profile_image?: MediaType;
+  };
+  course: {
+    title: string;
   };
 }

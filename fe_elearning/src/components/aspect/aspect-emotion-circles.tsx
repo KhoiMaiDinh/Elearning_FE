@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
-import { CommentEachItemCourse } from '@/types/commentType';
+import { LectureComment } from '@/types/commentType';
 
 interface Emotion {
   id: string;
@@ -47,7 +47,7 @@ const aspectTypes = [
   'other',
 ];
 
-export function AspectEmotionCircles({ comments }: { comments: CommentEachItemCourse[] }) {
+export function AspectEmotionCircles({ comments }: { comments: LectureComment[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

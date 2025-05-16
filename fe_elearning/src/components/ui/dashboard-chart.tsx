@@ -21,6 +21,8 @@ import {
 } from 'recharts';
 
 import { cn } from '@/lib/utils';
+import { ContentType, DefaultLegendContent } from 'recharts/types/component/DefaultLegendContent';
+import { Props } from 'recharts/types/component/Legend';
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;
@@ -503,7 +505,7 @@ export function Chart({
           fill="#8884d8"
           dataKey={category || 'value'}
           nameKey={index}
-          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+          label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -517,10 +519,53 @@ export function Chart({
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
           }}
         />
-        {showLegend && <Legend />}
+        {showLegend && (
+          <Legend
+            layout="vertical"
+            align="center"
+            verticalAlign="bottom"
+            content={renderCustomLegend as any}
+          />
+        )}
       </RechartsPieChart>
     </ResponsiveContainer>
   );
+
+  const renderCustomLegend = (props: Props): React.ReactNode => {
+    const { payload } = props;
+    if (!payload) return null;
+    return (
+      <ul
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)', // Change to 3 for 3 columns
+          gap: '8px',
+          listStyle: 'none',
+          padding: 0,
+          margin: 0,
+          fontSize: '10px',
+          maxHeight: '150px',
+          overflowY: 'auto',
+        }}
+      >
+        {payload.map((entry, index) => (
+          <li key={`item-${index}`} style={{ marginBottom: 4, color: entry.color }}>
+            <span
+              style={{
+                display: 'inline-block',
+                width: 10,
+                height: 10,
+                backgroundColor: entry.color,
+                marginRight: 6,
+                borderRadius: '50%',
+              }}
+            />
+            {entry.value}
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   switch (type) {
     case 'bar':

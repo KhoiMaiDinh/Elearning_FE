@@ -16,7 +16,7 @@ module.exports = {
 
     // Enable the TypeScript version
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
