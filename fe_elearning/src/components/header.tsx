@@ -1,26 +1,16 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  Eye,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-import { APIGetCurrentUser } from "@/utils/user";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser, clearUser } from "@/constants/userSlice";
-import { RootState } from "@/constants/store";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from 'react';
+import { Button } from './ui/button';
+import { BadgeCheck, Bell, CreditCard, LogOut, Menu, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { APIGetCurrentUser } from '@/utils/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, clearUser } from '@/constants/userSlice';
+import { RootState } from '@/constants/store';
+import { usePathname, useRouter } from 'next/navigation';
 // import io from "socket.io-client"; // Comment lại vì chưa có Socket.IO
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,37 +19,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { NotificationCenter } from "./notifications/notificationComponent";
+} from '@/components/ui/dropdown-menu';
+import { NotificationCenter } from './notifications/notificationComponent';
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const pathname = usePathname();
 
   const menuItems = [
-    { label: "Trang chủ", path: "/" },
-    { label: "Khóa học", path: "/course" },
-    { label: "Giảng viên", path: "/lecture" },
-    { label: "Liên hệ", path: "/contact" },
+    { label: 'Trang chủ', path: '/' },
+    { label: 'Khóa học', path: '/course' },
+    { label: 'Giảng viên', path: '/lecture' },
+    { label: 'Liên hệ', path: '/contact' },
   ];
 
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
 
   // State cho thông báo
-  const [notifications, setNotifications] = useState([
+  const [_notifications, setNotifications] = useState([
     {
       id: 1,
-      message: "Khóa học mới đã được thêm!",
-      date: "2025-03-07",
-      link: "/course/new",
+      message: 'Khóa học mới đã được thêm!',
+      date: '2025-03-07',
+      link: '/course/new',
       isRead: false,
     },
     {
       id: 2,
-      message: "Bạn có một tin nhắn mới.",
-      date: "2025-03-06",
-      link: "/messages",
+      message: 'Bạn có một tin nhắn mới.',
+      date: '2025-03-06',
+      link: '/messages',
       isRead: true,
     },
   ]);
@@ -79,38 +69,36 @@ const Header = () => {
   }, []); */
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   const handleGetCurrentUser = async () => {
     const response = await APIGetCurrentUser();
     if (response?.status === 200) {
-      userInfo !== response?.data && dispatch(setUser(response?.data));
+      if (userInfo !== response.data) {
+        dispatch(setUser(response.data));
+      }
     }
   };
 
   const handleLogOut = () => {
-    router.push("/login");
-    localStorage.setItem("access_token", "");
-    localStorage.setItem("refresh_token", "");
-    localStorage.setItem("expires_at", "");
+    router.push('/login');
+    localStorage.setItem('access_token', '');
+    localStorage.setItem('refresh_token', '');
+    localStorage.setItem('expires_at', '');
     dispatch(clearUser());
   };
 
   // Đánh dấu thông báo là đã xem
-  const markAsRead = (id: number) => {
+  const _markAsRead = (id: number) => {
     setNotifications((prev) =>
-      prev.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
-      )
+      prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
     );
   };
 
   // Đánh dấu tất cả thông báo là đã xem
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notif) => ({ ...notif, isRead: true }))
-    );
+  const _markAllAsRead = () => {
+    setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })));
   };
 
   useEffect(() => {
@@ -136,8 +124,8 @@ const Header = () => {
                   onClick={() => router.push(item.path)}
                   className={`${
                     pathname === item.path
-                      ? "bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet"
-                      : ""
+                      ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
+                      : ''
                   }`}
                 >
                   {item.label}
@@ -153,7 +141,7 @@ const Header = () => {
             src="/images/logo.png"
             alt="Logo"
             className="h-10 w-auto cursor-pointer"
-            onClick={() => router.push("/")}
+            onClick={() => router.push('/')}
           />
         </div>
 
@@ -165,8 +153,8 @@ const Header = () => {
               onClick={() => router.push(item.path)}
               className={`text-sm font-medium transition-colors hover:text-primary ${
                 pathname === item.path
-                  ? "text-LavenderIndigo dark:text-PaleViolet font-semibold"
-                  : "text-muted-foreground"
+                  ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
+                  : 'text-muted-foreground'
               }`}
             >
               {item.label}
@@ -183,7 +171,7 @@ const Header = () => {
             onClick={toggleTheme}
             className="rounded-full bg-muted/50 hover:bg-muted"
           >
-            {theme === "light" ? (
+            {theme === 'light' ? (
               <Sun className="h-5 w-5 transition-all" />
             ) : (
               <Moon className="h-5 w-5 transition-all" />
@@ -198,24 +186,21 @@ const Header = () => {
           {!userInfo.id ? (
             <Button
               className="bg-gradient-to-r from-LavenderIndigo to-majorelleBlue hover:brightness-110 text-white"
-              onClick={() => router.push("/login")}
+              onClick={() => router.push('/login')}
             >
               Đăng nhập
             </Button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8 rounded-full border-2 border-muted">
                     <AvatarImage
                       src={
-                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                          userInfo.profile_image?.key || "/placeholder.svg"
+                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE + userInfo.profile_image?.key ||
+                        '/placeholder.svg'
                       }
-                      alt={userInfo.username || "User"}
+                      alt={userInfo.username || 'User'}
                       className="object-cover"
                     />
                     <AvatarFallback className="text-xs">
@@ -231,20 +216,16 @@ const Header = () => {
                     <p className="text-sm font-medium leading-none">
                       {userInfo.first_name} {userInfo.last_name}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {userInfo.email}
-                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">{userInfo.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/profile/student")}
-                  >
+                  <DropdownMenuItem onClick={() => router.push('/profile/student')}>
                     <BadgeCheck className="mr-2 h-4 w-4" />
                     <span>Tài khoản</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/billing")}>
+                  <DropdownMenuItem onClick={() => router.push('/billing')}>
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>Thanh toán</span>
                   </DropdownMenuItem>

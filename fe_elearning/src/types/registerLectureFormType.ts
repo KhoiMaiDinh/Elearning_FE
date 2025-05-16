@@ -1,5 +1,5 @@
-import { Category } from "./categoryType";
-import { MediaType } from "./mediaType";
+import { Category } from './categoryType';
+import { MediaType } from './mediaType';
 export type RegisterLectureForm = {
   category: {
     slug: string;

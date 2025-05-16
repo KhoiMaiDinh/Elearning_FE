@@ -1,8 +1,8 @@
 // src/components/CourseFilter.tsx
-"use client";
-import React from "react";
-import SelectFilter from "@/components/selectComponent/selectFilter";
-import { dataLevel, priceRanges, stars } from "@/constants/selectData";
+'use client';
+import React from 'react';
+import SelectFilter from '@/components/selectComponent/selectFilter';
+import { dataLevel, priceRanges, stars } from '@/constants/selectData';
 
 interface CourseFilterProps {
   paramsCourse: any;
@@ -38,7 +38,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
   };
 
   const handlePriceChange = (value: string) => {
-    const [min, max] = value.split(",").map(Number);
+    const [min, max] = value.split(',').map(Number);
     setParamsCourse((prev: any) => ({
       ...prev,
       min_price: min,
@@ -59,7 +59,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
   };
 
   const handleRatingChange = (value: string) => {
-    const ratingValue = value === "all" ? undefined : value;
+    const ratingValue = value === 'all' ? undefined : value;
     setParamsCourse((prev: any) => ({ ...prev, min_rating: ratingValue }));
     const query = new URLSearchParams({
       ...(paramsCourse.level && { level: paramsCourse.level }),
@@ -95,43 +95,36 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
     router.push(`/course?${query}`);
   };
 
-  const initialDataFilterCategory = [
-    { id: "all", value: "Tất cả" },
-    ...category,
-  ];
-  const initialDataFilterLevel = [{ id: "all", value: "Tất cả" }, ...dataLevel];
+  const initialDataFilterCategory = [{ id: 'all', value: 'Tất cả' }, ...category];
+  const initialDataFilterLevel = [{ id: 'all', value: 'Tất cả' }, ...dataLevel];
 
-  const initialDataFilterReview = [{ id: "all", value: "Tất cả" }, ...stars];
+  const initialDataFilterReview = [{ id: 'all', value: 'Tất cả' }, ...stars];
 
   return (
     <div className="flex flex-wrap text-black dark:text-white gap-2">
       <SelectFilter
         data={initialDataFilterLevel}
         label="Mức độ"
-        value={paramsCourse.level || "all"}
+        value={paramsCourse.level || 'all'}
         onChange={handleLevelChange}
       />
       <SelectFilter
         data={initialDataFilterReview}
         label="Đánh giá"
-        value={
-          paramsCourse.min_rating !== undefined
-            ? paramsCourse.min_rating.toString()
-            : "all"
-        }
+        value={paramsCourse.min_rating !== undefined ? paramsCourse.min_rating.toString() : 'all'}
         onChange={handleRatingChange}
       />
 
       <SelectFilter
         data={priceRanges}
         label="Giá"
-        value={paramsCourse.min_price || "all"}
+        value={paramsCourse.min_price || 'all'}
         onChange={handlePriceChange}
       />
       <SelectFilter
         data={initialDataFilterCategory}
         label="Danh mục"
-        value={paramsCourse.category_slug || "all"}
+        value={paramsCourse.category_slug || 'all'}
         onChange={handleCategoryChange}
       />
     </div>

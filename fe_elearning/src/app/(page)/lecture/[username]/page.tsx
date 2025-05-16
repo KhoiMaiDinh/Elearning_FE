@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Mail, Star, BookOpen } from "lucide-react";
-import CoursesBlock from "@/components/block/courses-block"; // Đảm bảo import đúng đường dẫn
-import { Badge } from "@/components/ui/badge";
-import AnimateWrapper from "@/components/animations/animateWrapper";
-import { useParams } from "next/navigation";
-import { APIGetLectureByUserName } from "@/utils/lecture";
-import { useEffect, useState } from "react";
-import { Lecture } from "@/types/registerLectureFormType";
-import { APIGetListCourse } from "@/utils/course";
-import { CourseForm } from "@/types/courseType";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Mail, Star, BookOpen } from 'lucide-react';
+import CoursesBlock from '@/components/block/courses-block'; // Đảm bảo import đúng đường dẫn
+import { Badge } from '@/components/ui/badge';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import { useParams } from 'next/navigation';
+import { APIGetLectureByUserName } from '@/utils/lecture';
+import { useEffect, useState } from 'react';
+import { Lecture } from '@/types/registerLectureFormType';
+import { APIGetListCourse } from '@/utils/course';
+import { CourseForm } from '@/types/courseType';
 // Dữ liệu giả như gọi từ API
 
 const TeacherProfile = () => {
@@ -24,7 +24,7 @@ const TeacherProfile = () => {
         setTeacherData(response.data);
       }
     } catch (error) {
-      console.error("Error fetching lecture data:", error);
+      console.error('Error fetching lecture data:', error);
     }
   };
 
@@ -40,14 +40,14 @@ const TeacherProfile = () => {
         setDataCourse(response.data);
       }
     } catch (error) {
-      console.error("Error fetching course data:", error);
+      console.error('Error fetching course data:', error);
     }
   };
 
   useEffect(() => {
     handleGetLectureByUserName();
     handleGetCourseByLectureUserName();
-  }, [username]);
+  }, [username, handleGetLectureByUserName, handleGetCourseByLectureUserName]);
 
   return (
     <div className="container bg-white dark:bg-chineseBlack rounded-xl overflow-hidden mx-auto space-y-10">
@@ -58,27 +58,19 @@ const TeacherProfile = () => {
               <AvatarImage
                 src={
                   process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                  (teacherData?.user.profile_image?.key || "")
+                  (teacherData?.user.profile_image?.key || '')
                 }
-                alt={
-                  teacherData?.user.first_name +
-                  " " +
-                  teacherData?.user.last_name
-                }
+                alt={teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
                 className="object-cover"
               />
             </Avatar>
             <div className="space-y-2 text-center md:text-left">
               <CardTitle className="text-3xl font-bold">
-                {teacherData?.user.first_name +
-                  " " +
-                  teacherData?.user.last_name}
+                {teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
               </CardTitle>
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <Mail className="w-4 h-4" />
-                <span className="text-muted-foreground">
-                  {teacherData?.user.email}
-                </span>
+                <span className="text-muted-foreground">{teacherData?.user.email}</span>
               </div>
               <div className="flex gap-4 justify-center md:justify-start">
                 <div className="flex items-center gap-1">
@@ -90,7 +82,7 @@ const TeacherProfile = () => {
                   <span>
                     {teacherData?.avg_rating || teacherData?.avg_rating === 0
                       ? teacherData?.avg_rating?.toFixed(1)
-                      : "N/A "}
+                      : 'N/A '}
                     /5
                   </span>
                 </div>
@@ -105,16 +97,14 @@ const TeacherProfile = () => {
               <p
                 className="text-muted-foreground ql-content"
                 dangerouslySetInnerHTML={{
-                  __html: teacherData?.biography || "",
+                  __html: teacherData?.biography || '',
                 }}
               />
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">
-                  {teacherData?.category?.translations[0]?.name}
-                </Badge>
+                <Badge variant="secondary">{teacherData?.category?.translations[0]?.name}</Badge>
               </div>
             </div>
 

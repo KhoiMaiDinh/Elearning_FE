@@ -1,4 +1,4 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 const APIGetCategory = async ({
   language,
   with_children,
@@ -8,9 +8,9 @@ const APIGetCategory = async ({
 }) => {
   try {
     if (!language) {
-      language = "vi";
+      language = 'vi';
     }
-    const response = await axiosInstance.get("/categories", {
+    const response = await axiosInstance.get('/categories', {
       params: {
         language,
         with_children: with_children || false,
@@ -21,7 +21,7 @@ const APIGetCategory = async ({
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get category:", err);
+    console.error('Error during get category:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };

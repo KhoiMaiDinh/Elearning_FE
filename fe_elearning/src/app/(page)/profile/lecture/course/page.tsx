@@ -1,38 +1,24 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import {
-  useForm,
-  Controller,
-  useFieldArray,
-  FieldArrayWithId,
-  Resolver,
-} from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import axios from "axios";
-import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { CourseForm, Section, CourseItem } from "@/types/courseType";
-import { Delete } from "lucide-react";
-import SelectRegister from "@/components/selectComponent/selectRegister";
-import TextAreaRegisterLecture from "@/components/inputComponent/textAreaRegisterLecture";
-import { APIGetPresignedUrl } from "@/utils/storage";
-import { APIInitCourse } from "@/utils/course";
-import AlertSuccess from "@/components/alert/AlertSuccess";
-import AlertError from "@/components/alert/AlertError";
-import { APIGetCategory } from "@/utils/category";
-import { useRouter } from "next/navigation";
-import { setCourse } from "@/constants/course";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
-import AnimateWrapper from "@/components/animations/animateWrapper";
-import { MediaType } from "@/types/mediaType";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import axios from 'axios';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import { Button } from '@/components/ui/button';
+import { CourseForm } from '@/types/courseType';
+import SelectRegister from '@/components/selectComponent/selectRegister';
+import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
+import { APIGetPresignedUrl } from '@/utils/storage';
+import { APIInitCourse } from '@/utils/course';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import AlertError from '@/components/alert/AlertError';
+import { APIGetCategory } from '@/utils/category';
+import { useRouter } from 'next/navigation';
+import { setCourse } from '@/constants/course';
+import { useDispatch } from 'react-redux';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import { MediaType } from '@/types/mediaType';
 // Hàm upload file lên MinIO
 const uploadToMinIO = async (
   file: File,
@@ -45,85 +31,80 @@ const uploadToMinIO = async (
       entity: entity,
       entity_property: entity_property,
     });
-    const { postURL, formData } = presignedData?.data?.result;
+    const { postURL, formData } = presignedData?.data?.result ?? {};
     const id = presignedData?.data?.id;
 
     const uploadFormData = new FormData();
-    Object.entries(formData).forEach(([key, value]) =>
-      uploadFormData.append(key, value as string)
-    );
-    uploadFormData.append("file", file);
-    uploadFormData.append("id", id);
+    Object.entries(formData).forEach(([key, value]) => uploadFormData.append(key, value as string));
+    uploadFormData.append('file', file);
+    uploadFormData.append('id', id);
 
     const response = await axios.post(postURL, uploadFormData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
 
     if (response.status === 204 || response.status === 200) {
-      const key = uploadFormData.get("key");
-      if (!key) throw new Error("Missing key in form data");
+      const key = uploadFormData.get('key');
+      if (!key) throw new Error('Missing key in form data');
       return { key: key.toString(), id };
     } else {
-      throw new Error("Upload thất bại");
+      throw new Error('Upload thất bại');
     }
   } catch (error) {
-    console.error("Error uploading to MinIO:", error);
+    console.error('Error uploading to MinIO:', error);
     throw error;
   }
 };
 
 const data = [
-  { id: "BEGINNER", value: "Sơ cấp" },
-  { id: "INTERMEDIATE", value: "Trung cấp" },
-  { id: "ADVANCED", value: "Nâng cao" },
+  { id: 'BEGINNER', value: 'Sơ cấp' },
+  { id: 'INTERMEDIATE', value: 'Trung cấp' },
+  { id: 'ADVANCED', value: 'Nâng cao' },
 ];
 
 // Schema cho thông tin cơ bản
 const basicSchema = yup.object().shape({
   category: yup.object().shape({
-    slug: yup.string().required("Danh mục không được để trống"),
+    slug: yup.string().required('Danh mục không được để trống'),
   }),
-  title: yup.string().required("Tiêu đề khóa học không được để trống"),
-  subtitle: yup.string().required("Mô tả ngắn không được để trống"),
+  title: yup.string().required('Tiêu đề khóa học không được để trống'),
+  subtitle: yup.string().required('Mô tả ngắn không được để trống'),
   description: yup.string(),
-  level: yup.string().required("Cấp độ không được để trống"),
-  price: yup
-    .number()
-    .min(0, "Giá phải lớn hơn hoặc bằng 0")
-    .required("Giá không được để trống"),
+  level: yup.string().required('Cấp độ không được để trống'),
+  price: yup.number().min(0, 'Giá phải lớn hơn hoặc bằng 0').required('Giá không được để trống'),
   thumbnail: yup
     .object()
     .shape({
-      key: yup.string().required("Key của ảnh bìa không được để trống"),
-      id: yup.string().required("ID của ảnh bìa không được để trống"),
+      key: yup.string().required('Key của ảnh bìa không được để trống'),
+      id: yup.string().required('ID của ảnh bìa không được để trống'),
     })
     .nullable(),
 });
 
 // Schema cho section
-const sectionSchema = yup.object().shape({
-  title: yup.string().required("Tiêu đề phần không được để trống"),
-  section_description: yup.string().required("Mô tả phần không được để trống"),
-  position: yup.string().required("Thứ tự phần không được để trống"),
+const _sectionSchema = yup.object().shape({
+  title: yup.string().required('Tiêu đề phần không được để trống'),
+  section_description: yup.string().required('Mô tả phần không được để trống'),
+  position: yup.string().required('Thứ tự phần không được để trống'),
 });
 
 // Schema cho course item
-const courseItemSchema = yup.object().shape({
-  title: yup.string().required("Tiêu đề bài học không được để trống"),
-  description: yup.string().required("Nội dung bài học không được để trống"),
+const _courseItemSchema = yup.object().shape({
+  title: yup.string().required('Tiêu đề bài học không được để trống'),
+  description: yup.string().required('Nội dung bài học không được để trống'),
   video_id: yup
     .object()
     .shape({
-      key: yup.string().required("Key của video không được để trống"),
-      id: yup.string().required("ID của video không được để trống"),
+      key: yup.string().required('Key của video không được để trống'),
+      id: yup.string().required('ID của video không được để trống'),
     })
     .nullable()
     .default(null),
-  position: yup.string().required("Thứ tự bài học không được để trống"),
+  position: yup.string().required('Thứ tự bài học không được để trống'),
 });
 
 const UploadCourse: React.FC = () => {
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [categoryData, setCategoryData] = useState<
@@ -133,27 +114,24 @@ const UploadCourse: React.FC = () => {
       children?: { id: string; value: string }[];
     }[]
   >([]);
-  const [selectedParentCategory, setSelectedParentCategory] =
-    useState<string>("");
-  const [childCategories, setChildCategories] = useState<
-    { id: string; value: string }[]
-  >([]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState<string>('');
+  const [childCategories, setChildCategories] = useState<{ id: string; value: string }[]>([]);
 
   const {
     control,
     handleSubmit,
     setValue,
-    watch,
-    reset,
+    // watch,
+    // reset,
     formState: { errors },
   } = useForm<CourseForm>({
     resolver: yupResolver(basicSchema) as unknown as Resolver<CourseForm>,
     defaultValues: {
-      category: { slug: "" },
-      title: "",
-      subtitle: "",
-      description: "",
-      level: "",
+      category: { slug: '' },
+      title: '',
+      subtitle: '',
+      description: '',
+      level: '',
       price: 0,
       thumbnail: null,
       sections: [],
@@ -185,7 +163,7 @@ const UploadCourse: React.FC = () => {
         dispatch(setCourse(response?.data));
 
         setShowAlertSuccess(true);
-        setDescription("Khóa học đã được khởi tạo thành công");
+        setDescription('Khóa học đã được khởi tạo thành công');
         router.push(`/profile/lecture/course/${response?.data.id}`);
         dispatch(setCourse(response?.data));
 
@@ -197,9 +175,9 @@ const UploadCourse: React.FC = () => {
 
       // console.log("🚀 ~ onSubmitBasic ~ newCourseId:", newCourseId);
     } catch (error) {
-      console.error("Error initializing course:", error);
+      console.error('Error initializing course:', error);
       setShowAlertError(true);
-      setDescription("Khóa học đã được khởi tạo thất bại");
+      setDescription('Khóa học đã được khởi tạo thất bại');
 
       setTimeout(() => {
         setShowAlertError(false);
@@ -209,7 +187,7 @@ const UploadCourse: React.FC = () => {
 
   const handleGetCategory = async () => {
     const response = await APIGetCategory({
-      language: "vi",
+      language: 'vi',
       with_children: true,
     });
     if (response?.status === 200) {
@@ -229,7 +207,7 @@ const UploadCourse: React.FC = () => {
     setSelectedParentCategory(value);
     const selectedParent = categoryData.find((cat) => cat.id === value);
     setChildCategories(selectedParent?.children || []);
-    setValue("category.slug", ""); // Reset child category when parent changes
+    setValue('category.slug', ''); // Reset child category when parent changes
   };
 
   useEffect(() => {
@@ -300,7 +278,7 @@ const UploadCourse: React.FC = () => {
                   <SelectRegister
                     label="Lĩnh vực"
                     data={childCategories}
-                    onValueChange={(value) => setValue("category.slug", value)}
+                    onValueChange={(value) => setValue('category.slug', value)}
                     disabled={!selectedParentCategory}
                   />
                 </div>
@@ -321,7 +299,7 @@ const UploadCourse: React.FC = () => {
               <Controller
                 name="thumbnail"
                 control={control}
-                render={({ field }) => (
+                render={() => (
                   <div className="flex flex-col gap-2">
                     <InputRegisterLecture
                       labelText="Ảnh bìa"
@@ -331,13 +309,9 @@ const UploadCourse: React.FC = () => {
                       onChange={async (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
-                          const { key, id } = await uploadToMinIO(
-                            file,
-                            "course",
-                            "thumbnail"
-                          );
+                          const { key, id } = await uploadToMinIO(file, 'course', 'thumbnail');
                           const thumbnail: MediaType = { id, key };
-                          setValue("thumbnail", thumbnail);
+                          setValue('thumbnail', thumbnail);
                           setImagePreview(URL.createObjectURL(file));
                         }
                       }}
@@ -370,11 +344,7 @@ const UploadCourse: React.FC = () => {
               type="submit"
               className="bg-custom-gradient-button-violet mt-2 rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
             >
-              <img
-                src="/icons/icon_save.png"
-                alt="save"
-                className="w-5 h-5 object-fill"
-              />
+              <img src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
               Thêm khóa học
             </Button>
           </form>

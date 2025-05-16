@@ -1,4 +1,4 @@
-import { Lecture } from "./registerLectureFormType";
+import { Lecture } from './registerLectureFormType';
 
 export interface Roles {
   role_name: string;

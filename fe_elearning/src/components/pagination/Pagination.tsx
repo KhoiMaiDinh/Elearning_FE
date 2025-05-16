@@ -1,7 +1,6 @@
-import Image from "next/image";
-import React from "react";
-import { Button } from "../ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import Image from 'next/image';
+import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface PaginationProps {
   currentPage: number;
@@ -36,7 +35,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
     // Add "..." if needed before the startPage
     if (startPage > 2) {
-      pages.push("...");
+      pages.push('...');
     }
 
     // Add the range of pages
@@ -46,7 +45,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
     // Add "..." if needed after the endPage
     if (endPage < maxPage - 1) {
-      pages.push("...");
+      pages.push('...');
     }
 
     // Always include the last page
@@ -62,32 +61,25 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="flex-center flex flex-row items-center gap-2">
       <div
-        className={`${
-          currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"
-        }`}
+        className={`${currentPage === 1 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={() => handleChangePage(currentPage - 1)}
       >
-        <Image
-          src={"/icons/ic_arrow_left.png"}
-          width={12}
-          height={12}
-          alt="arrow-left"
-        ></Image>
+        <Image src={'/icons/ic_arrow_left.png'} width={12} height={12} alt="arrow-left"></Image>
       </div>
       {displayedPages.map((page, index) =>
-        typeof page === "number" ? (
+        typeof page === 'number' ? (
           <div
             onClick={() => handleChangePage(page)}
             key={index}
             className={`${
               currentPage === page
-                ? "bg-majorelleBlue20"
-                : "border dark:border-lightSilver bg-white border-darkSilver"
+                ? 'bg-majorelleBlue20'
+                : 'border dark:border-lightSilver bg-white border-darkSilver'
             } flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-md p-1`}
           >
             <p
               className={`font-normal ${
-                currentPage === page ? "text-white" : "text-LavenderIndigo"
+                currentPage === page ? 'text-white' : 'text-LavenderIndigo'
               }`}
             >
               {page}
@@ -100,17 +92,10 @@ const Pagination: React.FC<PaginationProps> = ({
         )
       )}
       <div
-        className={`${
-          currentPage === maxPage ? "cursor-not-allowed" : "cursor-pointer"
-        }`}
+        className={`${currentPage === maxPage ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={() => handleChangePage(currentPage + 1)}
       >
-        <Image
-          src={"/icons/ic_arrow_right.png"}
-          width={12}
-          height={12}
-          alt="arrow-right"
-        ></Image>
+        <Image src={'/icons/ic_arrow_right.png'} width={12} height={12} alt="arrow-right"></Image>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Skeleton } from '../ui/skeleton'
+import { Skeleton } from '../ui/skeleton';
 
 const SkeletonTable = () => {
   return (
@@ -14,7 +14,7 @@ const SkeletonTable = () => {
           </div>
         ))}
     </div>
-  )
-}
+  );
+};
 
-export default SkeletonTable
+export default SkeletonTable;

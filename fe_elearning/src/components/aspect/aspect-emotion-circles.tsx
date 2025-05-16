@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ThumbsUp, ThumbsDown, Meh } from "lucide-react";
-import { CommentEachItemCourse } from "@/types/commentType";
+import { useEffect, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
+import { LectureComment } from '@/types/commentType';
 
 interface Emotion {
   id: string;
@@ -15,50 +15,46 @@ interface Emotion {
 
 const emotions: Emotion[] = [
   {
-    id: "positive",
-    name: "Tích cực",
+    id: 'positive',
+    name: 'Tích cực',
     icon: ThumbsUp,
-    color: "#10b981",
-    bgColor: "#10b981",
+    color: '#10b981',
+    bgColor: '#10b981',
   },
   {
-    id: "neutral",
-    name: "Trung lập",
+    id: 'neutral',
+    name: 'Trung lập',
     icon: Meh,
-    color: "#3b82f6",
-    bgColor: "#3b82f6",
+    color: '#3b82f6',
+    bgColor: '#3b82f6',
   },
   {
-    id: "negative",
-    name: "Tiêu cực",
+    id: 'negative',
+    name: 'Tiêu cực',
     icon: ThumbsDown,
-    color: "#ef4444",
-    bgColor: "#ef4444",
+    color: '#ef4444',
+    bgColor: '#ef4444',
   },
 ];
 
 const aspectTypes = [
-  "instructor_quality",
-  "content_quality",
-  "technology",
-  "teaching_pace",
-  "study_materials",
-  "assignments_practice",
-  "other",
+  'instructor_quality',
+  'content_quality',
+  'technology',
+  'teaching_pace',
+  'study_materials',
+  'assignments_practice',
+  'other',
 ];
 
-export function AspectEmotionCircles({
-  comments,
-}: {
-  comments: CommentEachItemCourse[];
-}) {
+export function AspectEmotionCircles({ comments }: { comments: LectureComment[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     // Clear any existing canvases
-    containerRef.current.innerHTML = "";
+    containerRef.current.innerHTML = '';
 
     // Create a canvas for each aspect type
     aspectTypes.forEach((aspectType) => {
@@ -78,9 +74,7 @@ export function AspectEmotionCircles({
       const emotionCounts: { [key: string]: number } = {};
       emotions.forEach((emotion) => {
         emotionCounts[emotion.id] = aspectComments.filter((comment) =>
-          comment.aspects.some(
-            (a) => a.aspect === aspectType && a.emotion === emotion.id
-          )
+          comment.aspects.some((a) => a.aspect === aspectType && a.emotion === emotion.id)
         ).length;
       });
 
@@ -91,15 +85,15 @@ export function AspectEmotionCircles({
   const createEmptyCircle = (aspectType: string) => {
     if (!containerRef.current) return;
 
-    const container = document.createElement("div");
-    container.className = "flex flex-col items-center";
+    const container = document.createElement('div');
+    container.className = 'flex flex-col items-center';
 
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = 120;
     canvas.height = 120;
-    canvas.className = "mb-2";
+    canvas.className = 'mb-2';
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const centerX = canvas.width / 2;
@@ -109,43 +103,43 @@ export function AspectEmotionCircles({
     // Draw empty circle
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = "#e5e7eb";
+    ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Draw white circle in the center
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius * 0.4, 0, 2 * Math.PI);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = '#ffffff';
     ctx.fill();
-    ctx.strokeStyle = "#e5e7eb";
+    ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
     ctx.stroke();
 
     // Add label
-    const label = document.createElement("div");
-    label.className = "text-sm font-medium";
+    const label = document.createElement('div');
+    label.className = 'text-sm font-medium';
     label.textContent =
-      aspectType === "teaching_pace"
-        ? "Tốc độ dạy"
-        : aspectType === "instructor_quality"
-        ? "Chất lượng giảng viên"
-        : aspectType === "content_quality"
-        ? "Chất lượng nội dung"
-        : aspectType === "technology"
-        ? "Công nghệ"
-        : aspectType === "study_materials"
-        ? "Tài liệu học tập"
-        : aspectType === "assignments_practice"
-        ? "Bài tập và thực hành"
-        : aspectType === "other"
-        ? "Khác"
-        : aspectType;
+      aspectType === 'teaching_pace'
+        ? 'Tốc độ dạy'
+        : aspectType === 'instructor_quality'
+          ? 'Chất lượng giảng viên'
+          : aspectType === 'content_quality'
+            ? 'Chất lượng nội dung'
+            : aspectType === 'technology'
+              ? 'Công nghệ'
+              : aspectType === 'study_materials'
+                ? 'Tài liệu học tập'
+                : aspectType === 'assignments_practice'
+                  ? 'Bài tập và thực hành'
+                  : aspectType === 'other'
+                    ? 'Khác'
+                    : aspectType;
 
     // Add count
-    const count = document.createElement("div");
-    count.className = "text-xs text-muted-foreground";
-    count.textContent = "Không có bình luận";
+    const count = document.createElement('div');
+    count.className = 'text-xs text-muted-foreground';
+    count.textContent = 'Không có bình luận';
 
     container.appendChild(canvas);
     container.appendChild(label);
@@ -160,15 +154,15 @@ export function AspectEmotionCircles({
   ) => {
     if (!containerRef.current) return;
 
-    const container = document.createElement("div");
-    container.className = "flex flex-col items-center";
+    const container = document.createElement('div');
+    container.className = 'flex flex-col items-center';
 
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = 120;
     canvas.height = 120;
-    canvas.className = "mb-2";
+    canvas.className = 'mb-2';
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -192,7 +186,7 @@ export function AspectEmotionCircles({
 
       ctx.fillStyle = emotion.color;
       ctx.fill();
-      ctx.strokeStyle = "#ffffff";
+      ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -202,38 +196,36 @@ export function AspectEmotionCircles({
     // Draw white circle in the center
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius * 0.4, 0, 2 * Math.PI);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = '#ffffff';
     ctx.fill();
-    ctx.strokeStyle = "#e5e7eb";
+    ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
     ctx.stroke();
 
     // Add label
-    const label = document.createElement("div");
-    label.className = "text-sm font-medium";
+    const label = document.createElement('div');
+    label.className = 'text-sm font-medium';
     label.textContent =
-      aspectType === "teaching_pace"
-        ? "Tốc độ dạy"
-        : aspectType === "instructor_quality"
-        ? "Chất lượng giảng viên"
-        : aspectType === "content_quality"
-        ? "Chất lượng nội dung"
-        : aspectType === "technology"
-        ? "Công nghệ"
-        : aspectType === "study_materials"
-        ? "Tài liệu học tập"
-        : aspectType === "assignments_practice"
-        ? "Bài tập và thực hành"
-        : aspectType === "other"
-        ? "Khác"
-        : aspectType;
+      aspectType === 'teaching_pace'
+        ? 'Tốc độ dạy'
+        : aspectType === 'instructor_quality'
+          ? 'Chất lượng giảng viên'
+          : aspectType === 'content_quality'
+            ? 'Chất lượng nội dung'
+            : aspectType === 'technology'
+              ? 'Công nghệ'
+              : aspectType === 'study_materials'
+                ? 'Tài liệu học tập'
+                : aspectType === 'assignments_practice'
+                  ? 'Bài tập và thực hành'
+                  : aspectType === 'other'
+                    ? 'Khác'
+                    : aspectType;
 
     // Add count
-    const count = document.createElement("div");
-    count.className = "text-xs text-muted-foreground";
-    count.textContent = `${totalComments} bình luận${
-      totalComments !== 1 ? "" : ""
-    }`;
+    const count = document.createElement('div');
+    count.className = 'text-xs text-muted-foreground';
+    count.textContent = `${totalComments} bình luận${totalComments !== 1 ? '' : ''}`;
 
     container.appendChild(canvas);
     container.appendChild(label);
@@ -255,10 +247,7 @@ export function AspectEmotionCircles({
                 <div
                   className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
                 ></div>
-                <EmotionIcon
-                  className={`h-4 w-4 text-${emotion.color}`}
-                  color={emotion.color}
-                />
+                <EmotionIcon className={`h-4 w-4 text-${emotion.color}`} color={emotion.color} />
                 <span className="text-sm">{emotion.name}</span>
               </div>
             );

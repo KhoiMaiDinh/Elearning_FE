@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type socialMedia = {
   url: string;
@@ -7,13 +7,7 @@ type socialMedia = {
   color?: string;
   className?: string; // Additional class name for the social media container
 };
-const SocialMedia: React.FC<socialMedia> = ({
-  url,
-  icon: Icon,
-  sizeIcon,
-  color,
-  className,
-}) => {
+const SocialMedia: React.FC<socialMedia> = ({ url, icon: Icon, sizeIcon, color, className }) => {
   return (
     <div className="card">
       <a
@@ -22,9 +16,9 @@ const SocialMedia: React.FC<socialMedia> = ({
         target="_blank"
         rel="noopener noreferrer"
       >
-        {" "}
+        {' '}
         <Icon
-          color={color ? color : "#F9F9F7"}
+          color={color ? color : '#F9F9F7'}
           size={sizeIcon}
           className={`socialSvg ${className}`}
         />

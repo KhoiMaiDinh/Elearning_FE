@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { PlayCircle } from "lucide-react";
-import { CourseForm, CourseItem, Section } from "@/types/courseType";
+import React, { useState, useEffect } from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { PlayCircle } from 'lucide-react';
+import { CourseForm, Section } from '@/types/courseType';
 
 type CourseMainProps = {
   course: CourseForm;
@@ -39,9 +34,7 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                 {section.title}
               </span>
               {/* Hiển thị icon dropdown chỉ khi content có bài học */}
-              {section.items.length > 0 && (
-                <AccordionTrigger className="ml-2"></AccordionTrigger>
-              )}
+              {section.items.length > 0 && <AccordionTrigger className="ml-2"></AccordionTrigger>}
             </div>
 
             {/* Lesson titles */}
@@ -53,10 +46,7 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                       key={lessonIndex}
                       className="lg:text-[14px] flex flex-row items-center gap-2 md:text-[12px] text-[10px] text-darkSilver font-sans font-medium p-2 bg-gray/5 hover:bg-gray/10 rounded-md"
                     >
-                      <PlayCircle
-                        size={16}
-                        className="text-majorelleBlue shrink-0"
-                      />
+                      <PlayCircle size={16} className="text-majorelleBlue shrink-0" />
                       {lesson.title}
                     </div>
                   ))}

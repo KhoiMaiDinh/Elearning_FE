@@ -1,18 +1,13 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Star, Users, BookOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { CourseForm, CourseItem } from "@/types/courseType";
-import { formatPrice } from "../formatPrice";
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Star, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CourseForm } from '@/types/courseType';
+import { formatPrice } from '../formatPrice';
 
 const CoursesBlockMe: React.FC<CourseForm> = ({
   level,
@@ -21,28 +16,33 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
   description,
   price,
   instructor,
-  course_progress,
+  // course_progress,
   avg_rating,
   total_enrolled,
   thumbnail,
   id,
-  priceFinal,
+  // priceFinal,
 }) => {
   const router = useRouter();
 
-  const [levelShow, setLevelShow] = useState<string>("");
-  const [statusShow, setStatusShow] = useState<string>("");
+  const [levelShow, setLevelShow] = useState<string>('');
+  const [statusShow, setStatusShow] = useState<string>('');
   useEffect(() => {
-    level === "BEGINNER"
-      ? setLevelShow("Cơ bản")
-      : level === "INTERMEDIATE"
-      ? setLevelShow("Trung bình")
-      : setLevelShow("Nâng cao");
-    status === "DRAFT"
-      ? setStatusShow("Chưa duyệt")
-      : status === "PUBLISHED"
-      ? setStatusShow("Đã duyệt")
-      : setStatusShow("Đã bị cấm");
+    if (level === 'BEGINNER') {
+      setLevelShow('Cơ bản');
+    } else if (level === 'INTERMEDIATE') {
+      setLevelShow('Trung bình');
+    } else {
+      setLevelShow('Nâng cao');
+    }
+
+    if (status === 'DRAFT') {
+      setStatusShow('Chưa duyệt');
+    } else if (status === 'PUBLISHED') {
+      setStatusShow('Đã duyệt');
+    } else {
+      setStatusShow('Đã bị cấm');
+    }
   }, [level, status]);
   return (
     <Card
@@ -52,18 +52,14 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
       <CardHeader className="p-0">
         <div className="relative h-40 w-full">
           <img
-            src={
-              process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || "")
-            }
+            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '')}
             alt={title}
             className="w-full h-full object-contain rounded-t-lg"
           />
           {status && (
             <Badge
               className={`absolute top-2 right-2 bg-white dark:bg-eerieBlack ${
-                status === "PUBLISHED"
-                  ? " text-vividMalachite"
-                  : " text-carminePink"
+                status === 'PUBLISHED' ? ' text-vividMalachite' : ' text-carminePink'
               }`}
               variant="secondary"
             >
@@ -78,10 +74,10 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
             <AvatarImage
-              alt={instructor?.user?.last_name || ""}
+              alt={instructor?.user?.last_name || ''}
               src={
                 process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                (instructor?.user?.profile_image?.key || "")
+                (instructor?.user?.profile_image?.key || '')
               }
               className="object-cover"
             />
@@ -98,17 +94,13 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
 
         <p
           className="text-sm text-muted-foreground line-clamp-2 ql-content"
-          dangerouslySetInnerHTML={{ __html: description || "" }}
+          dangerouslySetInnerHTML={{ __html: description || '' }}
         ></p>
 
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-Sunglow" />
-            <span>
-              {avg_rating
-                ? (Math.round(avg_rating * 10) / 10).toFixed(1)
-                : "N/A"}
-            </span>
+            <span>{avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
@@ -144,11 +136,7 @@ const CoursesBlockMe: React.FC<CourseForm> = ({
               {formatPrice(price)}
             </span>
           )} */}
-          {price && (
-            <span className="font-semibold text-primary">
-              {formatPrice(price)}
-            </span>
-          )}
+          {price && <span className="font-semibold text-primary">{formatPrice(price)}</span>}
         </div>
         <Badge variant="outline" className="text-[10px]">
           Xem chi tiết

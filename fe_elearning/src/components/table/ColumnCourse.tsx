@@ -1,14 +1,14 @@
-"use client";
-import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "next/navigation";
-import { Translation } from "@/types/courseType";
-import { clearCourse, setCourse } from "@/constants/course";
-import { APIGetCourseById, APIGetFullCourse } from "@/utils/course";
-import { EyeIcon } from "lucide-react";
-import { formatPrice } from "@/components/formatPrice";
+'use client';
+import { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
+import { Translation } from '@/types/courseType';
+import { clearCourse, setCourse } from '@/constants/course';
+import { APIGetFullCourse } from '@/utils/course';
+import { EyeIcon } from 'lucide-react';
+import { formatPrice } from '@/components/formatPrice';
 const ColumnCourse: ColumnDef<{
   course_id?: string;
   id?: string;
@@ -33,19 +33,17 @@ const ColumnCourse: ColumnDef<{
   total_enrolled?: number;
 }>[] = [
   {
-    accessorKey: "index",
+    accessorKey: 'index',
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
         STT
         <CaretSortIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row, table }) => {
+      // eslint-disable-next-line
       const param = useSearchParams();
-      const currentPage = param.get("page") ? Number(param.get("page")) - 1 : 0;
+      const currentPage = param.get('page') ? Number(param.get('page')) - 1 : 0;
       const pageSize = table.getState().pagination.pageSize;
       const index = currentPage * pageSize + row.index + 1;
       return <div className="w-16 text-center font-bold">{index}</div>; // Hiển thị số thứ tự
@@ -54,51 +52,43 @@ const ColumnCourse: ColumnDef<{
     sortingFn: (rowA, rowB) => rowA.index - rowB.index,
   },
   {
-    accessorKey: "title",
+    accessorKey: 'title',
     header: () => {
       return <p className="w-[200px] text-left">Tên khóa học</p>;
     },
     cell: ({ row }) => {
-      return (
-        <div className="w-[200px] text-left font-bold">
-          {row.original.title}
-        </div>
-      ); // Hiển thị số thứ tự
+      return <div className="w-[200px] text-left font-bold">{row.original.title}</div>; // Hiển thị số thứ tự
     },
   },
 
   {
-    accessorKey: "level",
+    accessorKey: 'level',
     header: () => {
       return <p className="w-[200px] text-left">Mức độ</p>;
     },
     cell: ({ row }) => {
       return (
         <div className="w-[200px] text-left ">
-          {row.original.level === "BEGINNER"
-            ? "Cơ bản"
-            : row.original.level === "INTERMEDIATE"
-            ? "Trung bình"
-            : "Nâng cao"}
+          {row.original.level === 'BEGINNER'
+            ? 'Cơ bản'
+            : row.original.level === 'INTERMEDIATE'
+              ? 'Trung bình'
+              : 'Nâng cao'}
         </div>
       ); // Hiển thị số thứ tự
     },
   },
   {
-    accessorKey: "price",
+    accessorKey: 'price',
     header: () => {
       return <p className="w-[200px] text-left">Giá</p>;
     },
     cell: ({ row }) => {
-      return (
-        <div className="w-[200px] text-left ">
-          {formatPrice(row.original.price)}
-        </div>
-      ); // Hiển thị số thứ tự
+      return <div className="w-[200px] text-left ">{formatPrice(row.original.price)}</div>; // Hiển thị số thứ tự
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: 'status',
     header: () => {
       return <p className="w-[200px] text-left">Trạng thái</p>;
     },
@@ -106,27 +96,28 @@ const ColumnCourse: ColumnDef<{
       return (
         <div
           className={` text-left w-fit px-2 py-1 rounded-md ${
-            row.original.status === "PUBLISHED"
-              ? "bg-vividMalachite/10 text-vividMalachite"
-              : row.original.status === "DRAFT"
-              ? "bg-blueberry/10 text-blueberry"
-              : "bg-redPigment/10 text-redPigment"
+            row.original.status === 'PUBLISHED'
+              ? 'bg-vividMalachite/10 text-vividMalachite'
+              : row.original.status === 'DRAFT'
+                ? 'bg-blueberry/10 text-blueberry'
+                : 'bg-redPigment/10 text-redPigment'
           }`}
         >
-          {row.original.status === "PUBLISHED"
-            ? "Hoạt động"
-            : row.original.status === "DRAFT"
-            ? "Không hoạt động"
-            : "BAN"}
+          {row.original.status === 'PUBLISHED'
+            ? 'Hoạt động'
+            : row.original.status === 'DRAFT'
+              ? 'Không hoạt động'
+              : 'BAN'}
         </div>
       ); // Hiển thị số thứ tự
     },
   },
 
   {
-    accessorKey: "action",
-    header: "",
+    accessorKey: 'action',
+    header: '',
     cell: ({ row }) => {
+      // eslint-disable-next-line
       const dispatch = useDispatch();
       const handleViewMode = async (id: string) => {
         dispatch(clearCourse({}));

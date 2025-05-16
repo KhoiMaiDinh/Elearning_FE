@@ -1,12 +1,11 @@
-"use client";
-import "./page.css";
-import CoursesBlock from "@/components/block/courses-block";
-import InfoDashboard from "@/components/block/infoDashboard";
-import LecturersBlock from "@/components/block/lecturers-block";
-import { Button } from "@/components/ui/button";
+'use client';
+import './page.css';
+import CoursesBlock from '@/components/block/courses-block';
+import InfoDashboard from '@/components/block/infoDashboard';
+import LecturersBlock from '@/components/block/lecturers-block';
+import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
-  ArrowRightCircle,
   BookCheck,
   ChevronRight,
   Film,
@@ -14,18 +13,17 @@ import {
   Headset,
   IdCard,
   Loader2,
-  UsersRound,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import SplitText from "@/components/text/splitText";
-import FadeContent from "@/components/animations/fadeContent";
-import { useRouter } from "next/navigation";
-import AnimateWrapper from "@/components/animations/animateWrapper";
-import { APIGetListLecture } from "@/utils/lecture";
-import { APIGetListCourse } from "@/utils/course";
-import BlurColor from "@/components/blurColor/blurColor";
-import { CourseForm } from "@/types/courseType";
-import { Lecture } from "@/types/registerLectureFormType";
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import SplitText from '@/components/text/splitText';
+import FadeContent from '@/components/animations/fadeContent';
+import { useRouter } from 'next/navigation';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import { APIGetListLecture } from '@/utils/lecture';
+import { APIGetListCourse } from '@/utils/course';
+import BlurColor from '@/components/blurColor/blurColor';
+import { CourseForm } from '@/types/courseType';
+import { Lecture } from '@/types/registerLectureFormType';
 // const dataCourse = [
 //   {
 //     coverPhoto: "/images/course1.jpg",
@@ -107,8 +105,8 @@ export default function Page() {
   const [listLecture, setListLecture] = useState<Lecture[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [paramsLecture, setParamsLecture] = useState({
+  const [_error, setError] = useState<string | null>(null);
+  const [paramsLecture, _setParamsLecture] = useState({
     page: 1,
     limit: 10,
     search: undefined,
@@ -116,7 +114,7 @@ export default function Page() {
     is_approved: true,
   });
 
-  const [paramsCourse, setParamsCourse] = useState({
+  const [paramsCourse, _setParamsCourse] = useState({
     page: 1,
     limit: 10,
     search: undefined,
@@ -134,11 +132,11 @@ export default function Page() {
         setListLecture(response.data);
       } else {
         setIsLoading(false);
-        setError("Không tìm thấy dữ liệu");
+        setError('Không tìm thấy dữ liệu');
       }
     } catch (err) {
       setIsLoading(false);
-      console.error("Error during get list lecture:", err);
+      console.error('Error during get list lecture:', err);
     }
   };
 
@@ -151,11 +149,11 @@ export default function Page() {
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        setError("Không tìm thấy dữ liệu");
+        setError('Không tìm thấy dữ liệu');
       }
     } catch (err) {
       setIsLoading(false);
-      console.error("Error during get list course:", err);
+      console.error('Error during get list course:', err);
     }
   };
   useEffect(() => {
@@ -176,31 +174,31 @@ export default function Page() {
           <>
             <div
               className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: "40%", right: "0%" }}
+              style={{ top: '40%', right: '0%' }}
             />
 
             <div
               className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: "60%", right: "40%" }}
+              style={{ top: '60%', right: '40%' }}
             />
 
             <div
               className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: "0%", right: "60%" }}
+              style={{ top: '0%', right: '60%' }}
             />
 
             <div
               className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96"
-              style={{ top: "60%", right: "80%" }}
+              style={{ top: '60%', right: '80%' }}
             />
 
             <div
               className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96 z-0"
-              style={{ top: "0%", right: "80%" }}
+              style={{ top: '0%', right: '80%' }}
             />
             <div
               className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96 z-0"
-              style={{ top: "50%", right: "0%" }}
+              style={{ top: '50%', right: '0%' }}
             />
           </>
           <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 p-4 h-[calc(100vh-64px)] z-10">
@@ -211,9 +209,9 @@ export default function Page() {
                 delay={15}
                 animationFrom={{
                   opacity: 0,
-                  transform: "translate3d(0,50px,0)",
+                  transform: 'translate3d(0,50px,0)',
                 }}
-                animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
                 threshold={0.2}
                 rootMargin="-50px"
               />
@@ -223,9 +221,9 @@ export default function Page() {
                 delay={10}
                 animationFrom={{
                   opacity: 0,
-                  transform: "translate3d(0,50px,0)",
+                  transform: 'translate3d(0,50px,0)',
                 }}
-                animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
                 threshold={0.2}
                 rootMargin="-50px"
               />
@@ -235,9 +233,9 @@ export default function Page() {
                 delay={10}
                 animationFrom={{
                   opacity: 0,
-                  transform: "translate3d(0,50px,0)",
+                  transform: 'translate3d(0,50px,0)',
                 }}
-                animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
                 threshold={0.2}
                 rootMargin="-50px"
               />
@@ -245,7 +243,7 @@ export default function Page() {
               <div className="flex items-center gap-4">
                 <Button
                   className="bg-custom-gradient-button-violet text-white hover:scale-105 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
-                  onClick={() => router.push("/course")}
+                  onClick={() => router.push('/course')}
                 >
                   Tìm khóa học
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -256,9 +254,7 @@ export default function Page() {
                     <p className="text-sm dark:text-beautyGreen text-majorelleBlue opacity-80">
                       Hotline
                     </p>
-                    <p className="font-bold dark:text-beautyGreen text-majorelleBlue ">
-                      1900 1008
-                    </p>
+                    <p className="font-bold dark:text-beautyGreen text-majorelleBlue ">1900 1008</p>
                   </div>
                 </div>
               </div>
@@ -277,14 +273,11 @@ export default function Page() {
 
       {/* Stats Section */}
       <section className="container mx-auto gap-2 flex flex-col  md:absolute z-20 left-0 right-0 bottom-0 md:translate-y-[50%]">
-        <div
-          className="grid grid-cols-1 h-full md:grid-cols-4 gap-6"
-          data-aos="fade-up"
-        >
+        <div className="grid grid-cols-1 h-full md:grid-cols-4 gap-6" data-aos="fade-up">
           <AnimateWrapper direction="up" amount={0.5}>
             <InfoDashboard
               number={10}
-              title={"Giảng viên"}
+              title={'Giảng viên'}
               Icon={IdCard}
               color="#1568DF"
               bgColor="#1568DF"
@@ -293,7 +286,7 @@ export default function Page() {
           <AnimateWrapper direction="up" amount={0.5}>
             <InfoDashboard
               number={2000}
-              title={"Bài học"}
+              title={'Bài học'}
               Icon={BookCheck}
               color="#219653"
               bgColor="#219653"
@@ -302,7 +295,7 @@ export default function Page() {
           <AnimateWrapper direction="up" amount={0.5}>
             <InfoDashboard
               number={100}
-              title={"Sinh viên"}
+              title={'Sinh viên'}
               Icon={GraduationCap}
               color="#9B51DF"
               bgColor="#9B51DF"
@@ -311,7 +304,7 @@ export default function Page() {
           <AnimateWrapper direction="up" amount={0.5}>
             <InfoDashboard
               number={10}
-              title={"Video"}
+              title={'Video'}
               Icon={Film}
               color="#FF2E2E"
               bgColor="#FF2E2E"
@@ -328,10 +321,9 @@ export default function Page() {
               Về chúng tôi
             </h2>
             <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
-              Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành,
-              được thiết kế bởi đội ngũ chuyên gia hàng đầu. Mục tiêu là mang
-              lại giá trị thực tiễn cho học viên và doanh nghiệp thông qua giáo
-              dục chất lượng cao.
+              Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành, được thiết kế bởi đội
+              ngũ chuyên gia hàng đầu. Mục tiêu là mang lại giá trị thực tiễn cho học viên và doanh
+              nghiệp thông qua giáo dục chất lượng cao.
             </p>
           </AnimateWrapper>
         </div>
@@ -351,7 +343,7 @@ export default function Page() {
                   <Button
                     variant="link"
                     className="z-10 text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-                    onClick={() => router.push("/lecture")}
+                    onClick={() => router.push('/lecture')}
                   >
                     Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
                   </Button>
@@ -368,18 +360,14 @@ export default function Page() {
                     >
                       <LecturersBlock
                         avatar={lecture?.user?.profile_image?.key}
-                        name={
-                          lecture?.user?.first_name +
-                          " " +
-                          lecture?.user?.last_name
-                        }
+                        name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
                         rating={lecture?.avg_rating}
                         major={lecture?.category?.translations[0]?.name}
                         numberCourse={lecture?.total_courses}
                         numberStudent={lecture?.total_students}
                         description={lecture?.biography}
                         username={lecture?.user?.username}
-                      />{" "}
+                      />{' '}
                     </FadeContent>
                   ))}
                 </div>
@@ -397,7 +385,7 @@ export default function Page() {
                     <Button
                       variant="link"
                       className="z-10 text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-                      onClick={() => router.push("/course")}
+                      onClick={() => router.push('/course')}
                     >
                       Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
                     </Button>
@@ -435,14 +423,14 @@ export default function Page() {
           </AnimateWrapper>
           <AnimateWrapper delay={0.3} direction="up">
             <p className="text-lg mb-6 max-w-2xl mx-auto text-darkSilver">
-              Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ
-              giảng viên hàng đầu.
+              Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ giảng viên hàng
+              đầu.
             </p>
           </AnimateWrapper>
           <AnimateWrapper delay={0.3} direction="up">
             <Button
               className="bg-yankeesBlue text-white hover:bg-yankeesBlue/80 rounded-full px-8 py-3 font-semibold"
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push('/signup')}
             >
               Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
             </Button>

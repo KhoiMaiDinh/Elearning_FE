@@ -1,22 +1,19 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Label } from "../ui/label";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Label } from '../ui/label';
+import Image from 'next/image';
 
 type ComboboxOption = {
   id: string;
@@ -49,7 +46,7 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
   const selectedLabel = data.find((item) => item.id === value)?.value;
 
   return (
-    <div className={cn("w-full max-w-md flex flex-col gap-1.5", className)}>
+    <div className={cn('w-full max-w-md flex flex-col gap-1.5', className)}>
       <Label>{label}</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -58,10 +55,7 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={cn(
-              "justify-between text-left w-full",
-              !value && "text-muted-foreground"
-            )}
+            className={cn('justify-between text-left w-full', !value && 'text-muted-foreground')}
           >
             {selectedLabel || placeholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -88,12 +82,12 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
                 >
                   <Check
                     className={cn(
-                      "h-4 w-4 text-primary",
-                      item.id === value ? "opacity-100" : "opacity-0"
+                      'h-4 w-4 text-primary',
+                      item.id === value ? 'opacity-100' : 'opacity-0'
                     )}
                   />
                   {item.image && (
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.value}
                       className="w-auto md:h-5 h-2 object-contain"
@@ -107,9 +101,7 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
         </PopoverContent>
       </Popover>
 
-      {error && (
-        <div className="text-[12px] font-normal text-redPigment">{error}</div>
-      )}
+      {error && <div className="text-[12px] font-normal text-redPigment">{error}</div>}
     </div>
   );
 };

@@ -1,29 +1,29 @@
 // store.ts
-import { configureStore } from "@reduxjs/toolkit";
-import { combineReducers } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // Sử dụng localStorage
-import createUserSlice from "./userSlice";
-import createCourseSlice from "./course";
-import createBankAccountSlice from "./bankAccount";
-import createCartSlice from "./cart";
-import createOrderSlice from "./orderSlice";
-import createStatisticItemCourseSlice from "./statisticItemCourse";
-import createCommentSlice from "./comment";
-import socketSlice from "./socketSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // Sử dụng localStorage
+import createUserSlice from './userSlice';
+import createCourseSlice from './course';
+import createBankAccountSlice from './bankAccount';
+import createCartSlice from './cart';
+import createOrderSlice from './orderSlice';
+import createStatisticItemCourseSlice from './statisticItemCourse';
+import createCommentSlice from './comment';
+import socketSlice from './socketSlice';
 // Cấu hình persist
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage,
   whitelist: [
-    "user",
-    "course",
-    "bankAccount",
-    "cart",
-    "order",
-    "statisticItemCourse",
-    "comment",
-    "socket",
+    'user',
+    'course',
+    'bankAccount',
+    'cart',
+    'order',
+    'statisticItemCourse',
+    'comment',
+    'socket',
   ], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
 };
 

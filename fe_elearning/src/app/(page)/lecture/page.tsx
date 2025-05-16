@@ -1,18 +1,12 @@
-"use client";
-import LecturersBlock from "@/components/block/lecturers-block";
-import FilterBlock from "@/components/filter/filter-block";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import AnimateWrapper from "@/components/animations/animateWrapper";
-import { APIGetListLecture } from "@/utils/lecture";
-import { Lecture } from "@/types/registerLectureFormType";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import LectureFilter from "@/components/filter/filterLecture";
+'use client';
+import LecturersBlock from '@/components/block/lecturers-block';
+import React, { useEffect, useState } from 'react';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import { APIGetListLecture } from '@/utils/lecture';
+import { Lecture } from '@/types/registerLectureFormType';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+
 // const dataLecture: lectureBlock[] = [
 //   {
 //     avatar: "/images/avatar.jpg",
@@ -101,7 +95,7 @@ const Page = () => {
   const router = useRouter();
   const [lecture, setLecture] = useState<Lecture[]>([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState({
+  const [filter, _setFilter] = useState({
     page: 1,
     limit: 10,
     search: undefined,
@@ -117,9 +111,9 @@ const Page = () => {
     setLoading(false);
   };
   const handleScrollToLecture = () => {
-    const lectureSection = document.getElementById("lecture");
+    const lectureSection = document.getElementById('lecture');
     if (lectureSection) {
-      lectureSection.scrollIntoView({ behavior: "smooth" });
+      lectureSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -136,20 +130,18 @@ const Page = () => {
     <div className="w-full h-full flex flex-col p-6  gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
       {/* header */}
       <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
-        {" "}
+        {' '}
         <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white ">
           <AnimateWrapper direction="left">
             <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
               <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
-                Gặp gỡ đội ngũ{" "}
-                <span className="text-LavenderIndigo">giảng viên ưu tú</span>
+                Gặp gỡ đội ngũ <span className="text-LavenderIndigo">giảng viên ưu tú</span>
                 <br />
                 từ các lĩnh vực khác nhau
-              </h1>{" "}
+              </h1>{' '}
               <p className="mt-4 lg:text-lg md:text-sm text-xs text-muted-foreground max-w-xl">
-                Đội ngũ giảng viên của chúng tôi bao gồm những chuyên gia hàng
-                đầu trong nhiều lĩnh vực — luôn sẵn sàng truyền cảm hứng và kiến
-                thức thực chiến cho bạn.
+                Đội ngũ giảng viên của chúng tôi bao gồm những chuyên gia hàng đầu trong nhiều lĩnh
+                vực — luôn sẵn sàng truyền cảm hứng và kiến thức thực chiến cho bạn.
               </p>
               <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
                 <button
@@ -160,7 +152,7 @@ const Page = () => {
                 </button>
                 <button
                   className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition"
-                  onClick={() => router.push("/course")}
+                  onClick={() => router.push('/course')}
                 >
                   Đăng ký học thử
                 </button>
@@ -217,8 +209,7 @@ const Page = () => {
             Danh sách giảng viên
           </h2>
           <p className="md:text-sm text-xs text-muted-foreground mt-1">
-            Khám phá đội ngũ giảng viên nhiều kinh nghiệm, tận tâm và đầy nhiệt
-            huyết.
+            Khám phá đội ngũ giảng viên nhiều kinh nghiệm, tận tâm và đầy nhiệt huyết.
           </p>
         </div>
       </AnimateWrapper>
@@ -234,8 +225,9 @@ const Page = () => {
         <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {lecture.map((lecture: Lecture, index: number) => (
             <LecturersBlock
+              key={index}
               avatar={lecture?.user?.profile_image?.key}
-              name={lecture?.user?.first_name + " " + lecture?.user?.last_name}
+              name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
               rating={lecture?.avg_rating}
               major={lecture?.category?.translations[0]?.name}
               numberCourse={lecture?.total_courses}

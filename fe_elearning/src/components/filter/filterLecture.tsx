@@ -1,8 +1,8 @@
 // src/components/CourseFilter.tsx
-"use client";
-import React from "react";
-import SelectFilter from "@/components/selectComponent/selectFilter";
-import { dataLevel, priceRanges, stars } from "@/constants/selectData";
+'use client';
+import React from 'react';
+import SelectFilter from '@/components/selectComponent/selectFilter';
+import { dataLevel, stars } from '@/constants/selectData';
 
 interface LectureFilterProps {
   paramsLecture: any;
@@ -33,7 +33,7 @@ const LectureFilter: React.FC<LectureFilterProps> = ({
   };
 
   const handleRatingChange = (value: string) => {
-    const ratingValue = value === "all" ? undefined : value;
+    const ratingValue = value === 'all' ? undefined : value;
     setParamsLecture((prev: any) => ({ ...prev, min_rating: ratingValue }));
     const query = new URLSearchParams({
       ...(paramsLecture.level && { level: paramsLecture.level }),
@@ -59,37 +59,30 @@ const LectureFilter: React.FC<LectureFilterProps> = ({
     router.push(`/course?${query}`);
   };
 
-  const initialDataFilterCategory = [
-    { id: "all", value: "Tất cả" },
-    ...category,
-  ];
-  const initialDataFilterLevel = [{ id: "all", value: "Tất cả" }, ...dataLevel];
+  const initialDataFilterCategory = [{ id: 'all', value: 'Tất cả' }, ...category];
+  const initialDataFilterLevel = [{ id: 'all', value: 'Tất cả' }, ...dataLevel];
 
-  const initialDataFilterReview = [{ id: "all", value: "Tất cả" }, ...stars];
+  const initialDataFilterReview = [{ id: 'all', value: 'Tất cả' }, ...stars];
 
   return (
     <div className="flex flex-wrap text-black dark:text-white gap-2">
       <SelectFilter
         data={initialDataFilterLevel}
         label="Mức độ"
-        value={paramsLecture.level || "all"}
+        value={paramsLecture.level || 'all'}
         onChange={handleLevelChange}
       />
       <SelectFilter
         data={initialDataFilterReview}
         label="Đánh giá"
-        value={
-          paramsLecture.min_rating !== undefined
-            ? paramsLecture.min_rating.toString()
-            : "all"
-        }
+        value={paramsLecture.min_rating !== undefined ? paramsLecture.min_rating.toString() : 'all'}
         onChange={handleRatingChange}
       />
 
       <SelectFilter
         data={initialDataFilterCategory}
         label="Danh mục"
-        value={paramsLecture.category_slug || "all"}
+        value={paramsLecture.category_slug || 'all'}
         onChange={handleCategoryChange}
       />
     </div>

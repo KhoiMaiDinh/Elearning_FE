@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from '@/components/ui/pagination';
 
 interface PaginationProps {
   totalItems: number;
@@ -22,7 +22,7 @@ const PaginationComponent: React.FC<PaginationProps> = ({
   handlePageChange,
 }) => {
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentPage = Number(searchParams.get('page')) || 1;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Nếu chỉ có 1 trang thì không cần hiển thị pagination
@@ -34,14 +34,8 @@ const PaginationComponent: React.FC<PaginationProps> = ({
         {/* Nút Previous */}
         <PaginationItem>
           <PaginationPrevious
-            onClick={() =>
-              handlePageChange &&
-              currentPage > 1 &&
-              handlePageChange(currentPage - 1)
-            }
-            className={
-              currentPage === 1 ? "pointer-events-none opacity-50" : ""
-            }
+            onClick={() => handlePageChange && currentPage > 1 && handlePageChange(currentPage - 1)}
+            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
 
@@ -67,13 +61,9 @@ const PaginationComponent: React.FC<PaginationProps> = ({
         <PaginationItem>
           <PaginationNext
             onClick={() =>
-              handlePageChange &&
-              currentPage < totalPages &&
-              handlePageChange(currentPage + 1)
+              handlePageChange && currentPage < totalPages && handlePageChange(currentPage + 1)
             }
-            className={
-              currentPage === totalPages ? "pointer-events-none opacity-50" : ""
-            }
+            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
       </PaginationContent>

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 interface ConfirmDeleteDialogProps {
   isOpen: boolean;
@@ -22,8 +22,8 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   isOpen,
   onOpenChange,
   onConfirm,
-  title = "Xác nhận xóa",
-  description = "Bạn có chắc chắn muốn xóa không? Hành động này không thể hoàn tác.",
+  title = 'Xác nhận xóa',
+  description = 'Bạn có chắc chắn muốn xóa không? Hành động này không thể hoàn tác.',
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>

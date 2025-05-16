@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
 
 interface AnimateWrapperProps {
   children: ReactNode;
   delay?: number;
-  direction?: "up" | "down" | "left" | "right";
+  direction?: 'up' | 'down' | 'left' | 'right';
   amount?: number;
   className?: string;
 }
@@ -21,7 +21,7 @@ const directionVariants = {
 export default function AnimateWrapper({
   children,
   delay = 0,
-  direction = "up",
+  direction = 'up',
   amount = 0,
   className,
 }: AnimateWrapperProps) {
@@ -30,7 +30,7 @@ export default function AnimateWrapper({
       initial={directionVariants[direction]}
       whileInView={{ x: 0, y: 0, opacity: 1 }}
       viewport={{ once: true, amount }}
-      transition={{ duration: 0.5, ease: "easeOut", delay }}
+      transition={{ duration: 0.5, ease: 'easeOut', delay }}
       className={className}
     >
       {children}

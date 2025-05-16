@@ -1,35 +1,34 @@
-"use client";
+'use client';
 
 // ================== IMPORT LIBRARY ==================
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "next/navigation";
-import { ChevronDown, Eye } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
+import { ChevronDown, Eye } from 'lucide-react';
 
 // ================== IMPORT COMPONENTS ==================
-import { DataTable } from "@/components/table/DataTable";
-import SkeletonTable from "@/components/skeleton/SkeletonTable";
-import { RootState } from "@/constants/store";
-import { APIGetMyCourse } from "@/utils/course";
-import { APIGetComment, APIGetReview } from "@/utils/comment";
-import ColumnCourse from "../table/ColumnCourse";
-import { clearCourse } from "@/constants/course";
-import { setStatisticItemCourse } from "@/constants/statisticItemCourse";
-import { clearStatisticItemCourse } from "@/constants/statisticItemCourse";
-import StaticDetails from "./staticDetails";
-import { setComment } from "@/constants/comment";
-import { clearComment } from "@/constants/comment";
-import { formatPrice } from "../formatPrice";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import Popup from "../courseDetails/popup";
-import ReviewListUser from "../course/reviewListUser";
-import { Section } from "@/types/courseType";
-// ================== PAGE COMPONENT ==================
+import { DataTable } from '@/components/table/DataTable';
+import SkeletonTable from '@/components/skeleton/SkeletonTable';
+import { RootState } from '@/constants/store';
+import { APIGetMyCourse } from '@/utils/course';
+import { APIGetComment, APIGetReview } from '@/utils/comment';
+import ColumnCourse from '../table/ColumnCourse';
+import { clearCourse } from '@/constants/course';
+import { setStatisticItemCourse } from '@/constants/statisticItemCourse';
+import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
+import StaticDetails from './staticDetails';
+import { setComment } from '@/constants/comment';
+import { clearComment } from '@/constants/comment';
+import { formatPrice } from '../formatPrice';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import Popup from '../courseDetails/popup';
+import ReviewListUser from '../course/reviewListUser';
+import { Section } from '@/types/courseType';
+
 const Page = () => {
-  // =============== DECLARE ===============
   const dispatch = useDispatch();
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
   const course = useSelector((state: RootState) => state.course.courseInfo);
   const comments = useSelector((state: RootState) => state.comment.comment);
   const router = useRouter();
@@ -37,7 +36,7 @@ const Page = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showReviews, setShowReviews] = useState(false); // State for reviews popup
+  const [showReviews, setShowReviews] = useState(false);
   const [sections, setSections] = useState<Section[]>([]);
 
   // =============== FUNCTION ===============
@@ -49,11 +48,11 @@ const Page = () => {
       if (response?.status === 200 && Array.isArray(response.data)) {
         setDataTable(response.data);
       } else {
-        setError("Dữ liệu khoá học không hợp lệ.");
+        setError('Dữ liệu khoá học không hợp lệ.');
       }
     } catch (err) {
-      console.error("Error fetching courses:", err);
-      setError("Không thể tải dữ liệu khoá học.");
+      console.error('Error fetching courses:', err);
+      setError('Không thể tải dữ liệu khoá học.');
     } finally {
       setLoading(false);
     }
@@ -67,6 +66,7 @@ const Page = () => {
         setReviews(response.data);
       }
     } catch (error) {
+      console.log(error);
       throw error;
     }
   };
@@ -74,8 +74,8 @@ const Page = () => {
   useEffect(() => {
     if (course?.sections) {
       // Create a new sorted array instead of sorting in place
-      const sortedSections = [...course.sections].sort(
-        (a: Section, b: Section) => a.position.localeCompare(b.position)
+      const sortedSections = [...course.sections].sort((a: Section, b: Section) =>
+        a.position.localeCompare(b.position)
       );
       setSections(sortedSections);
     }
@@ -97,6 +97,7 @@ const Page = () => {
           dispatch(setComment([]));
         }
       } catch (err) {
+        console.log(err);
         dispatch(setStatisticItemCourse({}));
         dispatch(setComment([]));
       }
@@ -111,11 +112,10 @@ const Page = () => {
 
   useEffect(() => {
     if (course?.id) {
-      const formElement = document.getElementById("formProduct");
+      const formElement = document.getElementById('formProduct');
       if (formElement) {
-        const offsetTop =
-          formElement.getBoundingClientRect().top + window.pageYOffset - 100;
-        window.scrollTo({ top: offsetTop, behavior: "smooth" });
+        const offsetTop = formElement.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       }
       handleGetReviews(course.id);
     }
@@ -136,11 +136,7 @@ const Page = () => {
         ) : error ? (
           <div className="text-red-500 font-semibold">{error}</div>
         ) : (
-          <DataTable
-            columns={ColumnCourse}
-            data={dataTable}
-            loading={loading}
-          />
+          <DataTable columns={ColumnCourse} data={dataTable} loading={loading} />
         )}
       </div>
 
@@ -153,49 +149,38 @@ const Page = () => {
               Thông tin khóa học
             </h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <InfoRow
-                label="Tên khóa học:"
-                value={course?.title || "Chưa có"}
-              />
+              <InfoRow label="Tên khóa học:" value={course?.title || 'Chưa có'} />
               <InfoRow
                 label="Mức độ:"
                 value={
-                  course?.level === "BEGINNER"
-                    ? "Cơ bản"
-                    : course?.level === "INTERMEDIATE"
-                    ? "Trung bình"
-                    : course?.level === "ADVANCED"
-                    ? "Khó"
-                    : "Không xác định"
+                  course?.level === 'BEGINNER'
+                    ? 'Cơ bản'
+                    : course?.level === 'INTERMEDIATE'
+                      ? 'Trung bình'
+                      : course?.level === 'ADVANCED'
+                        ? 'Khó'
+                        : 'Không xác định'
                 }
               />
               <InfoRow
                 label="Giá:"
-                value={
-                  course?.price ? `${formatPrice(course.price)}` : "Miễn phí"
-                }
+                value={course?.price ? `${formatPrice(course.price)}` : 'Miễn phí'}
               />
               <InfoRow
                 label="Trạng thái:"
                 value={
-                  course?.status === "PUBLISHED"
-                    ? "Hoạt động"
-                    : course?.status === "DRAFT"
-                    ? "Không hoạt động"
-                    : course?.status === "BAN"
-                    ? "Bị khóa"
-                    : "Không xác định"
+                  course?.status === 'PUBLISHED'
+                    ? 'Hoạt động'
+                    : course?.status === 'DRAFT'
+                      ? 'Không hoạt động'
+                      : course?.status === 'BAN'
+                        ? 'Bị khóa'
+                        : 'Không xác định'
                 }
               />
 
-              <InfoRow
-                label="Số lượng học viên:"
-                value={course?.total_enrolled}
-              />
-              <InfoRow
-                label="Đánh giá trung bình:"
-                value={`${course?.avg_rating} / 5`}
-              />
+              <InfoRow label="Số lượng học viên:" value={course?.total_enrolled} />
+              <InfoRow label="Đánh giá trung bình:" value={`${course?.avg_rating} / 5`} />
             </div>
 
             <div className="flex flex-row gap-2">
@@ -233,10 +218,7 @@ const Page = () => {
                     <div className="space-y-2">
                       {section.items?.length > 0 ? (
                         section.items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="border rounded-md p-4 space-y-2"
-                          >
+                          <div key={item.id} className="border rounded-md p-4 space-y-2">
                             <div
                               className="flex items-center justify-between cursor-pointer"
                               onClick={() => toggleItem(item.id)}
@@ -246,7 +228,7 @@ const Page = () => {
                                 <span>Chi tiết</span>
                                 <ChevronDown
                                   className={`w-4 h-4 transition-transform ${
-                                    openItemId === item.id ? "rotate-180" : ""
+                                    openItemId === item.id ? 'rotate-180' : ''
                                   }`}
                                 />
                               </div>
@@ -264,17 +246,13 @@ const Page = () => {
                           </div>
                         ))
                       ) : (
-                        <div className="text-gray-500 italic">
-                          Chưa có bài học nào.
-                        </div>
+                        <div className="text-gray-500 italic">Chưa có bài học nào.</div>
                       )}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-gray-500 italic">
-                  Chưa có phần học nào.
-                </div>
+                <div className="text-gray-500 italic">Chưa có phần học nào.</div>
               )}
             </div>
           </div>
@@ -298,12 +276,8 @@ const Page = () => {
 // ================== REUSABLE COMPONENTS ==================
 const InfoRow = ({ label, value }: { label: string; value: any }) => (
   <div className="flex gap-2">
-    <span className="text-persianIndigo/80 dark:text-white/80 w-40 font-semibold">
-      {label}
-    </span>
-    <span className="text-persianIndigo/80 dark:text-white/80 font-normal">
-      {value}
-    </span>
+    <span className="text-persianIndigo/80 dark:text-white/80 w-40 font-semibold">{label}</span>
+    <span className="text-persianIndigo/80 dark:text-white/80 font-normal">{value}</span>
   </div>
 );
 

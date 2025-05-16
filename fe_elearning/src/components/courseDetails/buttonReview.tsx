@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Star } from "lucide-react";
-import CourseReviewForm from "./courseReviewForm";
+import { useState } from 'react';
+import { Star } from 'lucide-react';
+import CourseReviewForm from './courseReviewForm';
 
 export default function ButtonReview({ course_id }: { course_id: string }) {
   const [showReview, setShowReview] = useState(false);
