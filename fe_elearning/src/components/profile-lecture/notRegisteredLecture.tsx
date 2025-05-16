@@ -1,39 +1,34 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import BenefitsBar from "./benefitsBar";
-import RegisterLecture from "./registerLecture";
-import AnimateWrapper from "../animations/animateWrapper";
-import { useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Button } from '../ui/button';
+import BenefitsBar from './benefitsBar';
+import RegisterLecture from './registerLecture';
+import AnimateWrapper from '../animations/animateWrapper';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 const dataBenefit = [
   {
     description:
-      "Kiếm thu nhập thụ động bằng cách chia sẻ kiến thức với hàng ngàn học viên trên toàn thế giới.",
+      'Kiếm thu nhập thụ động bằng cách chia sẻ kiến thức với hàng ngàn học viên trên toàn thế giới.',
   },
   {
     description:
-      "Xây dựng thương hiệu cá nhân và khẳng định mình là chuyên gia trong lĩnh vực của bạn.",
+      'Xây dựng thương hiệu cá nhân và khẳng định mình là chuyên gia trong lĩnh vực của bạn.',
   },
   {
-    description:
-      "Truy cập vào các công cụ trực quan để tạo và quản lý khóa học một cách dễ dàng.",
+    description: 'Truy cập vào các công cụ trực quan để tạo và quản lý khóa học một cách dễ dàng.',
   },
   {
-    description:
-      "Tiếp cận học viên toàn cầu và tạo ra tác động ý nghĩa cho cộng đồng học tập.",
+    description: 'Tiếp cận học viên toàn cầu và tạo ra tác động ý nghĩa cho cộng đồng học tập.',
   },
   {
-    description:
-      "Nhận hỗ trợ toàn diện từ đội ngũ hỗ trợ giảng viên tận tâm của chúng tôi.",
+    description: 'Nhận hỗ trợ toàn diện từ đội ngũ hỗ trợ giảng viên tận tâm của chúng tôi.',
   },
   {
-    description:
-      "Theo dõi hiệu quả khóa học và nhận được những gợi ý cải thiện tương tác.",
+    description: 'Theo dõi hiệu quả khóa học và nhận được những gợi ý cải thiện tương tác.',
   },
   {
-    description:
-      "Tự do giảng dạy với thời gian linh hoạt—tạo nội dung theo tốc độ của riêng bạn.",
+    description: 'Tự do giảng dạy với thời gian linh hoạt—tạo nội dung theo tốc độ của riêng bạn.',
   },
 ];
 

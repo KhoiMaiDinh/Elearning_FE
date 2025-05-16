@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import SectionForm from "./SectionForm";
-import CourseItemForm from "./CourseItemForm";
-import { CourseItem, Section } from "@/types/courseType";
-import VideoPlayer from "@/components/courseDetails/videoPlayer";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import SectionForm from './SectionForm';
+import CourseItemForm from './CourseItemForm';
+import { CourseItem, Section } from '@/types/courseType';
+import VideoPlayer from '@/components/courseDetails/videoPlayer';
 
 interface SectionListProps {
   sections: Section[];
@@ -30,7 +30,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
   onSave,
   onCancel,
 }) => {
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadProgress, _setUploadProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   return (
@@ -50,7 +50,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
             </Button>
           </div>
           <p className="mb-1">
-            <strong>📄 Nội dung:</strong>{" "}
+            <strong>📄 Nội dung:</strong>{' '}
             <span
               className="ql-content text-sm"
               dangerouslySetInnerHTML={{ __html: item.description }}
@@ -59,12 +59,12 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
           {item.video && (
             <div className="mt-3">
               <p className="font-semibold mb-1">🎥 Video:</p>
-              {item.video.video.status === "validated" ? (
+              {item.video.video.status === 'validated' ? (
                 <VideoPlayer
                   videoUrl={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${item.video.video.key}`}
                   title={item.title}
                 />
-              ) : item.video.video.status === "uploaded" ? (
+              ) : item.video.video.status === 'uploaded' ? (
                 <div>
                   <div className="w-full max-w-sm bg-gray/20 rounded-full h-2.5">
                     <div
@@ -72,9 +72,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
-                  <p className="text-sm text-gray/60 mt-1">
-                    ⏳ Đang xử lý video...
-                  </p>
+                  <p className="text-sm text-gray/60 mt-1">⏳ Đang xử lý video...</p>
                 </div>
               ) : (
                 <p className="text-sm text-red-600">⛔ Video đã bị từ chối</p>
@@ -101,7 +99,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
             </div>
           )}
           <p className="mt-3 text-sm">
-            <strong>👁️ Xem trước:</strong> {item.is_preview ? "Có" : "Không"}
+            <strong>👁️ Xem trước:</strong> {item.is_preview ? 'Có' : 'Không'}
           </p>
         </>
       ) : (
@@ -129,26 +127,18 @@ const SectionList: React.FC<SectionListProps> = ({
   courseId,
   handleGetCourseInfo,
   setShowAlertSuccess,
-  setShowAlertError,
+  // setShowAlertError,
   setDescription,
 }) => {
   const [isEditingSection, setIsEditingSection] = useState<boolean>(false);
-  const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(
-    null
-  );
-  const [isAddingCourseItem, setIsAddingCourseItem] = useState<number | null>(
-    null
-  );
+  const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(null);
+  const [isAddingCourseItem, setIsAddingCourseItem] = useState<number | null>(null);
 
   return (
     <div className="bg-white dark:bg-eerieBlack text-cosmicCobalt dark:text-white shadow-md rounded-xl p-6 border">
       <div className="flex flex-row gap-1 items-center h-full mb-6">
         <div className="w-8 h-8 items-center justify-center flex">
-          <img
-            src="/icons/icon_book.png"
-            alt="book"
-            className="w-6 h-6 object-fill"
-          />
+          <img src="/icons/icon_book.png" alt="book" className="w-6 h-6 object-fill" />
         </div>
         <text className="text-2xl font-bold h-full "> Phần bài giảng</text>
       </div>
@@ -165,7 +155,7 @@ const SectionList: React.FC<SectionListProps> = ({
                   setEditingSectionIndex(null);
                   handleGetCourseInfo(updatedSection.id);
                   setShowAlertSuccess(true);
-                  setDescription("Phần bài giảng đã được cập nhật thành công!");
+                  setDescription('Phần bài giảng đã được cập nhật thành công!');
                   setTimeout(() => setShowAlertSuccess(false), 3000);
                 }}
                 onCancel={() => setEditingSectionIndex(null)}
@@ -188,7 +178,7 @@ const SectionList: React.FC<SectionListProps> = ({
 
                 {section.description && (
                   <p className="mb-2 text-sm">
-                    <strong>Mô tả:</strong>{" "}
+                    <strong>Mô tả:</strong>{' '}
                     <span
                       className="ql-content"
                       dangerouslySetInnerHTML={{ __html: section.description }}
@@ -242,12 +232,12 @@ const SectionList: React.FC<SectionListProps> = ({
       {isEditingSection ? (
         <SectionForm
           section={{
-            title: "",
-            description: "",
+            title: '',
+            description: '',
             position: (sections.length + 1).toString(),
             items: [],
-            id: "",
-            status: "ACTIVE",
+            id: '',
+            status: 'ACTIVE',
             course_id: courseId,
             quizzes: [],
             articles: [],
@@ -257,7 +247,7 @@ const SectionList: React.FC<SectionListProps> = ({
             setIsEditingSection(false);
             handleGetCourseInfo(newSection.id);
             setShowAlertSuccess(true);
-            setDescription("Phần bài giảng đã được thêm thành công!");
+            setDescription('Phần bài giảng đã được thêm thành công!');
             setTimeout(() => setShowAlertSuccess(false), 3000);
           }}
           onCancel={() => setIsEditingSection(false)}

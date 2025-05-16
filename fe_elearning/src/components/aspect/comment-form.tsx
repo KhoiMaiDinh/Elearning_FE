@@ -1,25 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { ThumbsUp, ThumbsDown, Meh } from "lucide-react";
-import { aspects } from "./comment-list";
+import { useState } from 'react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
+import { aspects } from './comment-list';
 
 export function CommentForm() {
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const [selectedAspects, setSelectedAspects] = useState<number[]>([]);
-  const [emotion, setEmotion] = useState("");
+  const [emotion, setEmotion] = useState('');
 
   const handleAspectChange = (aspectId: number) => {
     setSelectedAspects((prev: number[]) => {
@@ -36,10 +30,10 @@ export function CommentForm() {
     // Here you would typically send the data to your backend
     console.log({ comment, aspects: selectedAspects, emotion });
     // Reset form
-    setComment("");
+    setComment('');
     setSelectedAspects([]);
-    setEmotion("");
-    alert("Comment submitted successfully!");
+    setEmotion('');
+    alert('Comment submitted successfully!');
   };
 
   return (
@@ -79,15 +73,15 @@ export function CommentForm() {
                         className="flex items-center gap-1.5 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         <AspectIcon className="h-4 w-4" />
-                        {aspect.name === "teaching_pace"
-                          ? "Tốc độ dạy"
-                          : aspect.name === "instructor_quality"
-                          ? "Chất lượng giảng viên"
-                          : aspect.name === "content_quality"
-                          ? "Chất lượng nội dung"
-                          : aspect.name === "technology"
-                          ? "Công nghệ"
-                          : aspect.name}
+                        {aspect.name === 'teaching_pace'
+                          ? 'Tốc độ dạy'
+                          : aspect.name === 'instructor_quality'
+                            ? 'Chất lượng giảng viên'
+                            : aspect.name === 'content_quality'
+                              ? 'Chất lượng nội dung'
+                              : aspect.name === 'technology'
+                                ? 'Công nghệ'
+                                : aspect.name}
                       </Label>
                     </div>
                   </div>
@@ -151,11 +145,7 @@ function EmotionOption({
 }) {
   return (
     <div className="relative">
-      <RadioGroupItem
-        value={value}
-        id={`emotion-${value}`}
-        className="peer sr-only"
-      />
+      <RadioGroupItem value={value} id={`emotion-${value}`} className="peer sr-only" />
       <Label
         htmlFor={`emotion-${value}`}
         className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${className}`}

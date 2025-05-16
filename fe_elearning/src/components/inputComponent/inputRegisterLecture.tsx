@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Upload, UploadCloud } from "lucide-react";
+import React, { useRef } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { UploadCloud } from 'lucide-react';
 
 type InputRegisterLectureProps = {
   labelText?: string;
@@ -34,7 +34,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
 
   // Xử lý khi nhấp vào giao diện tùy chỉnh để kích hoạt input file
   const handleCustomClick = () => {
-    if (fileInputRef.current && type === "file") {
+    if (fileInputRef.current && type === 'file') {
       fileInputRef.current.click();
     }
   };
@@ -44,7 +44,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
       className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
       <Label htmlFor={name}>{labelText}</Label>
-      {type === "file" ? (
+      {type === 'file' ? (
         <>
           {/* Input file ẩn */}
           <Input
@@ -80,11 +80,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
           disabled={disabled}
         />
       )}
-      {error && (
-        <div className="text-[12px] font-sans font-normal text-redPigment">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-[12px] font-sans font-normal text-redPigment">{error}</div>}
     </div>
   );
 };

@@ -1,38 +1,26 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useForm, Controller, FieldValues, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import InputRegisterLecture from "@/components/inputComponent/inputRegisterLecture";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserType } from "@/types/userType";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
-import { APIGetCurrentUser, APIUpdateCurrentUser } from "@/utils/user";
-import axios from "axios";
-import { APIGetPresignedUrl } from "@/utils/storage";
-import { setUser } from "@/constants/userSlice";
-import AnimateWrapper from "@/components/animations/animateWrapper";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, FieldValues, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { UserType } from '@/types/userType';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { APIGetCurrentUser, APIUpdateCurrentUser } from '@/utils/user';
+import axios from 'axios';
+import { APIGetPresignedUrl } from '@/utils/storage';
+import { setUser } from '@/constants/userSlice';
+import AnimateWrapper from '@/components/animations/animateWrapper';
 
 // Schema validation với Yup
 const schema = yup.object().shape({
-  first_name: yup
-    .string()
-    .required("Họ không được bỏ trống")
-    .max(60, "Tối đa 60 ký tự"),
-  last_name: yup
-    .string()
-    .required("Tên không được bỏ trống")
-    .max(60, "Tối đa 60 ký tự"),
-  email: yup
-    .string()
-    .email("Email không hợp lệ")
-    .required("Email không được để trống"),
-  username: yup
-    .string()
-    .required("Biệt danh không được bỏ trống")
-    .max(60, "Tối đa 60 ký tự"),
+  first_name: yup.string().required('Họ không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
+  last_name: yup.string().required('Tên không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
+  email: yup.string().email('Email không hợp lệ').required('Email không được để trống'),
+  username: yup.string().required('Biệt danh không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
   profile_image: yup.object().shape({
     key: yup.string(),
     bucket: yup.string(),
@@ -52,16 +40,16 @@ const ProfileStudent = () => {
   } = useForm<UserType>({
     resolver: yupResolver(schema) as unknown as Resolver<UserType>,
     defaultValues: {
-      first_name: "",
-      last_name: "",
-      username: "",
-      email: "",
+      first_name: '',
+      last_name: '',
+      username: '',
+      email: '',
       profile_image: {
-        key: "",
-        bucket: "",
-        status: "",
-        rejected_reason: "",
-        id: "",
+        key: '',
+        bucket: '',
+        status: '',
+        rejected_reason: '',
+        id: '',
       },
     },
   });
@@ -70,36 +58,35 @@ const ProfileStudent = () => {
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const [disable, setDisable] = useState(true);
-  const [imagePreview, setImagePreview] = useState<string>(""); // Preview cho profile_image
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Lưu file thực tế
-  const profileImage = watch("profile_image"); // Theo dõi giá trị profile_image
+  const [imagePreview, setImagePreview] = useState<string>(''); // Preview cho profile_image
+  const [_selectedFile, setSelectedFile] = useState<File | null>(null); // Lưu file thực tế
+  const profileImage = watch('profile_image'); // Theo dõi giá trị profile_image
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
 
   // Đồng bộ dữ liệu từ Redux và preview ảnh
   useEffect(() => {
     if (userInfo) {
-      setValue("first_name", userInfo.first_name);
-      setValue("last_name", userInfo.last_name);
-      setValue("email", userInfo.email);
-      setValue("username", userInfo.username);
-      setValue("profile_image", {
-        key: userInfo.profile_image?.key || "",
-        bucket: userInfo.profile_image?.bucket || "",
-        status: userInfo.profile_image?.status || "",
-        rejected_reason: userInfo.profile_image?.rejected_reason || "",
+      setValue('first_name', userInfo.first_name);
+      setValue('last_name', userInfo.last_name);
+      setValue('email', userInfo.email);
+      setValue('username', userInfo.username);
+      setValue('profile_image', {
+        key: userInfo.profile_image?.key || '',
+        bucket: userInfo.profile_image?.bucket || '',
+        status: userInfo.profile_image?.status || '',
+        rejected_reason: userInfo.profile_image?.rejected_reason || '',
       });
 
       // Chỉ set imagePreview khi có query parameters
       if (
-        profileImage.key.startsWith("data:image") ||
-        profileImage.key.startsWith("blob:") ||
-        profileImage.key.includes("?")
+        profileImage.key.startsWith('data:image') ||
+        profileImage.key.startsWith('blob:') ||
+        profileImage.key.includes('?')
       ) {
         setImagePreview(
-          profileImage.key.startsWith("data:image") ||
-            profileImage.key.startsWith("blob:")
+          profileImage.key.startsWith('data:image') || profileImage.key.startsWith('blob:')
             ? profileImage.key
             : process.env.NEXT_PUBLIC_BASE_URL_IMAGE + profileImage.key
         );
@@ -111,17 +98,16 @@ const ProfileStudent = () => {
   useEffect(() => {
     if (profileImage?.key) {
       if (
-        profileImage.key.startsWith("data:image") ||
-        profileImage.key.startsWith("blob:") ||
-        profileImage.key.includes("?")
+        profileImage.key.startsWith('data:image') ||
+        profileImage.key.startsWith('blob:') ||
+        profileImage.key.includes('?')
       ) {
         setImagePreview(
-          profileImage.key.startsWith("data:image") ||
-            profileImage.key.startsWith("blob:")
+          profileImage.key.startsWith('data:image') || profileImage.key.startsWith('blob:')
             ? profileImage.key
             : process.env.NEXT_PUBLIC_BASE_URL_IMAGE + profileImage.key
         );
-        setValue("profile_image", {
+        setValue('profile_image', {
           key: profileImage.key,
           bucket: profileImage.bucket,
           status: profileImage.status,
@@ -135,16 +121,14 @@ const ProfileStudent = () => {
   // Lấy presigned URL từ backend
 
   // Upload file lên MinIO bằng presigned URL với axios
-  const uploadToMinIO = async (
-    file: File
-  ): Promise<{ key: string; id: string }> => {
+  const uploadToMinIO = async (file: File): Promise<{ key: string; id: string }> => {
     try {
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
-        entity: "user",
-        entity_property: "profile_image",
+        entity: 'user',
+        entity_property: 'profile_image',
       });
-      const { postURL, formData } = presignedData?.data?.result;
+      const { postURL, formData } = presignedData?.data?.result ?? {};
       const id = presignedData?.data?.id; // Lấy id từ API
 
       const uploadFormData = new FormData();
@@ -152,24 +136,24 @@ const ProfileStudent = () => {
         uploadFormData.append(key, value as string);
       });
 
-      uploadFormData.append("file", file);
-      uploadFormData.append("id", id); // Gửi id trong form data
+      uploadFormData.append('file', file);
+      uploadFormData.append('id', id); // Gửi id trong form data
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 204 || response.status === 200) {
-        const key = uploadFormData.get("key");
-        if (!key) throw new Error("Missing key in form data");
+        const key = uploadFormData.get('key');
+        if (!key) throw new Error('Missing key in form data');
         return { key: key.toString(), id }; // Trả về cả key và id
       } else {
-        throw new Error("Upload thất bại");
+        throw new Error('Upload thất bại');
       }
     } catch (error) {
-      console.error("Error uploading to MinIO:", error);
+      console.error('Error uploading to MinIO:', error);
       throw error;
     }
   };
@@ -178,8 +162,8 @@ const ProfileStudent = () => {
       let profileImageKey = data.profile_image.key; // Sửa từ .id thành .key
 
       // Cắt bỏ query parameters nếu có
-      if (profileImageKey.includes("?")) {
-        profileImageKey = profileImageKey.split("?")[0];
+      if (profileImageKey.includes('?')) {
+        profileImageKey = profileImageKey.split('?')[0];
       }
 
       const dataSubmit = {
@@ -208,7 +192,7 @@ const ProfileStudent = () => {
     try {
       const response = await APIUpdateCurrentUser(data);
       if (response?.status === 200) {
-        setAlertDescription("Cập nhật thành công");
+        setAlertDescription('Cập nhật thành công');
         setShowAlertSuccess(true);
         setDisable(true); // Quay lại chế độ disable
         setSelectedFile(null); // Xóa file tạm sau khi upload thành công
@@ -216,12 +200,13 @@ const ProfileStudent = () => {
         dispatch(setUser(response?.data));
         setTimeout(() => setShowAlertSuccess(false), 3000);
       } else {
-        setAlertDescription("Cập nhật thất bại");
+        setAlertDescription('Cập nhật thất bại');
         setShowAlertError(true);
         setTimeout(() => setShowAlertError(false), 3000);
       }
     } catch (err) {
-      setAlertDescription("Cập nhật thất bại");
+      console.error('Error updating profile:', err);
+      setAlertDescription('Cập nhật thất bại');
       setShowAlertError(true);
       setTimeout(() => setShowAlertError(false), 3000);
     }
@@ -230,10 +215,7 @@ const ProfileStudent = () => {
   return (
     <div className="bg-white dark:bg-black50 w-full p-4 rounded-b-sm">
       <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-full h-full gap-2 flex flex-col"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full gap-2 flex flex-col">
           {/* Thông tin cá nhân */}
           <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border gap-3 flex flex-col">
             <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
@@ -243,7 +225,7 @@ const ProfileStudent = () => {
               <Controller
                 name="profile_image"
                 control={control}
-                render={({ field }) => (
+                render={() => (
                   <div className="flex flex-col gap-2 items-center">
                     <Avatar className="w-24 h-24">
                       <AvatarImage
@@ -260,8 +242,7 @@ const ProfileStudent = () => {
                         error={errors.profile_image?.message}
                         disabled={disable}
                         onChange={async (e) => {
-                          const file = (e.target as HTMLInputElement)
-                            .files?.[0];
+                          const file = (e.target as HTMLInputElement).files?.[0];
                           if (file) {
                             try {
                               setSelectedFile(file);
@@ -272,7 +253,7 @@ const ProfileStudent = () => {
                               const { key, id } = await uploadToMinIO(file);
 
                               // Cập nhật form value với key và id
-                              setValue("profile_image", {
+                              setValue('profile_image', {
                                 key,
                                 id, // Thêm id vào đây
                                 bucket: undefined,
@@ -280,7 +261,8 @@ const ProfileStudent = () => {
                                 rejected_reason: undefined,
                               });
                             } catch (error) {
-                              setAlertDescription("Upload ảnh thất bại");
+                              console.log(error);
+                              setAlertDescription('Upload ảnh thất bại');
                               setShowAlertError(true);
                               setTimeout(() => setShowAlertError(false), 3000);
                             }
@@ -366,11 +348,7 @@ const ProfileStudent = () => {
                   type="submit"
                   className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 hover:scale-105 transition-transform duration-200 text-white"
                 >
-                  <img
-                    src="/icons/icon_save.png"
-                    alt="save"
-                    className="w-5 h-5 object-fill"
-                  />
+                  <img src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
                   Lưu
                 </Button>
               </div>

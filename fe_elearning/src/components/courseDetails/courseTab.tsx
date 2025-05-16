@@ -1,43 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Download,
-  MessageSquare,
-  Star,
-  Users,
-  Send,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // Giả sử bạn có component Input
-import { CourseItem, Section } from "@/types/courseType";
-import { Lecture } from "@/types/registerLectureFormType";
-import { APIPostComment, APIGetComment } from "@/utils/comment";
-import InputWithSendButton from "../inputComponent/inputComment";
-import AlertSuccess from "../alert/AlertSuccess";
-import AlertError from "../alert/AlertError";
-import { CommentEachItemCourse } from "@/types/commentType";
-import CommentListUser from "./commentListUser";
-import Popup from "./popup"; // Import your Popup component
+import React, { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Download, Star, Users, Send, ChevronDown, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input'; // Giả sử bạn có component Input
+import { CourseItem, Section } from '@/types/courseType';
+import { Lecture } from '@/types/registerLectureFormType';
+import { APIPostComment, APIGetComment } from '@/utils/comment';
+import InputWithSendButton from '../inputComponent/inputComment';
+import AlertSuccess from '../alert/AlertSuccess';
+import AlertError from '../alert/AlertError';
+import { LectureComment } from '@/types/commentType';
+import CommentListUser from './commentListUser';
+import Popup from './popup'; // Import your Popup component
 
-import SelectFilter from "../selectComponent/selectFilter";
-import { formatPrice } from "../formatPrice";
+import SelectFilter from '../selectComponent/selectFilter';
+import { formatPrice } from '../formatPrice';
 import {
   APIGetThread,
   APIPostThread,
   APIPostThreadReply,
   APIGetThreadReply,
-} from "@/utils/communityThread";
-import {
-  CommunityThread,
-  CommunityThreadReply,
-} from "@/types/communityThreadType";
-import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
-import { Textarea } from "../ui/textarea";
-import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
-import ReplyList from "./replyList";
-import ReportButton from "./report";
+} from '@/utils/communityThread';
+import { CommunityThread, CommunityThreadReply } from '@/types/communityThreadType';
+import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
+import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
+import ReplyList from './replyList';
+import ReportButton from './report';
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -52,7 +40,7 @@ interface CourseTabsProps {
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
   description,
-  sections,
+  // sections,
   lecture,
   rating,
   enrolledStudents,
@@ -61,22 +49,22 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   currentCourseItem,
   isOwner,
 }) => {
-  const [activeTab, setActiveTab] = useState("description");
-  const [newReview, setNewReview] = useState("");
-  const [newTitle, setNewTitle] = useState("");
-  const [newContent, setNewContent] = useState("");
+  const [activeTab, setActiveTab] = useState('description');
+  const [newReview, setNewReview] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [newContent, setNewContent] = useState('');
   const [expandedThreadId, setExpandedThreadId] = useState<string | null>(null);
 
   const [communityPosts, setCommunityPosts] = useState<CommunityThread[]>([]);
   const [replies, setReplies] = useState<CommunityThreadReply[]>([]); // Quản lý trả lời
-  const [newReply, setNewReply] = useState(""); // Nội dung trả lời mới
-  const [comments, setComments] = useState<CommentEachItemCourse[]>([]);
+  const [newReply, setNewReply] = useState(''); // Nội dung trả lời mới
+  const [comments, setComments] = useState<LectureComment[]>([]);
 
-  const [filterOption, setFilterOption] = useState("all"); // New state for filter option
+  const [filterOption, setFilterOption] = useState('all'); // New state for filter option
 
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [descriptionAlert, setDescriptionAlert] = useState("");
+  const [descriptionAlert, setDescriptionAlert] = useState('');
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
   const handlePostThread = async () => {
@@ -88,24 +76,25 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     try {
       const response = await APIPostThread(newPostData);
       if (response?.status === 201) {
-        setNewTitle("");
-        setNewContent("");
+        setNewTitle('');
+        setNewContent('');
         handleGetThread();
         setShowAlertSuccess(true);
-        setDescriptionAlert("Bài viết đã được đăng thành công");
+        setDescriptionAlert('Bài viết đã được đăng thành công');
         setTimeout(() => {
           setShowAlertSuccess(false);
         }, 3000);
       } else {
         setShowAlertError(true);
-        setDescriptionAlert("Lỗi khi đăng bài");
+        setDescriptionAlert('Lỗi khi đăng bài');
         setTimeout(() => {
           setShowAlertError(false);
         }, 3000);
       }
     } catch (error) {
+      console.log(error);
       setShowAlertError(true);
-      setDescriptionAlert("Lỗi khi đăng bài");
+      setDescriptionAlert('Lỗi khi đăng bài');
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
@@ -120,7 +109,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           setCommunityPosts(response?.data);
         }
       } catch (error) {
-        console.error("Error getting thread:", error);
+        console.error('Error getting thread:', error);
       }
     }
   };
@@ -133,23 +122,24 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       const response = await APIPostThreadReply(threadId, newReplyData);
 
       if (response?.status === 200) {
-        setNewReply("");
+        setNewReply('');
         handleGetThread();
         setShowAlertSuccess(true);
-        setDescriptionAlert("Trả lời đã được đăng thành công");
+        setDescriptionAlert('Trả lời đã được đăng thành công');
         setTimeout(() => {
           setShowAlertSuccess(false);
         }, 3000);
       } else {
         setShowAlertError(true);
-        setDescriptionAlert("Lỗi khi trả lời");
+        setDescriptionAlert('Lỗi khi trả lời');
         setTimeout(() => {
           setShowAlertError(false);
         }, 3000);
       }
     } catch (error) {
+      console.log(error);
       setShowAlertError(true);
-      setDescriptionAlert("Lỗi khi trả lời");
+      setDescriptionAlert('Lỗi khi trả lời');
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
@@ -168,7 +158,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       const response = await fetch(fileUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
       document.body.appendChild(link);
@@ -176,7 +166,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error('Error downloading file:', error);
     }
   };
 
@@ -187,19 +177,19 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           content: newReview,
         });
         if (response?.status === 201) {
-          setNewReview("");
+          setNewReview('');
           handleGetComment();
           setShowAlertSuccess(true);
-          setDescriptionAlert("Bài đăng đã được đăng thành công");
+          setDescriptionAlert('Bài đăng đã được đăng thành công');
           setTimeout(() => {
             setShowAlertSuccess(false);
           }, 3000);
         }
       }
     } catch (error) {
-      console.error("Error posting comment:", error);
+      console.error('Error posting comment:', error);
       setShowAlertError(true);
-      setDescriptionAlert("Lỗi khi đăng bài");
+      setDescriptionAlert('Lỗi khi đăng bài');
       setTimeout(() => {
         setShowAlertError(false);
       }, 3000);
@@ -209,7 +199,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const handleGetComment = async () => {
     if (currentCourseItem?.id) {
       const response = await APIGetComment(currentCourseItem.id, {
-        is_solved: filterOption === "mostRelevant" ? false : undefined,
+        is_solved: filterOption === 'mostRelevant' ? false : undefined,
       });
       if (response?.status === 200) {
         setComments(response?.data);
@@ -229,11 +219,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   }, [expandedThreadId]);
 
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={setActiveTab}
-      className="w-full font-sans"
-    >
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full font-sans">
       <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
         <TabsTrigger
           value="description"
@@ -259,11 +245,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
         >
           Cảm nhận
-          <img
-            src={"/icons/open-gift.gif"}
-            alt="gift"
-            className="w-4 h-4 ml-2 mb-1 "
-          />{" "}
+          <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1 " />{' '}
         </TabsTrigger>
       </TabsList>
 
@@ -279,9 +261,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           dangerouslySetInnerHTML={{ __html: description }}
         />
         <p className="mt-2 text-darkSilver dark:text-lightSilver">
-          Giảng viên:{" "}
+          Giảng viên:{' '}
           <span className="text-majorelleBlue">
-            {lecture?.user.first_name + " " + lecture?.user.last_name}
+            {lecture?.user.first_name + ' ' + lecture?.user.last_name}
           </span>
         </p>
         <div className="flex gap-4 mt-2 items-center">
@@ -289,7 +271,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             <div className="flex items-center gap-1">
               <Star size={16} className="text-Sunglow fill-Sunglow" />
               <span className="text-darkSilver dark:text-lightSilver">
-                {rating ? (Math.round(rating * 10) / 10).toFixed(1) : "N/A"}
+                {rating ? (Math.round(rating * 10) / 10).toFixed(1) : 'N/A'}
               </span>
             </div>
           )}
@@ -309,14 +291,10 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                 <span className="text-darkSilver dark:text-lightSilver line-through">
                   {formatPrice(price)}
                 </span>
-                <span className="text-beautyGreen font-semibold">
-                  {formatPrice(priceFinal)}
-                </span>
+                <span className="text-beautyGreen font-semibold">{formatPrice(priceFinal)}</span>
               </>
             ) : (
-              <span className="text-beautyGreen font-semibold">
-                {formatPrice(price)}
-              </span>
+              <span className="text-beautyGreen font-semibold">{formatPrice(price)}</span>
             )}
           </div>
         </div>
@@ -367,12 +345,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
               </li>
             ))}
 
-          {currentCourseItem?.resources &&
-            currentCourseItem?.resources.length === 0 && (
-              <p className="text-darkSilver dark:text-lightSilver">
-                Không có tài liệu
-              </p>
-            )}
+          {currentCourseItem?.resources && currentCourseItem?.resources.length === 0 && (
+            <p className="text-darkSilver dark:text-lightSilver">Không có tài liệu</p>
+          )}
         </ul>
       </TabsContent>
 
@@ -433,9 +408,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                     <Button
                       variant="link"
                       className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
-                      onClick={() =>
-                        setExpandedThreadId(isExpanded ? null : post.id)
-                      }
+                      onClick={() => setExpandedThreadId(isExpanded ? null : post.id)}
                     >
                       {isExpanded ? (
                         <ChevronDown className="w-6 h-6" />
@@ -529,11 +502,11 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         </div>
 
         <SelectFilter
-          placeholder={filterOption === "all" ? "Tất cả" : "Mới nhất"}
+          placeholder={filterOption === 'all' ? 'Tất cả' : 'Mới nhất'}
           // label="Bộ lọc"
           data={[
-            { id: "all", value: "Tất cả" },
-            { id: "mostRelevant", value: "Mới nhất" },
+            { id: 'all', value: 'Tất cả' },
+            { id: 'mostRelevant', value: 'Mới nhất' },
           ]}
           onChange={(value) => setFilterOption(value)}
         />
@@ -541,13 +514,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           {comments.length > 0 ? (
             comments
               .slice(0, 5)
-              .map((comment, index) => (
-                <CommentListUser key={index} comments={comment} />
-              ))
+              .map((comment, index) => <CommentListUser key={index} comments={comment} />)
           ) : (
-            <p className="text-darkSilver dark:text-lightSilver ">
-              Chưa có dữ liệu
-            </p>
+            <p className="text-darkSilver dark:text-lightSilver ">Chưa có dữ liệu</p>
           )}
         </div>
       </TabsContent>

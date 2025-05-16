@@ -9,7 +9,7 @@ export interface CommentAspect {
   deletedAt: null;
 }
 
-export interface CommentEachItemCourse {
+export interface LectureComment {
   lecture_comment_id: string;
   lecture_id: string;
   user_id: string;
@@ -35,6 +35,14 @@ export interface CommentEachItemCourse {
     };
   };
   lecture: {
+    section: {
+      title: string;
+      course: {
+        id: string;
+        title: string;
+        description: string;
+      };
+    };
     lecture_id: string;
     id: string;
     title: string;
@@ -98,6 +106,6 @@ export interface StatisticsEachItemCourse {
 }
 
 export interface StatisticItemCourseResponse {
-  comments: CommentEachItemCourse[];
+  comments: LectureComment[];
   statistics: StatisticsEachItemCourse;
 }

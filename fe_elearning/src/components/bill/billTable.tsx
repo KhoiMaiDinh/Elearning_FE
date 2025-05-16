@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -6,26 +6,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ChevronUp, Calendar } from "lucide-react";
-import BillDetails from "./billDetails";
-import { OrderResponse } from "@/types/billType";
-import { useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
-import { formatPrice } from "../formatPrice";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Search, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import BillDetails from './billDetails';
+import { OrderResponse } from '@/types/billType';
+import { formatPrice } from '../formatPrice';
 interface BillsTableProps {
   bills: OrderResponse[];
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
 
-const BillsTable: React.FC<BillsTableProps> = ({
-  bills,
-  searchTerm,
-  setSearchTerm,
-}) => {
+const BillsTable: React.FC<BillsTableProps> = ({ bills, searchTerm, setSearchTerm }) => {
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   // const orders = useSelector((state: RootState) => state.order.orders);
 
@@ -48,24 +42,12 @@ const BillsTable: React.FC<BillsTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="bg-majorelleBlue20 dark:bg-majorelleBlue/10 hover:bg-majorelleBlue50 dark:hover:bg-majorelleBlue/20">
-            <TableHead className="text-majorelleBlue font-semibold">
-              Mã hóa đơn
-            </TableHead>
-            <TableHead className="text-majorelleBlue font-semibold">
-              Khóa học
-            </TableHead>
-            <TableHead className="text-majorelleBlue font-semibold">
-              Số tiền
-            </TableHead>
-            <TableHead className="text-majorelleBlue font-semibold">
-              Ngày thanh toán
-            </TableHead>
-            <TableHead className="text-majorelleBlue font-semibold">
-              Trạng thái
-            </TableHead>
-            <TableHead className="text-majorelleBlue font-semibold">
-              Chi tiết
-            </TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Mã hóa đơn</TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Khóa học</TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Số tiền</TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Ngày thanh toán</TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Trạng thái</TableHead>
+            <TableHead className="text-majorelleBlue font-semibold">Chi tiết</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -74,11 +56,7 @@ const BillsTable: React.FC<BillsTableProps> = ({
               <React.Fragment key={bill.id}>
                 <TableRow
                   className="border-b border-majorelleBlue20 hover:bg-majorelleBlue/5 cursor-pointer"
-                  onClick={() =>
-                    setExpandedBillId(
-                      expandedBillId === bill.id ? null : bill.id
-                    )
-                  }
+                  onClick={() => setExpandedBillId(expandedBillId === bill.id ? null : bill.id)}
                 >
                   <TableCell className="font-medium">{bill.id}</TableCell>
                   <TableCell>
@@ -91,24 +69,24 @@ const BillsTable: React.FC<BillsTableProps> = ({
                   </TableCell>
                   <TableCell className="flex items-center gap-2 text-darkSilver dark:text-lightSilver">
                     <Calendar size={16} />
-                    {new Date(bill.createdAt).toLocaleDateString("vi-VN")}
+                    {new Date(bill.createdAt).toLocaleDateString('vi-VN')}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={`${
-                        bill.payment_status === "SUCCESS"
-                          ? "bg-beautyGreen20 text-beautyGreen border-beautyGreen"
-                          : "bg-redPigment/20 text-redPigment border-redPigment"
+                        bill.payment_status === 'SUCCESS'
+                          ? 'bg-beautyGreen20 text-beautyGreen border-beautyGreen'
+                          : 'bg-redPigment/20 text-redPigment border-redPigment'
                       }`}
                     >
-                      {bill.payment_status === "SUCCESS"
-                        ? "Hoàn tất"
-                        : bill.payment_status === "EXPIRED"
-                        ? "Hết hạn"
-                        : bill.payment_status === "FAILED"
-                        ? "Thất bại"
-                        : "Đang chờ"}
+                      {bill.payment_status === 'SUCCESS'
+                        ? 'Hoàn tất'
+                        : bill.payment_status === 'EXPIRED'
+                          ? 'Hết hạn'
+                          : bill.payment_status === 'FAILED'
+                            ? 'Thất bại'
+                            : 'Đang chờ'}
                     </Badge>
                   </TableCell>
                   <TableCell>

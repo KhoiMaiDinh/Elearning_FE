@@ -1,6 +1,6 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type AlertType = {
   description?: string;
@@ -11,9 +11,7 @@ const AlertError: React.FC<AlertType> = ({ description }) => {
       <Alert variant="destructive">
         <ExclamationTriangleIcon className="h-4 w-4 text-PersianRed" />
         <AlertTitle className="font-bold text-redPigment">Lỗi</AlertTitle>
-        <AlertDescription className="font-medium text-redPigment">
-          {description}
-        </AlertDescription>
+        <AlertDescription className="font-medium text-redPigment">{description}</AlertDescription>
       </Alert>
     </div>
   );

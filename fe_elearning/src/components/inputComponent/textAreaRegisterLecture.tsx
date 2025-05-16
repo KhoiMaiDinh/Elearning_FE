@@ -1,8 +1,8 @@
-import React from "react";
-import { Label } from "@/components/ui/label";
-import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css"; // Import CSS của react-quill-new
-const ReactQuill = dynamic(() => import("react-quill-new"), {
+import React from 'react';
+import { Label } from '@/components/ui/label';
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css'; // Import CSS của react-quill-new
+const ReactQuill = dynamic(() => import('react-quill-new'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>,
 });
@@ -47,75 +47,73 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
 
             // Font family & size
             [{ font: [] }],
-            [{ size: ["small", false, "large", "huge"] }],
+            [{ size: ['small', false, 'large', 'huge'] }],
 
             // Text styling
-            ["bold", "italic", "underline", "strike", "blockquote"],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
 
             // Text color & background
             [{ color: [] }, { background: [] }],
 
             // Text alignment
-            [{ align: ["", "center", "right", "justify"] }],
+            [{ align: ['', 'center', 'right', 'justify'] }],
 
             // Lists & Indentation
-            [{ list: "ordered" }, { list: "bullet" }],
-            [{ indent: "-1" }, { indent: "+1" }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ indent: '-1' }, { indent: '+1' }],
 
             // Links & Media
-            ["link", "image", "video"],
+            ['link', 'image', 'video'],
 
             // Code & Formula
-            ["code-block", "formula"],
+            ['code-block', 'formula'],
 
             // Subscript & Superscript
-            [{ script: "sub" }, { script: "super" }],
+            [{ script: 'sub' }, { script: 'super' }],
 
             // Clean formatting
-            ["clean"],
+            ['clean'],
           ],
         }}
         formats={[
           // Headings
-          "header",
+          'header',
 
           // Font styles
-          "font",
-          "size",
-          "bold",
-          "italic",
-          "underline",
-          "strike",
+          'font',
+          'size',
+          'bold',
+          'italic',
+          'underline',
+          'strike',
 
           // Text alignment & color
-          "align",
-          "color",
-          "background",
+          'align',
+          'color',
+          'background',
 
           // Paragraphs & Lists
-          "blockquote",
-          "list",
-          "bullet",
-          "indent",
+          'blockquote',
+          'list',
+          'bullet',
+          'indent',
 
           // Links & Media
-          "link",
-          "image",
-          "video",
+          'link',
+          'image',
+          'video',
 
           // Advanced formatting
-          "code-block",
-          "formula",
-          "script",
+          'code-block',
+          'formula',
+          'script',
 
           // Clean
-          "clean",
+          'clean',
         ]}
       />
       {error && (
-        <div className="mt-10 text-[12px] font-sans font-normal text-redPigment">
-          {error}
-        </div>
+        <div className="mt-10 text-[12px] font-sans font-normal text-redPigment">{error}</div>
       )}
     </div>
   );

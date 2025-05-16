@@ -1,13 +1,13 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import FilterBlock from "../filter/filter-block";
-import AnimateWrapper from "../animations/animateWrapper";
-import { useRouter } from "next/navigation";
-import { PlusIcon } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/constants/store";
-import { APIGetMyCourse } from "@/utils/course";
-import CoursesBlockMe from "../block/courses-block-me";
+'use client';
+import React, { useEffect, useState } from 'react';
+import FilterBlock from '../filter/filter-block';
+import AnimateWrapper from '../animations/animateWrapper';
+import { useRouter } from 'next/navigation';
+import { PlusIcon } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { APIGetMyCourse } from '@/utils/course';
+import CoursesBlockMe from '../block/courses-block-me';
 
 const CourseLecture = () => {
   const router = useRouter();
@@ -16,7 +16,7 @@ const CourseLecture = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const _userInfo = useSelector((state: RootState) => state.user.userInfo);
   const [dataCourseMe, setDataCourseMe] = useState<[]>([]);
 
   const handleGetCourseMe = async () => {
@@ -40,7 +40,7 @@ const CourseLecture = () => {
         <div className="w-full h-full flex items-center justify-end">
           <button
             className="bg-custom-gradient-button-violet flex flex-row hover:brightness-125 items-center justify-center dark:bg-custom-gradient-button-blue text-white px-4 py-2 rounded-md"
-            onClick={() => router.push("/profile/lecture/course")}
+            onClick={() => router.push('/profile/lecture/course')}
           >
             <PlusIcon className="w-4 h-4 mr-2 text-white" />
             Thêm khóa học
@@ -48,10 +48,10 @@ const CourseLecture = () => {
         </div>
         <div className="w-full h-full flex items-end justify-end">
           <FilterBlock />
-        </div>{" "}
+        </div>{' '}
         <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {dataCourseMe.map((course: any, index: number) => (
-            <CoursesBlockMe {...course} />
+            <CoursesBlockMe {...course} key={index} />
           ))}
         </div>
       </div>

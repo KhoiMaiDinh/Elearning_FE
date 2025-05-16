@@ -1,51 +1,49 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useForm, Controller, Resolver } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, Resolver } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
-import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
-import { Button } from "../ui/button";
-import AlertSuccess from "../alert/AlertSuccess";
-import AlertError from "../alert/AlertError";
-import AnimateWrapper from "../animations/animateWrapper";
+import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
+import { Button } from '../ui/button';
+import AlertSuccess from '../alert/AlertSuccess';
+import AlertError from '../alert/AlertError';
+import AnimateWrapper from '../animations/animateWrapper';
 
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/constants/store";
-import { setBankAccount } from "@/constants/bankAccount";
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { setBankAccount } from '@/constants/bankAccount';
 import {
   APIInitPaymentAccount,
   APIGetAllPaymentBank,
   APIGetPaymentAccount,
   APIUpdatePaymentAccount,
-} from "@/utils/payment";
-import { BankAccount } from "@/types/bankAccount";
-import ComboboxRegister from "../selectComponent/comboboxSelect";
+} from '@/utils/payment';
+import { BankAccount } from '@/types/bankAccount';
+import ComboboxRegister from '../selectComponent/comboboxSelect';
 // Schema validation
 const schema = yup.object().shape({
   name: yup
     .string()
-    .required("Tên tài khoản không được để trống")
-    .min(3, "Tên tài khoản phải có ít nhất 3 ký tự"),
-  bank_code: yup.string().required("Tên ngân hàng không được để trống"),
+    .required('Tên tài khoản không được để trống')
+    .min(3, 'Tên tài khoản phải có ít nhất 3 ký tự'),
+  bank_code: yup.string().required('Tên ngân hàng không được để trống'),
   bank_account_number: yup
     .string()
-    .required("Số tài khoản không được để trống")
-    .matches(/^\d{10,15}$/, "Số tài khoản phải có từ 10 đến 15 chữ số"),
+    .required('Số tài khoản không được để trống')
+    .matches(/^\d{10,15}$/, 'Số tài khoản phải có từ 10 đến 15 chữ số'),
 });
 
 const BankAccountLecture = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const bankAccount = useSelector(
-    (state: RootState) => state.bankAccount.bankAccountInfo
-  );
+  // const bankAccount = useSelector((state: RootState) => state.bankAccount.bankAccountInfo);
 
   const [isEdit, setIsEdit] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
   const [allPaymentBank, setAllPaymentBank] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -53,40 +51,42 @@ const BankAccountLecture = () => {
   const {
     control,
     handleSubmit,
-    reset,
+    // reset,
     setValue,
     formState: { errors },
   } = useForm<BankAccount>({
     resolver: yupResolver(schema) as unknown as Resolver<BankAccount>,
     defaultValues: {
-      name: "",
-      bank_code: "",
-      bank_account_number: "",
+      name: '',
+      bank_code: '',
+      bank_account_number: '',
     },
   });
 
-  const bankAccountInfo = useSelector(
-    (state: RootState) => state.bankAccount.bankAccountInfo
-  );
+  const bankAccountInfo = useSelector((state: RootState) => state.bankAccount.bankAccountInfo);
 
   useEffect(() => {
     if (bankAccountInfo.name) {
-      setValue("name", bankAccountInfo.name);
-      setValue("bank_code", bankAccountInfo.bank_code);
-      setValue("bank_account_number", bankAccountInfo.bank_account_number);
+      setValue('name', bankAccountInfo.name);
+      setValue('bank_code', bankAccountInfo.bank_code);
+      setValue('bank_account_number', bankAccountInfo.bank_account_number);
     } else {
-      setValue("name", "");
-      setValue("bank_code", "");
-      setValue("bank_account_number", "");
+      setValue('name', '');
+      setValue('bank_code', '');
+      setValue('bank_account_number', '');
     }
   }, [bankAccountInfo, setValue, isEdit]);
 
   useEffect(() => {
-    hasBankAccount
-      ? isEdit
-        ? setDisabled(false)
-        : setDisabled(true)
-      : setDisabled(false);
+    if (hasBankAccount) {
+      if (isEdit) {
+        setDisabled(false);
+      } else {
+        setDisabled(true);
+      }
+    } else {
+      setDisabled(false);
+    }
   }, [hasBankAccount, isEdit]);
 
   const handleGetAllPaymentBank = async () => {
@@ -119,7 +119,7 @@ const BankAccountLecture = () => {
       const response = await APIInitPaymentAccount(data);
       if (response?.status === 201) {
         dispatch(setBankAccount(response.data));
-        setAlertDescription("Thêm tài khoản thành công");
+        setAlertDescription('Thêm tài khoản thành công');
         setHasBankAccount(true);
         setShowAlertSuccess(true);
         setIsEdit(false);
@@ -129,9 +129,7 @@ const BankAccountLecture = () => {
         }, 3000);
       }
     } catch (error) {
-      setAlertDescription(
-        error instanceof Error ? error.message : "Thêm tài khoản thất bại"
-      );
+      setAlertDescription(error instanceof Error ? error.message : 'Thêm tài khoản thất bại');
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
@@ -144,7 +142,7 @@ const BankAccountLecture = () => {
       const response = await APIUpdatePaymentAccount(userInfo.id, data);
       if (response?.status === 200) {
         dispatch(setBankAccount(response.data));
-        setAlertDescription("Cập nhật tài khoản thành công");
+        setAlertDescription('Cập nhật tài khoản thành công');
         setIsEdit(false);
         setShowAlertSuccess(true);
         setTimeout(() => {
@@ -152,9 +150,7 @@ const BankAccountLecture = () => {
         }, 3000);
       }
     } catch (error) {
-      setAlertDescription(
-        error instanceof Error ? error.message : "Cập nhật tài khoản thất bại"
-      );
+      setAlertDescription(error instanceof Error ? error.message : 'Cập nhật tài khoản thất bại');
       setShowAlertError(true);
       setTimeout(() => {
         setShowAlertError(false);
@@ -164,7 +160,7 @@ const BankAccountLecture = () => {
 
   const onSubmit = async (data: BankAccount) => {
     if (!userInfo?.id) {
-      setAlertDescription("Không tìm thấy thông tin người dùng");
+      setAlertDescription('Không tìm thấy thông tin người dùng');
       setShowAlertError(true);
       return;
     }
@@ -242,7 +238,7 @@ const BankAccountLecture = () => {
                   disabled={loading}
                   className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white"
                 >
-                  {loading ? "Đang gửi..." : "Lưu"}
+                  {loading ? 'Đang gửi...' : 'Lưu'}
                 </Button>
               )
             ) : (
@@ -251,7 +247,7 @@ const BankAccountLecture = () => {
                 disabled={loading}
                 className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
               >
-                {loading ? "Đang gửi..." : "Thêm tài khoản"}
+                {loading ? 'Đang gửi...' : 'Thêm tài khoản'}
               </Button>
             )}
           </div>

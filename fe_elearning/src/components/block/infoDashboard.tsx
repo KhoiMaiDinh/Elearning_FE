@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect } from "react";
+import React from 'react';
 
-import CountUp from "../text/countUp";
+import CountUp from '../text/countUp';
 
 type infoDashboard = {
   number: number;
@@ -10,13 +10,7 @@ type infoDashboard = {
   bgColor?: string;
 };
 
-const InfoDashboard: React.FC<infoDashboard> = ({
-  number,
-  title,
-  Icon,
-  color,
-  bgColor,
-}) => {
+const InfoDashboard: React.FC<infoDashboard> = ({ number, title, Icon, color, bgColor }) => {
   // Khởi tạo AOS cho animation fade-up
 
   return (
@@ -35,9 +29,7 @@ const InfoDashboard: React.FC<infoDashboard> = ({
             className="count-up-text"
           />
         </p>
-        <p className="text-[16px] font-medium text-darkSilver dark:text-lightSilver">
-          {title}
-        </p>
+        <p className="text-[16px] font-medium text-darkSilver dark:text-lightSilver">{title}</p>
       </div>
     </div>
   );

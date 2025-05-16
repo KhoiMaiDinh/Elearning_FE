@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import React, { useEffect, useState } from 'react';
+import { Card, CardHeader, CardContent } from '../ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
-import { CommunityThreadReply } from "@/types/communityThreadType";
-import {
-  APILikeThreadReply,
-  APIUnLikeThreadReply,
-} from "@/utils/communityThread";
-import { Heart } from "lucide-react";
-import ReportButton from "./report";
+import { CommunityThreadReply } from '@/types/communityThreadType';
+import { APILikeThreadReply, APIUnLikeThreadReply } from '@/utils/communityThread';
+import { Heart } from 'lucide-react';
+import ReportButton from './report';
 interface ReplyListProps {
   replies: CommunityThreadReply;
 }
@@ -16,7 +13,7 @@ interface ReplyListProps {
 const ReplyList = ({ replies }: ReplyListProps) => {
   const formatDate = (date: string) => {
     const dateObj = new Date(date);
-    return dateObj.toLocaleDateString("vi-VN");
+    return dateObj.toLocaleDateString('vi-VN');
   };
 
   const [isLiked, setIsLiked] = useState(replies?.has_upvoted);
@@ -51,23 +48,21 @@ const ReplyList = ({ replies }: ReplyListProps) => {
               <AvatarImage
                 src={
                   process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                  (replies.author?.profile_image?.key || "default-key.jpg")
+                  (replies.author?.profile_image?.key || 'default-key.jpg')
                 }
-                alt={
-                  replies.author?.first_name + " " + replies.author?.last_name
-                }
+                alt={replies.author?.first_name + ' ' + replies.author?.last_name}
               />
               <AvatarFallback>
-                {replies.author?.first_name?.charAt(0) || "?"}
-                {replies.author?.last_name?.charAt(0) || "?"}
+                {replies.author?.first_name?.charAt(0) || '?'}
+                {replies.author?.last_name?.charAt(0) || '?'}
               </AvatarFallback>
             </Avatar>
             <div>
               <div className="font-medium font-sans text-sm">
-                {replies.author?.first_name + " " + replies.author?.last_name}
+                {replies.author?.first_name + ' ' + replies.author?.last_name}
               </div>
               <div className="text-xs text-muted-foreground font-sans">
-                {formatDate(replies.createdAt || "")}
+                {formatDate(replies.createdAt || '')}
               </div>
             </div>
           </div>
@@ -81,11 +76,9 @@ const ReplyList = ({ replies }: ReplyListProps) => {
 
         <div className="mt-3 flex items-center gap-2">
           <button
-            onClick={() =>
-              isLiked ? handleUnLike(replies.id) : handleLike(replies.id)
-            }
+            onClick={() => (isLiked ? handleUnLike(replies.id) : handleLike(replies.id))}
             className={`text-xs px-2 py-1 rounded hover:cursor-pointer transition-all ${
-              isLiked ? " cursor-not-allowed" : " text-white "
+              isLiked ? ' cursor-not-allowed' : ' text-white '
             }`}
           >
             {isLiked ? (
@@ -94,9 +87,7 @@ const ReplyList = ({ replies }: ReplyListProps) => {
               <Heart className="w-4 h-4 text-redPigment" />
             )}
           </button>
-          <span
-            className={`text-xs ${isLiked ? "text-redPigment" : "text-gray"}`}
-          >
+          <span className={`text-xs ${isLiked ? 'text-redPigment' : 'text-gray'}`}>
             {voteCount}
           </span>
         </div>

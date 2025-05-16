@@ -1,8 +1,5 @@
-// src/store/socketSlice.ts
-import { getSocket } from "@/lib/socket";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
-import { RootState } from "./store";
+import { getSocket } from '@/lib/socket';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SocketState {
   connected: boolean;
@@ -13,26 +10,23 @@ const initialState: SocketState = {
 };
 
 export const socketSlice = createSlice({
-  name: "socket",
+  name: 'socket',
   initialState,
   reducers: {
-    connectSocket: (
-      state,
-      action: PayloadAction<{ token: string; user_id: string }>
-    ) => {
+    connectSocket: (state, action: PayloadAction<{ token: string; user_id: string }>) => {
       const { token, user_id } = action.payload;
       const socket = getSocket(token);
-      socket.emit("register", {
-        user_id: action.payload.user_id,
+      socket.emit('register', {
+        user_id,
       });
 
-      socket.on("disconnect", () => {
+      socket.on('disconnect', () => {
         state.connected = false;
-        console.log("Socket disconnected");
+        console.log('Socket disconnected');
       });
 
-      socket.on("error", (error) => {
-        console.error("Socket registration error:", error);
+      socket.on('error', (error) => {
+        console.error('Socket registration error:', error);
       });
     },
 

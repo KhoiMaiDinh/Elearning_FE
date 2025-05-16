@@ -1,4 +1,4 @@
-import { UserType } from "./userType";
+import { UserType } from './userType';
 
 export interface CommunityThread {
   id: string;
@@ -14,6 +14,13 @@ export interface CommunityThread {
       key: string;
     };
   };
+  lecture:{
+    section: {
+      course: {
+        title: string;
+      }
+    }
+  }
 }
 
 export interface CommunityThreadReply {

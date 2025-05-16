@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import Hls from "hls.js";
-import { APIUpsertProgressItemCourse } from "@/utils/course";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useRef, useState } from 'react';
+import Hls from 'hls.js';
+import { APIUpsertProgressItemCourse } from '@/utils/course';
+import { cn } from '@/lib/utils';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -22,9 +22,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hls, setHls] = useState<Hls | null>(null);
-  const [qualityLevels, setQualityLevels] = useState<
-    { id: number; label: string }[]
-  >([]);
+  const [qualityLevels, setQualityLevels] = useState<{ id: number; label: string }[]>([]);
   const [selectedQuality, setSelectedQuality] = useState<number>(-1);
   const [showQualityMenu, setShowQualityMenu] = useState<boolean>(false);
   // Lưu tiến độ
@@ -50,7 +48,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         const levels = hlsInstance.levels.map((level, index) => {
           return {
             id: index,
-            label: level.bitrate === 1000000 ? "480p" : "1080p",
+            label: level.bitrate === 1000000 ? '480p' : '1080p',
           };
         });
         setQualityLevels(levels);
@@ -63,7 +61,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsInstance.destroy();
         saveProgress();
       };
-    } else if (video.canPlayType("application/x-mpegURL")) {
+    } else if (video.canPlayType('application/x-mpegURL')) {
       video.src = videoUrl;
     }
   }, [videoUrl]);
@@ -74,21 +72,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!video) return;
 
     const seekWhenReady = () => {
-      if (
-        typeof progress === "number" &&
-        progress > 0 &&
-        progress < 100 &&
-        video.duration
-      ) {
+      if (typeof progress === 'number' && progress > 0 && progress < 100 && video.duration) {
         const time = (progress / 100) * video.duration;
         video.currentTime = time;
       }
     };
 
-    video.addEventListener("loadedmetadata", seekWhenReady);
+    video.addEventListener('loadedmetadata', seekWhenReady);
 
     return () => {
-      video.removeEventListener("loadedmetadata", seekWhenReady);
+      video.removeEventListener('loadedmetadata', seekWhenReady);
     };
   }, [progress]);
 
@@ -98,23 +91,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!video || !lecture_id) return;
 
     const handlePause = () => saveProgress();
-    const handleEnded = () =>
-      APIUpsertProgressItemCourse(lecture_id, { watch_time: 100 });
+    const handleEnded = () => APIUpsertProgressItemCourse(lecture_id, { watch_time: 100 });
     const handleBeforeUnload = () => saveProgress();
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") saveProgress();
+      if (document.visibilityState === 'hidden') saveProgress();
     };
 
-    video.addEventListener("pause", handlePause);
-    video.addEventListener("ended", handleEnded);
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    video.addEventListener('pause', handlePause);
+    video.addEventListener('ended', handleEnded);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      video.removeEventListener("pause", handlePause);
-      video.removeEventListener("ended", handleEnded);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      video.removeEventListener('pause', handlePause);
+      video.removeEventListener('ended', handleEnded);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [lecture_id]);
 
@@ -156,9 +148,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       <li
                         onClick={() => handleQualitySelect(-1)}
                         className={cn(
-                          "cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700",
-                          selectedQuality === -1 &&
-                            "font-semibold text-blue-600"
+                          'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
+                          selectedQuality === -1 && 'font-semibold text-blue-600'
                         )}
                       >
                         Tự động
@@ -168,9 +159,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                           key={level.id}
                           onClick={() => handleQualitySelect(level.id)}
                           className={cn(
-                            "cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700",
-                            selectedQuality === level.id &&
-                              "font-semibold text-blue-600"
+                            'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
+                            selectedQuality === level.id && 'font-semibold text-blue-600'
                           )}
                         >
                           {level.label}
@@ -184,7 +174,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </>
         ) : (
           <img
-            src={coverPhoto || "/placeholder-video.jpg"}
+            src={coverPhoto || '/placeholder-video.jpg'}
             alt={title}
             className="w-full h-full object-cover rounded-md"
           />

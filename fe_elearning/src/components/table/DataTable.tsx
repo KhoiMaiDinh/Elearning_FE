@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   SortingState,
   getSortedRowModel,
   ColumnFiltersState,
   getFilteredRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -18,14 +17,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Input } from "../ui/input";
-import Pagination from "../pagination/Pagination";
+} from '@/components/ui/table';
+import Pagination from '../pagination/Pagination';
 
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
-import { useDispatch, useSelector } from "react-redux";
-import Image from "next/image";
-import SkeletonTable from "../skeleton/SkeletonTable";
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
+import Image from 'next/image';
+import SkeletonTable from '../skeleton/SkeletonTable';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,7 +50,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterSearch,
+  // filterSearch,
   titleTable,
   totalItems,
   loading,
@@ -62,18 +59,16 @@ export function DataTable<TData, TValue>({
   setCurrentPage,
   setItemsPerPage,
   onClickAddNew,
-  children,
-  openValue,
-  onClickOpenFilter,
-  filter = true,
+  // children,
+  // openValue,
+  // onClickOpenFilter,
+  // filter = true,
 }: // onClickRefresh,
 DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = React.useState<any>({});
-  const [showAlert, setShowAlert] = useState(false); // Trạng thái hiển thị thông báo
+  const [_showAlert, _setShowAlert] = useState(false);
 
   const table = useReactTable({
     data,
@@ -93,9 +88,9 @@ DataTableProps<TData, TValue>) {
   });
 
   const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage && setItemsPerPage(Number(value));
+    setItemsPerPage?.(Number(value));
   };
-  const totalRows = data ? data.length : 0;
+  const _totalRows = data ? data.length : 0;
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-md border border-lightSilver p-4">
@@ -106,17 +101,9 @@ DataTableProps<TData, TValue>) {
 
         <div className="flex flex-row gap-4">
           {onClickAddNew && (
-            <Button
-              style={{ backgroundColor: "#7152F3", color: "white" }}
-              onClick={onClickAddNew}
-            >
+            <Button style={{ backgroundColor: '#7152F3', color: 'white' }} onClick={onClickAddNew}>
               <div className="flex items-center gap-2">
-                <Image
-                  src={"/icons/ic_add_white.png"}
-                  alt="add"
-                  width={12}
-                  height={12}
-                />
+                <Image src={'/icons/ic_add_white.png'} alt="add" width={12} height={12} />
                 <span>Thêm mới</span>
               </div>
             </Button>
@@ -133,23 +120,19 @@ DataTableProps<TData, TValue>) {
               {table?.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => {
-                    const isLastColumn =
-                      index === headerGroup.headers.length - 1;
+                    const isLastColumn = index === headerGroup.headers.length - 1;
                     return (
                       <TableHead
                         key={header.id}
                         className={`text-center font-sans font-semibold dark:text-white text-persianIndigo ${
                           isLastColumn
-                            ? "sticky right-0 top-0 z-20 bg-majorelleBlue20"
-                            : "z-10 bg-majorelleBlue20"
+                            ? 'sticky right-0 top-0 z-20 bg-majorelleBlue20'
+                            : 'z-10 bg-majorelleBlue20'
                         }`}
                       >
                         {header.isPlaceholder
                           ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                          : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableHead>
                     );
                   })}
@@ -159,30 +142,25 @@ DataTableProps<TData, TValue>) {
             <TableBody>
               {table && table.getRowModel().rows?.length > 0 ? (
                 table.getRowModel().rows.map((row, index) => {
-                  const isLastColumn =
-                    index === table.getRowModel().rows.length - 1;
+                  const _isLastColumn = index === table.getRowModel().rows.length - 1;
                   return (
                     <TableRow
                       className={`text-center dark:text-white text-persianIndigo font-normal`}
                       key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
+                      data-state={row.getIsSelected() && 'selected'}
                     >
                       {row.getVisibleCells().map((cell, index) => {
-                        const isLastColumn =
-                          index === row.getVisibleCells().length - 1;
+                        const isLastColumn = index === row.getVisibleCells().length - 1;
                         return (
                           <TableCell
                             key={cell.id}
                             className={`${
                               isLastColumn
-                                ? "sticky right-0 top-0 z-20 bg-white dark:bg-eerieBlack"
-                                : "z-10"
+                                ? 'sticky right-0 top-0 z-20 bg-white dark:bg-eerieBlack'
+                                : 'z-10'
                             }`}
                           >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         );
                       })}
@@ -191,10 +169,7 @@ DataTableProps<TData, TValue>) {
                 })
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
@@ -207,12 +182,9 @@ DataTableProps<TData, TValue>) {
       {currentPage && (
         <div className="flex w-full">
           <div className="flex w-full flex-row justify-between gap-5">
-            {" "}
+            {' '}
             <div className="flex lg:w-1/4">
-              <Select
-                defaultValue="10"
-                onValueChange={handleItemsPerPageChange}
-              >
+              <Select defaultValue="10" onValueChange={handleItemsPerPageChange}>
                 <SelectTrigger className="h-[30px] w-[70px] border border-lightSilver">
                   {itemsPerPage}
                 </SelectTrigger>
@@ -225,9 +197,7 @@ DataTableProps<TData, TValue>) {
             </div>
             <div className="flex items-center justify-between lg:w-1/4">
               <div className="item-starts flex">
-                <p className="text-sm text-LavenderIndigo dark:text-white">
-                  Tổng: {totalItems}
-                </p>
+                <p className="text-sm text-LavenderIndigo dark:text-white">Tổng: {totalItems}</p>
               </div>
             </div>
             <div className="flex justify-end lg:w-1/4">

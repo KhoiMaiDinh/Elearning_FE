@@ -1,14 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import {
-  PlayCircle,
-  ChevronDown,
-  ChevronRight,
-  CheckCircle,
-  Lock,
-} from "lucide-react";
-import { CourseItem, Section } from "@/types/courseType";
+import React, { useState } from 'react';
+import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
+import { CourseItem, Section } from '@/types/courseType';
 
 interface CourseItemListProps {
   sections: Section[];
@@ -36,8 +30,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
 
   // Check nếu có bài con đang active thì section cha cũng sáng
   const isChildActive = (section: Section) =>
-    section?.items?.some((item) => item?.title === currentCourseItemId) ||
-    false;
+    section?.items?.some((item) => item?.title === currentCourseItemId) || false;
 
   if (!sections || sections.length === 0) {
     return (
@@ -53,10 +46,10 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
     <div className="h-full overflow-y-auto px-2 pb-6">
       <h3
         className={`py-4 px-3 text-lg font-semibold text-majorelleBlue dark:text-white/80 ${
-          !isExpanded ? "text-center" : ""
+          !isExpanded ? 'text-center' : ''
         }`}
       >
-        {isExpanded ? "Danh mục bài học" : ""}
+        {isExpanded ? 'Danh mục bài học' : ''}
       </h3>
 
       <div className="space-y-4">
@@ -73,8 +66,8 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                   onClick={() => toggleSection(sectionIndex)}
                   className={`flex items-center justify-between cursor-pointer px-3 py-2 rounded-md transition-colors ${
                     sectionActive
-                      ? "bg-majorelleBlue/20 dark:bg-majorelleBlue/30"
-                      : "bg-majorelleBlue/10 dark:bg-majorelleBlue/10 hover:bg-majorelleBlue/20"
+                      ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
+                      : 'bg-majorelleBlue/10 dark:bg-majorelleBlue/10 hover:bg-majorelleBlue/20'
                   }`}
                 >
                   <h4 className="text-sm font-medium text-cosmicCobalt dark:text-AntiFlashWhite">
@@ -99,34 +92,30 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                     return (
                       <li
                         key={courseItem.title}
-                        onClick={() =>
-                          !isLocked && onCourseItemSelect(courseItem)
-                        }
+                        onClick={() => !isLocked && onCourseItemSelect(courseItem)}
                         className={`group px-3 py-2 flex items-center justify-between rounded-md ${
-                          isLocked
-                            ? "cursor-not-allowed opacity-60"
-                            : "cursor-pointer"
+                          isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
                         } transition-colors ${
                           isActive
-                            ? "bg-majorelleBlue/20 dark:bg-majorelleBlue/30"
+                            ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
                             : !isLocked
-                            ? "hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10"
-                            : ""
+                              ? 'hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10'
+                              : ''
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <PlayCircle
                             size={20}
                             className={`text-majorelleBlue flex-shrink-0 transition-opacity group-hover:opacity-90 ${
-                              isActive ? "opacity-100" : "opacity-80"
+                              isActive ? 'opacity-100' : 'opacity-80'
                             }`}
                           />
                           {isExpanded && (
                             <span
                               className={`text-sm ${
                                 isActive
-                                  ? "font-semibold text-majorelleBlue"
-                                  : "text-darkSilver dark:text-lightSilver"
+                                  ? 'font-semibold text-majorelleBlue'
+                                  : 'text-darkSilver dark:text-lightSilver'
                               }`}
                             >
                               {courseItem.title}
@@ -138,19 +127,12 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                           isRegistered &&
                           courseItem.progresses &&
                           courseItem.progresses[0]?.watch_time_in_percentage &&
-                          courseItem.progresses[0]?.watch_time_in_percentage >
-                            80 && (
-                            <CheckCircle
-                              size={16}
-                              className="text-vividMalachite flex-shrink-0"
-                            />
+                          courseItem.progresses[0]?.watch_time_in_percentage > 80 && (
+                            <CheckCircle size={16} className="text-vividMalachite flex-shrink-0" />
                           )}
                         {/* 🔒 Lock icon for non-preview lessons when not registered */}
                         {isExpanded && isLocked && (
-                          <Lock
-                            size={16}
-                            className="text-gray-400 flex-shrink-0"
-                          />
+                          <Lock size={16} className="text-gray-400 flex-shrink-0" />
                         )}
                       </li>
                     );

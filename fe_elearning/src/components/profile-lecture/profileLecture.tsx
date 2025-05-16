@@ -1,46 +1,46 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useForm, Controller, FieldValues } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { MediaType } from "@/types/mediaType";
-import InputRegisterLecture from "../inputComponent/inputRegisterLecture";
-import TextAreaRegisterLecture from "../inputComponent/textAreaRegisterLecture";
-import { Button } from "../ui/button";
-import { RegisterLectureForm, Lecture } from "@/types/registerLectureFormType";
-import { X } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/constants/store";
-import { APIRegisterLecture } from "@/utils/lecture";
-import { APIGetPresignedUrl } from "@/utils/storage";
-import axios from "axios";
-import { APIGetCategory } from "@/utils/category";
-import { Category } from "@/types/categoryType";
-import SelectRegister from "../selectComponent/selectRegister";
-import AlertSuccess from "../alert/AlertSuccess";
-import AlertError from "../alert/AlertError";
-import { setUser } from "@/constants/userSlice";
-import AnimateWrapper from "../animations/animateWrapper";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, FieldValues } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { MediaType } from '@/types/mediaType';
+import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
+import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
+import { Button } from '../ui/button';
+import { RegisterLectureForm, Lecture } from '@/types/registerLectureFormType';
+import { X } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { APIRegisterLecture } from '@/utils/lecture';
+import { APIGetPresignedUrl } from '@/utils/storage';
+import axios from 'axios';
+import { APIGetCategory } from '@/utils/category';
+import { Category } from '@/types/categoryType';
+import SelectRegister from '../selectComponent/selectRegister';
+import AlertSuccess from '../alert/AlertSuccess';
+import AlertError from '../alert/AlertError';
+import { setUser } from '@/constants/userSlice';
+import AnimateWrapper from '../animations/animateWrapper';
 
 // Schema validation với Yup
 const schema = yup.object().shape({
   category: yup.object().shape({
-    slug: yup.string().required("Lĩnh vực chuyên môn không được để trống"),
+    slug: yup.string().required('Lĩnh vực chuyên môn không được để trống'),
   }),
-  biography: yup.string().required("Mô tả kinh nghiệm không được để trống"),
+  biography: yup.string().required('Mô tả kinh nghiệm không được để trống'),
   certificates: yup
     .array()
     .of(yup.string().nullable())
     .required()
-    .min(1, "Bằng cấp/chứng chỉ không được để trống"),
-  headline: yup.string().required("Tiêu đề không được để trống"),
-  resume: yup.string().required("CV không được để trống"),
+    .min(1, 'Bằng cấp/chứng chỉ không được để trống'),
+  headline: yup.string().required('Tiêu đề không được để trống'),
+  resume: yup.string().required('CV không được để trống'),
   website_url: yup.string().nullable().optional(),
   facebook_url: yup.string().nullable().optional(),
   linkedin_url: yup.string().nullable().optional(),
-  bankAccount: yup.string().required("Số tài khoản không được để trống"),
-  bankName: yup.string().required("Ngân hàng không được để trống"),
-  accountHolder: yup.string().required("Tên chủ tài khoản không được để trống"),
+  bankAccount: yup.string().required('Số tài khoản không được để trống'),
+  bankName: yup.string().required('Ngân hàng không được để trống'),
+  accountHolder: yup.string().required('Tên chủ tài khoản không được để trống'),
 }) as yup.ObjectSchema<RegisterLectureForm>;
 
 interface FilePreview {
@@ -49,7 +49,7 @@ interface FilePreview {
   file?: File;
 }
 
-interface FileData {
+interface _FileData {
   certificate_file: {
     key: string;
     bucket: string;
@@ -69,16 +69,16 @@ const ProfileLecture = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       category: {
-        slug: "",
+        slug: '',
       },
-      biography: "",
-      headline: "",
+      biography: '',
+      headline: '',
       resume: undefined,
       website_url: null,
       certificates: [],
-      bankAccount: "",
-      bankName: "",
-      accountHolder: "",
+      bankAccount: '',
+      bankName: '',
+      accountHolder: '',
       facebook_url: null,
       linkedin_url: null,
     },
@@ -90,50 +90,45 @@ const ProfileLecture = () => {
   const [loading, setLoading] = useState(false);
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState("");
+  const [alertDescription, setAlertDescription] = useState('');
   const [category, setCategory] = useState<{ id: string; value: string }[]>([]);
-  const [certificatePreviews, setCertificatePreviews] = useState<FilePreview[]>(
-    []
-  );
+  const [certificatePreviews, setCertificatePreviews] = useState<FilePreview[]>([]);
   const [resumePreview, setResumePreview] = useState<FilePreview | null>(null);
 
-  const certificateNames = watch("certificates");
-  const resumeName = watch("resume");
+  const certificateNames = watch('certificates');
+  const _resumeName = watch('resume');
 
   // Load initial data from instructor profile
   useEffect(() => {
     if (userInfo?.instructor_profile) {
       const profile = userInfo.instructor_profile as Lecture;
 
-      setValue("category.slug", profile.category.slug);
-      setValue("biography", profile.biography);
-      setValue("headline", profile.headline);
-      setValue("resume", {
-        id: profile.resume?.key || "",
-        key: profile.resume?.key || "",
-        bucket: profile.resume?.bucket || "",
-        status: profile.resume?.status || "",
-        rejection_reason: profile.resume?.rejection_reason || "",
+      setValue('category.slug', profile.category.slug);
+      setValue('biography', profile.biography);
+      setValue('headline', profile.headline);
+      setValue('resume', {
+        id: profile.resume?.key || '',
+        key: profile.resume?.key || '',
+        bucket: profile.resume?.bucket || '',
+        status: profile.resume?.status || '',
+        rejection_reason: profile.resume?.rejection_reason || '',
       });
-      setValue("website_url", profile.website_url);
-      setValue("facebook_url", profile.facebook_url);
-      setValue("linkedin_url", profile.linkedin_url);
-      setValue("bankAccount", profile.bankAccount);
-      setValue("bankName", profile.bankName);
-      setValue("accountHolder", profile.accountHolder);
+      setValue('website_url', profile.website_url);
+      setValue('facebook_url', profile.facebook_url);
+      setValue('linkedin_url', profile.linkedin_url);
+      setValue('bankAccount', profile.bankAccount);
+      setValue('bankName', profile.bankName);
+      setValue('accountHolder', profile.accountHolder);
 
       // Set certificates
-      const certKeys =
-        profile.certificates?.map((cert: MediaType) => cert.key) || [];
-      setValue("certificates", profile.certificates);
+      const _certKeys = profile.certificates?.map((cert: MediaType) => cert.key) || [];
+      setValue('certificates', profile.certificates);
 
       // Set previews
       setCertificatePreviews(
         profile.certificates?.map((cert: MediaType) => ({
-          url:
-            (process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT || "") +
-            (cert.key || ""),
-          name: cert.key || "",
+          url: (process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT || '') + (cert.key || ''),
+          name: cert.key || '',
         })) || []
       );
 
@@ -153,7 +148,7 @@ const ProfileLecture = () => {
   }, []);
 
   const handleGetCategory = async () => {
-    const response = await APIGetCategory({ language: "vi" });
+    const response = await APIGetCategory({ language: 'vi' });
     if (response?.status === 200) {
       const data = response?.data?.map((item: Category) => ({
         id: item.slug,
@@ -164,39 +159,36 @@ const ProfileLecture = () => {
   };
 
   // Upload file to MinIO
-  const uploadToMinIO = async (
-    file: File,
-    entity_property: string
-  ): Promise<string> => {
+  const uploadToMinIO = async (file: File, entity_property: string): Promise<string> => {
     try {
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
-        entity: "instructor",
+        entity: 'instructor',
         entity_property: entity_property,
       });
-      const { postURL, formData } = presignedData?.data;
+      const { postURL, formData } = presignedData?.data ?? {};
 
       const uploadFormData = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         uploadFormData.append(key, value as string);
       });
-      uploadFormData.append("file", file);
+      uploadFormData.append('file', file);
 
       const response = await axios.post(postURL, uploadFormData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 204 || response.status === 200) {
-        const key = uploadFormData.get("key");
-        if (!key) throw new Error("Missing key in form data");
+        const key = uploadFormData.get('key');
+        if (!key) throw new Error('Missing key in form data');
         return key.toString();
       } else {
-        throw new Error("Upload thất bại");
+        throw new Error('Upload thất bại');
       }
     } catch (error) {
-      console.error("Error uploading to MinIO:", error);
+      console.error('Error uploading to MinIO:', error);
       throw error;
     }
   };
@@ -212,27 +204,28 @@ const ProfileLecture = () => {
           name: file.name,
           file: file,
         });
-        setValue("resume", {
+        setValue('resume', {
           id: file.name,
           key: file.name,
-          bucket: "",
-          status: "",
+          bucket: '',
+          status: '',
           rejection_reason: undefined,
         });
       };
       reader.readAsDataURL(file);
 
       // Upload when file is selected
-      const resumeUrl = await uploadToMinIO(file, "resume");
-      setValue("resume", {
+      const resumeUrl = await uploadToMinIO(file, 'resume');
+      setValue('resume', {
         id: resumeUrl,
         key: resumeUrl,
-        bucket: "",
-        status: "",
+        bucket: '',
+        status: '',
         rejection_reason: undefined,
       });
     } catch (error) {
-      setAlertDescription("Không thể upload CV");
+      console.log(error);
+      setAlertDescription('Không thể upload CV');
       setShowAlertError(true);
       setTimeout(() => setShowAlertError(false), 3000);
     }
@@ -259,22 +252,23 @@ const ProfileLecture = () => {
         reader.readAsDataURL(file);
 
         // Upload when file is selected
-        const fileUrl = await uploadToMinIO(file, "certificates");
+        const fileUrl = await uploadToMinIO(file, 'certificates');
         currentCertificates.push({
           id: fileUrl,
           key: fileUrl,
-          bucket: "",
-          status: "",
+          bucket: '',
+          status: '',
           rejection_reason: undefined,
         });
       } catch (error) {
-        setAlertDescription("Không thể upload chứng chỉ");
+        console.log(error);
+        setAlertDescription('Không thể upload chứng chỉ');
         setShowAlertError(true);
         setTimeout(() => setShowAlertError(false), 3000);
         return;
       }
     }
-    setValue("certificates", currentCertificates);
+    setValue('certificates', currentCertificates);
   };
 
   // Remove certificate
@@ -282,17 +276,17 @@ const ProfileLecture = () => {
     const updatedPreviews = certificatePreviews.filter((_, i) => i !== index);
     setCertificatePreviews(updatedPreviews);
     const updatedNames = certificateNames.filter((_, i) => i !== index);
-    setValue("certificates", updatedNames);
+    setValue('certificates', updatedNames);
   };
 
   // Remove resume
   const removeResume = () => {
     setResumePreview(null);
-    setValue("resume", {
-      id: "",
-      key: "",
-      bucket: "",
-      status: "",
+    setValue('resume', {
+      id: '',
+      key: '',
+      bucket: '',
+      status: '',
       rejection_reason: undefined,
     });
   };
@@ -303,7 +297,7 @@ const ProfileLecture = () => {
       try {
         const response = await APIRegisterLecture(data);
         if (response?.status === 200) {
-          setAlertDescription("Cập nhật thành công");
+          setAlertDescription('Cập nhật thành công');
           setShowAlertSuccess(true);
           setLoading(false);
           setDisable(true);
@@ -318,7 +312,7 @@ const ProfileLecture = () => {
             setShowAlertSuccess(false);
           }, 3000);
         } else {
-          setAlertDescription("Cập nhật thất bại");
+          setAlertDescription('Cập nhật thất bại');
           setShowAlertError(true);
           setTimeout(() => {
             setShowAlertError(false);
@@ -326,7 +320,8 @@ const ProfileLecture = () => {
           setLoading(false);
         }
       } catch (err) {
-        setAlertDescription("Cập nhật thất bại");
+        console.log(err);
+        setAlertDescription('Cập nhật thất bại');
         setShowAlertError(true);
         setTimeout(() => {
           setShowAlertError(false);
@@ -354,10 +349,7 @@ const ProfileLecture = () => {
         </div>
       )}
       <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-full h-full gap-2 flex flex-col"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full gap-2 flex flex-col">
           {/* Thông tin cá nhân */}
           <div className="bg-white dark:bg-black50 shadow-md rounded-lg p-3 border">
             <p className="text-[16px] font-sans font-medium text-black dark:text-AntiFlashWhite">
@@ -366,14 +358,10 @@ const ProfileLecture = () => {
             <div className="grid lg:grid-cols-2 grid-cols-1 md:grid-cols-2 w-full p-3 gap-3">
               <InputRegisterLecture
                 labelText="Họ và tên"
-                value={userInfo?.first_name + " " + userInfo?.last_name}
+                value={userInfo?.first_name + ' ' + userInfo?.last_name}
                 disabled={true}
               />
-              <InputRegisterLecture
-                labelText="Email"
-                value={userInfo?.email}
-                disabled={true}
-              />
+              <InputRegisterLecture labelText="Email" value={userInfo?.email} disabled={true} />
             </div>
           </div>
 
@@ -396,7 +384,7 @@ const ProfileLecture = () => {
                       disabled={disable}
                       value={field.value}
                       onValueChange={(e) => {
-                        setValue("category.slug", e);
+                        setValue('category.slug', e);
                       }}
                     />
                   )}
@@ -466,9 +454,7 @@ const ProfileLecture = () => {
                     {resumePreview && (
                       <div className="mt-2 border rounded p-2">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-gray-600">
-                            {resumePreview.name}
-                          </span>
+                          <span className="text-sm text-gray-600">{resumePreview.name}</span>
                         </div>
                         <iframe
                           src={`${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resumePreview.url}`}
@@ -504,10 +490,7 @@ const ProfileLecture = () => {
                     {certificatePreviews.length > 0 && (
                       <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {certificatePreviews.map((preview, index) => (
-                          <div
-                            key={index}
-                            className="relative border rounded p-2"
-                          >
+                          <div key={index} className="relative border rounded p-2">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-gray-600 truncate max-w-[150px]">
                                 {preview.name}
@@ -639,7 +622,7 @@ const ProfileLecture = () => {
                 className="w-32 bg-custom-gradient-button-violet hover:shadow-md hover:scale-105 transition-all duration-300 text-white dark:hover:shadow-sm dark:hover:shadow-white hover:bg-majorelleBlue70 rounded-md font-sans font-medium text-[16px] p-2"
                 disabled={loading}
               >
-                {loading ? "Đang gửi..." : "Gửi xét duyệt"}
+                {loading ? 'Đang gửi...' : 'Gửi xét duyệt'}
               </Button>
             )}
           </div>

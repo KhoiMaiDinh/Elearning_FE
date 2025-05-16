@@ -1,5 +1,5 @@
-"use client";
-import axios from "axios";
+'use client';
+import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -7,9 +7,9 @@ const axiosInstance = axios.create({
 
 // Gắn access token vào mỗi request
 axiosInstance.interceptors.request.use(async (config) => {
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem('access_token');
   if (token) {
-    config.headers["authorization"] = `Bearer ${token}`;
+    config.headers['authorization'] = `Bearer ${token}`;
   }
   return config;
 });
@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
       const { status, data } = error.response;
 
       // Check for banned user
-      if (status === 401 && data.errorCode === "auth.error.banned") {
+      if (status === 401 && data.errorCode === 'auth.error.banned') {
         // Show a popup or redirect to a banned page
         window.alert(data.message); // You can replace this with a redirect if needed
         return Promise.reject(error);
@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      typeof window !== "undefined"
+      typeof window !== 'undefined'
     ) {
       originalRequest._retry = true;
 
@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers["authorization"] = `Bearer ${token}`;
+            originalRequest.headers['authorization'] = `Bearer ${token}`;
             return axiosInstance(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -70,33 +70,30 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem("refresh_token");
-        if (!refreshToken) throw new Error("Missing refresh token");
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) throw new Error('Missing refresh token');
 
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          { refresh_token: refreshToken }
-        );
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
 
         const newAccessToken = res.data.access_token;
 
         // Lưu token mới
-        localStorage.setItem("access_token", newAccessToken);
-        axiosInstance.defaults.headers.common[
-          "authorization"
-        ] = `Bearer ${newAccessToken}`;
+        localStorage.setItem('access_token', newAccessToken);
+        axiosInstance.defaults.headers.common['authorization'] = `Bearer ${newAccessToken}`;
 
         processQueue(null, newAccessToken);
 
         // Gửi lại request cũ
-        originalRequest.headers["authorization"] = `Bearer ${newAccessToken}`;
+        originalRequest.headers['authorization'] = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (err) {
         processQueue(err, null);
 
         // Nếu refresh thất bại => logout
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
 
         // window.location.href = "/login";
         return Promise.reject(err);

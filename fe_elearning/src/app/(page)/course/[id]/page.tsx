@@ -1,18 +1,14 @@
-"use client";
-import AnimateWrapper from "@/components/animations/animateWrapper";
-import InfoBlockCourse from "@/components/course/infoBlockCourse";
-import InfoCourse from "@/components/course/infoCourse";
-import { RootState } from "@/constants/store";
-import { CourseForm } from "@/types/courseType";
-import {
-  APIGetCourseById,
-  APIGetEnrolledCourse,
-  APIGetFullCourse,
-} from "@/utils/course";
-import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Loader2 } from "lucide-react";
+'use client';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import InfoBlockCourse from '@/components/course/infoBlockCourse';
+import InfoCourse from '@/components/course/infoCourse';
+import { RootState } from '@/constants/store';
+import { CourseForm } from '@/types/courseType';
+import { APIGetCourseById, APIGetEnrolledCourse, APIGetFullCourse } from '@/utils/course';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Loader2 } from 'lucide-react';
 
 const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -32,9 +28,9 @@ const Page = () => {
     }
   }, [userInfo, dataCourse]);
 
-  const handleGetDetailCourse = async () => {
+  const handleGetDetailCourse = useCallback(async () => {
     setLoading(true);
-    const response = await APIGetCourseById(id || "", {
+    const response = await APIGetCourseById(id || '', {
       with_sections: true,
       with_thumbnail: true,
     });
@@ -42,35 +38,36 @@ const Page = () => {
       setDataCourse(response.data);
     }
     setLoading(false);
-  };
+  }, [id]);
 
-  const handleGetEnrolledCourse = async () => {
+  const handleGetEnrolledCourse = useCallback(async () => {
     setLoading(true);
     const response = await APIGetEnrolledCourse();
     if (response && response.data) {
       setIsRegistered(response.data.some((item: any) => item.id === id));
     }
     setLoading(false);
-  };
+  }, [id]);
   useEffect(() => {
     // handleGetCourseById();
     handleGetDetailCourse();
     handleGetEnrolledCourse();
-  }, []);
+  }, [handleGetDetailCourse, handleGetEnrolledCourse]);
 
-  const handleGetFullCourse = async () => {
+  const handleGetFullCourse = useCallback(async () => {
     setLoading(true);
-    const response = await APIGetFullCourse(id || "");
+    const response = await APIGetFullCourse(id || '');
     if (response && response.data) {
       setDataCourse(response.data);
     }
-  };
+    // setLoading(false); // Don’t forget to stop loading
+  }, [id]);
 
   useEffect(() => {
     if (isRegistered) {
       handleGetFullCourse();
     }
-  }, [isRegistered]);
+  }, [isRegistered, handleGetFullCourse]);
 
   useEffect(() => {
     if (dataCourse && userInfo) {
@@ -90,7 +87,7 @@ const Page = () => {
                 course={dataCourse}
                 lecture={
                   dataCourse.instructor?.user?.first_name +
-                  " " +
+                  ' ' +
                   dataCourse.instructor?.user?.last_name
                 }
               />
@@ -133,10 +130,10 @@ const Page = () => {
             <div className="lg:w-1/4">
               <InfoBlockCourse
                 thumbnail={dataCourse?.thumbnail?.key}
-                id={id || ""}
+                id={id || ''}
                 isRegistered={isRegistered}
                 price={dataCourse?.price}
-                level={dataCourse?.level || ""}
+                level={dataCourse?.level || ''}
                 totalLessons={
                   dataCourse?.sections?.reduce(
                     (total, section) => total + section.items.length,

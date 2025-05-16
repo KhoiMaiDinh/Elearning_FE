@@ -1,5 +1,5 @@
 // components/ThreeBodyLoader.tsx
-import React from "react";
+import React from 'react';
 
 const Loader: React.FC = () => {
   return (
@@ -8,13 +8,13 @@ const Loader: React.FC = () => {
         <div className="absolute w-[30%] h-full bottom-[5%] left-0 transform rotate-[60deg] origin-[50%_85%]">
           <div
             className="absolute bottom-0 left-0 w-full pb-[100%] bg-[#5D3FD3] rounded-full animate-wobble1"
-            style={{ animationDelay: "-0.24s" }} // calc(0.8s * -0.3)
+            style={{ animationDelay: '-0.24s' }} // calc(0.8s * -0.3)
           />
         </div>
         <div className="absolute w-[30%] h-full bottom-[5%] right-0 transform -rotate-[60deg] origin-[50%_85%]">
           <div
             className="absolute bottom-0 left-0 w-full pb-[100%] bg-[#5D3FD3] rounded-full animate-wobble1"
-            style={{ animationDelay: "-0.12s" }} // calc(0.8s * -0.15)
+            style={{ animationDelay: '-0.12s' }} // calc(0.8s * -0.15)
           />
         </div>
         <div className="absolute w-[30%] h-full bottom-[-5%] left-0 transform translate-x-[116.666%]">

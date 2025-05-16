@@ -1,13 +1,13 @@
-import axiosInstance from "./axios";
+import axiosInstance from './axios';
 const APICreateOrder = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/orders", data);
+    const response = await axiosInstance.post('/orders', data);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during create order:", err);
+    console.error('Error during create order:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -20,7 +20,7 @@ const APIGetOrderById = async (id: string) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get order by id:", err);
+    console.error('Error during get order by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -28,11 +28,9 @@ const APIGetOrderById = async (id: string) => {
 const APIGetListOrderByMe = async (params: { payment_status?: string }) => {
   try {
     const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
+      Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
     );
-    const response = await axiosInstance.get("/orders/me", {
+    const response = await axiosInstance.get('/orders/me', {
       params: filteredParams,
     });
     if (response.status === 200) {
@@ -43,7 +41,7 @@ const APIGetListOrderByMe = async (params: { payment_status?: string }) => {
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error("Error during get list order:", err);
+    console.error('Error during get list order:', err);
     throw err;
   }
 };
