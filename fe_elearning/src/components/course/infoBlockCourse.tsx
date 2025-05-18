@@ -43,6 +43,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       setLevelShow('Nâng cao');
     }
   }, [level]);
+  
 
   return (
     <Card className="flex flex-col lg:w-80 md:w-72 p-4 w-full items-center justify-center gap-2 md:gap-4 ">

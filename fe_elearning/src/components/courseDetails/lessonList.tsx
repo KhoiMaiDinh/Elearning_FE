@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
 import { CourseItem, Section } from '@/types/courseType';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 interface CourseItemListProps {
   sections: Section[];
   currentCourseItemId: string;
   onCourseItemSelect: (courseItem: CourseItem) => void;
   isExpanded: boolean;
   isRegistered: boolean;
+  isOwner: boolean;
 }
 
 const CourseItemList: React.FC<CourseItemListProps> = ({
@@ -18,8 +20,12 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   onCourseItemSelect,
   isExpanded,
   isRegistered,
+  isOwner,
 }) => {
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
+  const userInfo = useSelector((state: RootState) => state.user.userInfo)
+
+
 
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({
@@ -87,7 +93,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                     if (!courseItem) return null;
 
                     const isActive = courseItem.title === currentCourseItemId;
-                    const isLocked = !isRegistered && !courseItem.is_preview;
+                    const isLocked = !isRegistered && !courseItem.is_preview && !isOwner;
 
                     return (
                       <li
@@ -131,7 +137,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                             <CheckCircle size={16} className="text-vividMalachite flex-shrink-0" />
                           )}
                         {/* 🔒 Lock icon for non-preview lessons when not registered */}
-                        {isExpanded && isLocked && (
+                        {isExpanded && isLocked && !isOwner && (
                           <Lock size={16} className="text-gray-400 flex-shrink-0" />
                         )}
                       </li>

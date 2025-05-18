@@ -188,6 +188,46 @@ const APIUpsertProgressItemCourse = async (id: string, data: any) => {
   }
 };
 
+const APIAddFavoriteCourse = async (course_id: string) => {
+  try {
+    const response = await axiosInstance.post(`/courses/${course_id}/favorites`);
+    if (response.status === 201) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error('Error during add favorite course:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIRemoveFavoriteCourse = async (course_id: string) => {
+  try {
+    const response = await axiosInstance.delete(`/courses/${course_id}/favorites`);
+    if (response.status === 204) {
+      return { data: response.data, status: response.status };
+
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error('Error during remove favorite course:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIGetFavoriteCourse = async () => {
+  try {
+    const response = await axiosInstance.get(`/courses/favorites/me`);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error('Error during get favorite course:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
 export {
   APIInitCourse,
   APIGetCourseById,
@@ -201,4 +241,7 @@ export {
   APIChangeCourseStatus,
   APIGetEnrolledCourse,
   APIUpsertProgressItemCourse,
+  APIAddFavoriteCourse,
+  APIRemoveFavoriteCourse,
+  APIGetFavoriteCourse,
 };
