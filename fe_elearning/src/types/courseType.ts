@@ -20,7 +20,7 @@ export interface ResourceType {
   name: string;
 }
 
-export interface CourseItem {
+export interface TCourseItem {
   id: string;
   title: string;
   description: string;

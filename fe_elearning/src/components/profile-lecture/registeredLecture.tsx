@@ -6,6 +6,7 @@ import BankAccountLecture from './bankAccountLecture';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Overview } from './overview';
+import CouponManagement from '../../app/(page)/profile/lecture/components/couponManagement';
 const RegisteredLecture = () => {
   enum TABS {
     OVERVIEW = 'tong-quan',
@@ -13,6 +14,7 @@ const RegisteredLecture = () => {
     COURSE = 'khoa-hoc',
     STATISTIC = 'thong-ke',
     BANK_ACCOUNT = 'tai-khoan-ngan-hang',
+    COUPON_MANAGEMENT = 'ma-giam-gia',
   }
 
   const query = useSearchParams();
@@ -25,6 +27,7 @@ const RegisteredLecture = () => {
     { id: TABS.COURSE, label: 'Khóa học' },
     { id: TABS.STATISTIC, label: 'Thống kê' },
     { id: TABS.BANK_ACCOUNT, label: 'Tài khoản ngân hàng' },
+    { id: TABS.COUPON_MANAGEMENT, label: 'Mã giảm giá' },
   ];
 
   return (
@@ -65,6 +68,9 @@ const RegisteredLecture = () => {
         </div>
         <div className={activeTab === TABS.BANK_ACCOUNT ? '' : 'hidden'}>
           <BankAccountLecture />
+        </div>
+        <div className={activeTab === TABS.COUPON_MANAGEMENT ? '' : 'hidden'}>
+          <CouponManagement />
         </div>
       </div>
     </div>

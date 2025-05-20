@@ -1,6 +1,9 @@
-import Image from 'next/image';
-import React from 'react';
+'use client';
+
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Button } from '../ui/button';
 
 interface PaginationProps {
   currentPage: number;
@@ -59,45 +62,54 @@ const Pagination: React.FC<PaginationProps> = ({
   const displayedPages = getDisplayedPages();
 
   return (
-    <div className="flex-center flex flex-row items-center gap-2">
-      <div
-        className={`${currentPage === 1 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+    <nav className="flex items-center space-x-1" aria-label="Pagination">
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 rounded-md"
         onClick={() => handleChangePage(currentPage - 1)}
+        disabled={currentPage === 1}
       >
-        <Image src={'/icons/ic_arrow_left.png'} width={12} height={12} alt="arrow-left"></Image>
-      </div>
+        <ChevronLeft className="h-4 w-4" />
+        <span className="sr-only">Previous page</span>
+      </Button>
+
       {displayedPages.map((page, index) =>
         typeof page === 'number' ? (
-          <div
-            onClick={() => handleChangePage(page)}
+          <Button
             key={index}
-            className={`${
+            variant={currentPage === page ? 'default' : 'outline'}
+            size="icon"
+            className={`h-8 w-8 rounded-md ${
               currentPage === page
-                ? 'bg-majorelleBlue20'
-                : 'border dark:border-lightSilver bg-white border-darkSilver'
-            } flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-md p-1`}
+                ? 'bg-majorelleBlue  text-white'
+                : 'bg-majorelleBlue70 hover:bg-majorelleBlue'
+            }`}
+            onClick={() => handleChangePage(page)}
           >
-            <p
-              className={`font-normal ${
-                currentPage === page ? 'text-white' : 'text-LavenderIndigo'
-              }`}
-            >
-              {page}
-            </p>
-          </div>
+            {page}
+          </Button>
         ) : (
-          <div key={index} className="h-[30px] w-[30px]">
-            <p className="text-LavenderIndigo">...</p>
-          </div>
+          <span
+            key={index}
+            className="text-gray-500 flex h-8 w-8 items-center justify-center text-sm"
+          >
+            &#8230;
+          </span>
         )
       )}
-      <div
-        className={`${currentPage === maxPage ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 rounded-md"
         onClick={() => handleChangePage(currentPage + 1)}
+        disabled={currentPage === maxPage}
       >
-        <Image src={'/icons/ic_arrow_right.png'} width={12} height={12} alt="arrow-right"></Image>
-      </div>
-    </div>
+        <ChevronRight className="h-4 w-4" />
+        <span className="sr-only">Next page</span>
+      </Button>
+    </nav>
   );
 };
 

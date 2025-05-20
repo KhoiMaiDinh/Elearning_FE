@@ -32,7 +32,7 @@ import {
   APIPayoutSummary,
   APIRevenueByCourse,
   APIStudentGrowth,
-} from '@/utils/instructor-dashboard';
+} from '@/utils/instructorDashboard';
 import { useEffect, useState } from 'react';
 import {
   CourseCompletionRateType,
