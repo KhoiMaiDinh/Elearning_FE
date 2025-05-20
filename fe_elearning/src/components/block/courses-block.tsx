@@ -4,12 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Star, Users } from 'lucide-react';
+import { Heart, Star, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CourseForm } from '@/types/courseType';
 import { formatPrice } from '../formatPrice';
-
+import { APIAddFavoriteCourse, APIRemoveFavoriteCourse } from '@/utils/course';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 const CoursesBlock: React.FC<CourseForm> = ({
+  is_favorite,
   id,
   thumbnail,
   avg_rating,
@@ -26,6 +29,8 @@ const CoursesBlock: React.FC<CourseForm> = ({
   const router = useRouter();
 
   const [levelShow, setLevelShow] = useState<string>('');
+  const [isFavorite, setIsFavorite] = useState<boolean>(is_favorite || false);
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   useEffect(() => {
     switch (level) {
       case 'BEGINNER':
@@ -41,6 +46,31 @@ const CoursesBlock: React.FC<CourseForm> = ({
         setLevelShow('Không xác định');
     }
   }, [level]);
+
+  const handleAddFavorite = async () => {
+    if (id && userInfo?.id) {
+      const res = await APIAddFavoriteCourse(id);
+      if (res?.status === 201 ) {
+        setIsFavorite(true);  
+      }
+    }
+    else {
+      router.push('/login');
+    }
+  };
+
+  const handleRemoveFavorite = async () => {
+    if (id && userInfo?.id) {
+      const res = await APIRemoveFavoriteCourse(id);
+      if (res?.status === 204) {
+        setIsFavorite(false);
+      }
+    }
+    else {
+      router.push('/login');
+    }
+  };
+
   return (
     <Card
       className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
@@ -131,6 +161,15 @@ const CoursesBlock: React.FC<CourseForm> = ({
             </span>
           </div>
         )}
+
+        {
+          isFavorite ? (
+            <Heart className="w-4 h-4" fill="red" color='red' onClick={(event) => { event.stopPropagation(); handleRemoveFavorite(); }} />
+          ) : (
+            <Heart className="w-4 h-4" color='red'  onClick={(event) => { event.stopPropagation(); handleAddFavorite(); }} />
+          )
+        }
+
       </CardFooter>
     </Card>
   );

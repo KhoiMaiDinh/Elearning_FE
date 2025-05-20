@@ -63,6 +63,7 @@ export interface Translation {
   deletedAt?: string | null;
 }
 export interface CourseForm {
+  is_favorite?: boolean;
   course_id?: string;
   id?: string;
   category?: {

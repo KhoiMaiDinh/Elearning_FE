@@ -191,6 +191,7 @@ const LearnPage = () => {
                   currentCourseItemId={currentCourseItem?.title || ''}
                   onCourseItemSelect={(courseItem) => setCurrentCourseItem(courseItem)}
                   isExpanded={isSidebarOpen}
+                  isOwner={isOwner}
                 />
               )}
             </div>
@@ -220,7 +221,7 @@ const LearnPage = () => {
           </div>
 
           {/* Tabs - Only show when registered */}
-          {courseData && isRegistered && (
+          {courseData && (isRegistered || isOwner) && (
             <div className="">
               <CourseTabs
                 currentCourseItem={currentCourseItem}
@@ -236,7 +237,7 @@ const LearnPage = () => {
             </div>
           )}
 
-          {!isRegistered && (
+          {!isRegistered && !isOwner && (
             <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md">
               <Button
                 variant="outline"
