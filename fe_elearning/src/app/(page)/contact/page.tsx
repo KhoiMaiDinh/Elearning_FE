@@ -34,7 +34,7 @@ const Page = () => {
           </AnimateWrapper>
         </div>
         <div className="col-span-1 flex justify-center md:justify-start">
-          <Image
+          <img
             src="/images/contact_bg.png"
             alt="Khóa học"
             className="md:w-[300px] w-[200px] rounded-xl"
