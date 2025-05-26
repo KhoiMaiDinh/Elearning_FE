@@ -115,6 +115,7 @@ const APIGetListCourse = async (params: {
   with_instructor?: boolean;
   with_category?: boolean;
   include_disabled?: boolean;
+  q?: string;
 }) => {
   try {
     const filteredParams = Object.fromEntries(

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { BadgeCheck, Bell, CreditCard, Heart, LogOut, Menu, Moon, Sun, Search, X } from "lucide-react"
 import { useTheme } from "next-themes"
@@ -12,7 +12,6 @@ import { setUser, clearUser } from "@/constants/userSlice"
 import type { RootState } from "@/constants/store"
 import { usePathname, useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { NotificationCenter } from "./notifications/notificationComponent"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import Image from "next/image"
+import { APIGetListCourse } from "@/utils/course"
+import { debounce } from "lodash"
 
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo)
@@ -32,6 +32,11 @@ const Header = () => {
   const pathname = usePathname()
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
   const [searchValue, setSearchValue] = useState("")
+  const [results, setResults] = useState<string[]>([])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [highlightIndex, setHighlightIndex] = useState(-1)
+
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const menuItems = [
     { label: "Trang chủ", path: "/" },
@@ -84,25 +89,103 @@ const Header = () => {
 
   const handleSearchFocus = () => {
     setIsSearchExpanded(true)
+    setShowDropdown(results.length > 0)
   }
 
   const handleSearchBlur = () => {
-    if (!searchValue) {
-      setIsSearchExpanded(false)
-    }
+    // Delay to allow dropdown clicks to register
+    setTimeout(() => {
+      if (!searchValue) {
+        setIsSearchExpanded(false)
+      }
+      setShowDropdown(false)
+    }, 150)
   }
 
+  // Xóa ô input
   const handleSearchClose = () => {
     setSearchValue("")
+    setResults([])
+    setShowDropdown(false)
+    setHighlightIndex(-1)
     setIsSearchExpanded(false)
+    inputRef.current?.blur()
   }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchValue.trim()) {
-      // Handle search logic here
-      console.log("Searching for:", searchValue)
-      // You can navigate to search results page or perform search
+      setShowDropdown(false)
+      router.push(`/course?search=${encodeURIComponent(searchValue.trim())}`)
+    }
+  }
+
+  const handleGetListCourse = async (val: string) => {
+    const response = await APIGetListCourse({ q: val })
+    if (response?.status === 200) {
+      const data = response.data
+        .map((item: any) => item.title); // chỉ lấy ra title
+      setResults(data);
+    }
+  }
+
+  const debouncedFetch = useRef(
+    debounce((val: string) => {
+      handleGetListCourse(val)
+    }, 400),
+  ).current
+
+  useEffect(() => {
+    if (searchValue.trim() === "") {
+      setResults([])
+      setShowDropdown(false)
+      setHighlightIndex(-1)
+      return
+    }
+    debouncedFetch(searchValue)
+    if (isSearchExpanded) {
+      setShowDropdown(true)
+    }
+  }, [searchValue, isSearchExpanded])
+
+  const handleSelectCourse = (name: string) => {
+    setSearchValue(name)
+    setShowDropdown(false)
+    router.push(`/course?search=${encodeURIComponent(name)}`)
+  }
+
+  // Xử lý enter, phím lên xuống
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showDropdown || results.length === 0) {
+      if (e.key === "Escape") {
+        handleSearchClose()
+      }
+      return
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setHighlightIndex((i) => (i + 1) % results.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setHighlightIndex((i) => (i <= 0 ? results.length - 1 : i - 1))
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      if (highlightIndex >= 0 && highlightIndex < results.length) {
+        handleSelectCourse(results[highlightIndex])
+      } else if (searchValue.trim() !== "") {
+        router.push(`/course?search=${encodeURIComponent(searchValue.trim())}`)
+      }
+    } else if (e.key === "Escape") {
+      setShowDropdown(false)
+      handleSearchClose()
+    }
+  }
+
+  // Xử lý nút tìm kiếm bấm
+  const handleSearchClick = () => {
+    if (searchValue.trim() !== "") {
+      setShowDropdown(false)
+      router.push(`/course?search=${encodeURIComponent(searchValue.trim())}`)
     }
   }
 
@@ -168,11 +251,8 @@ const Header = () => {
 
         {/* Logo */}
         <div className="flex items-center">
-          <div
-            className="text-xl font-bold cursor-pointer w-10 h-10 text-LavenderIndigo dark:text-PaleViolet"
-            onClick={() => router.push("/")}
-          >
-            <img src="/images/logo.png" alt="Logo" className="w-10 h-10" />
+          <div className="cursor-pointer" onClick={() => router.push("/")}>
+            <img src="/images/logo.png" alt="NovaLearn Logo" className="w-10 h-10" />
           </div>
         </div>
 
@@ -201,31 +281,52 @@ const Header = () => {
             isSearchExpanded ? "flex-1 mx-4" : "ml-auto mr-4 w-48 sm:w-64"
           }`}
         >
-          <form onSubmit={handleSearchSubmit} className="flex items-center w-full">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform duration-300 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Tìm kiếm khóa học..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-                className="pl-10 pr-10 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo"
-              />
-              {searchValue && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleSearchClose}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-full hover:bg-muted"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </form>
+          <div className="relative w-full">
+            <form onSubmit={handleSearchSubmit} className="flex items-center w-full">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" 
+                  onClick={() => searchValue && handleSearchClick()}
+                  />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Tìm kiếm khóa học..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
+                  onKeyDown={handleKeyDown}
+                  className="pl-10 pr-20 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo w-full outline-none"
+                />
+                {searchValue && (
+                  <button
+                    type="button"
+                    onClick={handleSearchClose}
+                    className="absolute right-12 top-1/2 transform -translate-y-1/2 h-6 w-6 rounded-full hover:bg-muted flex items-center justify-center"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                
+              </div>
+            </form>
+
+            {/* Search Dropdown */}
+            {showDropdown && results.length > 0 && (
+              <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-md mt-1 shadow-lg">
+                {results.map((course, index) => (
+                  <li
+                    key={course}
+                    onMouseDown={() => handleSelectCourse(course)}
+                    className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? "bg-muted" : ""}`}
+                  >
+                    {course}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Right Side Actions */}
@@ -281,9 +382,6 @@ const Header = () => {
                     <AvatarImage
                       src={
                         process.env.NEXT_PUBLIC_BASE_URL_IMAGE + userInfo.profile_image?.key ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
                         "/placeholder.svg" ||
                         "/placeholder.svg"
                       }
