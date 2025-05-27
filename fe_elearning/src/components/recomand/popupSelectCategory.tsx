@@ -54,7 +54,16 @@ export function CategorySelectionPopup({
       with_children: true,
     });
     if (response?.status === 200) {
-      setCategories(response.data);
+      const allChildren = response.data.flatMap((parent: any) => {
+        const { children, ...parentWithoutChildren } = parent;
+
+        return (children || []).map((child: any) => ({
+          ...child,
+          parent_slug: parent.slug,
+          parent: parentWithoutChildren,
+        }));
+      });
+      setCategories(allChildren);
     }
   };
 
@@ -75,7 +84,6 @@ export function CategorySelectionPopup({
 
   const handleSave = async () => {
     if (selectedCategories.length < minSelections) {
-      console.log('🚀 ~ selectedCategories.length < minSelections');
       return;
     }
 
@@ -134,8 +142,8 @@ export function CategorySelectionPopup({
         </div>
 
         {/* Categories grid */}
-        <ScrollArea className="flex-1 max-h-[60vh] overflow-y-auto px-1">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-1">
+        <ScrollArea className="flex-1 max-h-[60vh] overflow-y-auto  ">
+          <div className="grid grid-cols-2 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {categories.length > 0 &&
               categories?.map((category) => {
                 const isSelected = selectedCategories.includes(category.slug);
