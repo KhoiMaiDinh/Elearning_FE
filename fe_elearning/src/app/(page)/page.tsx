@@ -1,9 +1,7 @@
 'use client';
-import './page.css';
-import CoursesBlock from '@/components/block/courses-block';
-import InfoDashboard from '@/components/block/infoDashboard';
-import LecturersBlock from '@/components/block/lecturers-block';
-import { Button } from '@/components/ui/button';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
   BookCheck,
@@ -11,101 +9,91 @@ import {
   Film,
   GraduationCap,
   Headset,
-  IdCard,
+  BadgeIcon as IdCard,
   Loader2,
+  Clock,
+  TrendingUp,
+  Star,
+  BookOpen,
+  Search,
+  Bookmark,
+  BarChart3,
+  Calendar,
+  PlayCircle,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+
+// Components
+import CoursesBlock from '@/components/block/courses-block';
+import InfoDashboard from '@/components/block/infoDashboard';
+import LecturersBlock from '@/components/block/lecturers-block';
+import { Button } from '@/components/ui/button';
 import SplitText from '@/components/text/splitText';
 import FadeContent from '@/components/animations/fadeContent';
-import { useRouter } from 'next/navigation';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import { APIGetListLecture } from '@/utils/lecture';
-import { APIGetListCourse } from '@/utils/course';
-import BlurColor from '@/components/blurColor/blurColor';
-import { CourseForm } from '@/types/courseType';
-import { Lecture } from '@/types/registerLectureFormType';
-// const dataCourse = [
-//   {
-//     coverPhoto: "/images/course1.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Lập trình ReactJS cơ bản",
-//     rating: 4.9,
-//     level: "Cơ bản",
-//     numberStudent: 1200,
-//     description:
-//       "Khóa học dành cho người mới bắt đầu muốn tìm hiểu về ReactJS.",
-//     name: "Nguyễn Văn A",
-//     status: "Chưa đăng ký",
-//     progress: 45, // Đã hoàn thành 45% khóa học
-//     price: 500000,
-//     priceFinal: 450000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course2.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Phân tích dữ liệu với Python",
-//     rating: 4.8,
-//     level: "Trung cấp",
-//     numberStudent: 800,
-//     description:
-//       "Học cách phân tích dữ liệu và trực quan hóa với Python. Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
-//     name: "Lê Thị B",
-//     status: "Đang học",
-//     progress: 50, // Đã hoàn thành khóa học
-//     price: 700000,
-//     priceFinal: 700000, // Không giảm giá
-//   },
-//   {
-//     coverPhoto: "/images/course3.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Thiết kế giao diện với Figma",
-//     rating: 4.7,
-//     level: "Cơ bản",
-//     numberStudent: 650,
-//     description: "Khóa học cung cấp kiến thức cơ bản về thiết kế UI/UX.",
-//     name: "Trần Minh C",
-//     status: "Chưa đăng ký",
-//     price: 400000,
-//     priceFinal: 350000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course4.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Lập trình Backend với Node.js",
-//     rating: 4.6,
-//     level: "Nâng cao",
-//     numberStudent: 1550,
-//     description: "Nâng cao kỹ năng lập trình backend với Node.js và Express.",
-//     name: "Phạm Duy D",
-//     status: "Chưa đăng ký",
-//     progress: 60, // Đã hoàn thành 60% khóa học
-//     price: 600000,
-//     priceFinal: 500000, // Giá sau giảm
-//   },
-//   {
-//     coverPhoto: "/images/course5.jpg",
-//     avatar: "/images/avatar.jpg",
-//     title: "Phát triển ứng dụng di động với Flutter",
-//     rating: 4.9,
-//     level: "Trung cấp",
-//     numberStudent: 1100,
-//     description:
-//       "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với Flutter hg r f r rkr rx s frf er e gre rg erg er g rgs g se sg egr e g erg e t eg rver g erg er g rv.",
-//     name: "Hoàng Văn E",
-//     status: "Chưa đăng ký",
-//     progress: 100, // Đã hoàn thành khóa học
-//     price: 800000,
-//     priceFinal: 750000, // Giá sau giảm
-//   },
-// ];
+// API and Types
+import { APIGetListLecture } from '@/utils/lecture';
+import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
+import type { CourseForm } from '@/types/courseType';
+import type { Lecture } from '@/types/registerLectureFormType';
+import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
+import APIGetRecommendation from '@/utils/recommendation';
+// Mock data for categories
+const categories = [
+  { id: 1, name: 'Lập trình web', icon: '💻', count: 24 },
+  { id: 2, name: 'Khoa học dữ liệu', icon: '📊', count: 18 },
+  { id: 3, name: 'Thiết kế UI/UX', icon: '🎨', count: 15 },
+  { id: 4, name: 'Marketing số', icon: '📱', count: 12 },
+  { id: 5, name: 'Phát triển cá nhân', icon: '🚀', count: 10 },
+  { id: 6, name: 'Ngoại ngữ', icon: '🌎', count: 20 },
+];
+
+// Mock data for testimonials
+const testimonials = [
+  {
+    id: 1,
+    name: 'Nguyễn Văn Minh',
+    role: 'Sinh viên IT',
+    avatar: '/placeholder.svg?height=80&width=80',
+    content:
+      'Các khóa học ở đây rất chất lượng và thực tế. Tôi đã học được nhiều kỹ năng mới và tìm được việc làm tốt sau khi hoàn thành khóa học.',
+    rating: 5,
+  },
+  {
+    id: 2,
+    name: 'Trần Thị Hương',
+    role: 'Nhân viên Marketing',
+    avatar: '/placeholder.svg?height=80&width=80',
+    content:
+      'Giảng viên rất tâm huyết và chuyên nghiệp. Nội dung khóa học được cập nhật thường xuyên theo xu hướng mới nhất.',
+    rating: 5,
+  },
+  {
+    id: 3,
+    name: 'Lê Hoàng Nam',
+    role: 'Freelancer',
+    avatar: '/placeholder.svg?height=80&width=80',
+    content:
+      'Tôi đã thử nhiều nền tảng học trực tuyến khác nhau, nhưng đây là nơi tôi thấy hiệu quả nhất. Giao diện dễ sử dụng và hỗ trợ rất tốt.',
+    rating: 4,
+  },
+];
+
 export default function Page() {
   const router = useRouter();
 
   const [listLecture, setListLecture] = useState<Lecture[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
+  const [enrolledCourse, setEnrolledCourse] = useState<CourseForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [_error, setError] = useState<string | null>(null);
+  const [recommendation, setRecommendation] = useState<CourseForm[]>([]);
+
   const [paramsLecture, _setParamsLecture] = useState({
     page: 1,
     limit: 10,
@@ -140,6 +128,21 @@ export default function Page() {
     }
   };
 
+  // Fetch learning progress
+  const handleGetEnrolledCourse = async () => {
+    const response = await APIGetEnrolledCourse();
+    if (response?.status === 200) {
+      setEnrolledCourse(response?.data || []);
+    }
+  };
+
+  const handleGetRecommendation = async () => {
+    const response = await APIGetRecommendation({ amount: 3 });
+    if (response?.status === 200) {
+      setRecommendation(response?.data || []);
+    }
+  };
+
   const handleGetListCourse = async () => {
     try {
       setIsLoading(true);
@@ -156,134 +159,158 @@ export default function Page() {
       console.error('Error during get list course:', err);
     }
   };
+
   useEffect(() => {
     handleGetListLecture();
     handleGetListCourse();
+    handleGetEnrolledCourse();
+    handleGetRecommendation();
   }, []);
 
   return isLoading ? (
-    <div className="w-full h-full flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin" />
+    <div className="w-full h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
+        <p className="text-lg font-medium text-gray-600">Đang tải dữ liệu...</p>
+      </div>
     </div>
   ) : (
-    <div className="w-full min-h-screen bg-AntiFlashWhite dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite font-sans overflow-x-hidden">
+    <div className="w-full min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans overflow-x-hidden">
       {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 pt-8 pb-24 lg:pt-16 lg:pb-32 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
-      <section className="relative overflow-hidden">
-        <div className="bg-LavenderIndigo/50 w-full h-full overflow-hidden">
-          <>
-            <div
-              className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: '40%', right: '0%' }}
-            />
+        {/* Decorative elements */}
+        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl"></div>
 
-            <div
-              className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: '60%', right: '40%' }}
-            />
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
+                <Star className="w-4 h-4 mr-2" />
+                Nền tảng học trực tuyến hàng đầu
+              </div>
 
-            <div
-              className="absolute h-48 w-48 rounded-full bg-deepPink/20 blur-2xl md:h-96 md:w-96"
-              style={{ top: '0%', right: '60%' }}
-            />
+              <div>
+                <SplitText
+                  text="Học các kỹ năng từ những chuyên gia hàng đầu"
+                  className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight"
+                  delay={15}
+                  animationFrom={{
+                    opacity: 0,
+                    transform: 'translate3d(0,50px,0)',
+                  }}
+                  animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+                  threshold={0.2}
+                  rootMargin="-50px"
+                />
 
-            <div
-              className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96"
-              style={{ top: '60%', right: '80%' }}
-            />
+                <SplitText
+                  text="Nâng cao kỹ năng, mở rộng kiến thức và phát triển sự nghiệp của bạn với các khóa học chất lượng cao."
+                  className="mt-6 text-lg text-gray-600 dark:text-gray-300"
+                  delay={10}
+                  animationFrom={{
+                    opacity: 0,
+                    transform: 'translate3d(0,50px,0)',
+                  }}
+                  animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+                  threshold={0.2}
+                  rootMargin="-50px"
+                />
+              </div>
 
-            <div
-              className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96 z-0"
-              style={{ top: '0%', right: '80%' }}
-            />
-            <div
-              className="absolute h-48 w-48 rounded-full bg-white/70 blur-3xl md:h-96 md:w-96 z-0"
-              style={{ top: '50%', right: '0%' }}
-            />
-          </>
-          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 p-4 h-[calc(100vh-64px)] z-10">
-            <div className="col-span-1  md:col-span-1 relative text-left flex flex-col md:justify-center w-full dark:text-white gap-2 items-center h-full md:text-left px-4  text-LavenderIndigo font-sans  z-20">
-              <SplitText
-                text="Học các kỹ năng từ những giảng viên hàng đầu của chúng tôi"
-                className="lg:text-[38px] text-left md:text-[24px] text-[20px] font-bold text-eerieBlack"
-                delay={15}
-                animationFrom={{
-                  opacity: 0,
-                  transform: 'translate3d(0,50px,0)',
-                }}
-                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
-                threshold={0.2}
-                rootMargin="-50px"
-              />
-              <SplitText
-                text=" Giảng viên & chuyên gia chất lượng cao, uy tín, kinh nghiệm;"
-                className="mt-2 lg:text-[16px] text-left md:text-[14px] text-[12px] md:text-black70 dark:text-white text-majorelleBlue"
-                delay={10}
-                animationFrom={{
-                  opacity: 0,
-                  transform: 'translate3d(0,50px,0)',
-                }}
-                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
-                threshold={0.2}
-                rootMargin="-50px"
-              />
-              <SplitText
-                text="Mô hình học tập đa dạng & định hướng kết quả đầu ra, tích hợp công nghệ tiên tiến."
-                className="mt-2 lg:text-[16px] text-left md:text-[14px] text-[12px] md:text-black70 dark:text-white text-majorelleBlue"
-                delay={10}
-                animationFrom={{
-                  opacity: 0,
-                  transform: 'translate3d(0,50px,0)',
-                }}
-                animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
-                threshold={0.2}
-                rootMargin="-50px"
-              />
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Input
+                    placeholder="Tìm kiếm khóa học..."
+                    className="pl-10 pr-4 py-6 rounded-full border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 w-full sm:w-80"
+                  />
+                </div>
 
-              <div className="flex items-center gap-4">
                 <Button
-                  className="bg-custom-gradient-button-violet text-white hover:scale-105 transition-all duration-300 rounded-full px-6 py-3 font-semibold"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={() => router.push('/course')}
                 >
-                  Tìm khóa học
+                  Khám phá ngay
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
-                <div className="flex items-center gap-2 text-white">
-                  <Headset className="w-6 h-6 text-beautyGreen" />
+              </div>
+
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <Headset className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  </div>
                   <div>
-                    <p className="text-sm dark:text-beautyGreen text-majorelleBlue opacity-80">
-                      Hotline
-                    </p>
-                    <p className="font-bold dark:text-beautyGreen text-majorelleBlue ">1900 1008</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Hỗ trợ 24/7</p>
+                    <p className="font-bold text-gray-900 dark:text-white">1900 1008</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Học mọi lúc</p>
+                    <p className="font-bold text-gray-900 dark:text-white">Truy cập 24/7</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="col-span-1 z-10">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-3xl blur-3xl opacity-20 animate-pulse"></div>
               <img
                 src="/images/home_bg.png"
-                alt="dashboard_bg"
-                className="w-full h-full object-cover"
+                alt="Học trực tuyến"
+                className="relative w-full h-auto object-cover rounded-3xl shadow-2xl"
               />
+
+              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Học viên đạt kết quả</p>
+                    <p className="font-bold text-gray-900 dark:text-white">95% thành công</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute -top-6 -right-6 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <Star className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Đánh giá trung bình</p>
+                    <p className="font-bold text-gray-900 dark:text-white">4.8/5 sao</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="container mx-auto gap-2 flex flex-col  md:absolute z-20 left-0 right-0 bottom-0 md:translate-y-[50%]">
-        <div className="grid grid-cols-1 h-full md:grid-cols-4 gap-6" data-aos="fade-up">
-          <AnimateWrapper direction="up" amount={0.5}>
+      <section className="container mx-auto px-4 -mt-16 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <AnimateWrapper direction="up" amount={0.5} delay={0.1}>
             <InfoDashboard
-              number={10}
+              number={listLecture.length || 10}
               title={'Giảng viên'}
               Icon={IdCard}
               color="#1568DF"
               bgColor="#1568DF"
             />
           </AnimateWrapper>
-          <AnimateWrapper direction="up" amount={0.5}>
+
+          <AnimateWrapper direction="up" amount={0.5} delay={0.2}>
             <InfoDashboard
               number={2000}
               title={'Bài học'}
@@ -292,7 +319,8 @@ export default function Page() {
               bgColor="#219653"
             />
           </AnimateWrapper>
-          <AnimateWrapper direction="up" amount={0.5}>
+
+          <AnimateWrapper direction="up" amount={0.5} delay={0.3}>
             <InfoDashboard
               number={100}
               title={'Sinh viên'}
@@ -301,7 +329,8 @@ export default function Page() {
               bgColor="#9B51DF"
             />
           </AnimateWrapper>
-          <AnimateWrapper direction="up" amount={0.5}>
+
+          <AnimateWrapper direction="up" amount={0.5} delay={0.4}>
             <InfoDashboard
               number={10}
               title={'Video'}
@@ -313,43 +342,197 @@ export default function Page() {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="bg-white dark:bg-cosmicCobalt/10 py-16 pt-36">
-        <div className="container mx-auto text-center" data-aos="fade-up">
+      {/* My recommendation Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
           <AnimateWrapper delay={0.3} direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-cosmicCobalt dark:text-white mb-6">
-              Về chúng tôi
-            </h2>
-            <p className="text-darkSilver dark:text-lightSilver max-w-3xl mx-auto leading-relaxed">
-              Chúng tôi cung cấp các khóa học kết hợp lý thuyết và thực hành, được thiết kế bởi đội
-              ngũ chuyên gia hàng đầu. Mục tiêu là mang lại giá trị thực tiễn cho học viên và doanh
-              nghiệp thông qua giáo dục chất lượng cao.
-            </p>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Khóa học được đề xuất
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Khóa học được đề xuất dựa trên sở thích của bạn
+                </p>
+              </div>
+
+              {/* <Button
+                variant="outline"
+                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                onClick={() => router.push('/my-courses')}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button> */}
+            </div>
+
+            {enrolledCourse.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+                {recommendation.map((course) => (
+                  <CoursesBlock key={course.id} {...course} />
+                ))}
+              </div>
+            ) : (
+              <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Bạn chưa
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
+                    Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay
+                    hôm nay.
+                  </p>
+                  <Button
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
+                    onClick={() => router.push('/course')}
+                  >
+                    Khám phá khóa học
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </AnimateWrapper>
         </div>
       </section>
 
-      <section className="relative bg-LavenderIndigo/50 w-screen h-full p-4 overflow-hidden">
-        <div className="container mx-auto">
-          <BlurColor />
+      {/* My Courses Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Khóa học của tôi
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Tiếp tục hành trình học tập của bạn
+                </p>
+              </div>
 
-          <div className="container mx-auto z-20">
-            <AnimateWrapper delay={0.3} direction="up">
-              <section className="container mx-auto py-16">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-3xl z-10 font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
-                    Giảng viên tiêu biểu
-                  </h2>
+              <Button
+                variant="outline"
+                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                onClick={() => router.push('/my-courses')}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button>
+            </div>
+
+            {enrolledCourse.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {enrolledCourse.map((course) => (
+                  <EnrolledCourseBlock key={course.id} course={course} />
+                ))}
+              </div>
+            ) : (
+              <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Bạn chưa đăng ký khóa học nào
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
+                    Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay
+                    hôm nay.
+                  </p>
                   <Button
-                    variant="link"
-                    className="z-10 text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-                    onClick={() => router.push('/lecture')}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
+                    onClick={() => router.push('/course')}
                   >
-                    Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+                    Khám phá khóa học
                   </Button>
-                </div>
-                <div className="grid grid-cols-1 z-10 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {listLecture.slice(0, 4).map((lecture, index) => (
+                </CardContent>
+              </Card>
+            )}
+          </AnimateWrapper>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 bg-gray-100 dark:bg-gray-800/50">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Danh mục khóa học
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Khám phá các lĩnh vực học tập đa dạng với nội dung chất lượng cao từ các chuyên gia
+                hàng đầu
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              {categories.map((category) => (
+                <Card
+                  key={category.id}
+                  className="border-0 shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  onClick={() => router.push(`/course?category=${category.id}`)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                      {category.icon}
+                    </div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                      {category.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {category.count} khóa học
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </AnimateWrapper>
+        </div>
+      </section>
+
+      {/* Featured Courses Section */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Khóa học nổi bật
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Những khóa học được yêu thích nhất
+                </p>
+              </div>
+
+              <Button
+                variant="outline"
+                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                onClick={() => router.push('/course')}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button>
+            </div>
+
+            <Tabs defaultValue="all" className="mb-8">
+              {/* <TabsList className="bg-white dark:bg-gray-800 p-1 rounded-full">
+                <TabsTrigger value="all" className="rounded-full">
+                  Tất cả
+                </TabsTrigger>
+                <TabsTrigger value="popular" className="rounded-full">
+                  Phổ biến
+                </TabsTrigger>
+                <TabsTrigger value="new" className="rounded-full">
+                  Mới nhất
+                </TabsTrigger>
+                <TabsTrigger value="beginner" className="rounded-full">
+                  Cho người mới
+                </TabsTrigger>
+              </TabsList> */}
+
+              <TabsContent value="all" className="mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {listCourse.slice(0, 8).map((course, index) => (
                     <FadeContent
                       key={index}
                       blur={true}
@@ -358,82 +541,228 @@ export default function Page() {
                       initialOpacity={0}
                       className="transform transition-all hover:-translate-y-2"
                     >
-                      <LecturersBlock
-                        avatar={lecture?.user?.profile_image?.key}
-                        name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
-                        rating={lecture?.avg_rating}
-                        major={lecture?.category?.translations[0]?.name}
-                        numberCourse={lecture?.total_courses}
-                        numberStudent={lecture?.total_students}
-                        description={lecture?.biography}
-                        username={lecture?.user?.username}
-                      />{' '}
+                      <CoursesBlock {...course} />
                     </FadeContent>
                   ))}
                 </div>
-              </section>
-            </AnimateWrapper>
-
-            {/* Courses Section */}
-            <AnimateWrapper delay={0.3} direction="up">
-              <section className="py-16">
-                <div className="container z-10 mx-auto">
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl z-10 font-bold text-cosmicCobalt dark:text-AntiFlashWhite">
-                      Khóa học nổi bật
-                    </h2>
-                    <Button
-                      variant="link"
-                      className="z-10 text-cosmicCobalt dark:text-AntiFlashWhite dark:hover:text-AntiFlashWhite/80 hover:text-majorelleBlue70"
-                      onClick={() => router.push('/course')}
-                    >
-                      Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="grid z-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {listCourse.slice(0, 4).map((course, index) => (
-                      <FadeContent
-                        key={index}
-                        blur={true}
-                        duration={100}
-                        easing="ease-out"
-                        initialOpacity={0}
-                        className="transform transition-all hover:-translate-y-2"
-                      >
-                        <CoursesBlock {...course} />
-                      </FadeContent>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            </AnimateWrapper>
-          </div>
+              </TabsContent>
+            </Tabs>
+          </AnimateWrapper>
         </div>
       </section>
 
-      {/* Lecturers Section */}
+      {/* Featured Instructors Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Giảng viên tiêu biểu
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">Học từ những chuyên gia hàng đầu</p>
+              </div>
+
+              <Button
+                variant="outline"
+                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                onClick={() => router.push('/lecture')}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {listLecture.slice(0, 4).map((lecture, index) => (
+                <FadeContent
+                  key={index}
+                  blur={true}
+                  duration={100}
+                  easing="ease-out"
+                  initialOpacity={0}
+                  className="transform transition-all hover:-translate-y-2"
+                >
+                  <LecturersBlock
+                    avatar={lecture?.user?.profile_image?.key}
+                    name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
+                    rating={lecture?.avg_rating}
+                    major={lecture?.category?.translations[0]?.name}
+                    numberCourse={lecture?.total_courses}
+                    numberStudent={lecture?.total_students}
+                    description={lecture?.biography}
+                    username={lecture?.user?.username}
+                  />
+                </FadeContent>
+              ))}
+            </div>
+          </AnimateWrapper>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Học viên nói gì về chúng tôi
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Khám phá trải nghiệm học tập từ những học viên đã tham gia các khóa học của chúng
+                tôi
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <Card
+                  key={testimonial.id}
+                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <CardContent className="p-8">
+                    <div className="flex items-center mb-6">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                        />
+                      ))}
+                    </div>
+
+                    <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
+                      "{testimonial.content}"
+                    </p>
+
+                    <div className="flex items-center">
+                      <img
+                        src={testimonial.avatar || '/placeholder.svg'}
+                        alt={testimonial.name}
+                        className="w-12 h-12 rounded-full object-cover mr-4"
+                      />
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {testimonial.role}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </AnimateWrapper>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <AnimateWrapper delay={0.3} direction="up">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Tại sao chọn chúng tôi
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Chúng tôi cam kết mang đến trải nghiệm học tập tốt nhất với những ưu điểm vượt trội
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    Nội dung chất lượng
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Khóa học được thiết kế bởi các chuyên gia hàng đầu với nội dung cập nhật và thực
+                    tiễn
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Headset className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    Hỗ trợ 24/7
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc và giúp đỡ bạn trong quá
+                    trình học tập
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <BarChart3 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    Theo dõi tiến độ
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Dễ dàng theo dõi quá trình học tập và đánh giá kết quả của bạn qua các bài kiểm
+                    tra
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Bookmark className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    Chứng chỉ có giá trị
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Nhận chứng chỉ được công nhận sau khi hoàn thành khóa học để nâng cao hồ sơ của
+                    bạn
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </AnimateWrapper>
+        </div>
+      </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-majorelleBlue to-persianIndigo dark:text-white text-cosmicCobalt py-16">
-        <div className="container mx-auto text-center" data-aos="zoom-in">
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4">
           <AnimateWrapper delay={0.3} direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Sẵn sàng nâng cao kỹ năng của bạn?
-            </h2>
-          </AnimateWrapper>
-          <AnimateWrapper delay={0.3} direction="up">
-            <p className="text-lg mb-6 max-w-2xl mx-auto text-darkSilver">
-              Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ giảng viên hàng
-              đầu.
-            </p>
-          </AnimateWrapper>
-          <AnimateWrapper delay={0.3} direction="up">
-            <Button
-              className="bg-yankeesBlue text-white hover:bg-yankeesBlue/80 rounded-full px-8 py-3 font-semibold"
-              onClick={() => router.push('/signup')}
-            >
-              Bắt đầu ngay <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Sẵn sàng nâng cao kỹ năng của bạn?
+              </h2>
+              <p className="text-xl text-blue-100 mb-8">
+                Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ giảng viên hàng
+                đầu.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  className="bg-white text-blue-600 hover:bg-gray-100 rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => router.push('/signup')}
+                >
+                  Đăng ký ngay
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-2 border-white text-white hover:bg-white/10 rounded-full px-8 py-6 font-semibold"
+                  onClick={() => router.push('/course')}
+                >
+                  Khám phá khóa học
+                </Button>
+              </div>
+            </div>
           </AnimateWrapper>
         </div>
       </section>

@@ -55,7 +55,9 @@ export default function RootLayout({
                 <CategorySelectionPopup
                   onClose={() => setShow(false)}
                   isOpen={show}
-                  initialSelectedCategories={preference?.categories}
+                  initialSelectedCategories={preference?.categories.map(
+                    (category) => category.slug
+                  )}
                 />
               )}
             </div>
