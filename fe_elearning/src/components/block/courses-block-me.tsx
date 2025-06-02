@@ -1,149 +1,149 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Star, Users } from 'lucide-react';
+import {
+  Ban,
+  BarChart3,
+  Clock,
+  Edit,
+  Eye,
+  Globe,
+  MoreHorizontal,
+  PencilRuler,
+  Star,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CourseForm } from '@/types/courseType';
 import { formatPrice } from '../formatPrice';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { Button } from '../ui/button';
+import CourseLevelBadge from '../badge/courseLevelBadge';
+import CourseStatusBadge from '../badge/courseStatusBadge';
 
-const CoursesBlockMe: React.FC<CourseForm> = ({
+const MyCourseCard: React.FC<CourseForm> = ({
   level,
   status,
   title,
   description,
   price,
   instructor,
-  // course_progress,
   avg_rating,
   total_enrolled,
+  total_revenue,
+  category,
   thumbnail,
   id,
+  updatedAt,
   // priceFinal,
 }) => {
   const router = useRouter();
 
-  const [levelShow, setLevelShow] = useState<string>('');
-  const [statusShow, setStatusShow] = useState<string>('');
-  useEffect(() => {
-    if (level === 'BEGINNER') {
-      setLevelShow('Cơ bản');
-    } else if (level === 'INTERMEDIATE') {
-      setLevelShow('Trung bình');
-    } else {
-      setLevelShow('Nâng cao');
-    }
-
-    if (status === 'DRAFT') {
-      setStatusShow('Chưa duyệt');
-    } else if (status === 'PUBLISHED') {
-      setStatusShow('Đã duyệt');
-    } else {
-      setStatusShow('Đã bị cấm');
-    }
-  }, [level, status]);
   return (
-    <Card
-      className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
-      onClick={() => router.push(`/profile/lecture/course/${id}`)}
-    >
-      <CardHeader className="p-0">
-        <div className="relative h-40 w-full">
+    <>
+      <Card
+        key={id}
+        className="overflow-hidden hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
+        onClick={() => router.push(`/profile/lecture/course/${id}`)}
+      >
+        <div className="relative">
           <img
-            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '')}
+            src={
+              process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '') || '/placeholder.svg'
+            }
             alt={title}
-            className="w-full h-full object-contain rounded-t-lg"
+            className="h-48 w-full object-cover"
           />
-          {status && (
-            <Badge
-              className={`absolute top-2 right-2 bg-white dark:bg-eerieBlack ${
-                status === 'PUBLISHED' ? ' text-vividMalachite' : ' text-carminePink'
-              }`}
-              variant="secondary"
-            >
-              {statusShow}
+          <CourseStatusBadge status={status!} />
+        </div>
+        <CardHeader className="p-4">
+          <div className="flex items-center justify-between">
+            <Badge variant="outline" className="px-2 py-0 text-xs">
+              {category?.translations[0].name}
             </Badge>
-          )}
-        </div>
-      </CardHeader>
-
-      {/* Nội dung chính, set grow để phần dưới đẩy xuống */}
-      <CardContent className="pt-4 space-y-3 flex-grow">
-        <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8">
-            <AvatarImage
-              alt={instructor?.user?.last_name || ''}
-              src={
-                process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                (instructor?.user?.profile_image?.key || '')
-              }
-              className="object-cover"
-            />
-            <AvatarFallback>{instructor?.user?.last_name?.[0]}</AvatarFallback>
-
-            {/* <AvatarFallback>{name?.[0]}</AvatarFallback> */}
-          </Avatar>
-          <span className="text-sm text-muted-foreground">
-            {instructor?.user?.first_name} {instructor?.user?.last_name}
-          </span>
-        </div>
-
-        <h3 className="font-semibold line-clamp-2">{title}</h3>
-
-        <p
-          className="text-sm text-muted-foreground line-clamp-2 ql-content"
-          dangerouslySetInnerHTML={{ __html: description || '' }}
-        ></p>
-
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-Sunglow" />
-            <span>{avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">More</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <Edit className="mr-2 h-4 w-4" />
+                  <span>Edit Course</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>Preview</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  <span>Analytics</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-500">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            <span>{total_enrolled || 0}</span>
-          </div>
-          {level && (
-            <Badge variant="outline" className="bg-teaGreen dark:text-black">
-              {levelShow}
-            </Badge>
-          )}
-        </div>
-
-        {/* {course_progress !== undefined && (
-          <div className="space-y-1">
-            <div className="w-full bg-darkSilver rounded-full h-2">
-              <div
-                className="bg-vividMalachite h-2 rounded-full"
-                style={{ width: `${course_progress?.progress}%` }}
-              />
+          <CardTitle className="line-clamp-2 mt-2 text-base">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-2 pt-0">
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex flex-col">
+              <span className="text-muted-foreground">Học viên</span>
+              <span className="font-medium">{total_enrolled}</span>
             </div>
-            <span className="text-xs text-muted-foreground">
-              {course_progress?.progress}% hoàn thành
-            </span>
+            <div className="flex flex-col">
+              <span className="text-muted-foreground">Đánh giá</span>
+              <span className="flex items-center font-medium">
+                {avg_rating ? (
+                  <>
+                    {avg_rating}
+                    <Star className="ml-1 h-3 w-3 fill-yellow-500 text-yellow-500" />
+                  </>
+                ) : (
+                  'N/A'
+                )}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-muted-foreground">Doanh thu</span>
+              <span className="font-medium">
+                {total_revenue ? `${formatPrice(total_revenue)}` : 'N/A'}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-muted-foreground">Cấp độ</span>
+              <CourseLevelBadge level={level} />
+            </div>
           </div>
-        )} */}
-      </CardContent>
-
-      {/* Phần giá & button luôn ở dưới cùng */}
-      <CardFooter className="flex justify-between items-end mt-auto pt-2">
-        <div className="space-x-2">
-          {/* {price && (
-            <span className="text-muted-foreground line-through">
-              {formatPrice(price)}
-            </span>
-          )} */}
-          {price && <span className="font-semibold text-primary">{formatPrice(price)}</span>}
-        </div>
-        <Badge variant="outline" className="text-[10px]">
-          Xem chi tiết
-        </Badge>
-      </CardFooter>
-    </Card>
+        </CardContent>
+        <CardFooter className="flex items-center justify-between border-t p-4">
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Clock className="mr-1 h-3 w-3" />
+            <span>Cập nhật {updatedAt && new Date(updatedAt).toLocaleDateString()}</span>
+          </div>
+          <Button variant="outline" size="sm" className="h-8">
+            Manage
+          </Button>
+        </CardFooter>
+      </Card>
+    </>
   );
 };
 
-export default CoursesBlockMe;
+export default MyCourseCard;

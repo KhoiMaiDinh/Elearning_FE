@@ -18,7 +18,6 @@ import { Progress } from '@/components/ui/progress';
 import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
-// ===== VALIDATION SCHEMA =====
 const courseItemSchema = yup.object().shape({
   title: yup.string().required('Tiêu đề bài học không được để trống'),
   description: yup.string().required('Nội dung bài học không được để trống'),
@@ -173,7 +172,7 @@ const CourseItemForm = ({
         onSave();
       }
     } catch (error) {
-      console.error('Error handling course item:', error);
+      console.log('Error handling course item:', error);
       setShowAlertError(true);
       setDescription(initialValues ? 'Không thể cập nhật bài giảng' : 'Không thể thêm bài giảng');
       setTimeout(() => setShowAlertError(false), 3000);

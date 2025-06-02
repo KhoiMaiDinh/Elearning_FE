@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Label } from '../ui/label';
 
 type selectFilter = {
   label: string;
@@ -32,11 +31,11 @@ const SelectRegister: React.FC<selectFilter> = ({
 }) => {
   return (
     <div
-      className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
+      className={`w-full max-w-full flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
-      <Label>{label}</Label>
+      {/* <Label>{label}</Label> */}
       <Select disabled={disabled} onValueChange={onValueChange} value={value}>
-        <SelectTrigger className=" sm:min-w-28 md:min-w-32 lg:min-w-36 w-fit">
+        <SelectTrigger className="w-full sm:min-w-28 md:min-w-32 lg:min-w-36 ">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

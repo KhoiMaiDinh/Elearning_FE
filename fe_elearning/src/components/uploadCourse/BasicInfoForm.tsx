@@ -1,32 +1,38 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useForm, Controller, Resolver } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useEffect, useState } from 'react';
+import { Controller } from 'react-hook-form';
+
 import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
 import { Button } from '@/components/ui/button';
 import SelectRegister from '@/components/selectComponent/selectRegister';
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import { APIUpdateCourse } from '@/utils/course';
-import { uploadToMinIO } from '@/utils/storage';
 import { CourseForm } from '@/types/courseType';
-import { MediaType } from '@/types/mediaType';
-import { APIGetCategory } from '@/utils/category';
 import Image from 'next/image';
+import {
+  ArrowRight,
+  Check,
+  CircleDot,
+  CircleX,
+  DiamondPlus,
+  DollarSign,
+  LayoutGrid,
+  Plus,
+  Text,
+  Trash2,
+  Type,
+} from 'lucide-react';
+import CourseLevelBadge from '../badge/courseLevelBadge';
+import { Badge } from '../ui/badge';
+import { formatPrice } from '../formatPrice';
+import ImagePicker from '../inputComponent/imagePicker';
+import { useRouter } from 'next/navigation';
+import Asterisk from '../asterisk/asterisk';
+import { useCourseForm } from '@/hooks/course/useCourseForm';
+import { useCategoryFetcher } from '@/hooks/course/useCategoryFetcher';
+import { Spinner } from '../ui/spinner';
+import { Switch } from '../ui/switch';
 
-// Define interfaces for category data
-interface CategoryChild {
-  id: string;
-  value: string;
-}
-
-interface CategoryData {
-  id: string;
-  value: string;
-  children?: CategoryChild[];
-}
-
-// 🧩 Tạo component hiển thị dòng nội dung
 const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => {
   return (
     <div className="flex flex-col gap-2 py-2">
@@ -42,325 +48,516 @@ const data = [
   { id: 'ADVANCED', value: 'Nâng cao' },
 ];
 
-const basicSchema = yup.object().shape({
-  title: yup.string().required('Tiêu đề khóa học không được để trống'),
-  subtitle: yup.string().required('Mô tả ngắn không được để trống'),
-  description: yup.string().required(),
-  level: yup.string().required('Cấp độ không được để trống'),
-  price: yup.number().required('Giá không được để trống'),
-  thumbnail: yup
-    .object()
-    .shape({
-      id: yup.string().required(),
-      key: yup.string().required(),
-    })
-    .nullable(),
-  category: yup.object().shape({
-    slug: yup.string().required('Lĩnh vực không được để trống'),
-  }),
-});
-
 interface BasicInfoFormProps {
-  courseInfo: CourseForm | null;
+  isEditingBasic: boolean;
+  courseInfo?: CourseForm;
   courseId: string;
+  setCourseInfo: React.Dispatch<React.SetStateAction<CourseForm | null>>;
   setShowAlertSuccess: (value: boolean) => void;
   setShowAlertError: (value: boolean) => void;
   setDescription: (value: string) => void;
+
+  handleSubmitSuccess: () => void;
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
+  isEditingBasic,
   courseInfo,
   courseId,
+  setCourseInfo,
   setShowAlertSuccess,
   setShowAlertError,
   setDescription,
+  handleSubmitSuccess,
 }) => {
-  const [isEditingBasic, setIsEditingBasic] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [selectedParentCategory, setSelectedParentCategory] = useState<string>('');
-  const [childCategories, setChildCategories] = useState<CategoryChild[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const {
     control,
+    errors,
     handleSubmit,
+    values,
+    hasFormChanged,
+    requirementFields,
+    appendRequirements,
+    removeRequirements,
+    outcomeFields,
+    appendOutcomes,
+    removeOutcomes,
     setValue,
-    formState: { errors },
-  } = useForm<CourseForm>({
-    resolver: yupResolver(basicSchema) as unknown as Resolver<CourseForm>,
-    defaultValues: {
-      category: { slug: '' },
-      title: '',
-      subtitle: '',
-      description: '',
-      level: '',
-      price: 0,
-      thumbnail: null,
-      outcomes: [],
-      requirements: [],
-    },
-  });
+  } = useCourseForm(courseInfo);
+  const router = useRouter();
+
+  console.log(errors);
 
   useEffect(() => {
     if (courseInfo?.id) {
-      setValue('title', courseInfo?.title);
-      setValue('subtitle', courseInfo?.subtitle);
-      setValue('level', courseInfo?.level);
-      setValue('price', courseInfo?.price);
-      setValue('description', courseInfo?.description || '');
-      setValue('thumbnail', courseInfo?.thumbnail);
-
-      if (courseInfo?.category?.parent?.slug) {
-        setSelectedParentCategory(courseInfo?.category?.parent?.slug);
-
-        const parentCategory = categoryData.find(
-          (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
-        );
-
-        if (parentCategory) {
-          setChildCategories(parentCategory.children || []);
-        }
-      }
-
-      if (courseInfo?.category?.slug) {
-        setValue('category.slug', courseInfo?.category?.slug);
-      }
-
       if (courseInfo?.thumbnail?.key) {
         setImagePreview(process.env.NEXT_PUBLIC_BASE_URL_IMAGE + courseInfo?.thumbnail?.key);
       }
     }
-  }, [courseInfo, setValue, categoryData]);
+  }, [courseInfo, setValue]);
 
-  const handleGetCategory = useCallback(async () => {
-    try {
-      const response = await APIGetCategory({
-        language: 'vi',
-        with_children: true,
-      });
-
-      if (response?.status !== 200) return;
-
-      const formattedData = response.data.map((item: any) => ({
-        id: item.slug,
-        value: item?.translations[0]?.name || item.slug,
-        children:
-          item.children?.map((child: any) => ({
-            id: child.slug,
-            value: child?.translations[0]?.name || child.slug,
-          })) || [],
-      }));
-
-      setCategoryData(formattedData);
-
-      if (courseInfo?.course_id && courseInfo?.category?.parent?.slug) {
-        const parentCategory = formattedData.find(
-          (cat: CategoryData) => cat.id === courseInfo?.category?.parent?.slug
-        );
-
-        if (parentCategory?.children) {
-          setChildCategories(parentCategory.children);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  }, [courseInfo]);
-
-  useEffect(() => {
-    handleGetCategory();
-  }, [handleGetCategory]);
+  const { categoryData, selectedParentCategory, childCategories, handleParentCategoryChange } =
+    useCategoryFetcher({
+      parentSlugOfDefaultCategory: courseInfo?.category?.parent?.slug,
+    });
 
   const onSubmit = async (data: CourseForm) => {
+    setLoading(true);
+
     try {
-      const response = await APIUpdateCourse(courseId, data);
-      if (response?.status === 200) {
-        setIsEditingBasic(false);
-        setShowAlertSuccess(true);
-        setDescription('Thông tin khóa học đã được cập nhật thành công!');
-        setTimeout(() => setShowAlertSuccess(false), 3000);
+      if (hasFormChanged) {
+        const response = await APIUpdateCourse(courseId, data);
+        if (response?.status === 200) {
+          setShowAlertSuccess(true);
+          handleSubmitSuccess();
+          setCourseInfo(response.data);
+          setDescription('Thông tin khóa học đã được cập nhật thành công!');
+          setTimeout(() => setShowAlertSuccess(false), 3000);
+        }
+      } else {
+        handleSubmitSuccess();
       }
     } catch (error) {
       console.error('Error updating course:', error);
       setShowAlertError(true);
       setDescription('Không thể cập nhật thông tin khóa học');
       setTimeout(() => setShowAlertError(false), 3000);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleParentCategoryChange = (value: string) => {
-    setSelectedParentCategory(value);
-    const selectedParent = categoryData.find((cat: CategoryData) => cat.id === value);
-    setChildCategories(selectedParent?.children || []);
-    setValue('category.slug', '');
-  };
+  useEffect(() => {
+    console.log('Form values:', values);
+  }, [values]);
 
   const handleChildCategoryChange = (value: string) => {
     setValue('category.slug', value);
   };
 
-  return (
-    <div className="bg-white dark:bg-eerieBlack shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-      <div className="flex justify-between items-center ">
-        {courseInfo && !isEditingBasic && (
-          <div className="flex flex-col">
-            <h2 className="text-2xl font-bold text-cosmicCobalt dark:text-white">
-              {courseInfo.title}
-            </h2>
-
-            {courseInfo.subtitle && (
-              <text
-                className="font-sans text-xs text-cosmicCobalt/80 dark:text-white/80 ql-content"
-                dangerouslySetInnerHTML={{
-                  __html: courseInfo.subtitle,
-                }}
-              />
-            )}
-          </div>
-        )}
-        <div className="flex h-full items-start justify-start">
-          <Button
-            type="button"
-            className={`text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:text-white dark:hover:text-black ${
-              isEditingBasic ? ' hidden' : 'bg-cosmicCobalt'
-            }`}
-            onClick={() => setIsEditingBasic(true)}
-          >
-            ✍️ Chỉnh sửa
-          </Button>
-        </div>
+  const EmptyInfoBox: React.FC<{ message: string }> = ({ message }) => {
+    return (
+      <div className="text-sm font-mono text-center italic bg-gray-50 p-3 rounded border border-gray-200">
+        {message}
       </div>
+    );
+  };
 
-      {courseInfo && !isEditingBasic ? (
-        <div className="space-y-1 text-cosmicCobalt dark:text-white/90">
-          {imagePreview && (
-            <InfoRow label="Ảnh bìa:">
-              <Image
-                src={imagePreview}
-                alt="Ảnh bìa"
-                className="w-full max-w-xs rounded-xl shadow-lg"
-              />
-            </InfoRow>
-          )}
-          <InfoRow label="Cấp độ:">{courseInfo.level}</InfoRow>
-          <InfoRow label="Lĩnh vực:">{courseInfo?.category?.translations[0].name}</InfoRow>
-          <InfoRow label="Giá:">{courseInfo.price} VND</InfoRow>
-          <InfoRow label="Mô tả:">
-            <div
-              className="ql-content"
-              dangerouslySetInnerHTML={{
-                __html: courseInfo.description || '',
-              }}
-            />
-          </InfoRow>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <Controller
-            name="title"
-            control={control}
-            render={({ field }) => <InputRegisterLecture {...field} labelText="Tiêu đề khóa học" />}
-          />
-          <Controller
-            name="subtitle"
-            control={control}
-            render={({ field }) => <InputRegisterLecture {...field} labelText="Mô tả ngắn" />}
-          />
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => <TextAreaRegisterLecture {...field} labelText="Mô tả" />}
-          />
-          <Controller
-            name="level"
-            control={control}
-            render={({ field }) => <SelectRegister {...field} label="Cấp độ" data={data} />}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SelectRegister
-              label="Chuyên ngành"
-              data={categoryData.map((cat) => ({
-                id: cat.id,
-                value: cat.value,
-              }))}
-              onValueChange={handleParentCategoryChange}
-              value={selectedParentCategory}
-            />
-            <Controller
-              name="category.slug"
-              control={control}
-              render={({ field }) => (
-                <SelectRegister
-                  label="Lĩnh vực"
-                  data={childCategories}
-                  value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    handleChildCategoryChange(value);
-                  }}
-                  disabled={!selectedParentCategory}
+  interface LabelWithIconProps {
+    icon: React.ReactNode;
+    label: string;
+    required?: boolean;
+  }
+
+  const LabelWithIcon: React.FC<LabelWithIconProps> = ({ icon, label, required }) => {
+    return (
+      <div className="flex flex-row gap-2 items-center mb-1 text-darkSilver">
+        {icon}
+        <h4 className="font-medium text-sm">{label}</h4>
+        {required && <Asterisk />}
+      </div>
+    );
+  };
+  return (
+    <>
+      <div className="bg-AntiFlashWhite dark:bg-eerieBlack text-black dark:text-white  mx-auto border-gray-200 dark:border-gray-700 rounded-xl relative">
+        {/* Course Header Card */}
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
+          <div className="flex justify-between items-start">
+            <div className="space-y-3 w-full">
+              <div className="w-[85%]">
+                <LabelWithIcon
+                  icon={<Text className="w-3 h-3" />}
+                  label="Tiêu Đề Khóa Học"
+                  required={true}
                 />
-              )}
-            />
-          </div>
-          <Controller
-            name="price"
-            control={control}
-            render={({ field }) => (
-              <InputRegisterLecture {...field} labelText="Giá (VND)" type="number" />
-            )}
-          />
-          <Controller
-            name="thumbnail"
-            control={control}
-            render={({ field }) => (
-              <div className="space-y-2">
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Ảnh bìa"
-                  type="file"
-                  accept="image/*"
-                  error={errors.thumbnail?.message}
-                  onChange={async (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) {
-                      const { key, id } = await uploadToMinIO(file, 'course', 'thumbnail');
-                      const thumbnail: MediaType = { id, key };
-                      setValue('thumbnail', thumbnail);
-                      setImagePreview(URL.createObjectURL(file));
-                    }
-                  }}
-                />
-                {imagePreview && (
-                  <Image
-                    src={imagePreview}
-                    alt="Ảnh bìa"
-                    className="w-full max-w-xs rounded-lg shadow"
+                {isEditingBasic ? (
+                  <Controller
+                    name="title"
+                    control={control}
+                    render={({ field }) => <InputRegisterLecture {...field} maxLength={60} />}
                   />
+                ) : (
+                  <h1 className="text-2xl font-bold">{courseInfo?.title}</h1>
                 )}
               </div>
-            )}
-          />
-          <div className="flex flex-row gap-4">
-            <Button
-              type="submit"
-              className="bg-custom-gradient-button-violet rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
-            >
-              <Image src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
-              Lưu
-            </Button>
+              <div className="w-[95%]">
+                <LabelWithIcon
+                  icon={<Type className="w-3 h-3" />}
+                  label="Mô Tả Ngắn Khóa Học"
+                  required={true}
+                />
 
+                {isEditingBasic ? (
+                  <Controller
+                    name="subtitle"
+                    control={control}
+                    render={({ field }) => <InputRegisterLecture {...field} maxLength={120} />}
+                  />
+                ) : (
+                  <p className="dark:text-white/70">{courseInfo?.subtitle}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2 text-gray-700">Off</span>
+              <Switch />
+            </div>
+          </div>
+        </div>
+
+        {/* Course Details */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 ">
+          <div className="bg-white dark:bg-black rounded-lg shadow p-6 border border-black/20">
+            <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+              Thông Tin Cơ Bản
+            </h3>
+            <div className="space-y-4 text-darkSilver">
+              <div>
+                <LabelWithIcon
+                  icon={<DiamondPlus className="w-3 h-3" />}
+                  label="Cấp độ"
+                  required={true}
+                />
+                {isEditingBasic ? (
+                  <Controller
+                    name="level"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectRegister {...field} label="Cấp độ" data={data} className="w-full" />
+                    )}
+                  />
+                ) : courseInfo?.level ? (
+                  <CourseLevelBadge
+                    level={courseInfo.level}
+                    className="w-full flex justify-center py-2"
+                  />
+                ) : (
+                  <EmptyInfoBox message="Chưa điền cấp độ của khóa học" />
+                )}
+              </div>
+
+              <div>
+                <LabelWithIcon
+                  icon={<LayoutGrid className="w-3 h-3" />}
+                  label="Lĩnh vực"
+                  required={true}
+                />
+                {isEditingBasic ? (
+                  <div className="flex flex-col gap-2">
+                    <SelectRegister
+                      label="Chuyên ngành"
+                      data={categoryData.map((cat) => ({
+                        id: cat.id,
+                        value: cat.value,
+                      }))}
+                      onValueChange={handleParentCategoryChange}
+                      value={selectedParentCategory}
+                      placeholder="--Lựa chọn lĩnh vực--"
+                    />
+                    <Controller
+                      name="category.slug"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectRegister
+                          label="Lĩnh vực"
+                          data={childCategories}
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            handleChildCategoryChange(value);
+                          }}
+                          disabled={!selectedParentCategory}
+                          placeholder="--Lựa chọn lĩnh vực--"
+                        />
+                      )}
+                    />
+                  </div>
+                ) : courseInfo?.category ? (
+                  <Badge variant="outline" className="px-2 w-full flex justify-center py-2">
+                    {courseInfo.category?.translations?.[0].name}
+                  </Badge>
+                ) : (
+                  <EmptyInfoBox message="Chưa điền lĩnh vực của khóa học" />
+                )}
+              </div>
+
+              <div>
+                <LabelWithIcon
+                  icon={<DollarSign className="w-3 h-3" />}
+                  label="Giá bán - VND"
+                  required={true}
+                />
+                {isEditingBasic ? (
+                  <Controller
+                    name="price"
+                    control={control}
+                    render={({ field }) => (
+                      <InputRegisterLecture
+                        {...field}
+                        type="number"
+                        placeholder="Nhập giá khóa học"
+                        formatVND={true}
+                      />
+                    )}
+                  />
+                ) : courseInfo?.price ? (
+                  <p className="font-semibold text-sm text-white w-full text-center bg-money-gradient py-1 rounded-sm">
+                    {formatPrice(courseInfo?.price)}
+                  </p>
+                ) : (
+                  <EmptyInfoBox message="Chưa điền giá bán của khóa học" />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-black rounded-lg shadow p-6 col-span-2 border border-black/20">
+            <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+              Ảnh Bìa
+              <Asterisk className="ml-1" />
+            </h3>
+            <div className="relative justify-center h-[320px] rounded-lg overflow-hidden flex items-center flex-col aspect-video w-full">
+              {isEditingBasic ? (
+                <Controller
+                  name="thumbnail"
+                  control={control}
+                  render={({ field }) => (
+                    <ImagePicker
+                      {...field}
+                      limit={1}
+                      ratio={16 / 9}
+                      className="w-full"
+                      previousMedia={courseInfo?.thumbnail || undefined}
+                      onChange={(file) => {
+                        setValue('thumbnail', file);
+                      }}
+                    />
+                    // <InputRegisterLecture
+                    //   {...field}
+                    //   type="file"
+                    //   accept="image/*"
+                    //   onChange={async (e) => {
+                    //     const file = (e.target as HTMLInputElement).files?.[0];
+                    //     if (file) {
+                    //       const { key, id } = await uploadToMinIO(file, 'course', 'thumbnail');
+                    //       const thumbnail: MediaType = { id, key };
+                    //       setValue('thumbnail', thumbnail);
+                    //       setImagePreview(URL.createObjectURL(file));
+                    //     }
+                    //   }}
+                    // />
+                  )}
+                />
+              ) : (
+                <Image
+                  src={imagePreview || '/images/placeholder.svg?height=320&width=569'}
+                  alt="HTML CSS for beginners"
+                  fill
+                  className="object-cover aspect-video bg-black"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Course Description */}
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
+          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+            Mô Tả
+            <Asterisk className="ml-1" />
+          </h3>
+          <div className="prose max-w-none">
+            {isEditingBasic ? (
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <TextAreaRegisterLecture
+                    {...field}
+                    placeholder="Nhập mô tả chi tiết khóa học..."
+                  />
+                )}
+              />
+            ) : courseInfo?.description ? (
+              <div
+                className="ql-content"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    courseInfo?.description ||
+                    `This HTML and CSS course for beginners helps you master the foundational knowledge
+                    <strong>needed</strong> to develop web development skills. The course is designed to be simple and easy
+                    to understand with plenty of practical exercises to reinforce your learning.`,
+                }}
+              />
+            ) : (
+              <EmptyInfoBox message="Chưa điền mô tả của khóa học" />
+            )}
+          </div>
+        </div>
+
+        {/* Course Requirements */}
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
+          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+            Kiến Thức Cần Có Trước Khi Tham Gia Khóa Học <Asterisk className="ml-1" />
+          </h3>
+          <div className="prose max-w-none">
+            {isEditingBasic ? (
+              <div className="space-y-2">
+                {requirementFields.map((field, index) => (
+                  <div key={index} className="flex items-top gap-2 ">
+                    <Controller
+                      control={control}
+                      name={`requirements.${index}`}
+                      render={({ field }) => (
+                        <InputRegisterLecture
+                          {...field}
+                          placeholder={`Yêu cầu ${index + 1}`}
+                          className="flex-1"
+                          maxLength={160}
+                          error={errors.requirements?.[index]?.message}
+                        />
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeRequirements(index)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white"
+                  onClick={() => appendRequirements('')}
+                >
+                  <Plus /> Thêm yêu cầu
+                </Button>
+              </div>
+            ) : (
+              <ul className="space-y-4 text-left ">
+                {courseInfo?.requirements?.length ? (
+                  courseInfo?.requirements.map((requirement, index) => (
+                    <li className="flex items-center  gap-3 rtl:space-x-reverse" key={index}>
+                      <CircleDot
+                        key={index}
+                        className="w-4 h-4 dark:text-PaleViolet text-majorelleBlue"
+                      />
+                      {requirement}
+                    </li>
+                  ))
+                ) : (
+                  <EmptyInfoBox message="Chưa điền phần Kiến thức cần có trước khi tham gia khóa học" />
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/* Course Outcomes */}
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
+          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+            Kiến Thức Có Được Sau Khóa Học <Asterisk className="ml-1" />
+          </h3>
+          <div className="prose max-w-none">
+            {isEditingBasic ? (
+              <div className="space-y-2">
+                {outcomeFields.map((field, index) => (
+                  <div key={index} className="flex items-start gap-2 ">
+                    <Controller
+                      control={control}
+                      name={`outcomes.${index}`}
+                      render={({ field }) => (
+                        <InputRegisterLecture
+                          {...field}
+                          placeholder={`Kết quả ${index + 1}`}
+                          className="flex-1"
+                          maxLength={160}
+                          error={errors.outcomes?.[index]?.message}
+                        />
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeOutcomes(index)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white"
+                  onClick={() => appendOutcomes('')}
+                >
+                  <Plus /> Thêm kết quả
+                </Button>
+              </div>
+            ) : (
+              <ul className="space-y-4 text-left text-gray-500 dark:text-gray-400">
+                {courseInfo?.outcomes?.length ? (
+                  courseInfo?.outcomes.map((outcome, index) => (
+                    <li key={index} className="flex items-center gap-3 rtl:space-x-reverse">
+                      <Check className="w-4 h-4 text-goGreen stroke-[2.5]" />
+                      {outcome}
+                    </li>
+                  ))
+                ) : (
+                  <EmptyInfoBox message="Chưa điền phần Kiến thức có được sau khóa học" />
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 text-right ">
+          {isEditingBasic ? (
+            <div className="flex flex-row gap-4 justify-between">
+              <Button
+                type="button"
+                className=" bg-custom-gradient-button-red hover:brightness-125 text-white"
+                onClick={() => router.back()}
+              >
+                <CircleX className="stroke-[2px]" />
+                Hủy
+              </Button>
+              <Button
+                className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-125 text-white"
+                onClick={handleSubmit(onSubmit)}
+              >
+                Tiếp theo
+                {loading ? (
+                  <Spinner className="text-white" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                )}
+              </Button>
+            </div>
+          ) : (
             <Button
               type="button"
-              className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
-              onClick={() => setIsEditingBasic(false)}
+              className={` text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:bg-majorelleBlue70 hover:text-white dark:hover:text-black bg-majorelleBlue `}
+              // onClick={() => setIsEditingBasic(true)}
             >
-              Hủy
+              ✍️ Chỉnh sửa
             </Button>
-          </div>
-        </form>
-      )}
-    </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -20,7 +20,7 @@ export interface ResourceType {
   name: string;
 }
 
-export interface TCourseItem {
+export interface CourseItem {
   id: string;
   title: string;
   description: string;
@@ -44,9 +44,9 @@ export interface Section {
   status: string;
   course_id: string;
   items: CourseItem[];
-  // lectures: CourseItem[];
   quizzes: any[];
   articles: any[];
+  is_expanded?: boolean;
 }
 
 export interface Translation {
@@ -75,7 +75,7 @@ export interface CourseForm {
   title: string;
   subtitle: string;
   slug?: string;
-  description?: string;
+  description: string;
   language?: string;
   outcomes?: string[];
   requirements?: string[];
@@ -92,6 +92,8 @@ export interface CourseForm {
   avg_rating?: number;
   total_enrolled?: number;
   course_progress?: CourseProgress | null;
+  total_revenue?: number;
+  updatedAt?: string;
 }
 
 export interface CourseProgress {

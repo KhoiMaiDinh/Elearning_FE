@@ -103,6 +103,19 @@ const APIInitCourseItem = async (data: any) => {
   }
 };
 
+const APIUpdateCourseItem = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(`/lectures/${id}`, data);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error('Error during init course item:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
 const APIGetListCourse = async (params: {
   page?: number;
   limit?: number;
@@ -206,7 +219,6 @@ const APIRemoveFavoriteCourse = async (course_id: string) => {
     const response = await axiosInstance.delete(`/courses/${course_id}/favorites`);
     if (response.status === 204) {
       return { data: response.data, status: response.status };
-
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
@@ -236,6 +248,7 @@ export {
   APIGetFullCourse,
   APIUpdateSection,
   APIInitCourseItem,
+  APIUpdateCourseItem,
   APIGetListCourse,
   APIGetMyCourse,
   APIChangeCourseStatus,

@@ -1,4 +1,4 @@
-import { CouponStatus } from '@/app/(page)/profile/lecture/components/couponManagement';
+import { CouponStatus } from '@/app/(page)/profile/(with-layout)/lecture/components/couponManagement';
 import { CourseForm } from './courseType';
 
 export type CouponType = {

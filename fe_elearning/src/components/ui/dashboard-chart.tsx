@@ -21,7 +21,6 @@ import {
 } from 'recharts';
 
 import { cn } from '@/lib/utils';
-import { ContentType, DefaultLegendContent } from 'recharts/types/component/DefaultLegendContent';
 import { Props } from 'recharts/types/component/Legend';
 
 // Format: { THEME_NAME: CSS_SELECTOR }

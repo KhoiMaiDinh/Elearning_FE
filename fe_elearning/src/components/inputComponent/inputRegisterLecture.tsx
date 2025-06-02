@@ -1,20 +1,26 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UploadCloud } from 'lucide-react';
+import ImagePicker from '@/components/inputComponent/imagePicker';
+import Asterisk from '../asterisk/asterisk';
 
 type InputRegisterLectureProps = {
   labelText?: string;
   type?: string;
+
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   placeholder?: string;
-  value?: any; // Có thể là string hoặc string[]
+  value?: any; // string or number
   className?: string;
   error?: string;
   disabled?: boolean;
   multiple?: boolean;
   accept?: string;
+  maxLength?: number;
+  formatVND?: boolean;
+  isRequired?: boolean;
 };
 
 const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
@@ -29,58 +35,120 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
   disabled,
   multiple,
   accept,
+  maxLength,
+  formatVND = false,
+  isRequired = false,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [displayValue, setDisplayValue] = useState<string>(value || '');
 
-  // Xử lý khi nhấp vào giao diện tùy chỉnh để kích hoạt input file
+  const formattedVNDValue = useMemo(() => {
+    if (!formatVND || value === undefined || value === null) return value || '';
+    const raw = value.toString().replace(/[^\d]/g, '');
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(Number(raw));
+  }, [value, formatVND]);
+
+  useEffect(() => {
+    setDisplayValue(formattedVNDValue);
+  }, [formattedVNDValue]);
+
+  const handleVNDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^\d]/g, '');
+    const formatted = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(Number(raw));
+    setDisplayValue(formatted);
+
+    onChange?.({
+      ...e,
+      target: {
+        ...e.target,
+        value: raw,
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+
+    setTimeout(() => {
+      if (inputRef.current) {
+        const pos = formatted.length - 2;
+        inputRef.current.setSelectionRange(pos, pos);
+      }
+    }, 0);
+  };
+
   const handleCustomClick = () => {
     if (fileInputRef.current && type === 'file') {
       fileInputRef.current.click();
     }
   };
 
+  const handleCaretEnforcement = () => {
+    if (inputRef.current && formatVND && value) {
+      const maxCaret = inputRef.current.value.length - 2;
+      const currentPos = inputRef.current.selectionStart || 0;
+
+      if (currentPos > maxCaret) {
+        inputRef.current.setSelectionRange(maxCaret, maxCaret);
+      }
+    }
+  };
+
   return (
     <div
-      className={`w-full max-w-md flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
+      className={`w-full flex flex-col  text-black dark:text-lightSilver relative h-full mb-0 gap-1 ${className}`}
     >
-      <Label htmlFor={name}>{labelText}</Label>
+      {labelText && (
+        <Label className="flex gap-1">
+          {labelText}
+          {isRequired && <Asterisk />}
+        </Label>
+      )}
+
       {type === 'file' ? (
         <>
-          {/* Input file ẩn */}
           <Input
             type="file"
             id={name}
             name={name}
             ref={fileInputRef}
-            className="hidden" // Ẩn input file mặc định
+            className="hidden"
             onChange={onChange}
             disabled={disabled}
             multiple={multiple}
             accept={accept}
+            inputMode="text"
           />
-          {/* Giao diện tùy chỉnh */}
-          {!disabled && (
-            <div
-              onClick={handleCustomClick}
-              className="cursor-pointer shadow-sm flex font-sans font-normal text-xs text-white flex-row gap-1 w-fit px-4 py-2 items-center justify-center rounded-full dark:border dark:border-lightSilver/50 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 hover:underline"
-            >
-              Upload
-              <UploadCloud className="w-4 h-4 text-white" />
-            </div>
-          )}
         </>
       ) : (
         <Input
+          lang="vi"
+          inputMode="text"
+          autoComplete="off"
+          // spellCheck={false}
+          ref={inputRef}
+          className="w-full mb-0"
           type={type}
           id={name}
           name={name}
           placeholder={placeholder}
-          value={value}
-          onChange={onChange}
+          value={formatVND ? displayValue : value}
+          onChange={formatVND ? handleVNDChange : onChange}
+          onKeyUp={formatVND ? handleCaretEnforcement : undefined}
+          onClick={formatVND ? handleCaretEnforcement : undefined}
           disabled={disabled}
+          maxLength={maxLength}
         />
       )}
-      {error && <div className="text-[12px] font-sans font-normal text-redPigment">{error}</div>}
+
+      <span className="mb-1 font-medium text-[9px] text-redPigment h-[9px]">
+        {error && !disabled ? error : ''}
+      </span>
     </div>
   );
 };

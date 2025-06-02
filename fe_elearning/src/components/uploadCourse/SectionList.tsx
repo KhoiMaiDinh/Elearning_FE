@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import SectionForm from './SectionForm';
 import CourseItemForm from './CourseItemForm';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseForm, CourseItem, Section } from '@/types/courseType';
 import VideoPlayer from '@/components/courseDetails/videoPlayer';
+import {
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Eye,
+  FileText,
+  GripVertical,
+  Play,
+  Plus,
+  Trash2,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import AddButton from '../button/addButton';
+import LectureModal from '@/app/(page)/profile/(without-layout)/lecture/course/[id]/components/modals/lectureModal';
+import SectionModal from '@/app/(page)/profile/(without-layout)/lecture/course/[id]/components/modals/sectionModal';
+import SectionCard from '../cards/sectionCard';
 
 interface SectionListProps {
   sections: Section[];
   setSections: (sections: Section[]) => void;
-  courseId: string;
+  course: CourseForm;
   handleGetCourseInfo: (targetSection?: string) => void;
   setShowAlertSuccess: (value: boolean) => void;
   setShowAlertError: (value: boolean) => void;
@@ -34,7 +49,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   return (
-    <div className="ml-6 mt-4 p-4 rounded-xl bg-AntiFlashWhite dark:bg-gray/20 border">
+    <div className="ml-6 mt-4 p-4  rounded-xl bg-AntiFlashWhite dark:bg-gray/20 border">
       {!isEditing ? (
         <>
           <div className="flex justify-between items-center mb-2">
@@ -68,7 +83,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
                 <div>
                   <div className="w-full max-w-sm bg-gray/20 rounded-full h-2.5">
                     <div
-                      className="bg-blue-600 h-2.5 rounded-full"
+                      className="bg-majorelleBlue h-2.5 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -124,145 +139,274 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
 const SectionList: React.FC<SectionListProps> = ({
   sections,
   setSections,
-  courseId,
+  course,
   handleGetCourseInfo,
   setShowAlertSuccess,
-  // setShowAlertError,
+  setShowAlertError,
   setDescription,
 }) => {
-  const [isEditingSection, setIsEditingSection] = useState<boolean>(false);
+  const [isAddingSection, setIsAddingSection] = useState<boolean>(false);
   const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(null);
-  const [isAddingCourseItem, setIsAddingCourseItem] = useState<number | null>(null);
+  const [isAddingLecture, setIsAddingLecture] = useState<number | null>(null);
+  const [openSectionIds, setOpenSections] = useState<Set<string>>(new Set());
+
+  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
+  const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
+
+  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+  const [selectedLecture, setSelectedLecture] = useState<CourseItem | null>(null);
+
+  console.log('sections', sections);
+
+  const toggleSection = (sectionId: string) => {
+    setOpenSections((prevOpenSections) => {
+      const newOpenSections = new Set(prevOpenSections);
+      if (newOpenSections.has(sectionId)) {
+        newOpenSections.delete(sectionId);
+      } else {
+        newOpenSections.add(sectionId);
+      }
+      return newOpenSections;
+    });
+  };
+
+  const getTotalLectures = () => {
+    return sections.reduce((total, section) => total + (section?.items.length || 0), 0);
+  };
+
+  const getTotalDuration = () => {
+    return sections.reduce((total, section) => {
+      const sectionDuration = section.items.reduce((sectionTotal, item) => {
+        return sectionTotal + (item.video?.duration_in_seconds || 0);
+      }, 0);
+      return total + sectionDuration;
+    }, 0);
+  };
+
+  const handleEditLecture = (section: Section, lecture: CourseItem) => {
+    setSelectedSection(section);
+    setSelectedLecture(lecture);
+    setIsLectureModalOpen(true);
+  };
+
+  const handleCancelEditLecture = (open: boolean) => {
+    setSelectedSection(null);
+    setSelectedLecture(null);
+    setIsLectureModalOpen(open);
+  };
+
+  const handleAddLecture = (section: Section) => {
+    setSelectedSection(section);
+    setIsLectureModalOpen(true);
+  };
+
+  const handleCancelAddLecture = (open: boolean) => {
+    setSelectedSection(null);
+    setIsLectureModalOpen(open);
+  };
+
+  const handleAddSection = () => {
+    setIsSectionModalOpen(true);
+  };
+
+  const handleCancelAddSection = (open: boolean) => {
+    setIsSectionModalOpen(open);
+  };
+
+  const handleEditSection = (section: Section) => {
+    setSelectedSection(section);
+    setIsSectionModalOpen(true);
+  };
+
+  const handleCancelEditSection = (open: boolean) => {
+    setSelectedSection(null);
+    setIsSectionModalOpen(open);
+  };
 
   return (
-    <div className="bg-white dark:bg-eerieBlack text-cosmicCobalt dark:text-white shadow-md rounded-xl p-6 border">
-      <div className="flex flex-row gap-1 items-center h-full mb-6">
-        <div className="w-8 h-8 items-center justify-center flex">
-          <img src="/icons/icon_book.png" alt="book" className="w-6 h-6 object-fill" />
-        </div>
-        <text className="text-2xl font-bold h-full "> Phần bài giảng</text>
-      </div>
-      {sections.length > 0 ? (
-        sections.map((section, index) => (
-          <div key={index} className="mb-6 pb-4 border-b">
-            {editingSectionIndex === index ? (
-              <SectionForm
-                section={section}
-                onSave={(updatedSection) => {
-                  const updatedSections = [...sections];
-                  updatedSections[index] = updatedSection;
-                  setSections(updatedSections);
-                  setEditingSectionIndex(null);
-                  handleGetCourseInfo(updatedSection.id);
-                  setShowAlertSuccess(true);
-                  setDescription('Phần bài giảng đã được cập nhật thành công!');
-                  setTimeout(() => setShowAlertSuccess(false), 3000);
-                }}
-                onCancel={() => setEditingSectionIndex(null)}
-                courseId={courseId}
-              />
-            ) : (
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">
-                    Phần {index + 1}: {section.title}
-                  </h3>
-                  <Button
-                    type="button"
-                    className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-black hover:text-white"
-                    onClick={() => setEditingSectionIndex(index)}
-                  >
-                    ✍️ Chỉnh sửa
-                  </Button>
-                </div>
-
-                {section.description && (
-                  <p className="mb-2 text-sm">
-                    <strong>Mô tả:</strong>{' '}
-                    <span
-                      className="ql-content"
-                      dangerouslySetInnerHTML={{ __html: section.description }}
-                    />
-                  </p>
-                )}
-
-                {section.items?.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-md mb-2">📘 Bài giảng</h4>
-                    {section.items.map((item, itemIndex) => (
-                      <CourseItemDisplay
-                        key={itemIndex}
-                        item={item}
-                        sectionIndex={index}
-                        sections={sections}
-                        onSave={() => handleGetCourseInfo(section.id)}
-                        onCancel={() => setIsAddingCourseItem(null)}
-                      />
-                    ))}
+    <>
+      {/* Lessons Section */}
+      {/* <div className="bg-white dark:bg-black text-black dark:text-white rounded-lg shadow p-6">
+        {sections.length > 0 ? (
+          sections.map((section, index) => (
+            <div key={index} className="mb-6 pb-4 border-b">
+              {editingSectionIndex === index ? (
+                <SectionForm
+                  section={section}
+                  onSave={(updatedSection) => {
+                    const updatedSections = [...sections];
+                    updatedSections[index] = updatedSection;
+                    setSections(updatedSections);
+                    setEditingSectionIndex(null);
+                    handleGetCourseInfo(updatedSection.id);
+                    setShowAlertSuccess(true);
+                    setDescription('Phần bài giảng đã được cập nhật thành công!');
+                    setTimeout(() => setShowAlertSuccess(false), 3000);
+                  }}
+                  onCancel={() => setEditingSectionIndex(null)}
+                  courseId={courseId}
+                />
+              ) : (
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold">
+                      Phần {index + 1}: {section.title}
+                    </h3>
+                    <Button
+                      type="button"
+                      className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-black hover:text-white"
+                      onClick={() => setEditingSectionIndex(index)}
+                    >
+                      ✍️ Chỉnh sửa
+                    </Button>
                   </div>
-                )}
 
-                {isAddingCourseItem === index ? (
-                  <CourseItemForm
-                    sectionIndex={index}
-                    section={section}
-                    onSave={() => {
-                      handleGetCourseInfo(section.id);
-                      setIsAddingCourseItem(null);
-                    }}
-                    onCancel={() => setIsAddingCourseItem(null)}
-                  />
-                ) : (
-                  <Button
-                    type="button"
-                    className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
-                    onClick={() => setIsAddingCourseItem(index)}
-                  >
-                    + Thêm bài giảng
-                  </Button>
-                )}
-              </div>
-            )}
+                  {section.description && (
+                    <p className="mb-2 text-sm">
+                      <strong>Mô tả:</strong>{' '}
+                      <span
+                        className="ql-content"
+                        dangerouslySetInnerHTML={{ __html: section.description }}
+                      />
+                    </p>
+                  )}
+
+                  {section.items?.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="font-semibold text-md mb-2">📘 Bài giảng</h4>
+                      {section.items.map((item, itemIndex) => (
+                        <CourseItemDisplay
+                          key={itemIndex}
+                          item={item}
+                          sectionIndex={index}
+                          sections={sections}
+                          onSave={() => handleGetCourseInfo(section.id)}
+                          onCancel={() => setIsAddingLecture(null)}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {isAddingLecture === index ? (
+                    <CourseItemForm
+                      sectionIndex={index}
+                      section={section}
+                      onSave={() => {
+                        handleGetCourseInfo(section.id);
+                        setIsAddingLecture(null);
+                      }}
+                      onCancel={() => setIsAddingLecture(null)}
+                    />
+                  ) : (
+                    <Button
+                      type="button"
+                      className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
+                      onClick={() => setIsAddingLecture(index)}
+                    >
+                      + Thêm bài giảng
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="text-gray-500 italic mb-6 p-4 bg-AntiFlashWhite dark:bg-eerieBlack rounded-lg border border-dashed border-gray-300 text-center">
+            Chưa có bài học được thêm vào
           </div>
-        ))
-      ) : (
-        <p className="text-gray italic">Chưa có phần bài giảng nào.</p>
-      )}
+        )}
+        {isAddingSection ? (
+          <SectionForm
+            section={{
+              title: '',
+              description: '',
+              position: (sections.length + 1).toString(),
+              items: [],
+              id: '',
+              status: 'ACTIVE',
+              course_id: courseId,
+              quizzes: [],
+              articles: [],
+            }}
+            onSave={(newSection) => {
+              setSections([...sections, newSection]);
+              setIsAddingSection(false);
+              handleGetCourseInfo(newSection.id);
+              setShowAlertSuccess(true);
+              setDescription('Phần bài giảng đã được thêm thành công!');
+              setTimeout(() => setShowAlertSuccess(false), 3000);
+            }}
+            onCancel={() => setIsAddingSection(false)}
+            courseId={courseId}
+          />
+        ) : (
+          <Button
+            variant="outline"
+            className="bg-custom-gradient-button-violet text-white hover:text-white/90 hover:brightness-110 dark:bg-custom-gradient-button-blue"
+            onClick={() => setIsAddingSection(true)}
+          >
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Thêm Phầm Mới
+          </Button>
+        )}
+      </div> */}
+      <div className="space-y-6">
+        {/* Summary */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold">Tổng quan chương trình</h3>
+                <p className="text-sm text-muted-foreground">
+                  {sections.length} chương • {getTotalLectures()} bài học • {getTotalDuration()}{' '}
+                  thời lượng
+                </p>
+              </div>
+              <AddButton onClick={handleAddSection} label="Thêm Chương Mới" />
+            </div>
+          </CardContent>
+        </Card>
 
-      {isEditingSection ? (
-        <SectionForm
-          section={{
-            title: '',
-            description: '',
-            position: (sections.length + 1).toString(),
-            items: [],
-            id: '',
-            status: 'ACTIVE',
-            course_id: courseId,
-            quizzes: [],
-            articles: [],
-          }}
-          onSave={(newSection) => {
-            setSections([...sections, newSection]);
-            setIsEditingSection(false);
-            handleGetCourseInfo(newSection.id);
-            setShowAlertSuccess(true);
-            setDescription('Phần bài giảng đã được thêm thành công!');
-            setTimeout(() => setShowAlertSuccess(false), 3000);
-          }}
-          onCancel={() => setIsEditingSection(false)}
-          courseId={courseId}
+        {/* Sections */}
+        <div className="space-y-4">
+          {sections.map((section, sectionIndex) => (
+            <SectionCard
+              section={section}
+              sectionIndex={sectionIndex}
+              openSectionIds={openSectionIds}
+              toggleSection={toggleSection}
+              handleAddLecture={handleAddLecture}
+              handleEditSection={handleEditSection}
+              handleEditLecture={handleEditLecture}
+            />
+          ))}
+        </div>
+
+        {/* Section Modal */}
+        <SectionModal
+          open={isSectionModalOpen}
+          onOpenChange={selectedSection ? handleCancelEditSection : handleCancelAddSection}
+          course={course!}
+          section={selectedSection!}
+          onSubmitSuccess={handleGetCourseInfo}
+          setShowAlertSuccess={setShowAlertSuccess}
+          setShowAlertError={setShowAlertError}
+          setDescription={setDescription}
         />
-      ) : (
-        <Button
-          type="button"
-          className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
-          onClick={() => setIsEditingSection(true)}
-        >
-          + Thêm phần bài giảng
-        </Button>
-      )}
-    </div>
+
+        {/* Lecture Modal */}
+        <LectureModal
+          open={isLectureModalOpen}
+          onOpenChange={selectedLecture ? handleCancelEditLecture : handleCancelAddLecture}
+          section={selectedSection!}
+          lecture={selectedLecture!}
+          onSubmitSuccess={handleGetCourseInfo}
+          setShowAlertSuccess={setShowAlertSuccess}
+          setShowAlertError={setShowAlertError}
+          setDescription={setDescription}
+        />
+      </div>
+    </>
   );
 };
 

@@ -1,25 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProfileLecture from './profileLecture';
 import CourseLecture from './courseLecture';
 import StatisticLecture from './statisticLecture';
 import BankAccountLecture from './bankAccountLecture';
-import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Overview } from './overview';
-import CouponManagement from '../../app/(page)/profile/lecture/components/couponManagement';
-const RegisteredLecture = () => {
-  enum TABS {
-    OVERVIEW = 'tong-quan',
-    PROFILE = 'ho-so',
-    COURSE = 'khoa-hoc',
-    STATISTIC = 'thong-ke',
-    BANK_ACCOUNT = 'tai-khoan-ngan-hang',
-    COUPON_MANAGEMENT = 'ma-giam-gia',
-  }
+import CouponManagement from '@/app/(page)/profile/(with-layout)/lecture/components/couponManagement';
 
-  const query = useSearchParams();
+enum TABS {
+  OVERVIEW = 'tong-quan',
+  PROFILE = 'ho-so',
+  COURSE = 'khoa-hoc',
+  STATISTIC = 'thong-ke',
+  BANK_ACCOUNT = 'tai-khoan-ngan-hang',
+  COUPON_MANAGEMENT = 'ma-giam-gia',
+}
+
+const RegisteredLecture = ({ tab }: { tab: TABS }) => {
   const router = useRouter();
-  const activeTab = (query.get('tab') as TABS) || TABS.OVERVIEW;
+
+  const [activeTab, setActiveTab] = useState<TABS>(TABS.OVERVIEW);
+
+  useEffect(() => {
+    if (!tab) {
+      router.replace('lecture?tab=tong-quan');
+      return;
+    }
+
+    if (Object.values(TABS).includes(tab as TABS)) {
+      setActiveTab(tab as TABS);
+    } else {
+      setActiveTab(TABS.OVERVIEW);
+    }
+  }, [tab]);
+
+  if (activeTab === null) {
+    return null; // wait for hydration
+  }
 
   const tabs = [
     { id: TABS.OVERVIEW, label: 'Tổng quan' },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Label } from '@/components/ui/label';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css'; // Import CSS của react-quill-new
@@ -9,6 +9,7 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {
 
 type TextAreaRegisterLectureProps = {
   labelText?: string;
+  labelClassName?: string;
   name?: string;
   placeholder?: string;
   value?: string;
@@ -30,12 +31,13 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col h-auto  w-full gap-1.5 ${className} font-sans font-normal text-black70 dark:text-AntiFlashWhite`}
+      className={`flex flex-col h-auto w-full gap-1.5 font-sans font-normal text-black70 dark:text-AntiFlashWhite ${className}`}
     >
       <Label htmlFor={name}>{labelText}</Label>
       <ReactQuill
         // theme="snow"
-        className="max-h-[500px] overflow-auto"
+        preserveWhitespace
+        className="max-h-[500px] overflow-auto rounded-sm [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:whitespace-normal"
         value={value}
         onChange={(content: any) => onChange?.(content)}
         placeholder={placeholder}
@@ -47,7 +49,7 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
 
             // Font family & size
             [{ font: [] }],
-            [{ size: ['small', false, 'large', 'huge'] }],
+            // [{ size: ['small', false, 'large', 'huge'] }],
 
             // Text styling
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
@@ -63,10 +65,10 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
             [{ indent: '-1' }, { indent: '+1' }],
 
             // Links & Media
-            ['link', 'image', 'video'],
+            ['link'],
 
             // Code & Formula
-            ['code-block', 'formula'],
+            ['code-block'],
 
             // Subscript & Superscript
             [{ script: 'sub' }, { script: 'super' }],
@@ -74,6 +76,18 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
             // Clean formatting
             ['clean'],
           ],
+          keyboard: {
+            bindings: {
+              enter: {
+                key: 13,
+                shiftKey: true,
+                handler: (range: any, context: any) => {
+                  console.log('shift+enter', range, context);
+                  return true;
+                },
+              },
+            },
+          },
         }}
         formats={[
           // Headings
@@ -110,10 +124,13 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
 
           // Clean
           'clean',
+          // 'paragraph',
         ]}
       />
       {error && (
-        <div className="mt-10 text-[12px] font-sans font-normal text-redPigment">{error}</div>
+        <span className="mb-1 font-medium text-[9px] text-redPigment h-[9px]">
+          {error && !disabled ? error : ''}
+        </span>
       )}
     </div>
   );

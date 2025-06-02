@@ -544,7 +544,7 @@ const RegisterLecture = () => {
       {showAlertError && <AlertError description={alertDescription} />}
     </form>
   ) : (
-    <RegisteredLecture />
+    <RegisteredLecture tab={'tong-quan' as any} />
   );
 };
 

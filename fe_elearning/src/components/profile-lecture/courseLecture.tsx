@@ -7,7 +7,7 @@ import { PlusIcon } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { APIGetMyCourse } from '@/utils/course';
-import CoursesBlockMe from '../block/courses-block-me';
+import MyCourseCard from '../block/courses-block-me';
 
 const CourseLecture = () => {
   const router = useRouter();
@@ -32,6 +32,7 @@ const CourseLecture = () => {
 
   useEffect(() => {
     handleGetCourseMe();
+    console.log(dataCourseMe);
   }, []);
 
   return (
@@ -51,7 +52,7 @@ const CourseLecture = () => {
         </div>{' '}
         <div className="w-full h-full px-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
           {dataCourseMe.map((course: any, index: number) => (
-            <CoursesBlockMe {...course} key={index} />
+            <MyCourseCard {...course} key={index} />
           ))}
         </div>
       </div>

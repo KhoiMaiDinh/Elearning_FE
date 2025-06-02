@@ -50,11 +50,10 @@ const CoursesBlock: React.FC<CourseForm> = ({
   const handleAddFavorite = async () => {
     if (id && userInfo?.id) {
       const res = await APIAddFavoriteCourse(id);
-      if (res?.status === 201 ) {
-        setIsFavorite(true);  
+      if (res?.status === 201) {
+        setIsFavorite(true);
       }
-    }
-    else {
+    } else {
       router.push('/login');
     }
   };
@@ -65,15 +64,15 @@ const CoursesBlock: React.FC<CourseForm> = ({
       if (res?.status === 204) {
         setIsFavorite(false);
       }
-    }
-    else {
+    } else {
       router.push('/login');
     }
   };
 
   return (
     <Card
-      className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
+      // className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
+      className="overflow-hidden"
       onClick={() => router.push(`/course/${id}`)}
     >
       <CardHeader className="p-0">
@@ -162,14 +161,26 @@ const CoursesBlock: React.FC<CourseForm> = ({
           </div>
         )}
 
-        {
-          isFavorite ? (
-            <Heart className="w-4 h-4" fill="red" color='red' onClick={(event) => { event.stopPropagation(); handleRemoveFavorite(); }} />
-          ) : (
-            <Heart className="w-4 h-4" color='red'  onClick={(event) => { event.stopPropagation(); handleAddFavorite(); }} />
-          )
-        }
-
+        {isFavorite ? (
+          <Heart
+            className="w-4 h-4"
+            fill="red"
+            color="red"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleRemoveFavorite();
+            }}
+          />
+        ) : (
+          <Heart
+            className="w-4 h-4"
+            color="red"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleAddFavorite();
+            }}
+          />
+        )}
       </CardFooter>
     </Card>
   );
