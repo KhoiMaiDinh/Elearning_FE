@@ -1,16 +1,19 @@
 'use client';
-import React, { useEffect, useState } from 'react';
 
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Star, Users } from 'lucide-react';
+import { Heart, Star, Users, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { CourseForm } from '@/types/courseType';
+import type { CourseForm } from '@/types/courseType';
 import { formatPrice } from '../formatPrice';
 import { APIAddFavoriteCourse, APIRemoveFavoriteCourse } from '@/utils/course';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/constants/store';
+import type { RootState } from '@/constants/store';
+import { Progress } from '@/components/ui/progress';
+
 const CoursesBlock: React.FC<CourseForm> = ({
   is_favorite,
   id,
@@ -19,18 +22,17 @@ const CoursesBlock: React.FC<CourseForm> = ({
   level,
   total_enrolled,
   title,
-  // status,
   course_progress,
   instructor,
   description,
   price,
-  // priceFinal,
 }) => {
   const router = useRouter();
 
   const [levelShow, setLevelShow] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState<boolean>(is_favorite || false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
   useEffect(() => {
     switch (level) {
       case 'BEGINNER':
@@ -47,7 +49,8 @@ const CoursesBlock: React.FC<CourseForm> = ({
     }
   }, [level]);
 
-  const handleAddFavorite = async () => {
+  const handleAddFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (id && userInfo?.id) {
       const res = await APIAddFavoriteCourse(id);
       if (res?.status === 201) {
@@ -58,7 +61,8 @@ const CoursesBlock: React.FC<CourseForm> = ({
     }
   };
 
-  const handleRemoveFavorite = async () => {
+  const handleRemoveFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (id && userInfo?.id) {
       const res = await APIRemoveFavoriteCourse(id);
       if (res?.status === 204) {
@@ -69,31 +73,60 @@ const CoursesBlock: React.FC<CourseForm> = ({
     }
   };
 
+  const getLevelColor = () => {
+    switch (level) {
+      case 'BEGINNER':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'INTERMEDIATE':
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'ADVANCED':
+        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+    }
+  };
+
   return (
     <Card
-      // className="w-full h-full hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
-      className="overflow-hidden"
+      className="w-full h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-gray-800/90 backdrop-blur-sm"
       onClick={() => router.push(`/course/${id}`)}
     >
-      <CardHeader className="p-0">
-        <div className="relative h-40 w-full">
+      <div className="relative">
+        {/* Thumbnail */}
+        <div className="relative h-48 w-full overflow-hidden">
           <img
             src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '')}
             alt={title}
-            className="w-full h-full object-contain rounded-t-lg"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
-          {/* {status && (
-            <Badge className="absolute top-2 right-2" variant="secondary">
-              {status}
-            </Badge>
-          )} */}
-        </div>
-      </CardHeader>
 
-      {/* Nội dung chính, set grow để phần dưới đẩy xuống */}
-      <CardContent className="pt-4 space-y-3 flex-grow">
+          {/* Favorite Button */}
+          <button
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
+            onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+          >
+            <Heart
+              className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
+            />
+          </button>
+
+          {/* Level Badge */}
+          {level && (
+            <Badge className={`absolute bottom-3 left-3 ${getLevelColor()}`}>{levelShow}</Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <CardContent className="px-5 space-y-2">
+        {/* Title */}
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 ">
+          {title}
+        </h3>
+
+        {/* Instructor */}
         <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-8 h-8 border-2 border-white dark:border-gray-700">
             <AvatarImage
               alt={instructor?.user?.last_name || ''}
               src={
@@ -103,84 +136,63 @@ const CoursesBlock: React.FC<CourseForm> = ({
               className="object-cover"
             />
             <AvatarFallback>{instructor?.user?.last_name?.[0]}</AvatarFallback>
-
-            {/* <AvatarFallback>{name?.[0]}</AvatarFallback> */}
           </Avatar>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
             {instructor?.user?.first_name} {instructor?.user?.last_name}
           </span>
         </div>
 
-        <h3 className="font-semibold line-clamp-2">{title}</h3>
+        {/* Stats */}
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-yellow-400" />
+            <span className="text-gray-700 dark:text-gray-300">
+              {avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4 text-blue-500" />
+            <span className="text-gray-700 dark:text-gray-300">{total_enrolled || 0}</span>
+          </div>
+        </div>
 
-        <p
-          className="text-sm text-muted-foreground line-clamp-2"
+        {/* Description */}
+        <div
+          className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 min-h-[2.5rem]"
           dangerouslySetInnerHTML={{ __html: description || '' }}
-        ></p>
+        />
       </CardContent>
 
-      {/* Phần giá & button luôn ở dưới cùng */}
-      <CardFooter className="flex flex-col justify-end w-full  pt-2">
-        <div className="flex items-center gap-4 text-sm w-full">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-Sunglow" />
-            <span>{avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            <span>{total_enrolled || 0}</span>
-          </div>
-          {level && (
-            <Badge variant="outline" className="bg-teaGreen dark:text-black">
-              {levelShow}
-            </Badge>
-          )}
-        </div>
-
-        <div className="flex  justify-between items-end mt-auto pt-2 w-full">
-          <div className="space-x-2">
-            {/* {price && (
-            <span className="text-muted-foreground line-through">
-              {formatPrice(price)}
-            </span>
-          )} */}
-            {price && <span className="font-semibold text-primary">{formatPrice(price)}</span>}
-          </div>
-        </div>
-        {course_progress !== undefined && (
-          <div className="space-y-1 w-full py-2">
-            <div className="w-full bg-darkSilver rounded-full h-2">
-              <div
-                className="bg-vividMalachite h-2 rounded-full"
-                style={{ width: `${course_progress?.progress}%` }}
-              />
+      <CardFooter className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className="w-full space-y-3">
+          {/* Progress Bar (if applicable) */}
+          {course_progress !== undefined && (
+            <div className="space-y-1 w-full">
+              <div className="flex items-center justify-between text-xs mb-1">
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <Clock className="w-3 h-3 mr-1" />
+                  <span>Tiến độ</span>
+                </div>
+                <span className="font-medium text-blue-600 dark:text-blue-400">
+                  {course_progress?.progress}%
+                </span>
+              </div>
+              <Progress value={course_progress?.progress} className="h-2" />
             </div>
-            <span className="text-xs text-muted-foreground">
-              {course_progress?.progress}% hoàn thành
-            </span>
-          </div>
-        )}
+          )}
 
-        {isFavorite ? (
-          <Heart
-            className="w-4 h-4"
-            fill="red"
-            color="red"
-            onClick={(event) => {
-              event.stopPropagation();
-              handleRemoveFavorite();
-            }}
-          />
-        ) : (
-          <Heart
-            className="w-4 h-4"
-            color="red"
-            onClick={(event) => {
-              event.stopPropagation();
-              handleAddFavorite();
-            }}
-          />
-        )}
+          {/* Price */}
+          <div className="flex justify-between items-center">
+            {price && (
+              <span className="font-bold text-lg text-gray-900 dark:text-white">
+                {formatPrice(price)}
+              </span>
+            )}
+            <Badge className="bg-blue-600 hover:bg-blue-700">
+              {course_progress ? 'Tiếp tục học' : 'Xem chi tiết'}
+            </Badge>
+          </div>
+        </div>
       </CardFooter>
     </Card>
   );

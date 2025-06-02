@@ -1,22 +1,25 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Mail, Star, BookOpen } from 'lucide-react';
-import CoursesBlock from '@/components/block/courses-block'; // Đảm bảo import đúng đường dẫn
+import { Mail, Star, BookOpen, Users, Globe, Facebook, Linkedin } from 'lucide-react';
+import CoursesBlock from '@/components/block/courses-block';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useParams } from 'next/navigation';
 import { APIGetLectureByUserName } from '@/utils/lecture';
 import { useEffect, useState } from 'react';
-import { Lecture } from '@/types/registerLectureFormType';
+import type { Lecture } from '@/types/registerLectureFormType';
 import { APIGetListCourse } from '@/utils/course';
-import { CourseForm } from '@/types/courseType';
-// Dữ liệu giả như gọi từ API
+import type { CourseForm } from '@/types/courseType';
+import Link from 'next/link';
 
 const TeacherProfile = () => {
   const { username } = useParams();
   const [teacherData, setTeacherData] = useState<Lecture>();
+  const [dataCourse, setDataCourse] = useState<CourseForm[]>([]);
+
   const handleGetLectureByUserName = async () => {
     try {
       const response = await APIGetLectureByUserName(username as string);
@@ -28,7 +31,6 @@ const TeacherProfile = () => {
     }
   };
 
-  const [dataCourse, setDataCourse] = useState<CourseForm[]>([]);
   const handleGetCourseByLectureUserName = async () => {
     try {
       const params = {
@@ -47,106 +49,208 @@ const TeacherProfile = () => {
   useEffect(() => {
     handleGetLectureByUserName();
     handleGetCourseByLectureUserName();
-  }, [username, handleGetLectureByUserName, handleGetCourseByLectureUserName]);
+  }, [username]);
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+      />
+    ));
+  };
 
   return (
-    <div className="container bg-white dark:bg-chineseBlack rounded-xl overflow-hidden mx-auto space-y-10">
-      <Card className=" mx-auto bg-white dark:bg-chineseBlack shadow-md ">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Teacher Profile Card */}
         <AnimateWrapper delay={0.2} direction="up">
-          <CardHeader className="flex flex-col md:flex-row items-center gap-6">
-            <Avatar className="w-32 h-32">
-              <AvatarImage
-                src={
-                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                  (teacherData?.user.profile_image?.key || '')
-                }
-                alt={teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
-                className="object-cover"
-              />
-            </Avatar>
-            <div className="space-y-2 text-center md:text-left">
-              <CardTitle className="text-3xl font-bold">
-                {teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
-              </CardTitle>
-              <div className="flex items-center gap-2 justify-center md:justify-start">
-                <Mail className="w-4 h-4" />
-                <span className="text-muted-foreground">{teacherData?.user.email}</span>
-              </div>
-              <div className="flex gap-4 justify-center md:justify-start">
-                <div className="flex items-center gap-1">
-                  <BookOpen className="w-4 h-4" />
-                  <span>{teacherData?.total_courses} bài giảng</span>
+          <Card className="mb-8 overflow-hidden border-0 shadow-lg">
+            <CardContent className="p-8">
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Avatar Section */}
+                <div className="flex flex-col items-center lg:items-start">
+                  <Avatar className="w-32 h-32 mb-4">
+                    <AvatarImage
+                      src={
+                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                        (teacherData?.user.profile_image?.key || '')
+                      }
+                      alt={teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
+                      className="object-cover"
+                    />
+                  </Avatar>
+                  <div className="w-8 h-8 bg-green-500 rounded-full border-4 border-white -mt-6 ml-20 lg:ml-20" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <span>
-                    {teacherData?.avg_rating || teacherData?.avg_rating === 0
-                      ? teacherData?.avg_rating?.toFixed(1)
-                      : 'N/A '}
-                    /5
-                  </span>
+
+                {/* Info Section */}
+                <div className="flex-1 space-y-6">
+                  {/* Name and Title */}
+                  <div className="text-center lg:text-left">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                      {teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-300">
+                      {teacherData?.headline || 'Giảng viên chuyên nghiệp'}
+                    </p>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <BookOpen className="w-5 h-5 text-blue-600 mr-2" />
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                          {teacherData?.total_courses || 0}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Khóa học</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <Users className="w-5 h-5 text-green-600 mr-2" />
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                          {teacherData?.total_students || 0}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Học viên</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <div className="flex mr-2">{renderStars(teacherData?.avg_rating || 0)}</div>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                          {teacherData?.avg_rating?.toFixed(1) || 'N/A'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                          {teacherData?.approved_at
+                            ? new Date(teacherData.approved_at).getFullYear()
+                            : '2024'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Tham gia</p>
+                    </div>
+                  </div>
+
+                  {/* Contact and Social */}
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-center justify-center lg:justify-start">
+                      <Mail className="w-4 h-4 text-gray-500 mr-2" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        {teacherData?.user.email}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center lg:justify-end space-x-3">
+                      {teacherData?.website_url && (
+                        <Link href={teacherData.website_url} target="_blank">
+                          <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                            <Globe className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      )}
+                      {teacherData?.facebook_url && (
+                        <Link href={teacherData.facebook_url} target="_blank">
+                          <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                            <Facebook className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      )}
+                      {teacherData?.linkedin_url && (
+                        <Link href={teacherData.linkedin_url} target="_blank">
+                          <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                            <Linkedin className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardHeader>
+            </CardContent>
+          </Card>
         </AnimateWrapper>
-        <AnimateWrapper delay={0.2} direction="up">
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Giới thiệu</h3>
-              <p
-                className="text-muted-foreground ql-content"
-                dangerouslySetInnerHTML={{
-                  __html: teacherData?.biography || '',
-                }}
-              />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Chuyên môn</h3>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">{teacherData?.category?.translations[0]?.name}</Badge>
-              </div>
+
+        {/* About and Expertise */}
+        <div className="mb-8">
+          <AnimateWrapper delay={0.3} direction="up">
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="grid lg:grid-cols-4 gap-6">
+                  {/* About - Takes more space */}
+                  <div className="lg:col-span-3">
+                    <h2 className="text-xl font-semibold mb-4 flex items-center">
+                      <Users className="w-5 h-5 mr-2 text-blue-600" />
+                      Giới thiệu về giảng viên
+                    </h2>
+                    <div
+                      className="prose prose-gray dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 ql-content"
+                      dangerouslySetInnerHTML={{
+                        __html: teacherData?.biography || 'Chưa có thông tin giới thiệu.',
+                      }}
+                    />
+                  </div>
+
+                  {/* Expertise - Compact sidebar */}
+                  <div className="lg:col-span-1">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center">
+                      <BookOpen className="w-4 h-4 mr-2 text-purple-600" />
+                      Chuyên môn
+                    </h3>
+                    <Badge
+                      variant="secondary"
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-0 px-3 py-2 text-sm w-full justify-center"
+                    >
+                      {teacherData?.category?.translations[0]?.name || 'Chưa xác định'}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </AnimateWrapper>
+        </div>
+
+        {/* Courses Section */}
+        <AnimateWrapper delay={0.5} direction="up">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Các khóa học của giảng viên
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Khám phá những khóa học chất lượng cao được thiết kế bởi giảng viên
+              </p>
             </div>
 
-            {/* <div className="">
-              <h3 className="text-lg font-semibold mb-2">Khoá học tiêu biểu</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {dataCourse.slice(0, 2).map((course, index) => (
-                  <Card key={index} className="p-2">
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ""}${
-                        course.thumbnail?.key || ""
-                      }`}
-                      alt={course.title}
-                      className="w-full h-40 object-cover rounded-md"
-                    />
-                    <div className="mt-2 space-y-1">
-                      <h4 className="font-semibold text-base">
-                        {course.title}
-                      </h4>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {course.description}
-                      </p>
-                    </div>
-                  </Card>
+            {dataCourse.length > 0 ? (
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+                {dataCourse.map((course, index) => (
+                  <CoursesBlock key={index} {...course} />
                 ))}
               </div>
-            </div> */}
-          </CardContent>
-        </AnimateWrapper>
-      </Card>
-
-      {/* Danh sách khóa học */}
-      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-        <div className="max-w-6xl mx-auto space-y-6 p-2">
-          <h2 className="text-2xl font-bold">Các khóa học của giảng viên</h2>
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-            {dataCourse.map((course, index) => (
-              <CoursesBlock key={index} {...course} />
-            ))}
+            ) : (
+              <Card className="border-0 shadow-lg">
+                <CardContent className="text-center py-12">
+                  <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Chưa có khóa học nào
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Giảng viên đang chuẩn bị những khóa học tuyệt vời. Hãy quay lại sau nhé!
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
-        </div>
-      </AnimateWrapper>
+        </AnimateWrapper>
+      </div>
     </div>
   );
 };

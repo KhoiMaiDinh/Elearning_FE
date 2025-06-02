@@ -442,26 +442,24 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                         <ReplyList key={index} replies={reply} />
                       ))}
 
-                      {!isOwner && (
-                        <div className="flex gap-2 mt-2">
-                          <Input
-                            value={newReply}
-                            onChange={(e) => setNewReply(e.target.value)}
-                            placeholder="Thêm câu trả lời..."
-                            className="flex-1"
-                          />
-                          <Button
-                            onClick={() => handleReplySubmit(post.id)}
-                            disabled={!newReply.trim()}
-                            type="button"
-                            size="sm"
-                            className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
-                          >
-                            <Send size={16} />
-                            Gửi
-                          </Button>
-                        </div>
-                      )}
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          value={newReply}
+                          onChange={(e) => setNewReply(e.target.value)}
+                          placeholder="Thêm câu trả lời..."
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={() => handleReplySubmit(post.id)}
+                          disabled={!newReply.trim()}
+                          type="button"
+                          size="sm"
+                          className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+                        >
+                          <Send size={16} />
+                          Gửi
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}

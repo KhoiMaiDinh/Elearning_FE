@@ -1,179 +1,221 @@
 'use client';
-import LecturersBlock from '@/components/block/lecturers-block';
-import React, { useEffect, useState } from 'react';
 import AnimateWrapper from '@/components/animations/animateWrapper';
+import CoursesBlock from '@/components/block/courses-block';
+import type { CourseForm } from '@/types/courseType';
+import { APIGetListCourse } from '@/utils/course';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { Loader2, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { APIGetCategory } from '@/utils/category';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { APIGetListLecture } from '@/utils/lecture';
+import { Input } from '@/components/ui/input';
+import LecturersBlock from '@/components/block/lecturers-block';
 import { Lecture } from '@/types/registerLectureFormType';
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-
-// const dataLecture: lectureBlock[] = [
-//   {
-//     avatar: "/images/avatar.jpg",
-//     name: "Lê Thị Thu Hiền",
-//     rating: 4.9,
-//     major: "Công nghệ thông tin",
-//     description:
-//       "Chuyên gia CNTT vớibáo khoa học đạt chuẩn quốc tế báo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tếbáo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-//     numberCourse: 12,
-//     numberStudent: 250,
-//   },
-//   {
-//     avatar: "/images/avatar2.jpg",
-//     name: "Nguyễn Văn An",
-//     rating: 4.8,
-//     major: "Phân tích dữ liệu",
-//     description:
-//       "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-//     numberCourse: 8,
-//     numberStudent: 180,
-//   },
-//   {
-//     avatar: "/images/avatar.jpg",
-//     name: "Lê Thị Thu Hiền",
-//     rating: 4.9,
-//     major: "Công nghệ thông tin",
-//     description:
-//       "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-//     numberCourse: 12,
-//     numberStudent: 250,
-//   },
-//   {
-//     avatar: "/images/avatar2.jpg",
-//     name: "Nguyễn Văn An",
-//     rating: 4.8,
-//     major: "Phân tích dữ liệu",
-//     description:
-//       "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-//     numberCourse: 8,
-//     numberStudent: 180,
-//   },
-//   {
-//     avatar: "/images/avatar.jpg",
-//     name: "Lê Thị Thu Hiền",
-//     rating: 4.9,
-//     major: "Công nghệ thông tin",
-//     description:
-//       "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-//     numberCourse: 12,
-//     numberStudent: 250,
-//   },
-//   {
-//     avatar: "/images/avatar2.jpg",
-//     name: "Nguyễn Văn An",
-//     rating: 4.8,
-//     major: "Phân tích dữ liệu",
-//     description:
-//       "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-//     numberCourse: 8,
-//     numberStudent: 180,
-//   },
-//   {
-//     avatar: "/images/avatar.jpg",
-//     name: "Lê Thị Thu Hiền",
-//     rating: 4.9,
-//     major: "Công nghệ thông tin",
-//     description:
-//       "Chuyên gia CNTT với nhiều năm kinh nghiệm giảng dạy, cùng với đó là các bài báo khoa học đạt chuẩn quốc tế, bằng thạc sĩ đồ đó, blalabla nha.",
-//     numberCourse: 12,
-//     numberStudent: 250,
-//   },
-//   {
-//     avatar: "/images/avatar2.jpg",
-//     name: "Nguyễn Văn An",
-//     rating: 4.8,
-//     major: "Phân tích dữ liệu",
-//     description:
-//       "Kinh nghiệm 10 năm trong lĩnh vực phân tích dữ liệu và hướng dẫn sử dụng các công cụ như Python, R và Tableau.",
-//     numberCourse: 8,
-//     numberStudent: 180,
-//   },
-//   //... more lecturers
-// ];
+import { Category } from '@/types/categoryType';
+import { debounce } from 'lodash';
 
 const Page = () => {
   const router = useRouter();
-  const [lecture, setLecture] = useState<Lecture[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filter, _setFilter] = useState({
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const [listLecture, setListLecture] = useState<Lecture[]>([]);
+  const [isLoadingLecture, setIsLoadingLecture] = useState(false);
+  const [category, setCategory] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
+
+  // Initialize params from URL
+  const [paramsLecture, setParamsLecture] = useState({
     page: 1,
-    limit: 10,
-    search: undefined,
-    order: undefined,
-    specialty: undefined,
+    limit: 12,
+    specialty: searchParams.get('specialty') || undefined,
+
+    q: searchParams.get('search') || undefined,
   });
+
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchInput, setSearchInput] = useState(paramsLecture.q || '');
+
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const handleGetLecture = async () => {
-    setLoading(true);
-    const response = await APIGetListLecture(filter);
+    setIsLoadingLecture(true);
+    const response = await APIGetListLecture(paramsLecture);
     if (response?.status === 200) {
-      setLecture(response.data);
+      setListLecture(response.data);
     }
-    setLoading(false);
+    setIsLoadingLecture(false);
+    const total = response?.total;
+    const limit = paramsLecture.limit;
+    const totalPages = Math.ceil(total / limit);
+    setTotalPages(totalPages);
   };
-  const handleScrollToLecture = () => {
-    const lectureSection = document.getElementById('lecture');
-    if (lectureSection) {
-      lectureSection.scrollIntoView({ behavior: 'smooth' });
+
+  const handleGetCategory = async () => {
+    try {
+      const response = await APIGetCategory({
+        language: 'vi',
+        with_children: true,
+      });
+
+      setCategory(response?.data);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const debouncedSearch = useRef(
+    debounce((value: string) => {
+      handleFilterChange('q', value.trim() === '' ? undefined : value);
+    }, 400)
+  ).current;
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    debouncedSearch(value);
   };
 
   useEffect(() => {
-    // Scroll to top when the component mounts or route changes
-    handleGetLecture();
-    window.scrollTo(0, 0);
+    return () => {
+      debouncedSearch.cancel();
+    };
   }, []);
-  return loading ? (
-    <div className="w-full h-full flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin" />
-    </div>
-  ) : (
-    <div className="w-full h-full flex flex-col p-6  gap-3 bg-AntiFlashWhite dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto">
-      {/* header */}
-      <div className="grid md:grid-cols-3 grid-cols-1 items-center ">
-        {' '}
-        <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white ">
-          <AnimateWrapper direction="left">
-            <div className="md:col-span-2 col-span-1 flex items-center justify-center flex-col text-center text-white md:px-4">
-              <h1 className="lg:text-4xl md:text-2xl text-xl font-extrabold dark:text-white text-eerieBlack leading-tight">
-                Gặp gỡ đội ngũ <span className="text-LavenderIndigo">giảng viên ưu tú</span>
-                <br />
-                từ các lĩnh vực khác nhau
-              </h1>{' '}
-              <p className="mt-4 lg:text-lg md:text-sm text-xs text-muted-foreground max-w-xl">
-                Đội ngũ giảng viên của chúng tôi bao gồm những chuyên gia hàng đầu trong nhiều lĩnh
-                vực — luôn sẵn sàng truyền cảm hứng và kiến thức thực chiến cho bạn.
-              </p>
-              <div className="mt-4 md:mt-6 flex md:gap-4 gap-2 md:text-base text-[10px]">
-                <button
-                  className="bg-custom-gradient-button-violet text-white md:px-6 px-4 py-2 rounded-xl hover:bg-majorelleBlue70 transition"
-                  onClick={handleScrollToLecture}
-                >
-                  Khám phá giảng viên
-                </button>
-                <button
-                  className="border dark:border-white border-eerieBlack  dark:text-white text-eerieBlack px-6 py-2 rounded-xl hover:text-white hover:bg-eerieBlack dark:hover:bg-white dark:hover:text-black transition"
-                  onClick={() => router.push('/course')}
-                >
-                  Đăng ký học thử
-                </button>
-              </div>
-            </div>
-          </AnimateWrapper>
-        </div>
-        <div className="col-span-1 flex justify-center">
-          <img
-            src="/images/lecture_bg.png"
-            alt="Giảng viên"
-            className="md:w-[300px] w-[200px] rounded-xl"
-          />
-        </div>
-      </div>
 
+  const updateURL = (newParams: any) => {
+    const url = new URL(window.location.href);
+    Object.keys(newParams).forEach((key) => {
+      if (newParams[key] !== undefined && newParams[key] !== null && newParams[key] !== '') {
+        url.searchParams.set(key, newParams[key].toString());
+      } else {
+        url.searchParams.delete(key);
+      }
+    });
+    router.push(url.pathname + url.search);
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    const newParams = { ...paramsLecture, [key]: value, page: 1 };
+    setParamsLecture(newParams);
+    updateURL({ [key]: value, page: 1 });
+  };
+
+  const clearFilters = () => {
+    const clearedParams = {
+      page: 1,
+      limit: 12,
+      specialty: undefined,
+      q: undefined,
+    };
+    setParamsLecture(clearedParams);
+    setSortBy('newest');
+    router.push('/lecture');
+  };
+
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (paramsLecture.specialty) count++;
+    if (paramsLecture.q) count++;
+    return count;
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setParamsLecture((prev) => ({ ...prev, page })); // Update paramsCourse to trigger API call
+  };
+
+  // Calculate total pages based on the listCourse length and limit
+
+  useEffect(() => {
+    handleGetLecture();
+  }, [paramsLecture]);
+
+  useEffect(() => {
+    handleGetCategory();
+  }, []);
+
+  const FilterSidebar = ({ className = '' }) => (
+    <Card className={`${className}`}>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Bộ lọc
+          </span>
+          {getActiveFiltersCount() > 0 && (
+            <Badge variant="secondary">{getActiveFiltersCount()}</Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Category Filter */}
+        <div className="space-y-2">
+          <Label>Danh mục</Label>
+          <Select
+            value={paramsLecture.specialty || 'all'}
+            onValueChange={(value) =>
+              handleFilterChange('specialty', value === 'all' ? undefined : value)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn danh mục" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả danh mục</SelectItem>
+              {category.map((cat: Category) => (
+                <SelectItem key={cat.slug} value={cat.slug}>
+                  {cat.translations[0]?.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Rating Filter */}
+        <div className="space-y-2">
+          <Label>Tìm kiếm</Label>
+          <Input value={searchInput} onChange={handleSearchInput} />
+        </div>
+
+        <Separator />
+
+        {/* Clear Filters */}
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className="w-full"
+          disabled={getActiveFiltersCount() === 0}
+        >
+          Xóa bộ lọc
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="min-h-screen bg-background">
       {/* Giang vien uu tu */}
       <section className="py-12  overflow-hidden">
         <AnimateWrapper direction="up">
           <div className="text-center mb-8">
-            <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
+            <h2 className="md:text-2xl text-xl font-bold text-black dark:text-white">
               Gương mặt ưu tú
             </h2>
             <p className="md:text-sm text-xs text-muted-foreground mt-2">
@@ -185,7 +227,7 @@ const Page = () => {
         <div className="relative w-full whitespace-nowrap">
           <AnimateWrapper direction="up">
             <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
-              {lecture.concat(lecture).map((lecture: Lecture, idx: number) => (
+              {listLecture.concat(listLecture).map((lecture: Lecture, idx: number) => (
                 <div
                   key={idx}
                   className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
@@ -202,42 +244,191 @@ const Page = () => {
         </div>
       </section>
 
-      {/* Danh sach giang vien */}
-      <AnimateWrapper direction="up">
-        <div className="md:px-6 pt-4 pb-2" id="lecture">
-          <h2 className="md:text-2xl text-xl font-bold text-cosmicCobalt dark:text-white">
-            Danh sách giảng viên
-          </h2>
-          <p className="md:text-sm text-xs text-muted-foreground mt-1">
-            Khám phá đội ngũ giảng viên nhiều kinh nghiệm, tận tâm và đầy nhiệt huyết.
-          </p>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Desktop Filter Sidebar */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-24">
+              <FilterSidebar />
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 min-w-0">
+            {/* Top Filters and Controls */}
+            <div className="mb-6">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold">Danh sách giảng viên</h2>
+                  <p className="text-muted-foreground">
+                    {isLoadingLecture ? 'Đang tải...' : `Tìm thấy ${listLecture.length} giảng viên`}
+                  </p>
+                </div>
+
+                {/* Mobile Filter Button */}
+                <Button
+                  variant="outline"
+                  onClick={() => setShowMobileFilter(true)}
+                  className="lg:hidden"
+                >
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  Bộ lọc
+                  {getActiveFiltersCount() > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {getActiveFiltersCount()}
+                    </Badge>
+                  )}
+                </Button>
+              </div>
+
+              {/* Top Controls */}
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div className="flex gap-2 items-center">
+                  <Label htmlFor="sort">Sắp xếp:</Label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Mới nhất</SelectItem>
+                      <SelectItem value="oldest">Cũ nhất</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Active Filters */}
+              {getActiveFiltersCount() > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {paramsLecture.specialty && (
+                    <Badge variant="secondary" className="gap-1">
+                      {
+                        category.find((c: Category) => c.slug === paramsLecture.specialty)
+                          ?.translations[0]?.name
+                      }
+                      <button onClick={() => handleFilterChange('specialty', undefined)}>×</button>
+                    </Badge>
+                  )}
+                  {paramsLecture.q && (
+                    <Badge variant="secondary" className="gap-1">
+                      {paramsLecture.q}
+                      <button onClick={() => handleFilterChange('q', undefined)}>×</button>
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Course Grid/List */}
+            <AnimateWrapper delay={0} direction="up" amount={0.01}>
+              {isLoadingLecture ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : listLecture.length > 0 ? (
+                <div
+                  className={`grid gap-6 ${
+                    viewMode === 'grid'
+                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                      : 'grid-cols-1'
+                  }`}
+                >
+                  {listLecture?.map((lecture: Lecture, index: number) => (
+                    <LecturersBlock
+                      key={index}
+                      avatar={lecture?.user?.profile_image?.key}
+                      name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
+                      rating={lecture?.avg_rating}
+                      major={lecture?.category?.translations[0]?.name}
+                      numberCourse={lecture?.total_courses}
+                      numberStudent={lecture?.total_students}
+                      description={lecture?.biography}
+                      username={lecture?.user?.username}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">
+                    Không tìm thấy giảng viên nào phù hợp với bộ lọc của bạn.
+                  </p>
+                  <Button onClick={clearFilters} className="mt-4">
+                    Xóa bộ lọc
+                  </Button>
+                </div>
+              )}
+            </AnimateWrapper>
+
+            {/* Pagination */}
+            {listLecture.length > 0 && (
+              <div className="flex justify-center mt-8">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Trước
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <Button
+                      key={index + 1}
+                      variant={currentPage === index + 1 ? 'default' : 'outline'}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </Button>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Sau
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </AnimateWrapper>
-      <AnimateWrapper direction="up" amount={0.01}>
-        <div className="w-full h-full flex items-end justify-end">
-          {/* <LectureFilter
-            paramsLecture={filter}
-            setParamsLecture={setFilter}
-            router={router}
-            category={[]}
-          /> */}
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {showMobileFilter && (
+        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden">
+          <div className="fixed right-0 top-0 h-full w-80 bg-background shadow-xl">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold">Bộ lọc</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowMobileFilter(false)}>
+                  ×
+                </Button>
+              </div>
+            </div>
+            <div className="p-4 overflow-y-auto h-full pb-20">
+              <FilterSidebar className="border-0 shadow-none" />
+            </div>
+          </div>
         </div>
-        <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2 lg:grid-cols-4 md:grid-cols-2 ">
-          {lecture.map((lecture: Lecture, index: number) => (
-            <LecturersBlock
-              key={index}
-              avatar={lecture?.user?.profile_image?.key}
-              name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
-              rating={lecture?.avg_rating}
-              major={lecture?.category?.translations[0]?.name}
-              numberCourse={lecture?.total_courses}
-              numberStudent={lecture?.total_students}
-              description={lecture?.biography}
-              username={lecture?.user?.username}
-            />
-          ))}
-        </div>
-      </AnimateWrapper>
+      )}
     </div>
   );
 };

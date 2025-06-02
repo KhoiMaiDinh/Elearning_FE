@@ -1,12 +1,14 @@
 'use client';
-// components/TeacherCard.tsx
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+
+import type React from 'react';
+
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Star, Users, BookOpen } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Star, Users, BookOpen, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-type lecturersBlock = {
+
+type LecturersBlockProps = {
   avatar?: string;
   name?: string;
   rating?: number;
@@ -16,7 +18,8 @@ type lecturersBlock = {
   numberStudent?: number;
   username?: string;
 };
-const LecturersBlock: React.FC<lecturersBlock> = ({
+
+const LecturersBlock: React.FC<LecturersBlockProps> = ({
   avatar,
   name,
   rating,
@@ -26,65 +29,89 @@ const LecturersBlock: React.FC<lecturersBlock> = ({
   numberStudent,
   username,
 }) => {
-  const { theme: _theme } = useTheme();
   const router = useRouter();
+
   return (
     <Card
-      className="w-full max-w-sm rounded-2xl  duration-300 transform  hover:cursor-pointer hover:shadow-cosmicCobalt shadow-md font-sans hover:shadow-md  transition-shadow bg-white dark:bg-eerieBlack"
+      className="w-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-gray-800/90 backdrop-blur-sm cursor-pointer group"
       onClick={() => router.push(`/lecture/${username}`)}
     >
-      <CardHeader className="flex flex-col items-center gap-4">
-        <Avatar className="w-24 h-24 shadow">
-          <AvatarImage
-            src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || '')}
-            alt={name}
-            className="object-cover"
-          />
-          <AvatarFallback>
-            {name
-              ?.split(' ')
-              .map((n) => n[0])
-              .join('') || 'GV'}
-          </AvatarFallback>
-        </Avatar>
-        <div className="text-center space-y-1">
-          <h3 className="font-semibold text-lg text-black/80 dark:text-white">
-            {name || 'Giảng viên'}
-          </h3>
-          <Badge
-            variant="secondary"
-            className="mt-1 bg-LavenderIndigo/80 dark:bg-LavenderIndigo/50 text-white hover:bg-LavenderIndigo/80 dark:hover:bg-LavenderIndigo/50"
-          >
-            {major || 'Chưa xác định'}
-          </Badge>
+      <div className="relative h-28 bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
+        <div className="items-center justify-center flex  w-full h-28  ">
+          <Avatar className="w-24 h-24 border-4 shadow-lg">
+            <AvatarImage
+              src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || '')}
+              alt={name}
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-blue-600 text-white text-xl">
+              {name
+                ?.split(' ')
+                .map((n) => n[0])
+                .join('') || 'GV'}
+            </AvatarFallback>
+          </Avatar>
         </div>
+      </div>
+
+      <CardHeader className=" pb-3 text-center">
+        <h3 className="font-bold text-lg text-gray-900 dark:text-white">{name || 'Giảng viên'}</h3>
+        <Badge
+          variant="secondary"
+          className="mx-auto mt-1 bg-custom-gradient-button-violet text-white hover:from-blue-700 hover:to-purple-700"
+        >
+          {major || 'Chưa xác định'}
+        </Badge>
       </CardHeader>
 
-      <CardContent className="flex flex-col justify-between space-y-4 h-40">
-        <p
-          className="text-sm text-darkSilver/70 ql-content dark:text-lightSilver/70 text-center line-clamp-3"
+      <CardContent className="space-y-4 pb-6">
+        {/* Description */}
+        <div
+          className="text-sm text-gray-600 dark:text-gray-400 text-center line-clamp-3 "
           dangerouslySetInnerHTML={{
             __html: description || 'Chưa có mô tả',
           }}
-        ></p>
-        <div className="flex justify-around text-sm text-darkSilver/70 dark:text-lightSilver/70">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-Sunglow" />
-            <span>{rating || rating === 0 ? rating : 'N/A'}</span>
+        />
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2 text-center pt-2">
+          <div className="flex flex-col items-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+              <Star className="w-4 h-4" />
+              <span className="font-medium">
+                {rating || rating === 0 ? rating.toFixed(1) : 'N/A'}
+              </span>
+            </div>
+            <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Đánh giá</span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <BookOpen className="w-4 h-4" />
-            <span>{numberCourse || numberCourse === 0 ? numberCourse : 'N/A'} khóa</span>
+          <div className="flex flex-col items-center p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
+            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <BookOpen className="w-4 h-4" />
+              <span className="font-medium">
+                {numberCourse || numberCourse === 0 ? numberCourse : 'N/A'}
+              </span>
+            </div>
+            <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Khóa học</span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            <span>{numberStudent || numberStudent === 0 ? numberStudent : 'N/A'}</span>
+          <div className="flex flex-col items-center p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+              <Users className="w-4 h-4" />
+              <span className="font-medium">
+                {numberStudent || numberStudent === 0 ? numberStudent : 'N/A'}
+              </span>
+            </div>
+            <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Học viên</span>
           </div>
         </div>
+
+        {/* View Profile Link */}
+        <div className="flex items-center justify-center text-blue-600 dark:text-blue-400 text-sm font-medium pt-2 group-hover:underline">
+          Xem hồ sơ
+          <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+        </div>
       </CardContent>
-      <CardFooter className="">{/* Footer content goes here */}</CardFooter>
     </Card>
   );
 };
