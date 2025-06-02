@@ -73,6 +73,30 @@ export default {
       },
 
       keyframes: {
+        circle: {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.5)', opacity: '0.5' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        dot: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(0)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        outline: {
+          '0%': {
+            transform: 'scale(0)',
+            outline: 'solid 20px hsl(0, 0%, 87%)',
+            outlineOffset: '0',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'scale(1)',
+            outline: 'solid 0 transparent',
+            outlineOffset: '20px',
+            opacity: '0',
+          },
+        },
         shake: {
           '0%, 100%': { transform: 'translateX(0)' },
           '20%, 60%': { transform: 'translateX(-5px)' },
@@ -100,6 +124,9 @@ export default {
         },
       },
       animation: {
+        circle: 'circle 2s ease-in-out infinite',
+        dot: 'dot 2s ease-in-out infinite',
+        outline: 'outline 2s ease-in-out infinite',
         marquee: 'marquee 30s linear infinite', // 30s là thời gian chạy của marquee , vong lap chay
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
@@ -126,6 +153,7 @@ export default {
       cosmicCobalt: '#2F327D',
       chineseBlack: 'rgba(13, 15, 28, 0.1)',
       gray: '#BBBBBB',
+      grayLight: '#f9fafb',
       goGreen: '#14AE5C',
       white: '#ffffff',
       PinkLace: '#f3e0f7',
@@ -156,7 +184,7 @@ export default {
       carminePink: '#ef4444',
     },
     backgroundImage: {
-      'custom-gradient-dark': 'linear-gradient(to  right, #1E293B, #334155)',
+      'custom-gradient-dark': 'linear-gradient(to right, #1E293B, #334155)',
       'custom-gradient-light': 'linear-gradient(to  right, #E5E7EB, #F3F4F6)',
       'custom-gradient-button-violet': 'linear-gradient(to left top, #545AE8,#8844FF, #B781FF)',
       // "custom-gradient-button-blue":
@@ -168,7 +196,20 @@ export default {
       'custom-gradient-button-red':
         'linear-gradient(to left top, #b91c1c ,#dc2626,#ef4444, #f87171)',
       'gradient-144': 'linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)',
+      'intermediate-gradient': 'linear-gradient(144deg, #545AE8, #C03BFF)',
+      'advance-gradient': 'linear-gradient(144deg, #545AE8, #C03BFF, #FC1996)',
+      'money-gradient': 'linear-gradient(to right, #10b981, #13CD2F)',
+      'indigo-gradient':
+        'linear-gradient(to top left, theme("colors.indigo.500"), theme("colors.fuchsia.500"))',
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@vidstack/react/tailwind.cjs')({
+      // Optimize output by specifying player selector.
+      selector: '.media-player',
+      // Change the media variants prefix.
+      prefix: 'media',
+    }),
+  ],
 } satisfies Config;
