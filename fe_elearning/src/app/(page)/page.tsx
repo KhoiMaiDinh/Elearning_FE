@@ -21,6 +21,7 @@ import {
   Calendar,
   PlayCircle,
 } from 'lucide-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 // Components
 import CoursesBlock from '@/components/block/courses-block';
@@ -35,6 +36,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 // API and Types
 import { APIGetListLecture } from '@/utils/lecture';
@@ -43,6 +51,7 @@ import type { CourseForm } from '@/types/courseType';
 import type { Lecture } from '@/types/registerLectureFormType';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
 import APIGetRecommendation from '@/utils/recommendation';
+
 // Mock data for categories
 const categories = [
   { id: 1, name: 'Lập trình web', icon: '💻', count: 24 },
@@ -230,7 +239,7 @@ export default function Page() {
                 </div>
 
                 <Button
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={() => router.push('/course')}
                 >
                   Khám phá ngay
@@ -365,7 +374,7 @@ export default function Page() {
               </Button> */}
             </div>
 
-            {enrolledCourse.length > 0 ? (
+            {recommendation.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
                 {recommendation.map((course) => (
                   <CoursesBlock key={course.id} {...course} />
@@ -378,14 +387,14 @@ export default function Page() {
                     <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Bạn chưa
+                    Bạn chưa đăng ký khóa học nào
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
                     Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay
                     hôm nay.
                   </p>
                   <Button
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
                     onClick={() => router.push('/course')}
                   >
                     Khám phá khóa học
@@ -440,7 +449,7 @@ export default function Page() {
                     hôm nay.
                   </p>
                   <Button
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
                     onClick={() => router.push('/course')}
                   >
                     Khám phá khóa học
@@ -515,35 +524,42 @@ export default function Page() {
             </div>
 
             <Tabs defaultValue="all" className="mb-8">
-              {/* <TabsList className="bg-white dark:bg-gray-800 p-1 rounded-full">
-                <TabsTrigger value="all" className="rounded-full">
-                  Tất cả
-                </TabsTrigger>
-                <TabsTrigger value="popular" className="rounded-full">
-                  Phổ biến
-                </TabsTrigger>
-                <TabsTrigger value="new" className="rounded-full">
-                  Mới nhất
-                </TabsTrigger>
-                <TabsTrigger value="beginner" className="rounded-full">
-                  Cho người mới
-                </TabsTrigger>
-              </TabsList> */}
-
               <TabsContent value="all" className="mt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {listCourse.slice(0, 8).map((course, index) => (
-                    <FadeContent
-                      key={index}
-                      blur={true}
-                      duration={100}
-                      easing="ease-out"
-                      initialOpacity={0}
-                      className="transform transition-all hover:-translate-y-2"
-                    >
-                      <CoursesBlock {...course} />
-                    </FadeContent>
-                  ))}
+                <div className="relative">
+                  <Carousel
+                    opts={{
+                      align: 'start',
+                      loop: true,
+                    }}
+                    plugins={[
+                      Autoplay({
+                        delay: 4000,
+                        stopOnInteraction: true,
+                      }),
+                    ]}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-2 md:-ml-4">
+                      {listCourse.slice(0, 8).map((course, index) => (
+                        <CarouselItem
+                          key={index}
+                          className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
+                        >
+                          <FadeContent
+                            blur={true}
+                            duration={100}
+                            easing="ease-out"
+                            initialOpacity={0}
+                            className="transform transition-all hover:-translate-y-2 p-2"
+                          >
+                            <CoursesBlock {...course} />
+                          </FadeContent>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
                 </div>
               </TabsContent>
             </Tabs>
@@ -572,28 +588,47 @@ export default function Page() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {listLecture.slice(0, 4).map((lecture, index) => (
-                <FadeContent
-                  key={index}
-                  blur={true}
-                  duration={100}
-                  easing="ease-out"
-                  initialOpacity={0}
-                  className="transform transition-all hover:-translate-y-2"
-                >
-                  <LecturersBlock
-                    avatar={lecture?.user?.profile_image?.key}
-                    name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
-                    rating={lecture?.avg_rating}
-                    major={lecture?.category?.translations[0]?.name}
-                    numberCourse={lecture?.total_courses}
-                    numberStudent={lecture?.total_students}
-                    description={lecture?.biography}
-                    username={lecture?.user?.username}
-                  />
-                </FadeContent>
-              ))}
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: 'start',
+                  loop: true,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 5000,
+                    stopOnInteraction: true,
+                  }),
+                ]}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {listLecture.slice(0, 6).map((lecture, index) => (
+                    <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                      <FadeContent
+                        blur={true}
+                        duration={100}
+                        easing="ease-out"
+                        initialOpacity={0}
+                        className="transform transition-all hover:-translate-y-2 p-2"
+                      >
+                        <LecturersBlock
+                          avatar={lecture?.user?.profile_image?.key}
+                          name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
+                          rating={lecture?.avg_rating}
+                          major={lecture?.category?.translations[0]?.name}
+                          numberCourse={lecture?.total_courses}
+                          numberStudent={lecture?.total_students}
+                          description={lecture?.biography}
+                          username={lecture?.user?.username}
+                        />
+                      </FadeContent>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
             </div>
           </AnimateWrapper>
         </div>
@@ -735,14 +770,14 @@ export default function Page() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-black dark:text-white">
         <div className="container mx-auto px-4">
           <AnimateWrapper delay={0.3} direction="up">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Sẵn sàng nâng cao kỹ năng của bạn?
               </h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-blueberry mb-8">
                 Tham gia ngay hôm nay để trải nghiệm học tập chất lượng từ đội ngũ giảng viên hàng
                 đầu.
               </p>
@@ -756,7 +791,7 @@ export default function Page() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-2 border-white text-white hover:bg-white/10 rounded-full px-8 py-6 font-semibold"
+                  className="border-2 border-white text-black dark:text-white hover:bg-white/10 rounded-full px-8 py-6 font-semibold"
                   onClick={() => router.push('/course')}
                 >
                   Khám phá khóa học

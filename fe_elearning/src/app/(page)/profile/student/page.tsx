@@ -2,21 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import {
-  Mail,
-  Phone,
-  Calendar,
-  Edit,
-  BookOpen,
-  Star,
-  ChevronRight,
-  Users,
-  Clock,
-} from 'lucide-react';
+import { Mail, Phone, Calendar, Edit, BookOpen, Users, KeySquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm, Controller, FieldValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -32,11 +22,11 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import axios from 'axios';
 import { APIGetCurrentUser, APIUpdateCurrentUser } from '@/utils/user';
 import { APIGetPreference } from '@/utils/preference';
-import { APIGetEnrolledCourse } from '@/utils/course';
+import { APIGetEnrolledCourse, APIGetFavoriteCourse } from '@/utils/course';
 import { APIGetPresignedUrl } from '@/utils/storage';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-
+import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
 // Yup schema for form validation
 const schema = yup.object().shape({
   first_name: yup.string().required('Họ không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
@@ -65,6 +55,9 @@ const StudentProfile = () => {
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [alertDescription, setAlertDescription] = useState('');
+  const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
+  const router = useRouter();
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
   const {
     control,
@@ -251,11 +244,19 @@ const StudentProfile = () => {
     }
   }, [profileImage.key, setValue]);
 
+  const handleGetFavoriteCourse = async () => {
+    const response = await APIGetFavoriteCourse();
+    if (response?.status === 200) {
+      setFavoriteCourse(response?.data || []);
+    }
+  };
+
   // Fetch data on mount or username change
   useEffect(() => {
     handleGetStudentData();
     handleGetFavoriteCategories();
     handleGetLearningProgress();
+    handleGetFavoriteCourse();
   }, [username]);
 
   // Format the date
@@ -400,6 +401,19 @@ const StudentProfile = () => {
                       </div>
                       <div className="text-sm text-gray-500 ml-7">
                         {studentData?.createdAt ? formatDate(studentData.createdAt) : '15/03/2023'}
+                      </div>
+
+                      <div className="pt-4 flex justify-start">
+                        <div
+                          className="text-gray-500 hover:cursor-pointer flex hover:text-blueberry flex-row items-center text-xs"
+                          onClick={() => setIsPasswordDialogOpen(true)}
+                        >
+                          <KeySquare
+                            className="w-3 h-3 mr-2 dark:text-yellow-100 text-yellow-300"
+                            fill="currentColor"
+                          />
+                          Đổi mật khẩu
+                        </div>
                       </div>
                     </div>
 
@@ -586,7 +600,7 @@ const StudentProfile = () => {
             </AnimateWrapper>
 
             <AnimateWrapper delay={0.6} direction="up">
-              {/* Enrolled Courses */}
+              {/* Favorite Courses */}
               <Card>
                 <CardHeader>
                   <CardTitle>Khóa học đã yêu thích</CardTitle>
@@ -594,7 +608,7 @@ const StudentProfile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {learningProgress.map((course) => (
+                    {favoriteCourse.map((course) => (
                       <div key={course.id} className="flex items-start gap-4 p-3 rounded-lg border">
                         <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
                           <Image
@@ -608,7 +622,7 @@ const StudentProfile = () => {
                           />
                         </div>
                         <div className="flex-1 space-y-1">
-                          <h4 className="font-medium">{course.title}</h4>
+                          <h4 className="font-medium text-black dark:text-white">{course.title}</h4>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Users className="h-3.5 w-3.5" />
                             <span>
@@ -619,30 +633,25 @@ const StudentProfile = () => {
                         </div>
                         <Badge
                           variant={
-                            course.course_progress?.progress &&
-                            course.course_progress.progress === 0
+                            course.level && course.level === 'BEGINNER'
                               ? 'default'
-                              : course.course_progress?.progress &&
-                                  course.course_progress.progress === 100
+                              : course.level && course.level === 'INTERMEDIATE'
                                 ? 'secondary'
                                 : 'outline'
                           }
                           className={`w-fit ${
-                            course.course_progress?.progress &&
-                            course.course_progress.progress === 0
+                            course.level && course.level === 'BEGINNER'
                               ? 'bg-darkSilver'
-                              : course.course_progress?.progress &&
-                                  course.course_progress.progress === 100
+                              : course.level && course.level === 'INTERMEDIATE'
                                 ? 'bg-blueberry'
                                 : 'bg-vividMalachite'
                           }`}
                         >
-                          {course.course_progress?.progress && course.course_progress.progress === 0
-                            ? 'Chưa bắt đầu'
-                            : course.course_progress?.progress &&
-                                course.course_progress.progress === 100
-                              ? 'Đã hoàn thành'
-                              : 'Đang học'}
+                          {course.level && course.level === 'BEGINNER'
+                            ? 'Cơ bản'
+                            : course.level && course.level === 'INTERMEDIATE'
+                              ? 'Trung bình'
+                              : 'Nâng cao'}
                         </Badge>
                       </div>
                     ))}
@@ -664,6 +673,8 @@ const StudentProfile = () => {
             {alertDescription}
           </div>
         )}
+
+        <ChangePasswordDialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen} />
       </div>
     </div>
   );

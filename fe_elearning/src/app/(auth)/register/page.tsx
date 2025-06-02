@@ -3,12 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useDispatch } from 'react-redux';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -29,27 +26,32 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { APILoginEmail } from '@/utils/auth';
-import { setUser } from '@/constants/userSlice';
-import { createLoginSchema } from '@/utils/validation';
+import { APIRegisterEmail } from '@/utils/auth';
+import { Button } from '@/components/ui/button';
+import { createRegistrationSchema } from '@/utils/validation';
+import * as z from 'zod';
 
-// Form schema
-
-const formSchema = createLoginSchema();
+// Use the validation schema from utils
+const formSchema = createRegistrationSchema();
 type FormData = z.infer<typeof formSchema>;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
+      confirmPassword: '',
+      terms: false,
     },
   });
 
@@ -57,29 +59,28 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       setError(null);
+      setSuccess(null);
 
-      const response = await APILoginEmail({
+      const response = await APIRegisterEmail({
+        first_name: values.first_name,
+        last_name: values.last_name,
         email: values.email,
         password: values.password,
       });
 
-      if (response?.status === 200) {
-        // Store tokens properly
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token);
-        localStorage.setItem('token_expires', response.data.token_expires);
+      if (response?.status === 201) {
+        setSuccess('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
 
-        // Set user info in Redux store
-        dispatch(setUser(response.data.user));
-
-        // Redirect to home page
-        router.push('/');
+        // Redirect to login page after 3 seconds
+        setTimeout(() => {
+          router.push('/login');
+        }, 3000);
       } else {
-        setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+        setError('Đăng ký thất bại. Vui lòng thử lại sau.');
       }
     } catch (err: any) {
-      console.error('Login error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
+      console.error('Registration error:', err);
+      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng ký');
     } finally {
       setIsLoading(false);
     }
@@ -96,11 +97,11 @@ export default function LoginPage() {
       <div className="w-full max-w-md z-10">
         <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
-              Đăng nhập
+            <CardTitle className="text-3xl font`-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Tạo tài khoản
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
-              Nhập thông tin đăng nhập của bạn để tiếp tục
+              Nhập thông tin của bạn để tạo tài khoản mới
             </CardDescription>
           </CardHeader>
 
@@ -115,10 +116,63 @@ export default function LoginPage() {
               </Alert>
             )}
 
-            <Tabs defaultValue="email" className="w-full">
-              <TabsContent value="email">
+            {success && (
+              <Alert className="border-green-500 text-green-500 bg-green-50 dark:bg-green-900/20">
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+
+            <Tabs defaultValue="student" className="w-full">
+              <TabsContent value="student">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="first_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Họ</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  placeholder="Nguyễn"
+                                  className="pl-10"
+                                  {...field}
+                                  disabled={isLoading}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="last_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tên</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  placeholder="Văn A"
+                                  className="pl-10"
+                                  {...field}
+                                  disabled={isLoading}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="email"
@@ -175,23 +229,74 @@ export default function LoginPage() {
                       )}
                     />
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="remember" />
-                        <label
-                          htmlFor="remember"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-600 dark:text-gray-300"
-                        >
-                          Ghi nhớ đăng nhập
-                        </label>
-                      </div>
-                      <div
-                        onClick={() => router.push('/forgot-password')}
-                        className="text-sm font-medium hover:cursor-pointer text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        Quên mật khẩu?
-                      </div>
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Xác nhận mật khẩu</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                              <Input
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                className="pl-10"
+                                {...field}
+                                disabled={isLoading}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                              >
+                                {showConfirmPassword ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="terms"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm text-gray-600 dark:text-gray-300">
+                              Tôi đồng ý với{' '}
+                              <Link
+                                href="/terms"
+                                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                điều khoản dịch vụ
+                              </Link>{' '}
+                              và{' '}
+                              <Link
+                                href="/privacy"
+                                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                chính sách bảo mật
+                              </Link>
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
 
                     <Button
                       type="submit"
@@ -223,9 +328,7 @@ export default function LoginPage() {
                           Đang xử lý...
                         </div>
                       ) : (
-                        <div className="flex items-center">
-                          <LogIn className="mr-2 h-4 w-4" /> Đăng nhập
-                        </div>
+                        'Đăng ký'
                       )}
                     </Button>
                   </form>
@@ -239,7 +342,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
-                  Hoặc tiếp tục với
+                  Hoặc đăng ký với
                 </span>
               </div>
             </div>
@@ -287,12 +390,12 @@ export default function LoginPage() {
 
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Chưa có tài khoản?{' '}
+              Đã có tài khoản?{' '}
               <div
-                onClick={() => router.push('/register')}
+                onClick={() => router.push('/login')}
                 className="font-medium hover:cursor-pointer text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Đăng ký ngay
+                Đăng nhập
               </div>
             </div>
           </CardFooter>

@@ -33,4 +33,16 @@ const APIUpdateCurrentUser = async (data: any) => {
   }
 };
 
-export { APIGetCurrentUser, APIUpdateCurrentUser };
+const APIChangePassword = async (data: any) => {
+  try {
+    const response = await axiosInstance.post('/users/me/change-password', data);
+    if (response.status === 201) {
+      return { data: response.data, status: response.status };
+    }
+    return null;
+  } catch (err) {
+    console.error('Error during change password:', err);
+  }
+};
+
+export { APIGetCurrentUser, APIUpdateCurrentUser, APIChangePassword };

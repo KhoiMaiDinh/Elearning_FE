@@ -45,16 +45,16 @@ const APIRegisterGoogle = async (data: any) => {
   }
 };
 
-// const APIRefreshToken = async (data: RefreshTokenReqType) => {
-//   try {
-//     const response = await axiosInstance.post(`/auth/refresh-token`, data);
+const APIRefreshToken = async () => {
+  try {
+    const response = await axiosInstance.post(`/auth/refresh`);
 
-//     return response.data;
-//   } catch (err) {
-//     console.error('Error during get info company:', err);
-//     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
-//   }
-// };
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    console.error('Error during get info company:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
 
 // const APIChangePassword = async (data: ChangePasswordReqType) => {
 //   try {
@@ -67,4 +67,32 @@ const APIRegisterGoogle = async (data: any) => {
 //   }
 // }
 
-export { APILoginEmail, APIRegisterEmail, APILoginGoogle, APIRegisterGoogle };
+const APIForgotPassword = async (data: any) => {
+  try {
+    const response = await axiosInstance.post('/auth/forgot-password', data);
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    console.error('Error during forgot password:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIResetPassword = async (data: any) => {
+  try {
+    const response = await axiosInstance.post('/auth/reset-password', data);
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    console.error('Error during reset password:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+export {
+  APILoginEmail,
+  APIRegisterEmail,
+  APILoginGoogle,
+  APIRegisterGoogle,
+  APIForgotPassword,
+  APIResetPassword,
+  APIRefreshToken,
+};
