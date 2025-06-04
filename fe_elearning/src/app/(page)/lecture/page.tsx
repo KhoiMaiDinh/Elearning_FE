@@ -20,12 +20,13 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { APIGetListLecture } from '@/utils/lecture';
+import { APIGetListInstructor } from '@/utils/instructor';
 import { Input } from '@/components/ui/input';
 import LecturersBlock from '@/components/block/lecturers-block';
 import { Lecture } from '@/types/registerLectureFormType';
 import { Category } from '@/types/categoryType';
 import { debounce } from 'lodash';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Page = () => {
   const router = useRouter();
@@ -57,7 +58,7 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const handleGetLecture = async () => {
     setIsLoadingLecture(true);
-    const response = await APIGetListLecture(paramsLecture);
+    const response = await APIGetListInstructor(paramsLecture);
     if (response?.status === 200) {
       setListLecture(response.data);
     }
@@ -232,11 +233,26 @@ const Page = () => {
                   key={idx}
                   className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
                 >
-                  <img
+                  {/* <img
                     src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
                     alt={`Lecturer ${idx}`}
                     className="object-cover text-cosmicCobalt w-full h-full"
-                  />
+                  /> */}
+                  <Avatar className="w-full h-full border-4 shadow-lg">
+                    <AvatarImage
+                      src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
+                      alt={lecture?.user?.last_name + ' ' + lecture?.user?.first_name || ''}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="bg-PaleViolet/50 text-white text-xl">
+                      {lecture?.user?.last_name +
+                        '' +
+                        lecture?.user?.first_name
+                          ?.split(' ')
+                          .map((n) => n[0])
+                          .join('') || 'GV'}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
               ))}
             </div>

@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, LucideIcon } from 'lucide-react';
 import ImagePicker from '@/components/inputComponent/imagePicker';
 import Asterisk from '../asterisk/asterisk';
 
 type InputRegisterLectureProps = {
   labelText?: string;
   type?: string;
-
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   placeholder?: string;
   value?: any; // string or number
   className?: string;
+  inputClassName?: string;
   error?: string;
   disabled?: boolean;
   multiple?: boolean;
@@ -21,6 +21,8 @@ type InputRegisterLectureProps = {
   maxLength?: number;
   formatVND?: boolean;
   isRequired?: boolean;
+  icon?: LucideIcon;
+  iconColor?: string;
 };
 
 const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
@@ -31,6 +33,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
   placeholder,
   value,
   className,
+  inputClassName,
   error,
   disabled,
   multiple,
@@ -38,6 +41,8 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
   maxLength,
   formatVND = false,
   isRequired = false,
+  icon: Icon,
+  iconColor = 'text-gray-500',
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,7 +106,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
 
   return (
     <div
-      className={`w-full flex flex-col  text-black dark:text-lightSilver relative h-full mb-0 gap-1 ${className}`}
+      className={`w-full flex flex-col text-black dark:text-lightSilver relative h-full mb-0 gap-1 ${className}`}
     >
       {labelText && (
         <Label className="flex gap-1">
@@ -110,41 +115,49 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
         </Label>
       )}
 
-      {type === 'file' ? (
-        <>
+      <div className="relative">
+        {Icon && (
+          <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${iconColor}`}>
+            <Icon size={18} />
+          </div>
+        )}
+
+        {type === 'file' ? (
+          <>
+            <Input
+              type="file"
+              id={name}
+              name={name}
+              ref={fileInputRef}
+              className="hidden"
+              onChange={onChange}
+              disabled={disabled}
+              multiple={multiple}
+              accept={accept}
+            />
+          </>
+        ) : (
           <Input
-            type="file"
+            lang="vi"
+            inputMode="text"
+            autoComplete="off"
+            ref={inputRef}
+            className={`w-full mb-0 ${Icon ? 'pl-10' : ''} ${inputClassName} ${
+              disabled ? 'cursor-not-allowed opacity-50' : ''
+            }`}
+            type={type}
             id={name}
             name={name}
-            ref={fileInputRef}
-            className="hidden"
-            onChange={onChange}
+            placeholder={placeholder}
+            value={formatVND ? displayValue : value}
+            onChange={formatVND ? handleVNDChange : onChange}
+            onKeyUp={formatVND ? handleCaretEnforcement : undefined}
+            onClick={formatVND ? handleCaretEnforcement : undefined}
             disabled={disabled}
-            multiple={multiple}
-            accept={accept}
-            inputMode="text"
+            maxLength={maxLength}
           />
-        </>
-      ) : (
-        <Input
-          lang="vi"
-          inputMode="text"
-          autoComplete="off"
-          // spellCheck={false}
-          ref={inputRef}
-          className="w-full mb-0"
-          type={type}
-          id={name}
-          name={name}
-          placeholder={placeholder}
-          value={formatVND ? displayValue : value}
-          onChange={formatVND ? handleVNDChange : onChange}
-          onKeyUp={formatVND ? handleCaretEnforcement : undefined}
-          onClick={formatVND ? handleCaretEnforcement : undefined}
-          disabled={disabled}
-          maxLength={maxLength}
-        />
-      )}
+        )}
+      </div>
 
       <span className="mb-1 font-medium text-[9px] text-redPigment h-[9px]">
         {error && !disabled ? error : ''}

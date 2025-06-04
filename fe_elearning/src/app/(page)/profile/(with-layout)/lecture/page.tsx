@@ -19,7 +19,10 @@ const Page = () => {
         !userInfo?.instructor_profile ? (
           <NotRegisteredLecture />
         ) : (
-          <RegisteredLecture tab={tabParam as any} />
+          <RegisteredLecture
+            tab={tabParam as any}
+            isApproved={!!userInfo?.instructor_profile?.approved_at}
+          />
         )
       ) : (
         <Loader />

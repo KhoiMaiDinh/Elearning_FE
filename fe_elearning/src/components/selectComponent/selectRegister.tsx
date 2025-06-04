@@ -8,9 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Label } from '../ui/label';
+import Asterisk from '../asterisk/asterisk';
 
 type selectFilter = {
-  label: string;
+  label?: string;
   disabled?: boolean;
   onValueChange?: (value: string) => void;
   placeholder?: string;
@@ -18,6 +20,8 @@ type selectFilter = {
   error?: string;
   className?: string;
   value?: string;
+  isRequired?: boolean;
+  inputClassName?: string;
 };
 const SelectRegister: React.FC<selectFilter> = ({
   label,
@@ -28,14 +32,23 @@ const SelectRegister: React.FC<selectFilter> = ({
   error,
   className,
   value,
+  isRequired = false,
+  inputClassName,
 }) => {
   return (
     <div
       className={`w-full max-w-full flex flex-col gap-1.5 ${className} font-sans font-normal text-black70 dark:text-lightSilver`}
     >
-      {/* <Label>{label}</Label> */}
+      {label && (
+        <Label className="flex gap-1">
+          {label}
+          {isRequired && <Asterisk />}
+        </Label>
+      )}
       <Select disabled={disabled} onValueChange={onValueChange} value={value}>
-        <SelectTrigger className="w-full sm:min-w-28 md:min-w-32 lg:min-w-36 ">
+        <SelectTrigger
+          className={`w-full sm:min-w-28 md:min-w-32 lg:min-w-36 ${inputClassName} `}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -49,7 +62,7 @@ const SelectRegister: React.FC<selectFilter> = ({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {error && <div className="text-[12px] font-sans font-normal text-redPigment">{error}</div>}
+      {error && <div className="mb-1 font-medium text-[9px] text-redPigment h-[9px]">{error}</div>}
     </div>
   );
 };

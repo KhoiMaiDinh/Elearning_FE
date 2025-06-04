@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/carousel';
 
 // API and Types
-import { APIGetListLecture } from '@/utils/lecture';
+import { APIGetListInstructor } from '@/utils/instructor';
 import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import type { Lecture } from '@/types/registerLectureFormType';
@@ -123,7 +123,7 @@ export default function Page() {
   const handleGetListLecture = async () => {
     try {
       setIsLoading(true);
-      const response = await APIGetListLecture(paramsLecture);
+      const response = await APIGetListInstructor(paramsLecture);
       if (response && response.data) {
         setIsLoading(false);
         setListLecture(response.data);

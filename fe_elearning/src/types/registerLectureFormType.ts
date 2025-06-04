@@ -1,6 +1,7 @@
 import { Category } from './categoryType';
 import { MediaType } from './mediaType';
 export type RegisterLectureForm = {
+  user: { first_name: string; last_name: string };
   category: {
     slug: string;
   };
@@ -11,9 +12,6 @@ export type RegisterLectureForm = {
   website_url?: string | null;
   facebook_url?: string | null;
   linkedin_url?: string | null;
-  bankAccount: string;
-  bankName: string;
-  accountHolder: string;
 };
 
 export type Lecture = RegisterLectureForm & {

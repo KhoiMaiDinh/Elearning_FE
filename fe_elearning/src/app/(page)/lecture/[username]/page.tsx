@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useParams } from 'next/navigation';
-import { APIGetLectureByUserName } from '@/utils/lecture';
+import { APIGetInstructorByUserName } from '@/utils/instructor';
 import { useEffect, useState } from 'react';
 import type { Lecture } from '@/types/registerLectureFormType';
 import { APIGetListCourse } from '@/utils/course';
@@ -22,7 +22,7 @@ const TeacherProfile = () => {
 
   const handleGetLectureByUserName = async () => {
     try {
-      const response = await APIGetLectureByUserName(username as string);
+      const response = await APIGetInstructorByUserName(username as string);
       if (response && response.data) {
         setTeacherData(response.data);
       }

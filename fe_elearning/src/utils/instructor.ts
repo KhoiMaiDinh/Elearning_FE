@@ -1,7 +1,20 @@
 import axiosInstance from './axios';
-const APIRegisterLecture = async (data: any) => {
+const APIRegisterInstructor = async (data: any) => {
   try {
     const response = await axiosInstance.post('/instructors', data);
+    if (response.status === 201) {
+      return { data: response.data, status: response.status };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err) {
+    console.error('Error during register lecture:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIUpdateInstructor = async (username: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(`/instructors/${username}`, data);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
@@ -12,7 +25,7 @@ const APIRegisterLecture = async (data: any) => {
   }
 };
 
-const APIGetLectureByUserName = async (user_name: string) => {
+const APIGetInstructorByUserName = async (user_name: string) => {
   try {
     const response = await axiosInstance.get(`/instructors/${user_name}`);
     if (response.status === 200) {
@@ -25,7 +38,7 @@ const APIGetLectureByUserName = async (user_name: string) => {
   }
 };
 
-const APIGetListLecture = async (params: {
+const APIGetListInstructor = async (params: {
   page?: number;
   limit?: number;
   search?: string;
@@ -54,4 +67,9 @@ const APIGetListLecture = async (params: {
     throw err;
   }
 };
-export { APIRegisterLecture, APIGetLectureByUserName, APIGetListLecture };
+export {
+  APIRegisterInstructor,
+  APIGetInstructorByUserName,
+  APIGetListInstructor,
+  APIUpdateInstructor,
+};

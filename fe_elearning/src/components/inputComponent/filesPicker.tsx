@@ -36,24 +36,35 @@ import { Input } from '../ui/input';
 import InputRegisterLecture from './inputRegisterLecture';
 import { Spinner } from '../ui/spinner';
 
+const ONE_MB = 1024 * 1024;
+const MAX_FILE_SIZE = 50 * ONE_MB;
+const ACCEPTED_EXTENSIONS = ['.pdf'];
+
 type FilesPickerProps = {
   label?: string;
+  boxLabel?: string;
   className?: string;
+  dropzoneClassName?: string;
   disabled?: boolean;
   onChange: (file: File) => void;
   loading?: boolean;
+  error?: string;
+  maxSize?: number;
+  acceptedExtensions?: string[];
 };
 
 const FilesPicker: React.FC<FilesPickerProps> = ({
-  label = 'Tải lên các file',
+  label,
+  boxLabel = 'Tải lên các file',
   className,
+  dropzoneClassName,
   onChange,
   disabled,
   loading = false,
+  error,
+  maxSize = MAX_FILE_SIZE,
+  acceptedExtensions = ACCEPTED_EXTENSIONS,
 }) => {
-  const ONE_MB = 1024 * 1024;
-  const MAX_FILE_SIZE = 50 * ONE_MB;
-  const ACCEPTED_EXTENSIONS = ['.pdf'];
   const dropzone = useDropzone({
     onDropFile: async (file: File) => {
       onChange(file);
@@ -65,9 +76,9 @@ const FilesPicker: React.FC<FilesPickerProps> = ({
 
     validation: {
       accept: {
-        'application/pdf': ACCEPTED_EXTENSIONS,
+        'application/pdf': acceptedExtensions,
       },
-      maxSize: MAX_FILE_SIZE,
+      maxSize: maxSize,
     },
     // shiftOnMaxFiles: true,
   });
@@ -84,17 +95,19 @@ const FilesPicker: React.FC<FilesPickerProps> = ({
   };
 
   return (
-    <div className={`not-prose flex flex-1 flex-col gap-4 h-full ${className} `}>
+    <div className={`not-prose flex flex-1 flex-col gap-4 h-full ${className}`}>
       <Dropzone {...dropzone}>
         <div className="h-full flex flex-col ">
-          <div className="flex ">
-            <DropzoneDescription className="w-full flex flex-col  text-black dark:text-lightSilver relative h-full mb-0">
-              Tài liệu
-            </DropzoneDescription>
-            {/* <DropzoneMessage /> */}
-          </div>
+          {label && (
+            <div className="flex">
+              <DropzoneDescription className="w-full flex flex-col  text-black dark:text-lightSilver relative h-full mb-0">
+                {label}
+              </DropzoneDescription>
+            </div>
+          )}
+
           <DropZoneArea
-            className={`border-none flex flex-1 relative dark:bg-black py-0 px-0 flex-col `}
+            className={`border-none flex flex-1 relative dark:bg-black py-0 px-0 flex-col ${dropzoneClassName}`}
           >
             <DropzoneTrigger
               disabled={disabled}
@@ -108,17 +121,17 @@ const FilesPicker: React.FC<FilesPickerProps> = ({
               )}
               <CloudUploadIcon className="size-8" />
               <div>
-                <p className="font-semibold">{label}</p>
+                <p className="font-semibold">{boxLabel}</p>
                 <p className="text-sm text-muted-foreground">
                   Nhấp vào đây hoặc kéo thả để tải lên
                 </p>
                 <p className="text-[10px] text-muted-foreground">
-                  Chọn file có kích thước tối đa {formatSize(MAX_FILE_SIZE)}, định dạng{' '}
+                  Chọn file có kích thước tối đa {formatSize(maxSize)}, định dạng{' '}
                   {ACCEPTED_EXTENSIONS.join(', ')}
                 </p>
               </div>
             </DropzoneTrigger>
-            <DropzoneMessage />
+            <DropzoneMessage>{error}</DropzoneMessage>
           </DropZoneArea>
         </div>
       </Dropzone>

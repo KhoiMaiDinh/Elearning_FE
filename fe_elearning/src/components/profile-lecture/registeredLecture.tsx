@@ -7,45 +7,43 @@ import { useRouter } from 'next/navigation';
 import { Overview } from './overview';
 import CouponManagement from '@/app/(page)/profile/(with-layout)/lecture/components/couponManagement';
 
-enum TABS {
+export enum TABS {
   OVERVIEW = 'tong-quan',
   PROFILE = 'ho-so',
   COURSE = 'khoa-hoc',
-  STATISTIC = 'thong-ke',
+  STATISTIC = 'phan-tich-phan-hoi',
   BANK_ACCOUNT = 'tai-khoan-ngan-hang',
   COUPON_MANAGEMENT = 'ma-giam-gia',
 }
 
-const RegisteredLecture = ({ tab }: { tab: TABS }) => {
+const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean }) => {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<TABS | null>(null);
 
-  const [activeTab, setActiveTab] = useState<TABS>(TABS.OVERVIEW);
+  const tabs = isApproved
+    ? [
+        { id: TABS.OVERVIEW, label: 'Tổng quan' },
+        { id: TABS.PROFILE, label: 'Hồ sơ' },
+        { id: TABS.COURSE, label: 'Khóa học' },
+        { id: TABS.STATISTIC, label: 'Phân tích phản hồi' },
+        { id: TABS.BANK_ACCOUNT, label: 'Tài khoản ngân hàng' },
+        { id: TABS.COUPON_MANAGEMENT, label: 'Mã giảm giá' },
+      ]
+    : [{ id: TABS.PROFILE, label: 'Hồ sơ' }];
 
   useEffect(() => {
-    if (!tab) {
-      router.replace('lecture?tab=tong-quan');
-      return;
-    }
-
-    if (Object.values(TABS).includes(tab as TABS)) {
-      setActiveTab(tab as TABS);
+    if (!tab || !Object.values(TABS).includes(tab as TABS)) {
+      router.replace(`/profile/lecture?tab=${isApproved ? TABS.OVERVIEW : TABS.PROFILE}`);
+      setActiveTab(isApproved ? TABS.OVERVIEW : TABS.PROFILE);
+    } else if (!isApproved && tab !== TABS.PROFILE) {
+      router.replace(`/profile/lecture?tab=${TABS.PROFILE}`);
+      setActiveTab(TABS.PROFILE);
     } else {
-      setActiveTab(TABS.OVERVIEW);
+      setActiveTab(tab as TABS);
     }
-  }, [tab]);
+  }, [tab, isApproved]);
 
-  if (activeTab === null) {
-    return null; // wait for hydration
-  }
-
-  const tabs = [
-    { id: TABS.OVERVIEW, label: 'Tổng quan' },
-    { id: TABS.PROFILE, label: 'Hồ sơ' },
-    { id: TABS.COURSE, label: 'Khóa học' },
-    { id: TABS.STATISTIC, label: 'Thống kê' },
-    { id: TABS.BANK_ACCOUNT, label: 'Tài khoản ngân hàng' },
-    { id: TABS.COUPON_MANAGEMENT, label: 'Mã giảm giá' },
-  ];
+  if (activeTab === null) return null;
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -71,24 +69,32 @@ const RegisteredLecture = ({ tab }: { tab: TABS }) => {
       </div>
 
       <div className="w-full flex-1 mt-6">
-        <div className={activeTab === TABS.OVERVIEW ? '' : 'hidden'}>
-          <Overview />
-        </div>
-        <div className={activeTab === TABS.PROFILE ? '' : 'hidden'}>
-          <ProfileLecture />
-        </div>
-        <div className={activeTab === TABS.COURSE ? '' : 'hidden'}>
-          <CourseLecture />
-        </div>
-        <div className={activeTab === TABS.STATISTIC ? '' : 'hidden'}>
-          <StatisticLecture />
-        </div>
-        <div className={activeTab === TABS.BANK_ACCOUNT ? '' : 'hidden'}>
-          <BankAccountLecture />
-        </div>
-        <div className={activeTab === TABS.COUPON_MANAGEMENT ? '' : 'hidden'}>
-          <CouponManagement />
-        </div>
+        {isApproved ? (
+          <>
+            <div className={activeTab === TABS.OVERVIEW ? '' : 'hidden'}>
+              <Overview />
+            </div>
+            <div className={activeTab === TABS.PROFILE ? '' : 'hidden'}>
+              <ProfileLecture />
+            </div>
+            <div className={activeTab === TABS.COURSE ? '' : 'hidden'}>
+              <CourseLecture />
+            </div>
+            <div className={activeTab === TABS.STATISTIC ? '' : 'hidden'}>
+              <StatisticLecture />
+            </div>
+            <div className={activeTab === TABS.BANK_ACCOUNT ? '' : 'hidden'}>
+              <BankAccountLecture />
+            </div>
+            <div className={activeTab === TABS.COUPON_MANAGEMENT ? '' : 'hidden'}>
+              <CouponManagement />
+            </div>
+          </>
+        ) : (
+          <div className={activeTab === TABS.PROFILE ? '' : 'hidden'}>
+            <ProfileLecture />
+          </div>
+        )}
       </div>
     </div>
   );
