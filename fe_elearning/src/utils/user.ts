@@ -1,11 +1,6 @@
 import axiosInstance from './axios';
 const APIGetCurrentUser = async () => {
   try {
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-      throw new Error('Missing refresh token');
-    }
-
     const response = await axiosInstance.get('/users/me');
     if (response.status === 200) {
       return { data: response.data, status: response.status };

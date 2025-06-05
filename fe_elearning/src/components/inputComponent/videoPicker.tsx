@@ -94,7 +94,7 @@ const VideoPicker: React.FC<VideoPickerProps> = ({
   };
 
   const handleSaveVideo = async (video: File) => {
-    const uploadedMedia = await uploadToMinIO(video, 'lecture-video', 'video', (progress) =>
+    const uploadedMedia = await uploadToMinIO(video, 'lecture-series', 'video', (progress) =>
       setUploadProgress(progress)
     );
     const duration = await getVideoDuration(video);

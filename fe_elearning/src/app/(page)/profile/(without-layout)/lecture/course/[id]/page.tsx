@@ -17,6 +17,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressBar from './components/progressBar';
 import { Button } from '@/components/ui/button';
 
+export const steps = [
+  {
+    id: 1,
+    title: 'Thông Tin Khóa Học',
+    description: 'Tiêu đề, mô tả và thông tin khóa học',
+  },
+  {
+    id: 2,
+    title: 'Chương trình học',
+    description: 'Tạo các chương và bài học',
+  },
+  {
+    id: 3,
+    title: 'Xem lại & Xuất bản',
+    description: 'Kiểm tra và xuất bản khóa học',
+  },
+];
+
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
@@ -53,24 +71,6 @@ const CourseDetails: React.FC = () => {
     handleGetCourseInfo();
   }, [courseId, dispatch]);
 
-  const steps = [
-    {
-      id: 1,
-      title: 'Thông Tin Khóa Học',
-      description: 'Tiêu đề, mô tả và thông tin khóa học',
-    },
-    {
-      id: 2,
-      title: 'Chương trình học',
-      description: 'Tạo các chương và bài học',
-    },
-    {
-      id: 3,
-      title: 'Xem lại & Xuất bản',
-      description: 'Kiểm tra và xuất bản khóa học',
-    },
-  ];
-
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -94,10 +94,9 @@ const CourseDetails: React.FC = () => {
         return (
           <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
             <BasicInfoForm
-              isEditingBasic={true}
+              mode="edit"
               courseInfo={courseInfo}
               setCourseInfo={handleGetCourseInfo}
-              courseId={courseId}
               setShowAlertSuccess={setShowAlertSuccess}
               setShowAlertError={setShowAlertError}
               setDescription={setDescription}

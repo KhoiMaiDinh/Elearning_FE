@@ -3,22 +3,14 @@ import { Button } from '@/components/ui/button';
 import CourseItemForm from './CourseItemForm';
 import { CourseForm, CourseItem, Section } from '@/types/courseType';
 import VideoPlayer from '@/components/courseDetails/videoPlayer';
-import {
-  ChevronDown,
-  ChevronRight,
-  Edit,
-  Eye,
-  FileText,
-  GripVertical,
-  Play,
-  Plus,
-  Trash2,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader } from '../ui/card';
+
+import { Card, CardContent } from '../ui/card';
 import AddButton from '../button/addButton';
 import LectureModal from '@/app/(page)/profile/(without-layout)/lecture/course/[id]/components/modals/lectureModal';
 import SectionModal from '@/app/(page)/profile/(without-layout)/lecture/course/[id]/components/modals/sectionModal';
 import SectionCard from '../cards/sectionCard';
+import { Globe } from 'lucide-react';
+import { APIChangeCourseStatus } from '@/utils/course';
 
 interface SectionListProps {
   sections: Section[];
@@ -171,7 +163,7 @@ const SectionList: React.FC<SectionListProps> = ({
   };
 
   const getTotalLectures = () => {
-    return sections.reduce((total, section) => total + (section?.items.length || 0), 0);
+    return sections.reduce((total, section) => total + (section?.items?.length || 0), 0);
   };
 
   const getTotalDuration = () => {
@@ -221,6 +213,22 @@ const SectionList: React.FC<SectionListProps> = ({
   const handleCancelEditSection = (open: boolean) => {
     setSelectedSection(null);
     setIsSectionModalOpen(open);
+  };
+
+  const publicCourse = async () => {
+    try {
+      const response = await APIChangeCourseStatus(course.id!, {
+        status: 'PUBLISHED',
+      });
+      if (response) {
+        setShowAlertSuccess(true);
+        setDescription('Bạn đã cập nhật trạng thái khóa học thành công');
+      }
+    } catch (error) {
+      console.log(error);
+      setShowAlertError(true);
+      setDescription('Cập nhật trạng thái khóa học thất bại');
+    }
   };
 
   return (
@@ -381,6 +389,8 @@ const SectionList: React.FC<SectionListProps> = ({
             />
           ))}
         </div>
+
+        <AddButton label={'Xuất bản'} icon={Globe} onClick={publicCourse} />
 
         {/* Section Modal */}
         <SectionModal

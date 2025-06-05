@@ -13,6 +13,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { CourseItem, Section } from '@/types/courseType';
+import AddButton from '../button/addButton';
 
 type SectionCardProps = {
   section: Section;
@@ -86,9 +87,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                     <Play className="h-4 w-4 text-majorelleBlue" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-medium">
-                          {lectureIndex + 1}. {lecture.title}
-                        </h4>
+                        <h4 className="font-medium">{lecture?.series?.[0]?.title}</h4>
                         {lecture.is_preview && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
                             <Eye className="h-3 w-3" />
@@ -102,7 +101,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                       />
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                         <span>{lecture.video?.duration_in_seconds}</span>
-                        {lecture.resources.length > 0 && (
+                        {lecture?.resources?.length > 0 && (
                           <span className="flex items-center gap-1">
                             <FileText className="h-3 w-3" />
                             {lecture.resources.length} tài liệu

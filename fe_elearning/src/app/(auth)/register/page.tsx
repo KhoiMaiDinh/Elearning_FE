@@ -97,7 +97,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md z-10">
         <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font`-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font`-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
               Tạo tài khoản
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">

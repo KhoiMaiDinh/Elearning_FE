@@ -70,12 +70,8 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) throw new Error('Missing refresh token');
-
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        });
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`);
+        console.trace(res);
 
         const newAccessToken = res.data.access_token;
 

@@ -970,77 +970,7 @@ export const Overview = () => {
             </Card>
           </div>
 
-          {/* Most Viewed Lectures */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Most Viewed Lectures</CardTitle>
-              <CardDescription>Lectures with the highest view counts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Introduction to JavaScript</h4>
-                      <p className="text-sm text-muted-foreground">Web Development</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">1,245 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">UI Design Principles</h4>
-                      <p className="text-sm text-muted-foreground">UI/UX Design</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">1,120 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Data Visualization Techniques</h4>
-                      <p className="text-sm text-muted-foreground">Data Science</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">985 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">React Native Fundamentals</h4>
-                      <p className="text-sm text-muted-foreground">Mobile App Development</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">876 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">SEO Strategies</h4>
-                      <p className="text-sm text-muted-foreground">Digital Marketing</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">754 views</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+       
         </div>
       )}
     </AnimateWrapper>

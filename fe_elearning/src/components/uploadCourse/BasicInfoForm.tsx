@@ -6,7 +6,7 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import { Button } from '@/components/ui/button';
 import SelectRegister from '@/components/selectComponent/selectRegister';
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
-import { APIUpdateCourse } from '@/utils/course';
+import { APIInitCourse, APIUpdateCourse } from '@/utils/course';
 import { CourseForm } from '@/types/courseType';
 import Image from 'next/image';
 import {
@@ -49,9 +49,8 @@ const data = [
 ];
 
 interface BasicInfoFormProps {
-  isEditingBasic: boolean;
+  mode: 'edit' | 'create' | 'view';
   courseInfo?: CourseForm;
-  courseId: string;
   setCourseInfo: React.Dispatch<React.SetStateAction<CourseForm | null>>;
   setShowAlertSuccess: (value: boolean) => void;
   setShowAlertError: (value: boolean) => void;
@@ -61,9 +60,8 @@ interface BasicInfoFormProps {
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
-  isEditingBasic,
+  mode,
   courseInfo,
-  courseId,
   setCourseInfo,
   setShowAlertSuccess,
   setShowAlertError,
@@ -105,26 +103,46 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       parentSlugOfDefaultCategory: courseInfo?.category?.parent?.slug,
     });
 
+  const handleUpdateCourse = async (data: CourseForm) => {
+    if (!courseInfo?.id) return;
+
+    if (hasFormChanged) {
+      const response = await APIUpdateCourse(courseInfo.id, data);
+      if (response?.status === 200) {
+        setCourseInfo(response.data);
+        setShowAlertSuccess(true);
+        setDescription('Thông tin khóa học đã được cập nhật thành công!');
+        handleSubmitSuccess();
+        setTimeout(() => setShowAlertSuccess(false), 3000);
+      }
+    } else {
+      handleSubmitSuccess(); // No change
+    }
+  };
+
+  const handleCreateCourse = async (data: CourseForm) => {
+    const response = await APIInitCourse(data);
+    if (response?.status === 201) {
+      setCourseInfo(response.data);
+      setShowAlertSuccess(true);
+      setDescription('Khóa học đã được tạo thành công!');
+      handleSubmitSuccess();
+      setTimeout(() => setShowAlertSuccess(false), 3000);
+    }
+  };
+
   const onSubmit = async (data: CourseForm) => {
     setLoading(true);
-
     try {
-      if (hasFormChanged) {
-        const response = await APIUpdateCourse(courseId, data);
-        if (response?.status === 200) {
-          setShowAlertSuccess(true);
-          handleSubmitSuccess();
-          setCourseInfo(response.data);
-          setDescription('Thông tin khóa học đã được cập nhật thành công!');
-          setTimeout(() => setShowAlertSuccess(false), 3000);
-        }
-      } else {
-        handleSubmitSuccess();
+      if (mode == 'edit') {
+        await handleUpdateCourse(data);
+      } else if (mode == 'create') {
+        await handleCreateCourse(data);
       }
     } catch (error) {
-      console.error('Error updating course:', error);
+      console.error('Error saving course:', error);
       setShowAlertError(true);
-      setDescription('Không thể cập nhật thông tin khóa học');
+      setDescription('Không thể lưu thông tin khóa học');
       setTimeout(() => setShowAlertError(false), 3000);
     } finally {
       setLoading(false);
@@ -175,14 +193,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   label="Tiêu Đề Khóa Học"
                   required={true}
                 />
-                {isEditingBasic ? (
+                {mode == 'view' ? (
+                  <h1 className="text-2xl font-bold">{courseInfo?.title}</h1>
+                ) : (
                   <Controller
                     name="title"
                     control={control}
                     render={({ field }) => <InputRegisterLecture {...field} maxLength={60} />}
                   />
-                ) : (
-                  <h1 className="text-2xl font-bold">{courseInfo?.title}</h1>
                 )}
               </div>
               <div className="w-[95%]">
@@ -192,14 +210,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   required={true}
                 />
 
-                {isEditingBasic ? (
+                {mode == 'view' ? (
+                  <p className="dark:text-white/70">{courseInfo?.subtitle}</p>
+                ) : (
                   <Controller
                     name="subtitle"
                     control={control}
                     render={({ field }) => <InputRegisterLecture {...field} maxLength={120} />}
                   />
-                ) : (
-                  <p className="dark:text-white/70">{courseInfo?.subtitle}</p>
                 )}
               </div>
             </div>
@@ -223,12 +241,22 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   label="Cấp độ"
                   required={true}
                 />
-                {isEditingBasic ? (
+                {mode == 'edit' || mode == 'create' ? (
                   <Controller
                     name="level"
                     control={control}
                     render={({ field }) => (
-                      <SelectRegister {...field} label="Cấp độ" data={data} className="w-full" />
+                      <SelectRegister
+                        {...field}
+                        label="Cấp độ"
+                        data={data}
+                        className="w-full"
+                        placeholder="--Lựa chọn cấp độ--"
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                      />
                     )}
                   />
                 ) : courseInfo?.level ? (
@@ -247,7 +275,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   label="Lĩnh vực"
                   required={true}
                 />
-                {isEditingBasic ? (
+                {mode == 'edit' || mode == 'create' ? (
                   <div className="flex flex-col gap-2">
                     <SelectRegister
                       label="Chuyên ngành"
@@ -292,14 +320,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   label="Giá bán - VND"
                   required={true}
                 />
-                {isEditingBasic ? (
+                {mode == 'edit' || mode == 'create' ? (
                   <Controller
                     name="price"
                     control={control}
                     render={({ field }) => (
                       <InputRegisterLecture
                         {...field}
-                        type="number"
+                        type="string"
                         placeholder="Nhập giá khóa học"
                         formatVND={true}
                       />
@@ -322,7 +350,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               <Asterisk className="ml-1" />
             </h3>
             <div className="relative justify-center h-[320px] rounded-lg overflow-hidden flex items-center flex-col aspect-video w-full">
-              {isEditingBasic ? (
+              {mode == 'edit' || mode == 'create' ? (
                 <Controller
                   name="thumbnail"
                   control={control}
@@ -372,7 +400,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             <Asterisk className="ml-1" />
           </h3>
           <div className="prose max-w-none">
-            {isEditingBasic ? (
+            {mode == 'edit' || mode == 'create' ? (
               <Controller
                 name="description"
                 control={control}
@@ -406,7 +434,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             Kiến Thức Cần Có Trước Khi Tham Gia Khóa Học <Asterisk className="ml-1" />
           </h3>
           <div className="prose max-w-none">
-            {isEditingBasic ? (
+            {mode == 'edit' || mode == 'create' ? (
               <div className="space-y-2">
                 {requirementFields.map((field, index) => (
                   <div key={index} className="flex items-top gap-2 ">
@@ -469,7 +497,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             Kiến Thức Có Được Sau Khóa Học <Asterisk className="ml-1" />
           </h3>
           <div className="prose max-w-none">
-            {isEditingBasic ? (
+            {mode == 'edit' || mode == 'create' ? (
               <div className="space-y-2">
                 {outcomeFields.map((field, index) => (
                   <div key={index} className="flex items-start gap-2 ">
@@ -524,7 +552,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
 
         <div className="mt-6 text-right ">
-          {isEditingBasic ? (
+          {mode == 'edit' || mode == 'create' ? (
             <div className="flex flex-row gap-4 justify-between">
               <Button
                 type="button"

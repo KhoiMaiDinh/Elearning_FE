@@ -214,7 +214,7 @@ const Page = () => {
               <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 Sẵn sàng bắt đầu hành trình học tập?
               </h2>
-              <p className="text-xl text-blue-300">
+              <p className="text-xl text-blueberry">
                 Liên hệ với chúng tôi ngay hôm nay để được tư vấn miễn phí về các khóa học phù hợp
               </p>
               <Button

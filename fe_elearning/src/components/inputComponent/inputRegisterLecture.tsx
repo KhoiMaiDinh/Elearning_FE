@@ -138,9 +138,6 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
           </>
         ) : (
           <Input
-            lang="vi"
-            inputMode="text"
-            autoComplete="off"
             ref={inputRef}
             className={`w-full mb-0 ${Icon ? 'pl-10' : ''} ${inputClassName} ${
               disabled ? 'cursor-not-allowed opacity-50' : ''

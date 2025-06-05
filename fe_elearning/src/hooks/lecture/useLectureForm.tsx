@@ -6,11 +6,7 @@ import { CourseItem, ResourceType, Section, VideoType } from '@/types/courseType
 import { APIInitCourseItem, APIUpdateCourseItem } from '@/utils/course';
 import { uploadToMinIO } from '@/utils/storage';
 import { MediaType } from '@/types/mediaType';
-
-const stripHtml = (html: string) => {
-  if (!html) return '';
-  return html.replace(/<\/?[^>]+(>|$)/g, '');
-};
+import { stripHtml } from '@/helpers';
 
 const MAX_RESOURCES = 5;
 const courseItemSchema = yup.object().shape({
@@ -20,9 +16,12 @@ const courseItemSchema = yup.object().shape({
     .max(60, 'Tiêu đề không được vượt quá 60 ký tự'),
   description: yup
     .string()
-    .required('Nội dung bài học không được để trống')
+    .test('min-text-length', 'Nội dung bài học không được để trống', (value) => {
+      const textOnly = stripHtml(value || '');
+      return textOnly.length > 0;
+    })
     .test('max-text-length', 'Nội dung không được vượt quá 1000 ký tự', (value) => {
-      const textOnly = stripHtml(value);
+      const textOnly = stripHtml(value || '');
       return textOnly.length <= 1000;
     }),
   video: yup
@@ -60,10 +59,6 @@ export const useLecture = (
   onSave: (successMessage: string) => void,
   onFail: (errorMessage: string) => void
 ) => {
-  // const [videoPreview, setVideoPreview] = useState<string | null>(null);
-  // const [documentPreviews, setDocumentPreviews] = useState<Array<{ name: string; url: string }>>(
-  //   []
-  // );
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -90,8 +85,6 @@ export const useLecture = (
       previous_position: undefined,
     },
   });
-
-  console.log('initialValues', initialValues);
 
   useEffect(() => {
     reset({

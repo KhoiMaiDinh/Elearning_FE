@@ -19,6 +19,11 @@ import { setCourse } from '@/constants/course';
 import { useDispatch } from 'react-redux';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { MediaType } from '@/types/mediaType';
+import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
+import { steps } from './[id]/page';
+import ProgressBar from './[id]/components/progressBar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
 // Hàm upload file lên MinIO
 const uploadToMinIO = async (
   file: File,
@@ -214,143 +219,41 @@ const UploadCourse: React.FC = () => {
     handleGetCategory();
   }, []);
 
+  const handleSetCourse = async (data: CourseForm) => {
+    dispatch(setCourse(data));
+  };
+
+  const handlePageBack = () => {
+    router.back();
+  };
+
   return (
-    <div className="w-full h-full gap-4 flex flex-col p-4">
-      {/* Thông tin cơ bản */}
-      <AnimateWrapper delay={0.2} direction="up" amount={0.1}>
-        <div className="bg-white dark:bg-eerieBlack shadow-md rounded-lg p-3 border">
-          <h2 className="text-lg font-bold text-cosmicCobalt dark:text-white">
-            Thông tin khóa học
-          </h2>
-
-          <form onSubmit={handleSubmit(onSubmitBasic)} className="p-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <InputRegisterLecture
-                    {...field}
-                    labelText="Tiêu đề khóa học"
-                    error={errors.title?.message}
-                    onChange={(e) => field.onChange(e.target.value)}
-                  />
-                )}
-              />
-              <Controller
-                name="subtitle"
-                control={control}
-                render={({ field }) => (
-                  <InputRegisterLecture
-                    {...field}
-                    labelText="Mô tả ngắn"
-                    error={errors.subtitle?.message}
-                    onChange={(e) => field.onChange(e.target.value)}
-                  />
-                )}
-              />
-              <Controller
-                name="level"
-                control={control}
-                render={({ field }) => (
-                  <SelectRegister
-                    {...field}
-                    label="Cấp độ"
-                    error={errors.level?.message}
-                    data={data}
-                    onValueChange={(value) => field.onChange(value)}
-                  />
-                )}
-              />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <SelectRegister
-                    label="Chuyên ngành"
-                    data={categoryData.map((cat) => ({
-                      id: cat.id,
-                      value: cat.value,
-                    }))}
-                    onValueChange={handleParentCategoryChange}
-                    value={selectedParentCategory}
-                  />
-                </div>
-                <div>
-                  <SelectRegister
-                    label="Lĩnh vực"
-                    data={childCategories}
-                    onValueChange={(value) => setValue('category.slug', value)}
-                    disabled={!selectedParentCategory}
-                  />
-                </div>
-              </div>
-              <Controller
-                name="price"
-                control={control}
-                render={({ field }) => (
-                  <InputRegisterLecture
-                    {...field}
-                    labelText="Giá (VND)"
-                    type="number"
-                    error={errors.price?.message}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                )}
-              />
-              <Controller
-                name="thumbnail"
-                control={control}
-                render={() => (
-                  <div className="flex flex-col gap-2">
-                    <InputRegisterLecture
-                      labelText="Ảnh bìa"
-                      type="file"
-                      accept="image/*"
-                      error={errors.thumbnail?.message}
-                      onChange={async (e) => {
-                        const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) {
-                          const { key, id } = await uploadToMinIO(file, 'course', 'thumbnail');
-                          const thumbnail: MediaType = { id, key };
-                          setValue('thumbnail', thumbnail);
-                          setImagePreview(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-                    {imagePreview && (
-                      <img
-                        src={imagePreview}
-                        alt="Ảnh bìa"
-                        className="w-full max-w-xs rounded-lg shadow"
-                      />
-                    )}
-                  </div>
-                )}
-              />
-              <div className="md:col-span-2">
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <TextAreaRegisterLecture
-                      {...field}
-                      labelText="Mô tả"
-                      error={errors.description?.message}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-            <Button
-              type="submit"
-              className="bg-custom-gradient-button-violet mt-2 rounded-lg dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
-            >
-              <img src="/icons/icon_save.png" alt="save" className="w-5 h-5 object-fill" />
-              Thêm khóa học
-            </Button>
-          </form>
-        </div>
-      </AnimateWrapper>
-
+    <div className="w-full h-full gap-4 flex flex-col p-4 ">
+      <Button
+        className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-125 text-white w-fit font-medium"
+        onClick={handlePageBack}
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Quay lại
+      </Button>
+      <ProgressBar steps={steps} completedSteps={[]} currentStep={1} />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-xl">{steps[1 - 1].title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+            <BasicInfoForm
+              mode="create"
+              setShowAlertSuccess={setShowAlertSuccess}
+              setShowAlertError={setShowAlertError}
+              setDescription={setDescription}
+              setCourseInfo={(data) => handleSetCourse(data as CourseForm)}
+              handleSubmitSuccess={() => {}}
+            />
+          </AnimateWrapper>
+        </CardContent>
+      </Card>
       {showAlertSuccess && <AlertSuccess description={description} />}
       {showAlertError && <AlertError description={description} />}
     </div>

@@ -24,8 +24,7 @@ export interface CourseItem {
   id: string;
   title: string;
   description: string;
-  videos?: VideoType[];
-  video?: VideoType | null;
+  video?: MediaType | null;
   resources: ResourceType[];
   is_preview: boolean;
   position: string;
@@ -34,6 +33,18 @@ export interface CourseItem {
   previous_position?: string;
   fileUrl?: string;
   progresses?: ProgressItem[];
+  series?: [
+    {
+      version: number;
+      title: string;
+      is_preview?: boolean;
+      description?: string;
+      duration_in_seconds?: number;
+      status?: string;
+      video?: VideoType | null;
+      resources?: ResourceType[];
+    },
+  ];
 }
 
 export interface Section {
@@ -72,6 +83,7 @@ export interface CourseForm {
     parent?: { slug: string; translations: Translation[] };
     translations: Translation[];
   };
+
   title: string;
   subtitle: string;
   slug?: string;

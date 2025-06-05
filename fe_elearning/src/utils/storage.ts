@@ -51,7 +51,7 @@ const uploadToMinIO = async (
       throw new Error('Upload thất bại');
     }
   } catch (error) {
-    console.error('Error uploading to MinIO:', error);
+    console.log('Error uploading to MinIO:', error);
     throw error;
   }
 };

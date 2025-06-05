@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Meh, ChevronsRightLeft } from 'lucide-react';
 import { LectureComment } from '@/types/commentType';
 
 interface Emotion {
@@ -34,6 +34,13 @@ const emotions: Emotion[] = [
     icon: ThumbsDown,
     color: '#ef4444',
     bgColor: '#ef4444',
+  },
+  {
+    id: 'conflict',
+    name: 'Xung đột',
+    icon: ChevronsRightLeft,
+    color: '#f59e0b',
+    bgColor: '#f59e0b',
   },
 ];
 

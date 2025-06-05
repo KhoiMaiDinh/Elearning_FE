@@ -44,7 +44,7 @@ const LecturersBlock: React.FC<LecturersBlockProps> = ({
               alt={name}
               className="object-cover"
             />
-            <AvatarFallback className="bg-blue-600 text-white text-xl">
+            <AvatarFallback className="bg-PaleViolet/50 text-white text-xl">
               {name
                 ?.split(' ')
                 .map((n) => n[0])

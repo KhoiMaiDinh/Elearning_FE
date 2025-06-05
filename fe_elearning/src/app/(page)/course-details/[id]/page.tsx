@@ -145,7 +145,7 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (currentCourseItem?.video) {
-      setVideoUrl(currentCourseItem?.video?.video?.key);
+      setVideoUrl(currentCourseItem?.video?.key);
     }
   }, [currentCourseItem]);
 
@@ -156,6 +156,8 @@ const LearnPage = () => {
       router.push('/login');
     }
   }, [userInfo.id]);
+
+  console.log(currentCourseItem);
 
   return (
     <AnimateWrapper delay={0.2} direction="up">

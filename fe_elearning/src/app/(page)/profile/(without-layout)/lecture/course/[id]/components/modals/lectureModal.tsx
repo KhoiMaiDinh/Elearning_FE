@@ -280,6 +280,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                 onChange={handleUploadAndTrack}
                 disabled={resources.length >= MAX_RESOURCES}
                 loading={Object.keys(uploadProgress).length > 0}
+                label="Tài liệu"
               />
 
               <div className="grid gap-0 p-0 max-h-20 overflow-y-auto relative">

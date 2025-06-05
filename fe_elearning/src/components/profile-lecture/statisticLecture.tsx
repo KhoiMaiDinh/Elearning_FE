@@ -199,6 +199,13 @@ const Page = () => {
               >
                 Xem đánh giá
               </Button>
+              <Button
+                variant="outline"
+                className="bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
+                onClick={() => router.push(`/profile/lecture/course/${course?.id}`)}
+              >
+                Chỉnh sửa
+              </Button>
             </div>
           </div>
 

@@ -199,10 +199,10 @@ const StudentProfile = () => {
   // Sync user data and image preview
   useEffect(() => {
     if (studentData) {
-      setValue('first_name', studentData.first_name);
-      setValue('last_name', studentData.last_name);
-      setValue('email', studentData.email);
-      setValue('username', studentData.username);
+      setValue('first_name', studentData?.first_name);
+      setValue('last_name', studentData?.last_name);
+      setValue('email', studentData?.email);
+      setValue('username', studentData?.username);
       setValue('profile_image', {
         key: studentData.profile_image?.key || '',
         bucket: studentData.profile_image?.bucket || '',
@@ -272,11 +272,11 @@ const StudentProfile = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="relative grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Profile Info */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 sticky top-8">
             <AnimateWrapper delay={0.2} direction="left">
-              <Card className="border-0 shadow-lg sticky top-8">
+              <Card className="border-0 shadow-lg  flex flex-col ">
                 <CardContent className="p-6 text-center">
                   <form onSubmit={handleSubmit(onSubmit)}>
                     {/* Avatar */}
@@ -352,7 +352,7 @@ const StudentProfile = () => {
                               <InputRegisterLecture
                                 {...field}
                                 labelText="Họ"
-                                error={errors.first_name?.message}
+                                error={errors?.first_name?.message}
                                 disabled={disable}
                               />
                             )}
@@ -547,7 +547,7 @@ const StudentProfile = () => {
                         <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
                           <Image
                             src={
-                              // `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
+                              `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
                               '/images/logo.png'
                             }
                             alt={`Course ${course.title}`}
@@ -560,8 +560,8 @@ const StudentProfile = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Users className="h-3.5 w-3.5" />
                             <span>
-                              Giảng viên: {course.instructor?.user.first_name}{' '}
-                              {course.instructor?.user.last_name}
+                              Giảng viên: {course.instructor?.user?.first_name}{' '}
+                              {course.instructor?.user?.last_name}
                             </span>
                           </div>
                         </div>
@@ -613,7 +613,7 @@ const StudentProfile = () => {
                         <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
                           <Image
                             src={
-                              // `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
+                              `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
                               '/images/logo.png'
                             }
                             alt={`Course ${course.title}`}
@@ -626,8 +626,8 @@ const StudentProfile = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Users className="h-3.5 w-3.5" />
                             <span>
-                              Giảng viên: {course.instructor?.user.first_name}{' '}
-                              {course.instructor?.user.last_name}
+                              Giảng viên: {course.instructor?.user?.first_name}{' '}
+                              {course.instructor?.user?.last_name}
                             </span>
                           </div>
                         </div>
