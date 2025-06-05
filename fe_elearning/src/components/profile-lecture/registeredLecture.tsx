@@ -6,6 +6,7 @@ import BankAccountLecture from './bankAccountLecture';
 import { useRouter } from 'next/navigation';
 import { Overview } from './overview';
 import CouponManagement from '@/app/(page)/profile/(with-layout)/lecture/components/couponManagement';
+import Payout from './payout';
 
 export enum TABS {
   OVERVIEW = 'tong-quan',
@@ -14,6 +15,7 @@ export enum TABS {
   STATISTIC = 'phan-tich-phan-hoi',
   BANK_ACCOUNT = 'tai-khoan-ngan-hang',
   COUPON_MANAGEMENT = 'ma-giam-gia',
+  PAYOUT = 'thanh-khoan',
 }
 
 const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean }) => {
@@ -28,6 +30,7 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
         { id: TABS.STATISTIC, label: 'Phân tích phản hồi' },
         { id: TABS.BANK_ACCOUNT, label: 'Tài khoản ngân hàng' },
         { id: TABS.COUPON_MANAGEMENT, label: 'Mã giảm giá' },
+        { id: TABS.PAYOUT, label: 'Thanh khoản' },
       ]
     : [{ id: TABS.PROFILE, label: 'Hồ sơ' }];
 
@@ -88,6 +91,9 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
             </div>
             <div className={activeTab === TABS.COUPON_MANAGEMENT ? '' : 'hidden'}>
               <CouponManagement />
+            </div>
+            <div className={activeTab === TABS.PAYOUT ? '' : 'hidden'}>
+              <Payout />
             </div>
           </>
         ) : (

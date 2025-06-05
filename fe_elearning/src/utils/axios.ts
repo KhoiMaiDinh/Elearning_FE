@@ -1,15 +1,48 @@
 'use client';
 import axios from 'axios';
+import { clearUser } from '@/constants/userSlice';
+import store from '@/constants/store';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
+const clearLoginData = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('token_expires');
+  store.dispatch(clearUser());
+};
+
 // Gắn access token vào mỗi request
 axiosInstance.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
-    config.headers['authorization'] = `Bearer ${token}`;
+    // Decode token and check status
+    try {
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+
+      // Check if token is expired
+      if (decodedToken.exp * 1000 < Date.now()) {
+        // Let the response interceptor handle token refresh
+        return config;
+      }
+
+      // Check if user is banned
+      if (decodedToken.banned_until) {
+        clearLoginData();
+        window.location.href = '/login?error=banned';
+        return Promise.reject(new Error('Tài khoản đã bị khóa'));
+      }
+
+      // Add token to headers
+      config.headers['authorization'] = `Bearer ${token}`;
+    } catch (error) {
+      console.error('Token decode error:', error);
+      clearLoginData();
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
   }
   return config;
 });
@@ -42,8 +75,15 @@ axiosInstance.interceptors.response.use(
 
       // Check for banned user
       if (status === 401 && data.errorCode === 'auth.error.banned') {
-        // Show a popup or redirect to a banned page
-        window.alert(data.message); // You can replace this with a redirect if needed
+        clearLoginData();
+        window.location.href = '/login?error=banned';
+        return Promise.reject(error);
+      }
+
+      // Handle unverified email
+      if (status === 401 && data.errorCode === 'auth.error.unverified') {
+        clearLoginData();
+        window.location.href = '/login?error=unverified';
         return Promise.reject(error);
       }
     }

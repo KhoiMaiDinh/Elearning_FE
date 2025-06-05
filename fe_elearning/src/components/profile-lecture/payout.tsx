@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Download,
   Eye,
@@ -48,7 +48,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APIGetPayout } from '@/utils/payout';
-
+import { PayoutType } from '@/types/payoutType';
 
 // Mock data for instructor payouts
 // const payoutData = [
@@ -201,56 +201,71 @@ const getStatusBadge = (status: string) => {
     failed: 'destructive',
   };
   return (
-    <Badge variant={(variants[status as keyof typeof variants] as "default" | "secondary" | "outline" | "destructive") || 'secondary'} className="capitalize">
+    <Badge
+      variant={
+        (variants[status as keyof typeof variants] as
+          | 'default'
+          | 'secondary'
+          | 'outline'
+          | 'destructive') || 'secondary'
+      }
+      className="capitalize"
+    >
       {status}
     </Badge>
   );
 };
 
 export default function InstructorPayouts() {
-  const [selectedPayout, setSelectedPayout] = useState(null);
+  const [selectedPayout, setSelectedPayout] = useState<PayoutType | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState('all');
-  const [dataPayout, setDataPayout] = useState([]);
+  const [dataPayout, setDataPayout] = useState<PayoutType[]>([]);
+  const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState({
-    page:1,
-    limmit:10,
+    page: 1,
+    limmit: 10,
     status: undefined,
+  });
 
-  })
-
-  const handleGetPayout = async() =>{
-    try{
+  const handleGetPayout = async () => {
+    try {
       const res = await APIGetPayout(filter);
-      if(res?.status === 200){
-        setDataPayout(res?.data)
+      if (res?.status === 200) {
+        setDataPayout(res?.data?.data);
+        setTotal(res?.data?.total);
       }
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-  }
+  useEffect(() => {
+    handleGetPayout();
+  }, [filter]);
 
   // Filter payouts based on status, search term, and date range
-  const filteredPayouts = payoutData.filter((payout) => {
-    const matchesStatus = statusFilter === 'all' || payout.status === statusFilter;
+  const filteredPayouts = dataPayout.filter((payout) => {
+    const matchesStatus = statusFilter === 'all' || payout.payout_status === statusFilter;
     const matchesSearch =
-      payout.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payout.payee?.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payout.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
   // Calculate summary statistics
-  const totalEarnings = payoutData.reduce((sum, payout) => sum + payout.amount, 0);
-  const pendingPayments = payoutData
-    .filter((p) => p.status === 'pending' || p.status === 'processing')
-    .reduce((sum, payout) => sum + payout.amount, 0);
-  const completedPayments = payoutData.filter((p) => p.status === 'completed').length;
-  const failedPayments = payoutData.filter((p) => p.status === 'failed').length;
+  const totalEarnings = dataPayout.reduce((sum, payout) => sum + Number(payout.amount), 0);
+  const pendingPayments = dataPayout
+    .filter((p) => p.payout_status === 'pending' || p.payout_status === 'processing')
+    .reduce((sum, payout) => sum + Number(payout.amount), 0);
+  const completedPayments = dataPayout.filter((p) => p.payout_status === 'completed').length;
+  const failedPayments = dataPayout.filter((p) => p.payout_status === 'failed').length;
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Instructor Payouts</h2>
+        <h2 className="text-3xl font-bold tracking-tight"> Tất cả thanh toán</h2>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
@@ -259,54 +274,10 @@ export default function InstructorPayouts() {
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalEarnings.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">All time instructor earnings</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Payments</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${pendingPayments.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Awaiting processing</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Payments</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{completedPayments}</div>
-            <p className="text-xs text-muted-foreground">Successfully processed</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed Payments</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{failedPayments}</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
-          </CardContent>
-        </Card>
-      </div>
-
       <Tabs defaultValue="transactions" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="transactions">Thanh toán</TabsTrigger>
+          <TabsTrigger value="analytics">Lịch sử</TabsTrigger>
         </TabsList>
 
         <TabsContent value="transactions" className="space-y-4">
@@ -326,23 +297,11 @@ export default function InstructorPayouts() {
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Date range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Time</SelectItem>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="completed">Đã thanh toán</SelectItem>
+                <SelectItem value="pending">Chờ xử lý</SelectItem>
+                <SelectItem value="processing">Đang xử lý</SelectItem>
+                <SelectItem value="failed">Thất bại</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -350,42 +309,41 @@ export default function InstructorPayouts() {
           {/* Payouts Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Payment History</CardTitle>
-              <CardDescription>
-                Detailed history of all instructor payments and transactions
-              </CardDescription>
+              <CardTitle>Lịch sử thanh toán</CardTitle>
+              <CardDescription>Lịch sử thanh toán của tất cả khoá học</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Transaction ID</TableHead>
-                    <TableHead>Instructor</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Payment Method</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Period</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Mã thanh toán</TableHead>
+                    <TableHead>Người thanh toán</TableHead>
+                    <TableHead>Số tiền</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Phương thức thanh toán (Bank)</TableHead>
+                    <TableHead>Ngày thanh toán</TableHead>
+                    <TableHead>Ngày xử lý</TableHead>
+                    <TableHead>Lý do thất bại</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredPayouts.map((payout) => (
                     <TableRow key={payout.id}>
                       <TableCell className="font-medium">{payout.id}</TableCell>
-                      <TableCell>{payout.instructor}</TableCell>
+                      <TableCell>{payout.payee?.username}</TableCell>
                       <TableCell className="font-medium">
-                        ${payout.amount.toLocaleString()}
+                        ${payout.amount?.toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {getStatusIcon(payout.status)}
-                          {getStatusBadge(payout.status)}
+                          {getStatusIcon(payout.payout_status)}
+                          {getStatusBadge(payout.payout_status)}
                         </div>
                       </TableCell>
-                      <TableCell>{payout.paymentMethod}</TableCell>
-                      <TableCell>{payout.transactionDate}</TableCell>
-                      <TableCell>{payout.period}</TableCell>
+                      <TableCell>{payout.bank_code}</TableCell>
+                      <TableCell>{payout.paid_out_sent_at}</TableCell>
+                      <TableCell>{payout.failure_reason}</TableCell>
                       <TableCell className="text-right">
                         <Dialog>
                           <DialogTrigger asChild>
@@ -399,9 +357,9 @@ export default function InstructorPayouts() {
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Payment Details - {payout.id}</DialogTitle>
+                              <DialogTitle>Chi tiết thanh toán - {payout.id}</DialogTitle>
                               <DialogDescription>
-                                Complete transaction information for {payout.instructor}
+                                Chi tiết thanh toán cho {payout.payee?.username}
                               </DialogDescription>
                             </DialogHeader>
                             {selectedPayout && (
@@ -410,105 +368,113 @@ export default function InstructorPayouts() {
                                 <div className="grid gap-4 md:grid-cols-2">
                                   <Card>
                                     <CardHeader>
-                                      <CardTitle className="text-lg">Payment Overview</CardTitle>
+                                      <CardTitle className="text-lg">
+                                        Tổng quan thanh toán
+                                      </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-2">
                                       <div className="flex justify-between">
                                         <span className="text-muted-foreground">
-                                          Transaction ID:
+                                          Mã thanh toán:
                                         </span>
                                         <span className="font-medium">{selectedPayout.id}</span>
                                       </div>
                                       <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Instructor:</span>
+                                        <span className="text-muted-foreground">
+                                          Người thanh toán:
+                                        </span>
                                         <span className="font-medium">
-                                          {selectedPayout.instructor}
+                                          {selectedPayout.payee?.username}
                                         </span>
                                       </div>
                                       <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Amount:</span>
+                                        <span className="text-muted-foreground">Số tiền:</span>
                                         <span className="font-bold text-lg">
-                                          ${selectedPayout.amount.toLocaleString()}
+                                          ${selectedPayout.amount?.toLocaleString()}
                                         </span>
                                       </div>
                                       <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Status:</span>
+                                        <span className="text-muted-foreground">Trạng thái:</span>
                                         <div className="flex items-center gap-2">
-                                          {getStatusIcon(selectedPayout.status)}
-                                          {getStatusBadge(selectedPayout.status)}
+                                          {getStatusIcon(selectedPayout.payout_status)}
+                                          {getStatusBadge(selectedPayout.payout_status)}
                                         </div>
                                       </div>
                                       <div className="flex justify-between">
                                         <span className="text-muted-foreground">
-                                          Payment Method:
+                                          Phương thức thanh toán (Bank):
                                         </span>
                                         <span className="font-medium">
-                                          {selectedPayout.paymentMethod}
+                                          {selectedPayout.bank_code}
                                         </span>
                                       </div>
                                       <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Period:</span>
-                                        <span className="font-medium">{selectedPayout.period}</span>
+                                        <span className="text-muted-foreground">
+                                          Ngày thanh toán:
+                                        </span>
+                                        <span className="font-medium">
+                                          {selectedPayout.paid_out_sent_at}
+                                        </span>
                                       </div>
                                     </CardContent>
                                   </Card>
 
                                   <Card>
                                     <CardHeader>
-                                      <CardTitle className="text-lg">Payment Details</CardTitle>
+                                      <CardTitle className="text-lg">Chi tiết thanh toán</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-2">
                                       <div className="flex justify-between">
                                         <span className="text-muted-foreground">
-                                          Transaction Date:
+                                          Ngày thanh toán:
                                         </span>
                                         <span className="font-medium">
-                                          {selectedPayout.transactionDate}
+                                          {selectedPayout.paid_out_sent_at}
                                         </span>
                                       </div>
-                                      {selectedPayout.processedDate && (
+                                      {selectedPayout.paid_out_sent_at && (
                                         <div className="flex justify-between">
-                                          <span className="text-muted-foreground">
-                                            Processed Date:
-                                          </span>
+                                          <span className="text-muted-foreground">Ngày xử lý:</span>
                                           <span className="font-medium">
-                                            {selectedPayout.processedDate}
+                                            {selectedPayout.paid_out_sent_at}
                                           </span>
                                         </div>
                                       )}
-                                      {selectedPayout.failureReason && (
+                                      {selectedPayout.failure_reason && (
                                         <div className="flex justify-between">
                                           <span className="text-muted-foreground">
-                                            Failure Reason:
+                                            Lý do thất bại:
                                           </span>
                                           <span className="font-medium text-red-600">
-                                            {selectedPayout.failureReason}
+                                            {selectedPayout.failure_reason}
                                           </span>
                                         </div>
                                       )}
-                                      {selectedPayout.bankDetails && (
+                                      {selectedPayout.bank_account_number && (
                                         <>
                                           <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Bank:</span>
+                                            <span className="text-muted-foreground">
+                                              Ngân hàng:
+                                            </span>
                                             <span className="font-medium">
-                                              {selectedPayout.bankDetails.bankName}
+                                              {selectedPayout.bank_code}
                                             </span>
                                           </div>
                                           <div className="flex justify-between">
                                             <span className="text-muted-foreground">Account:</span>
                                             <span className="font-medium">
-                                              {selectedPayout.bankDetails.accountNumber}
+                                              {selectedPayout.bank_account_number}
                                             </span>
                                           </div>
                                         </>
                                       )}
-                                      {selectedPayout.paypalEmail && (
+                                      {selectedPayout.payee?.email && (
                                         <div className="flex justify-between">
                                           <span className="text-muted-foreground">
                                             PayPal Email:
                                           </span>
                                           <span className="font-medium">
-                                            {selectedPayout.paypalEmail}
+                                            {selectedPayout.payee?.email}
                                           </span>
                                         </div>
                                       )}
@@ -533,7 +499,7 @@ export default function InstructorPayouts() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                        {selectedPayout.courses.map((course, index) => (
+                                        {/* {selectedPayout.courses.map((course: CourseForm, index: number) => (
                                           <TableRow key={index}>
                                             <TableCell className="font-medium">
                                               {course.name}
@@ -543,29 +509,29 @@ export default function InstructorPayouts() {
                                               ${course.earnings.toLocaleString()}
                                             </TableCell>
                                           </TableRow>
-                                        ))}
+                                        ))} */}
                                       </TableBody>
                                     </Table>
                                   </CardContent>
                                 </Card>
 
-                                {/* Fee Breakdown */}
+                                {/* //Fee Breakdown
                                 <Card>
                                   <CardHeader>
-                                    <CardTitle className="text-lg">Fee Breakdown</CardTitle>
+                                    <CardTitle className="text-lg">Chi tiết phí</CardTitle>
                                   </CardHeader>
                                   <CardContent>
                                     <div className="space-y-2">
                                       <div className="flex justify-between">
                                         <span className="text-muted-foreground">
-                                          Gross Earnings:
+                                          Tổng thu nhập:
                                         </span>
                                         <span className="font-medium">
                                           $
                                           {(
                                             selectedPayout.amount +
-                                            selectedPayout.fees.platformFee +
-                                            selectedPayout.fees.processingFee
+                                            selectedPayout.fees?.platformFee +
+                                            selectedPayout.fees?.processingFee
                                           ).toLocaleString()}
                                         </span>
                                       </div>
@@ -600,7 +566,7 @@ export default function InstructorPayouts() {
                                       </div>
                                     </div>
                                   </CardContent>
-                                </Card>
+                                </Card> */}
                               </div>
                             )}
                           </DialogContent>
@@ -612,11 +578,11 @@ export default function InstructorPayouts() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Download Receipt</DropdownMenuItem>
-                            <DropdownMenuItem>Resend Payment</DropdownMenuItem>
+                            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                            <DropdownMenuItem>Tải xuất kết quả</DropdownMenuItem>
+                            <DropdownMenuItem>Gửi lại thanh toán</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Contact Instructor</DropdownMenuItem>
+                            <DropdownMenuItem>Liên hệ người thanh toán</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -628,7 +594,7 @@ export default function InstructorPayouts() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
+        {/* <TabsContent value="analytics" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -649,7 +615,7 @@ export default function InstructorPayouts() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );

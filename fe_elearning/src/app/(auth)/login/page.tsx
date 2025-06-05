@@ -30,8 +30,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APILoginEmail } from '@/utils/auth';
-import { setUser } from '@/constants/userSlice';
+import { setUser, clearUser } from '@/constants/userSlice';
 import { createLoginSchema } from '@/utils/validation';
+import { CustomModal } from '@/components/modal/custom-modal';
 
 // Form schema
 
@@ -44,6 +45,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showBannedModal, setShowBannedModal] = useState(false);
+  const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -52,6 +55,13 @@ export default function LoginPage() {
       password: '',
     },
   });
+
+  const clearLoginData = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token_expires');
+    dispatch(clearUser());
+  };
 
   const onSubmit = async (values: FormData) => {
     try {
@@ -64,25 +74,40 @@ export default function LoginPage() {
       });
 
       if (response?.status === 200) {
-        // Store tokens properly
+        const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.setItem('token_expires', response.data.token_expires);
-
-        // Set user info in Redux store
         dispatch(setUser(response.data.user));
+        // Check if user is banned
+        if (decodedToken.banned_until) {
+          clearLoginData();
+          setShowBannedModal(true);
+          return;
+        }
 
-        // Redirect to home page
+        // Check if email is verified
+        if (!decodedToken.is_verified) {
+          setShowUnverifiedModal(true);
+          return;
+        }
+
+        // Store tokens and proceed with login
+
         router.push('/');
       } else {
         setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       }
     } catch (err: any) {
-      console.error('Login error:', err);
       setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleContinueUnverified = () => {
+    setShowUnverifiedModal(false);
+    router.push('/');
   };
 
   return (
@@ -298,6 +323,27 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
       </div>
+
+      {/* Banned User Modal */}
+      <CustomModal
+        isOpen={showBannedModal}
+        onClose={() => setShowBannedModal(false)}
+        title="Tài khoản bị khóa"
+        description="Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để biết thêm chi tiết."
+      />
+
+      {/* Unverified Email Modal */}
+      <CustomModal
+        isOpen={showUnverifiedModal}
+        onClose={() => {
+          setShowUnverifiedModal(false);
+          clearLoginData();
+        }}
+        title="Email chưa xác thực"
+        description="Tài khoản của bạn chưa được xác thực qua email. Bạn có thể tiếp tục sử dụng với các tính năng hạn chế hoặc xác thực email để sử dụng đầy đủ tính năng."
+        showContinueButton={true}
+        onContinue={handleContinueUnverified}
+      />
     </div>
   );
 }
