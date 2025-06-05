@@ -14,6 +14,7 @@ import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
+
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefined => {
   if (!item) return undefined;
@@ -48,14 +49,9 @@ const LearnPage = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
-  // Lấy video URL từ currentCourseItem
-  // const videoUrl = getVideoUrl(currentCourseItem);
-
   useEffect(() => {
-    if (userInfo.id) {
-      if (userInfo.id === courseData?.instructor?.user?.id) {
-        setIsOwner(true);
-      }
+    if (userInfo.id && courseData?.instructor?.user?.id) {
+      setIsOwner(userInfo.id === courseData.instructor.user.id);
     }
   }, [userInfo, courseData]);
 
@@ -107,7 +103,7 @@ const LearnPage = () => {
 
   useEffect(() => {
     handleGetEnrolledCourse();
-    if (isRegistered) {
+    if (isRegistered || isOwner) {
       handleGetCourseData();
     } else {
       handleGetCourseDataNotEnrolled();
@@ -115,6 +111,7 @@ const LearnPage = () => {
   }, [
     id,
     isRegistered,
+    isOwner,
     handleGetEnrolledCourse,
     handleGetCourseData,
     handleGetCourseDataNotEnrolled,
@@ -122,8 +119,8 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (courseData?.sections && sections) {
-      if (isRegistered) {
-        // For registered users, show first video from first section
+      if (isRegistered || isOwner) {
+        // For registered users or owner, show first video from first section
         const firstSection = sections[0];
         if (firstSection && firstSection.items && firstSection.items.length > 0) {
           setCurrentCourseItem(firstSection.items[0]);
@@ -141,7 +138,7 @@ const LearnPage = () => {
         setCurrentCourseItem(previewItem);
       }
     }
-  }, [courseData, sections, isRegistered]);
+  }, [courseData, sections, isRegistered, isOwner]);
 
   useEffect(() => {
     if (currentCourseItem?.video) {
@@ -157,8 +154,6 @@ const LearnPage = () => {
     }
   }, [userInfo.id]);
 
-  console.log(currentCourseItem);
-
   return (
     <AnimateWrapper delay={0.2} direction="up">
       {isLoading ? (
@@ -170,9 +165,7 @@ const LearnPage = () => {
           <div className="flex flex-col lg:flex-row gap-4 ">
             <p className="text-2xl font-bold">{courseData?.title}</p>
           </div>
-          {/* Video và Danh mục bài học */}
           <div className="flex flex-col lg:flex-row gap-4 ">
-            {/* Nút mở/thu nhỏ sidebar */}
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="lg:hidden mb-4 p-2 bg-majorelleBlue text-white rounded-full"
@@ -180,7 +173,6 @@ const LearnPage = () => {
               {isSidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
             </button>
 
-            {/* Sidebar (Danh mục bài học) */}
             <div
               className={`${
                 isSidebarOpen ? 'w-full lg:w-1/4' : 'w-0 lg:w-16'
@@ -188,7 +180,7 @@ const LearnPage = () => {
             >
               {courseData?.sections && (
                 <CourseItemList
-                  isRegistered={isRegistered}
+                  isRegistered={isRegistered || isOwner}
                   sections={courseData.sections}
                   currentCourseItemId={currentCourseItem?.title || ''}
                   onCourseItemSelect={(courseItem) => setCurrentCourseItem(courseItem)}
@@ -198,11 +190,10 @@ const LearnPage = () => {
               )}
             </div>
 
-            {/* Video Player - Chỉ render khi có videoUrl */}
             <div className="flex-1">
               {currentCourseItem &&
               videoUrl &&
-              (isRegistered || (!isRegistered && currentCourseItem.is_preview)) ? (
+              (isRegistered || isOwner || (!isRegistered && currentCourseItem.is_preview)) ? (
                 <VideoPlayer
                   videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoUrl}
                   title={currentCourseItem.title}
@@ -213,7 +204,7 @@ const LearnPage = () => {
               ) : (
                 <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md">
                   <p className="text-lg font-medium">
-                    {!isRegistered
+                    {!isRegistered && !isOwner
                       ? 'Bạn cần đăng ký khóa học để xem nội dung này'
                       : 'Không có video để phát cho mục này.'}
                   </p>
@@ -222,7 +213,6 @@ const LearnPage = () => {
             </div>
           </div>
 
-          {/* Tabs - Only show when registered */}
           {courseData && (isRegistered || isOwner) && (
             <div className="">
               <CourseTabs
@@ -256,7 +246,6 @@ const LearnPage = () => {
         </div>
       )}
 
-      {/* Only show review and more buttons when registered and not owner */}
       {courseData?.id && !isOwner && isRegistered && (
         <>
           <ButtonReview course_id={courseData?.id || ''} />

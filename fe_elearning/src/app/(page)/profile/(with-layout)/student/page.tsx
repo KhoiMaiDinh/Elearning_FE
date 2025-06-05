@@ -274,7 +274,7 @@ const StudentProfile = () => {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="relative grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Profile Info */}
-          <div className="lg:col-span-1 md:sticky top-8">
+          <div className="lg:col-span-1 lg:sticky top-8">
             <AnimateWrapper delay={0.2} direction="left">
               <Card className="border-0 shadow-lg  flex flex-col ">
                 <CardContent className="p-6 text-center">

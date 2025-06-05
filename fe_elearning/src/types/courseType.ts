@@ -35,6 +35,7 @@ export interface CourseItem {
   previous_position?: string;
   fileUrl?: string;
   progresses?: ProgressItem[];
+
   series?: [
     {
       version: number;

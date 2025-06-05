@@ -18,11 +18,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import Pagination from '../pagination/Pagination';
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import Image from 'next/image';
 import SkeletonTable from '../skeleton/SkeletonTable';
+import Pagination from '../pagination/pagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

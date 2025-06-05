@@ -1,49 +1,50 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
-import { PlayCircle, Lock, CheckCircle, Clock, ChevronRight } from "lucide-react"
-import type { CourseForm, Section } from "@/types/courseType"
-import { cn } from "@/lib/utils"
+import type React from 'react';
+import { useState, useEffect } from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { PlayCircle, Lock, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import type { CourseForm, CourseItem, Section } from '@/types/courseType';
+import { cn } from '@/lib/utils';
+import { formatDuration } from '@/helpers/durationFormater';
 
 type CourseMainProps = {
-  course: CourseForm
-}
+  course: CourseForm;
+};
 
 // Component chính
 const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
-  const [sections, setSections] = useState<Section[]>([])
-  const [expandedSections, setExpandedSections] = useState<string[]>([])
+  const [sections, setSections] = useState<Section[]>([]);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
   useEffect(() => {
     if (course?.sections) {
-      const sortedSections = course.sections.sort((a: Section, b: Section) => a.position.localeCompare(b.position))
-      setSections(sortedSections)
+      const sortedSections = course.sections.sort((a: Section, b: Section) =>
+        a.position.localeCompare(b.position)
+      );
+      setSections(sortedSections);
 
       // Auto-expand the first section
       if (sortedSections.length > 0) {
-        setExpandedSections([`section-0`])
+        setExpandedSections([`section-0`]);
       }
     }
-  }, [course?.sections])
-
-  // Format seconds to minutes and seconds
-  const formatDuration = (seconds: number | undefined) => {
-    if (!seconds) return null
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-  }
+  }, [course?.sections]);
 
   // Determine if a lesson is completed or locked (mock logic - replace with actual logic)
-  const getLessonStatus = (lessonIndex: number, sectionIndex: number) => {
+  const getLessonStatus = (courseItem: CourseItem) => {
     // This is mock logic - replace with your actual logic to determine lesson status
     // For demo purposes: first lesson is completed, some are locked, rest are available
-    if (sectionIndex === 0 && lessonIndex === 0) return "completed"
-    if ((sectionIndex + lessonIndex) % 5 === 0) return "locked"
-    return "available"
-  }
+
+    if (
+      courseItem.progresses &&
+      courseItem.progresses[0]?.watch_time_in_percentage &&
+      courseItem.progresses[0]?.watch_time_in_percentage > 80
+    )
+      return 'completed';
+
+    return 'available';
+  };
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
@@ -56,17 +57,23 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
         {sections?.map((section, sectionIndex) => {
           // Count completed lessons in this section
           const completedCount = section.items.filter(
-            (_, idx) => getLessonStatus(idx, sectionIndex) === "completed",
-          ).length
+            (course, idx) => getLessonStatus(course) === 'completed'
+          ).length;
 
           return (
-            <AccordionItem key={sectionIndex} value={`section-${sectionIndex}`} className="border-none">
+            <AccordionItem
+              key={sectionIndex}
+              value={`section-${sectionIndex}`}
+              className="border-none"
+            >
               {/* Section title */}
               <div className="bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <div className="flex flex-col items-start text-left w-full">
                     <div className="flex items-center justify-between w-full">
-                      <span className="font-semibold text-base text-gray-900 dark:text-white">{section.title}</span>
+                      <span className="font-semibold text-base text-gray-900 dark:text-white">
+                        {section.title}
+                      </span>
 
                       {completedCount > 0 && (
                         <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full ml-2">
@@ -86,53 +93,45 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                 <AccordionContent className="p-0">
                   <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {section.items.map((lesson, lessonIndex) => {
-                      const status = getLessonStatus(lessonIndex, sectionIndex)
+                      const status = getLessonStatus(lesson);
 
                       return (
                         <div
                           key={lessonIndex}
                           className={cn(
-                            "flex items-center p-4 transition-colors",
-                            status === "locked"
-                              ? "opacity-70 cursor-not-allowed"
-                              : "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer",
-                            status === "completed" && "bg-green-50/50 dark:bg-green-900/10",
+                            'flex items-center p-4 transition-colors    hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer',
+                            status === 'completed' ? 'bg-green-50/50 dark:bg-green-900/10' : ''
                           )}
                         >
                           <div className="flex items-center gap-3 flex-1">
                             {/* Status icon */}
                             <div className="flex-shrink-0">
-                              {status === "completed" ? (
+                              {status === 'completed' ? (
                                 <CheckCircle size={18} className="text-vividMalachite" />
-                              ) : status === "locked" ? (
-                                <Lock size={18} className="text-gray-400" />
                               ) : (
                                 <PlayCircle size={18} className="text-majorelleBlue" />
                               )}
                             </div>
-
                             {/* Lesson content */}
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
                                 <p
                                   className={cn(
-                                    "text-sm md:text-base font-medium",
-                                    status === "completed"
-                                      ? "text-green-700 dark:text-green-400"
-                                      : status === "locked"
-                                        ? "text-gray-500 dark:text-gray-400"
-                                        : "text-gray-900 dark:text-gray-100",
+                                    'text-sm md:text-base font-medium',
+                                    status === 'completed'
+                                      ? 'text-green-700 dark:text-green-400'
+                                      : 'text-gray-900 dark:text-gray-100'
                                   )}
                                 >
                                   {lesson.title}
                                 </p>
 
                                 {/* Duration if available */}
-                                {lesson.video?.duration_in_seconds && (
+                                {lesson?.duration_in_seconds && (
                                   <div className="flex items-center gap-1 ml-2">
                                     <Clock size={12} className="text-gray-400" />
                                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {formatDuration(lesson.video.duration_in_seconds)}
+                                      {formatDuration(lesson.duration_in_seconds)}
                                     </span>
                                   </div>
                                 )}
@@ -145,18 +144,18 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                                 </p>
                               )}
                             </div>
-
                             {/* Action indicator */}
-                            {status !== "locked" && <ChevronRight size={16} className="text-gray-400 ml-2" />}
+
+                            <ChevronRight size={16} className="text-gray-400 ml-2" />
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </AccordionContent>
               )}
             </AccordionItem>
-          )
+          );
         })}
       </Accordion>
 
@@ -166,7 +165,7 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CourseMain
+export default CourseMain;
