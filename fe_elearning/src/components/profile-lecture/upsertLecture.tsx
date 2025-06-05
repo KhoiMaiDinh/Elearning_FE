@@ -386,19 +386,22 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
 
         {/* Submit Button */}
         <div className="flex justify-center mt-8 gap-2">
-          <Button
-            disabled={loading}
-            onClick={handdlePresssView}
-            className={` shadow-majorelleBlue50 shadow-md text-white hover:brightness-110 rounded-md font-sans font-medium text-[13px] px-8 py-2.5 transition-all duration-300 w-32 ${
-              isViewMode
-                ? loading
-                  ? 'translate-x-[calc(50%+16px)] bg-custom-gradient-button-violet hover:bg-custom-gradient-button-violet shadow-majorelleBlue50'
-                  : 'translate-x-[calc(50%+16px)] bg-majorelleBlue hover:bg-majorelleBlue shadow-majorelleBlue50'
-                : 'bg-redPigment hover:bg-redPigment shadow-redPigment/50'
-            }`}
-          >
-            {isViewMode ? (loading ? 'Đang lưu ...' : 'Chỉnh sửa') : 'Hủy'}
-          </Button>
+          {mode == 'update' && (
+            <Button
+              disabled={loading}
+              onClick={handdlePresssView}
+              className={` shadow-majorelleBlue50 shadow-md text-white hover:brightness-110 rounded-md font-sans font-medium text-[13px] px-8 py-2.5 transition-all duration-300 w-32 ${
+                isViewMode
+                  ? loading
+                    ? 'translate-x-[calc(50%+16px)] bg-custom-gradient-button-violet hover:bg-custom-gradient-button-violet shadow-majorelleBlue50'
+                    : 'translate-x-[calc(50%+16px)] bg-majorelleBlue hover:bg-majorelleBlue shadow-majorelleBlue50'
+                  : 'bg-redPigment hover:bg-redPigment shadow-redPigment/50'
+              }`}
+            >
+              {isViewMode ? (loading ? 'Đang lưu ...' : 'Chỉnh sửa') : 'Hủy'}
+            </Button>
+          )}
+
           <Button
             onClick={() => {
               setViewMode(true);
@@ -409,7 +412,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
               bg-custom-gradient-button-violet shadow-majorelleBlue50 shadow-md text-white hover:bg-majorelleBlue70
               rounded-md font-sans font-medium text-[13px] px-8 py-2 w-32 transition-all duration-300 ease-in-out
               transform
-              ${isViewMode ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}
+              ${isViewMode && mode == 'update' ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100 scale-100'}
             `}
           >
             {loading ? 'Đang gửi...' : 'Gửi xét duyệt'}
