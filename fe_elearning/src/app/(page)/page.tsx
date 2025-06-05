@@ -234,7 +234,7 @@ export default function Page() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     placeholder="Tìm kiếm khóa học..."
-                    className="pl-10 pr-4 py-6 rounded-full border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 w-full sm:w-80"
+                    className="pl-10 pr-4 py-1 rounded-full border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 w-full sm:w-80"
                   />
                 </div>
 

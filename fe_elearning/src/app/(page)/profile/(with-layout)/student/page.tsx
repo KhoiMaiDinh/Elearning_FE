@@ -274,7 +274,7 @@ const StudentProfile = () => {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="relative grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Profile Info */}
-          <div className="lg:col-span-1 sticky top-8">
+          <div className="lg:col-span-1 md:sticky top-8">
             <AnimateWrapper delay={0.2} direction="left">
               <Card className="border-0 shadow-lg  flex flex-col ">
                 <CardContent className="p-6 text-center">
@@ -491,15 +491,11 @@ const StudentProfile = () => {
             <AnimateWrapper delay={0.4} direction="up">
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      Tiến độ học tập
-                    </h3>
-                  </div>
+                  <CardTitle>Tiến độ học tập</CardTitle>
 
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+                  <CardDescription className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
                     Theo dõi quá trình học tập của bạn
-                  </p>
+                  </CardDescription>
 
                   <div className="space-y-6">
                     {learningProgress.map((course) => (
@@ -528,6 +524,15 @@ const StudentProfile = () => {
                         <Progress value={course.course_progress?.progress} className="h-2" />
                       </div>
                     ))}
+                    {learningProgress.length > 3 && (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
+                        onClick={() => router.push('/course?page=1&tab=my-courses')}
+                      >
+                        Xem tất cả khóa học
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -594,6 +599,15 @@ const StudentProfile = () => {
                         </Badge>
                       </div>
                     ))}
+                    {learningProgress.length > 3 && (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
+                        onClick={() => router.push('/course?page=1&tab=my-courses')}
+                      >
+                        Xem tất cả
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -655,6 +669,15 @@ const StudentProfile = () => {
                         </Badge>
                       </div>
                     ))}
+                    {favoriteCourse.length > 3 && (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
+                        onClick={() => router.push('/course?page=1&tab=favorites')}
+                      >
+                        Xem tất cả
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

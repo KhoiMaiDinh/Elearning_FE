@@ -124,17 +124,28 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
 
         {type === 'file' ? (
           <>
+            {/* Input file ẩn */}
             <Input
               type="file"
               id={name}
               name={name}
               ref={fileInputRef}
-              className="hidden"
+              className="hidden" // Ẩn input file mặc định
               onChange={onChange}
               disabled={disabled}
               multiple={multiple}
               accept={accept}
             />
+            {/* Giao diện tùy chỉnh */}
+            {!disabled && (
+              <div
+                onClick={handleCustomClick}
+                className="cursor-pointer shadow-sm flex font-sans font-normal text-xs text-white flex-row gap-1 w-fit px-4 py-2 items-center justify-center rounded-full dark:border dark:border-lightSilver/50 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 hover:underline"
+              >
+                Upload
+                <UploadCloud className="w-4 h-4 text-white" />
+              </div>
+            )}
           </>
         ) : (
           <Input

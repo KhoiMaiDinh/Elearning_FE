@@ -330,7 +330,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
                     <TextAreaRegisterLecture
                       {...field}
                       error={errors.biography?.message}
-                      className="min-h-[180px] max-h-[280px]"
+                      className="min-h-[180px] max-h-[280px] "
                       disabled={pageDisabled()}
                     />
                   )}
