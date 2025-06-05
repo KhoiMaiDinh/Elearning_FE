@@ -76,11 +76,11 @@ const CoursesBlock: React.FC<CourseForm> = ({
   const getLevelColor = () => {
     switch (level) {
       case 'BEGINNER':
-        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+        return 'bg-green-100 text-green-700 dark:bg-green-900/80 dark:text-green-400';
       case 'INTERMEDIATE':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/80 dark:text-blue-400';
       case 'ADVANCED':
-        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
+        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/80 dark:text-purple-400';
       default:
         return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
     }
@@ -88,7 +88,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
 
   return (
     <Card
-      className="w-full h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-gray-800/90 backdrop-blur-sm"
+      className="w-full h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-black backdrop-blur-sm"
       onClick={() => router.push(`/course/${id}`)}
     >
       <div className="relative">
@@ -163,7 +163,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
         />
       </CardContent>
 
-      <CardFooter className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+      <CardFooter className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-black">
         <div className="w-full space-y-3">
           {/* Progress Bar (if applicable) */}
           {course_progress !== undefined && (
@@ -188,7 +188,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
                 {formatPrice(price)}
               </span>
             )}
-            <Badge className="bg-blue-600 hover:bg-blue-700">
+            <Badge className="bg-blue-600 hover:bg-blue-700 hover:brightness-125 hover:cursor-pointer">
               {course_progress ? 'Tiếp tục học' : 'Xem chi tiết'}
             </Badge>
           </div>

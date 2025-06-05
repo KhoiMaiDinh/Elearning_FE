@@ -22,10 +22,12 @@ export interface ResourceType {
 
 export interface CourseItem {
   id: string;
+  is_favorite?: boolean;
   title: string;
   description: string;
   video?: MediaType | null;
   resources: ResourceType[];
+  duration_in_seconds?: number;
   is_preview: boolean;
   position: string;
   section_id: string;
