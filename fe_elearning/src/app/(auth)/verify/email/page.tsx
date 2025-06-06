@@ -29,7 +29,7 @@ export default function VerifyEmailPage() {
           setMessage('Xác thực email thành công! Đang chuyển hướng...');
           // Redirect after 2 seconds
           setTimeout(() => {
-            router.push('/login');
+            router.push('/');
           }, 2000);
         } else {
           setStatus('error');

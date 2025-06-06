@@ -49,6 +49,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APIGetPayout } from '@/utils/payout';
 import { PayoutType } from '@/types/payoutType';
+import { formatPrice } from '../formatPrice';
 
 // Mock data for instructor payouts
 // const payoutData = [
@@ -195,9 +196,9 @@ const getStatusIcon = (status: string) => {
 
 const getStatusBadge = (status: string) => {
   const variants = {
-    completed: 'default',
-    pending: 'secondary',
-    processing: 'outline',
+    completed: 'success',
+    pending: 'warning',
+    processing: 'warning',
     failed: 'destructive',
   };
   return (
@@ -253,14 +254,6 @@ export default function InstructorPayouts() {
       payout.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
-
-  // Calculate summary statistics
-  const totalEarnings = dataPayout.reduce((sum, payout) => sum + Number(payout.amount), 0);
-  const pendingPayments = dataPayout
-    .filter((p) => p.payout_status === 'pending' || p.payout_status === 'processing')
-    .reduce((sum, payout) => sum + Number(payout.amount), 0);
-  const completedPayments = dataPayout.filter((p) => p.payout_status === 'completed').length;
-  const failedPayments = dataPayout.filter((p) => p.payout_status === 'failed').length;
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -333,7 +326,7 @@ export default function InstructorPayouts() {
                       <TableCell className="font-medium">{payout.id}</TableCell>
                       <TableCell>{payout.payee?.username}</TableCell>
                       <TableCell className="font-medium">
-                        ${payout.amount?.toLocaleString()}
+                        {formatPrice(Number(payout.amount || 0))}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -461,7 +454,9 @@ export default function InstructorPayouts() {
                                             </span>
                                           </div>
                                           <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Account:</span>
+                                            <span className="text-muted-foreground">
+                                              Số tài khoản:
+                                            </span>
                                             <span className="font-medium">
                                               {selectedPayout.bank_account_number}
                                             </span>
@@ -470,9 +465,7 @@ export default function InstructorPayouts() {
                                       )}
                                       {selectedPayout.payee?.email && (
                                         <div className="flex justify-between">
-                                          <span className="text-muted-foreground">
-                                            PayPal Email:
-                                          </span>
+                                          <span className="text-muted-foreground">Email:</span>
                                           <span className="font-medium">
                                             {selectedPayout.payee?.email}
                                           </span>
@@ -481,92 +474,6 @@ export default function InstructorPayouts() {
                                     </CardContent>
                                   </Card>
                                 </div>
-
-                                {/* Course Earnings Breakdown */}
-                                <Card>
-                                  <CardHeader>
-                                    <CardTitle className="text-lg">
-                                      Course Earnings Breakdown
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>Course Name</TableHead>
-                                          <TableHead>Students</TableHead>
-                                          <TableHead className="text-right">Earnings</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {/* {selectedPayout.courses.map((course: CourseForm, index: number) => (
-                                          <TableRow key={index}>
-                                            <TableCell className="font-medium">
-                                              {course.name}
-                                            </TableCell>
-                                            <TableCell>{course.students}</TableCell>
-                                            <TableCell className="text-right font-medium">
-                                              ${course.earnings.toLocaleString()}
-                                            </TableCell>
-                                          </TableRow>
-                                        ))} */}
-                                      </TableBody>
-                                    </Table>
-                                  </CardContent>
-                                </Card>
-
-                                {/* //Fee Breakdown
-                                <Card>
-                                  <CardHeader>
-                                    <CardTitle className="text-lg">Chi tiết phí</CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="space-y-2">
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Tổng thu nhập:
-                                        </span>
-                                        <span className="font-medium">
-                                          $
-                                          {(
-                                            selectedPayout.amount +
-                                            selectedPayout.fees?.platformFee +
-                                            selectedPayout.fees?.processingFee
-                                          ).toLocaleString()}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Platform Fee (15%):
-                                        </span>
-                                        <span className="font-medium">
-                                          -${selectedPayout.fees.platformFee.toLocaleString()}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Processing Fee:
-                                        </span>
-                                        <span className="font-medium">
-                                          -${selectedPayout.fees.processingFee.toLocaleString()}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Tax Withholding:
-                                        </span>
-                                        <span className="font-medium">
-                                          -${selectedPayout.fees.tax.toLocaleString()}
-                                        </span>
-                                      </div>
-                                      <hr />
-                                      <div className="flex justify-between font-bold text-lg">
-                                        <span>Net Payment:</span>
-                                        <span>${selectedPayout.amount.toLocaleString()}</span>
-                                      </div>
-                                    </div>
-                                  </CardContent>
-                                </Card> */}
                               </div>
                             )}
                           </DialogContent>

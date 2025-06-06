@@ -10,7 +10,7 @@ const APIGetPayout = async (params: {
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
     );
-    const response = await axiosInstance.get(`/payout`, {
+    const response = await axiosInstance.get(`/payout/me`, {
       params: filteredParams,
     });
     if (response.status === 200) {
