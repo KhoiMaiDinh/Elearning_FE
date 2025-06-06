@@ -5,7 +5,7 @@ const APIRegisterInstructor = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during register lecture:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -18,7 +18,7 @@ const APIUpdateInstructor = async (username: string, data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during register lecture:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -31,7 +31,7 @@ const APIGetInstructorByUserName = async (user_name: string) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get lecture by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -61,7 +61,7 @@ const APIGetListInstructor = async (params: {
         total: response.data.pagination.totalRecords,
       };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get list lecture:', err);
     throw err;

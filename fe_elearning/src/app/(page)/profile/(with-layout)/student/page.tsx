@@ -27,6 +27,8 @@ import { APIGetPresignedUrl } from '@/utils/storage';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
+import { APIGetCertificate } from '@/utils/certificate';
+import { CertificateType } from '@/types/certificateType';
 // Yup schema for form validation
 const schema = yup.object().shape({
   first_name: yup.string().required('Họ không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
@@ -58,6 +60,7 @@ const StudentProfile = () => {
   const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
   const router = useRouter();
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [certificate, setCertificate] = useState<CertificateType[]>([]);
 
   const {
     control,
@@ -251,12 +254,20 @@ const StudentProfile = () => {
     }
   };
 
+  const handleGetCertificateList = async () => {
+    const response = await APIGetCertificate();
+    if (response?.status === 200) {
+      setCertificate(response?.data || []);
+    }
+  };
+
   // Fetch data on mount or username change
   useEffect(() => {
     handleGetStudentData();
     handleGetFavoriteCategories();
     handleGetLearningProgress();
     handleGetFavoriteCourse();
+    handleGetCertificateList();
   }, [username]);
 
   // Format the date
@@ -678,6 +689,79 @@ const StudentProfile = () => {
                         Xem tất cả
                       </Button>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+            </AnimateWrapper>
+
+            {/* Certificate */}
+            <AnimateWrapper delay={0.6} direction="up">
+              {/* Favorite Courses */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Chứng chỉ</CardTitle>
+                  <CardDescription>Các chứng chỉ bạn đã nhận</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {certificate.map((certificate) => (
+                      <div
+                        key={certificate.certificate_code}
+                        className="flex items-start gap-4 p-3 rounded-lg border flex-col cursor-pointer"
+                        onClick={() =>
+                          window.open(`/certificate/${certificate.certificate_code}`, '_blank')
+                        }
+                      >
+                        <div className="flex-1 space-y-1">
+                          <h4 className="font-medium text-black dark:text-white">
+                            {certificate.course.title}
+                          </h4>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-3.5 w-3.5" />
+                            <span>
+                              Giảng viên: {certificate.course.instructor?.user?.first_name}{' '}
+                              {certificate.course.instructor?.user?.last_name}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3.5 w-3.5" />
+                            <span>Ngày nhận: {formatDate(certificate.completed_at)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <Badge
+                            variant={
+                              certificate.course.level && certificate.course.level === 'BEGINNER'
+                                ? 'default'
+                                : certificate.course.level &&
+                                    certificate.course.level === 'INTERMEDIATE'
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                            className={`w-fit ${
+                              certificate.course.level && certificate.course.level === 'BEGINNER'
+                                ? 'bg-darkSilver'
+                                : certificate.course.level &&
+                                    certificate.course.level === 'INTERMEDIATE'
+                                  ? 'bg-blueberry'
+                                  : 'bg-vividMalachite'
+                            }`}
+                          >
+                            {certificate.course.level && certificate.course.level === 'BEGINNER'
+                              ? 'Cơ bản'
+                              : certificate.course.level &&
+                                  certificate.course.level === 'INTERMEDIATE'
+                                ? 'Trung bình'
+                                : 'Nâng cao'}
+                          </Badge>
+                          {/* 
+                          <Badge variant="outline" className="w-fit">
+                            {certificate.course.category?.translations[0]?.name || 'Category Name'}
+                          </Badge> */}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

@@ -19,7 +19,7 @@ const APIGetCategory = async ({
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get category:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Download,
   Eye,
@@ -10,6 +10,7 @@ import {
   CheckCircle,
   AlertCircle,
   MoreHorizontal,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,144 +51,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APIGetPayout } from '@/utils/payout';
 import { PayoutType } from '@/types/payoutType';
 import { formatPrice } from '../formatPrice';
+import Pagination from '../pagination/pagination';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import html2canvas from 'html2canvas';
 
-// Mock data for instructor payouts
-// const payoutData = [
-//   {
-//     id: 'PAY-001',
-//     instructor: 'John Doe',
-//     instructorId: 'INS-001',
-//     amount: 15750.0,
-//     currency: 'USD',
-//     status: 'completed',
-//     paymentMethod: 'Bank Transfer',
-//     transactionDate: '2024-01-15',
-//     processedDate: '2024-01-16',
-//     courses: [
-//       { name: 'Complete Web Development', earnings: 8500.0, students: 170 },
-//       { name: 'Advanced JavaScript', earnings: 4250.0, students: 85 },
-//       { name: 'React Masterclass', earnings: 3000.0, students: 60 },
-//     ],
-//     fees: {
-//       platformFee: 2250.0,
-//       processingFee: 47.25,
-//       tax: 0.0,
-//     },
-//     period: 'December 2023',
-//     bankDetails: {
-//       accountNumber: '****1234',
-//       bankName: 'Chase Bank',
-//       routingNumber: '****5678',
-//     },
-//   },
-//   {
-//     id: 'PAY-002',
-//     instructor: 'Jane Smith',
-//     instructorId: 'INS-002',
-//     amount: 12300.0,
-//     currency: 'USD',
-//     status: 'pending',
-//     paymentMethod: 'PayPal',
-//     transactionDate: '2024-01-10',
-//     processedDate: null,
-//     courses: [
-//       { name: 'Python for Data Science', earnings: 9200.0, students: 184 },
-//       { name: 'Machine Learning Basics', earnings: 5350.0, students: 107 },
-//     ],
-//     fees: {
-//       platformFee: 2050.0,
-//       processingFee: 36.9,
-//       tax: 0.0,
-//     },
-//     period: 'December 2023',
-//     paypalEmail: 'jane.smith@email.com',
-//   },
-//   {
-//     id: 'PAY-003',
-//     instructor: 'Alex Johnson',
-//     instructorId: 'INS-003',
-//     amount: 8900.0,
-//     currency: 'USD',
-//     status: 'failed',
-//     paymentMethod: 'Bank Transfer',
-//     transactionDate: '2024-01-08',
-//     processedDate: null,
-//     courses: [
-//       { name: 'UI/UX Design Fundamentals', earnings: 6700.0, students: 134 },
-//       { name: 'Figma Masterclass', earnings: 3550.0, students: 71 },
-//     ],
-//     fees: {
-//       platformFee: 1350.0,
-//       processingFee: 26.7,
-//       tax: 0.0,
-//     },
-//     period: 'December 2023',
-//     failureReason: 'Invalid bank account details',
-//     bankDetails: {
-//       accountNumber: '****9876',
-//       bankName: 'Bank of America',
-//       routingNumber: '****4321',
-//     },
-//   },
-//   {
-//     id: 'PAY-004',
-//     instructor: 'Sarah Williams',
-//     instructorId: 'INS-004',
-//     amount: 6750.0,
-//     currency: 'USD',
-//     status: 'completed',
-//     paymentMethod: 'Stripe',
-//     transactionDate: '2024-01-05',
-//     processedDate: '2024-01-06',
-//     courses: [
-//       { name: 'Digital Marketing Strategy', earnings: 4500.0, students: 90 },
-//       { name: 'Social Media Marketing', earnings: 3375.0, students: 67 },
-//     ],
-//     fees: {
-//       platformFee: 1125.0,
-//       processingFee: 20.25,
-//       tax: 0.0,
-//     },
-//     period: 'December 2023',
-//     stripeAccountId: 'acct_****5678',
-//   },
-//   {
-//     id: 'PAY-005',
-//     instructor: 'Mike Brown',
-//     instructorId: 'INS-005',
-//     amount: 4200.0,
-//     currency: 'USD',
-//     status: 'processing',
-//     paymentMethod: 'Bank Transfer',
-//     transactionDate: '2024-01-12',
-//     processedDate: null,
-//     courses: [
-//       { name: 'Photography Basics', earnings: 3150.0, students: 63 },
-//       { name: 'Photo Editing with Lightroom', earnings: 1890.0, students: 38 },
-//     ],
-//     fees: {
-//       platformFee: 840.0,
-//       processingFee: 12.6,
-//       tax: 0.0,
-//     },
-//     period: 'December 2023',
-//     bankDetails: {
-//       accountNumber: '****5555',
-//       bankName: 'Wells Fargo',
-//       routingNumber: '****7777',
-//     },
-//   },
-// ];
+// DejaVu Sans font in Base64 (simplified for brevity; in practice, use the full Base64 string)
+const dejaVuSansBase64 = 'AAEAAA...'; // Replace with actual Base64-encoded TTF file for DejaVu Sans
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'completed':
+    case 'SUCCESS':
       return <CheckCircle className="h-4 w-4 text-green-500" />;
-    case 'pending':
+    case 'PENDING':
       return <Clock className="h-4 w-4 text-yellow-500" />;
-    case 'processing':
+    case 'PROCESSING':
       return <Clock className="h-4 w-4 text-blue-500" />;
-    case 'failed':
+    case 'FAILED':
       return <AlertCircle className="h-4 w-4 text-red-500" />;
     default:
       return <Clock className="h-4 w-4 text-gray-500" />;
@@ -196,10 +76,10 @@ const getStatusIcon = (status: string) => {
 
 const getStatusBadge = (status: string) => {
   const variants = {
-    completed: 'success',
-    pending: 'warning',
-    processing: 'warning',
-    failed: 'destructive',
+    SUCCESS: 'Thành công',
+    PENDING: 'Chờ xử lý',
+    PROCESSING: 'Đang xử lý',
+    FAILED: 'Thất bại',
   };
   return (
     <Badge
@@ -210,9 +90,27 @@ const getStatusBadge = (status: string) => {
           | 'outline'
           | 'destructive') || 'secondary'
       }
-      className="capitalize"
+      className={`capitalize ${
+        variants[status as keyof typeof variants] === 'SUCCESS'
+          ? 'bg-green-500 text-white'
+          : variants[status as keyof typeof variants] === 'PENDING'
+            ? 'bg-yellow-500 text-white'
+            : variants[status as keyof typeof variants] === 'PROCESSING'
+              ? 'bg-blue-500 text-white'
+              : variants[status as keyof typeof variants] === 'FAILED'
+                ? 'bg-red-500 text-white'
+                : 'bg-gray-500 text-white'
+      }`}
     >
-      {status}
+      {status === 'SUCCESS'
+        ? 'Thành công'
+        : status === 'PENDING'
+          ? 'Chờ xử lý'
+          : status === 'PROCESSING'
+            ? 'Đang xử lý'
+            : status === 'FAILED'
+              ? 'Thất bại'
+              : ''}
     </Badge>
   );
 };
@@ -221,15 +119,17 @@ export default function InstructorPayouts() {
   const [selectedPayout, setSelectedPayout] = useState<PayoutType | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateRange, setDateRange] = useState('all');
   const [dataPayout, setDataPayout] = useState<PayoutType[]>([]);
   const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [filter, setFilter] = useState({
-    page: 1,
-    limmit: 10,
+    page: currentPage,
+    limit: itemsPerPage,
     status: undefined,
   });
-
+  const [isExporting, setIsExporting] = useState(false);
+  const detailsRef = useRef<HTMLDivElement>(null);
   const handleGetPayout = async () => {
     try {
       const res = await APIGetPayout(filter);
@@ -246,7 +146,14 @@ export default function InstructorPayouts() {
     handleGetPayout();
   }, [filter]);
 
-  // Filter payouts based on status, search term, and date range
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      page: currentPage,
+    }));
+  }, [currentPage]);
+
+  // Filter payouts based on status and search term
   const filteredPayouts = dataPayout.filter((payout) => {
     const matchesStatus = statusFilter === 'all' || payout.payout_status === statusFilter;
     const matchesSearch =
@@ -255,24 +162,208 @@ export default function InstructorPayouts() {
     return matchesStatus && matchesSearch;
   });
 
+  // Export all data to Excel with UTF-8 encoding
+  const handleExportAllToExcel = async () => {
+    try {
+      setIsExporting(true);
+
+      const exportData = dataPayout.map((payout) => ({
+        'Mã thanh toán': payout.id,
+        'Người thanh toán': payout.payee?.username || '',
+        'Số tiền': formatPrice(Number(payout.amount || 0)),
+        'Trạng thái':
+          payout.payout_status === 'SUCCESS'
+            ? 'Thành công'
+            : payout.payout_status === 'PENDING'
+              ? 'Chờ xử lý'
+              : payout.payout_status === 'PROCESSING'
+                ? 'Đang xử lý'
+                : payout.payout_status === 'FAILED'
+                  ? 'Thất bại'
+                  : '',
+        'Phương thức thanh toán': payout.bank_code || '',
+        'Ngày thanh toán': payout.paid_out_sent_at || '',
+        'Lý do thất bại': payout.failure_reason || 'Không có',
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Payouts');
+
+      // Ensure UTF-8 encoding
+      XLSX.writeFile(
+        workbook,
+        `payouts-${new Date().toISOString().replace(/[:.]/g, '-').split('T')[0]}.xlsx`,
+        { bookSST: true }
+      );
+      setIsExporting(false);
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      setIsExporting(false);
+    }
+  };
+
+  // Export individual payout to PDF
+  const handleExportIndividual = (payout: PayoutType) => {
+    try {
+      setIsExporting(true);
+
+      // Create PDF in portrait mode with UTF-8 support
+      const doc = new jsPDF();
+
+      // Add font for Vietnamese
+      doc.setFont('helvetica');
+      doc.setFontSize(16);
+
+      // Title
+      doc.text(`Chi tiết thanh toán - ${payout.id}`, 20, 20);
+
+      // Overview data
+      const overviewData = [
+        ['Mã thanh toán', payout.id],
+        ['Người thanh toán', payout.payee?.username || ''],
+        ['Số tiền', formatPrice(Number(payout.amount || 0))],
+        [
+          'Trạng thái',
+          payout.payout_status === 'SUCCESS'
+            ? 'Thành công'
+            : payout.payout_status === 'PENDING'
+              ? 'Chờ xử lý'
+              : payout.payout_status === 'PROCESSING'
+                ? 'Đang xử lý'
+                : payout.payout_status === 'FAILED'
+                  ? 'Thất bại'
+                  : '',
+        ],
+        ['Phương thức thanh toán', payout.bank_code || ''],
+        ['Ngày thanh toán', payout.paid_out_sent_at || ''],
+      ];
+
+      // Details data
+      const detailsData = [
+        ['Ngày thanh toán', payout.paid_out_sent_at || ''],
+        ...(payout.paid_out_sent_at ? [['Ngày xử lý', payout.paid_out_sent_at]] : []),
+        ...(payout.failure_reason ? [['Lý do thất bại', payout.failure_reason]] : []),
+        ...(payout.bank_account_number
+          ? [
+              ['Ngân hàng', payout.bank_code || ''],
+              ['Số tài khoản', payout.bank_account_number],
+            ]
+          : []),
+        ...(payout.payee?.email ? [['Email', payout.payee.email]] : []),
+      ];
+
+      // Add overview table
+      (doc as any).autoTable({
+        head: [['Thông tin', 'Chi tiết']],
+        body: overviewData,
+        startY: 30,
+        theme: 'grid',
+        styles: {
+          fontSize: 10,
+          cellPadding: 5,
+          font: 'helvetica',
+          textColor: [0, 0, 0],
+        },
+        headStyles: {
+          fillColor: [63, 81, 181],
+          textColor: [255, 255, 255],
+          fontSize: 11,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        columnStyles: {
+          0: { fontStyle: 'bold', fillColor: [240, 240, 240] },
+          1: { halign: 'left' },
+        },
+        margin: { top: 30, left: 20, right: 20 },
+      });
+
+      // Add details title
+      const finalY = (doc as any).lastAutoTable.finalY + 20;
+      doc.setFontSize(14);
+      doc.text('Chi tiết thanh toán', 20, finalY);
+
+      // Add details table
+      (doc as any).autoTable({
+        head: [['Thông tin', 'Chi tiết']],
+        body: detailsData,
+        startY: finalY + 10,
+        theme: 'grid',
+        styles: {
+          fontSize: 10,
+          cellPadding: 5,
+          font: 'helvetica',
+          textColor: [0, 0, 0],
+        },
+        headStyles: {
+          fillColor: [63, 81, 181],
+          textColor: [255, 255, 255],
+          fontSize: 11,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        columnStyles: {
+          0: { fontStyle: 'bold', fillColor: [240, 240, 240] },
+          1: { halign: 'left' },
+        },
+        margin: { top: 20, left: 20, right: 20 },
+      });
+
+      // Add footer with page numbers
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.text(
+          `Trang ${i} / ${pageCount}`,
+          doc.internal.pageSize.width - 30,
+          doc.internal.pageSize.height - 10
+        );
+      }
+
+      // Save the PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      doc.save(`payout-${payout.id}-${timestamp}.pdf`);
+
+      setIsExporting(false);
+    } catch (error) {
+      console.error('Error exporting individual PDF:', error);
+      setIsExporting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (detailsRef.current) {
+      html2canvas(detailsRef.current).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        console.log(imgData);
+      });
+    }
+  }, [selectedPayout]);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight"> Tất cả thanh toán</h2>
         <div className="flex items-center space-x-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
+          <Button variant="outline" onClick={handleExportAllToExcel} disabled={isExporting}>
+            {isExporting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang xuất...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export Excel
+              </>
+            )}
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="transactions" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="transactions">Thanh toán</TabsTrigger>
-          <TabsTrigger value="analytics">Lịch sử</TabsTrigger>
-        </TabsList>
-
         <TabsContent value="transactions" className="space-y-4">
           {/* Filters */}
           <div className="flex items-center space-x-2">
@@ -291,10 +382,10 @@ export default function InstructorPayouts() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="completed">Đã thanh toán</SelectItem>
-                <SelectItem value="pending">Chờ xử lý</SelectItem>
-                <SelectItem value="processing">Đang xử lý</SelectItem>
-                <SelectItem value="failed">Thất bại</SelectItem>
+                <SelectItem value="SUCCESS">Đã thanh toán</SelectItem>
+                <SelectItem value="PENDING">Chờ xử lý</SelectItem>
+                <SelectItem value="PROCESSING">Đang xử lý</SelectItem>
+                <SelectItem value="FAILED">Thất bại</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -331,7 +422,7 @@ export default function InstructorPayouts() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getStatusIcon(payout.payout_status)}
-                          {getStatusBadge(payout.payout_status)}
+                          {getStatusBadge(payout.payout_status as string)}
                         </div>
                       </TableCell>
                       <TableCell>{payout.bank_code}</TableCell>
@@ -356,7 +447,7 @@ export default function InstructorPayouts() {
                               </DialogDescription>
                             </DialogHeader>
                             {selectedPayout && (
-                              <div className="space-y-6">
+                              <div className="space-y-6" ref={detailsRef}>
                                 {/* Payment Overview */}
                                 <div className="grid gap-4 md:grid-cols-2">
                                   <Card>
@@ -383,7 +474,7 @@ export default function InstructorPayouts() {
                                       <div className="flex justify-between">
                                         <span className="text-muted-foreground">Số tiền:</span>
                                         <span className="font-bold text-lg">
-                                          ${selectedPayout.amount?.toLocaleString()}
+                                          {formatPrice(Number(selectedPayout.amount || 0))}
                                         </span>
                                       </div>
                                       <div className="flex justify-between">
@@ -485,9 +576,9 @@ export default function InstructorPayouts() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                            <DropdownMenuItem>Tải xuất kết quả</DropdownMenuItem>
-                            <DropdownMenuItem>Gửi lại thanh toán</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleExportIndividual(payout)}>
+                              Tải xuất kết quả
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Liên hệ người thanh toán</DropdownMenuItem>
                           </DropdownMenuContent>
@@ -499,30 +590,19 @@ export default function InstructorPayouts() {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        {/* <TabsContent value="analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payout Trends</CardTitle>
-                <CardDescription>Monthly payout amounts over time</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <PayoutTrendsChart />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Method Distribution</CardTitle>
-                <CardDescription>Breakdown by payment method</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <PayoutBreakdownChart />
-              </CardContent>
-            </Card>
+          {/* Pagination */}
+          <div className="flex justify-center mt-4">
+            {total > itemsPerPage && (
+              <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalItem={total}
+                itemPerPage={itemsPerPage}
+              />
+            )}
           </div>
-        </TabsContent> */}
+        </TabsContent>
       </Tabs>
     </div>
   );

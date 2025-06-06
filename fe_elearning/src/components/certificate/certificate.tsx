@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, Edit, Save, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface CertificateProps {
   studentName: string;
@@ -122,7 +123,9 @@ export default function Certificate({
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <div className="text-white text-2xl font-bold">🎓</div>
+              <div className="text-white text-2xl font-bold">
+                <Image src="/images/logo.png" alt="logo" width={100} height={100} />
+              </div>
             </div>
             <h1 className="text-4xl font-bold text-blue-700 mb-2 tracking-wide">
               CHỨNG NHẬN HOÀN THÀNH
@@ -153,7 +156,7 @@ export default function Certificate({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-end mt-12 pt-8 border-t border-gray-200">
+          <div className="flex justify-between items-end mt-12 h-full pt-8 border-t border-gray-200">
             <div className="text-center">
               <div className="w-32 h-px bg-gray-400 mb-2"></div>
               <p className="text-sm text-gray-600">Giảng viên</p>
@@ -161,10 +164,9 @@ export default function Certificate({
             </div>
 
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mb-2 shadow-md">
-                <div className="text-white font-bold text-sm">SEAL</div>
-              </div>
-              <p className="text-xs text-gray-500">Mã chứng chỉ: {certificateId}</p>
+              <div className="w-32 h-px bg-gray-400 mb-2"></div>
+              <p className="text-sm text-gray-600">Mã chứng chỉ</p>
+              <p className="font-semibold text-gray-800">{certificateId}</p>
             </div>
 
             <div className="text-center">

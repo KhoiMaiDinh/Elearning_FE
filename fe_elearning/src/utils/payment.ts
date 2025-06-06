@@ -5,7 +5,7 @@ const APIInitPaymentAccount = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during init payment account:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -21,7 +21,7 @@ const APIGetPaymentAccount = async (id: string) => {
         status: response.status,
       };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get payment account:', err);
     throw err;
@@ -34,7 +34,7 @@ const APIUpdatePaymentAccount = async (id: string, data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during update payment account:', err);
     throw err;
@@ -46,7 +46,7 @@ const APIGetAllPaymentBank = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get all payment bank:', err);
     throw err;

@@ -107,6 +107,9 @@ const BankAccountLecture = () => {
       dispatch(setBankAccount(response.data));
       setHasBankAccount(true);
     }
+    if (response?.status === 404) {
+      setHasBankAccount(false);
+    }
   };
 
   useEffect(() => {

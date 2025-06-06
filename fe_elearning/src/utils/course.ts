@@ -5,7 +5,7 @@ const APIInitCourse = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    // return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during init course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -31,7 +31,7 @@ const APIGetCourseById = async (
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get course by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -44,7 +44,7 @@ const APIUpdateCourse = async (course_id: string, data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during update course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -57,7 +57,7 @@ const APIInitSection = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during init section:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -70,7 +70,7 @@ const APIGetFullCourse = async (course_id: string) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get full course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -83,7 +83,7 @@ const APIUpdateSection = async (section_id: string, data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during update section:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -96,7 +96,7 @@ const APIInitCourseItem = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Né
   } catch (err) {
     console.error('Error during init course item:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm

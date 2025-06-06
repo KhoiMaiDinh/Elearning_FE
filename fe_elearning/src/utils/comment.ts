@@ -8,7 +8,7 @@ const APIPostComment = async (id: string, data: any) => {
       status: response.status,
     };
   }
-  return null;
+  return { data: null, status: response.status };
 };
 
 const APIGetComment = async (
@@ -32,7 +32,7 @@ const APIGetComment = async (
       status: response.status,
     };
   }
-  return null;
+  return { data: null, status: response.status };
 };
 
 const APIPostReview = async (course_id: string, data: any) => {
@@ -43,7 +43,7 @@ const APIPostReview = async (course_id: string, data: any) => {
       status: response.status,
     };
   }
-  return null;
+  return { data: null, status: response.status };
 };
 
 const APIGetReview = async (course_id: string) => {
@@ -55,10 +55,10 @@ const APIGetReview = async (course_id: string) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.log(error);
-    return null;
+    return { data: null, status: 500 };
   }
 };
 
