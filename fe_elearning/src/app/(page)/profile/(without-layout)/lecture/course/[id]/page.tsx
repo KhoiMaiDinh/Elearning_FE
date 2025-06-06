@@ -16,24 +16,7 @@ import { ArrowLeft, Ban, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressBar from './components/progressBar';
 import { Button } from '@/components/ui/button';
-
-export const steps = [
-  {
-    id: 1,
-    title: 'Thông Tin Khóa Học',
-    description: 'Tiêu đề, mô tả và thông tin khóa học',
-  },
-  {
-    id: 2,
-    title: 'Chương trình học',
-    description: 'Tạo các chương và bài học',
-  },
-  {
-    id: 3,
-    title: 'Xem lại & Xuất bản',
-    description: 'Kiểm tra và xuất bản khóa học',
-  },
-];
+import { steps } from '@/helpers/step';
 
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);

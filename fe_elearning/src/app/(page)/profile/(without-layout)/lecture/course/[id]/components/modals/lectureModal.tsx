@@ -21,12 +21,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLecture } from '@/hooks/lecture/useLectureForm';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseItem, Section, VideoType } from '@/types/courseType';
 import { Edit, FileCheck, Trash2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import Asterisk from '@/components/asterisk/asterisk';
 import { AnimatePresence, motion } from 'framer-motion';
+import { MediaType } from '@/types/mediaType';
 
 interface LectureModalProps {
   open: boolean;
@@ -107,13 +108,14 @@ const LectureModal: React.FC<LectureModalProps> = ({
     if (!open) reset();
     onOpenChange(open);
   };
-
   const handleSelectVersion = (versionId: string) => {
-    const version = lecture?.videos?.find((v) => v.version === Number(versionId));
-    setSelectedVersion(version);
+    const version = lecture?.series?.find((v) => v.version === Number(versionId));
+    if (version?.video) {
+      setSelectedVersion(version.video);
+    }
   };
 
-  const getVideoStatus = (status: 'uploaded' | 'validated' | 'pending' | 'rejected') => {
+  const getVideoStatus = (status: string | undefined) => {
     switch (status) {
       case 'uploaded':
         return 'Đã tải lên, đang trong quá trình xử lí';
@@ -236,17 +238,15 @@ const LectureModal: React.FC<LectureModalProps> = ({
                       >
                         <Select
                           onValueChange={(val) => handleSelectVersion(val)}
-                          defaultValue={selectedVersion?.version.toString()}
+                          defaultValue={selectedVersion?.version?.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {lecture?.videos?.map((version) => (
+                            {lecture?.series?.map((version) => (
                               <SelectItem key={version.version} value={version.version.toString()}>
-                                V
-                                {version.version + ' - ' + getVideoStatus(version.video.status) ||
-                                  0}
+                                V{version.version + ' - ' + getVideoStatus(version.status) || 0}
                               </SelectItem>
                             ))}
                           </SelectContent>

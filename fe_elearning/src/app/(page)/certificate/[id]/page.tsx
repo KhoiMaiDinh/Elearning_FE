@@ -1,4 +1,5 @@
 'use client';
+
 import Certificate from '@/components/certificate/certificate';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -9,9 +10,10 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { formatDuration } from '@/helpers/durationFormater';
+import { useParams } from 'next/navigation';
 
-export default function CertificatePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+const CertificatePage = () => {
+  const { id } = useParams<{ id: string }>();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const [certificate, setCertificate] = useState<CertificateType | null>(null);
 
@@ -75,4 +77,5 @@ export default function CertificatePage({ params }: { params: { id: string } }) 
       </div>
     </div>
   );
-}
+};
+export default CertificatePage;

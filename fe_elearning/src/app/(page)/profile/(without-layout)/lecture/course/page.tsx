@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { MediaType } from '@/types/mediaType';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
-import { steps } from './[id]/page';
+import { steps } from '@/helpers/step';
 import ProgressBar from './[id]/components/progressBar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';

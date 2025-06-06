@@ -25,7 +25,7 @@ export interface CourseItem {
   is_favorite?: boolean;
   title: string;
   description: string;
-  video?: MediaType | null;
+  video?: VideoType | null;
   resources: ResourceType[];
   duration_in_seconds?: number;
   is_preview: boolean;
