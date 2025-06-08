@@ -12,8 +12,9 @@ import {
 import { clearUser } from '@/constants/userSlice';
 import { APIResendEmailVerification } from '@/utils/auth';
 import { useDispatch } from 'react-redux';
-import { showToast } from '@/utils/toast';
-import { useTheme } from 'next-themes';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast } from 'react-toastify';
+import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
 
 interface CustomModalProps {
   isOpen: boolean;
@@ -33,16 +34,21 @@ export function CustomModal({
   onContinue,
 }: CustomModalProps) {
   const dispatch = useDispatch();
-  const theme = useTheme();
 
   const handleResendEmailVerification = async () => {
     try {
       const response = await APIResendEmailVerification();
       if (response.status === 200) {
-        showToast.success('Email xác thực đã được gửi lại');
+        toast.success(<ToastNotify status={1} message="Email xác thực đã được gửi lại" />, {
+          style: styleSuccess,
+        });
+        // showToast.success('Email xác thực đã được gửi lại');
       }
     } catch (error) {
-      showToast.error('Lỗi khi gửi lại email xác thực');
+      toast.error(<ToastNotify status={-1} message="Lỗi khi gửi lại email xác thực" />, {
+        style: styleError,
+      });
+      // showToast.error('Lỗi khi gửi lại email xác thực');
     }
   };
 

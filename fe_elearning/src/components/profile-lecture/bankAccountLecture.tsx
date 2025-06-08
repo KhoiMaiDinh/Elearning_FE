@@ -108,6 +108,13 @@ const BankAccountLecture = () => {
       if (response?.status === 200) {
         dispatch(setBankAccount(response.data));
         setHasBankAccount(true);
+      } else {
+        setHasBankAccount(false);
+        setIsEdit(false);
+        setDisabled(true);
+        setValue('name', '');
+        setValue('bank_code', '');
+        setValue('bank_account_number', '');
       }
     } catch (error) {
       setHasBankAccount(false);
