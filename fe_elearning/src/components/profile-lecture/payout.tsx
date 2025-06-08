@@ -176,8 +176,13 @@ export default function InstructorPayouts() {
                   ? 'Thất bại'
                   : '',
         'Phương thức thanh toán': payout.bank_code || '',
-        'Ngày thanh toán': payout.paid_out_sent_at || '',
-        'Lý do thất bại': payout.failure_reason || 'Không có',
+        'Ngày thanh toán': new Date(payout.issued_at).toLocaleDateString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
+        'Kỳ thanh toán': `${payout.month}/${payout.year}`,
+        'Lý do thất bại': payout.failure_reason || '',
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -399,6 +404,7 @@ export default function InstructorPayouts() {
                     <TableHead>Số tiền</TableHead>
                     <TableHead>Trạng thái</TableHead>
                     <TableHead>Ngày thanh toán</TableHead>
+                    <TableHead>Kỳ thanh toán</TableHead>
 
                     <TableHead className="text-right">Hành động</TableHead>
                   </TableRow>
@@ -423,6 +429,9 @@ export default function InstructorPayouts() {
                           month: '2-digit',
                           year: 'numeric',
                         })}
+                      </TableCell>
+                      <TableCell>
+                        {payout.month}/{payout.year}
                       </TableCell>
                       <TableCell className="text-right">
                         <Dialog>

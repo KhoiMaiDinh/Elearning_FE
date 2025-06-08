@@ -68,7 +68,7 @@ const testimonials = [
     id: 1,
     name: 'Nguyễn Văn Minh',
     role: 'Sinh viên IT',
-    avatar: '/placeholder.svg?height=80&width=80',
+    avatar: 'images/avt1.jpg',
     content:
       'Các khóa học ở đây rất chất lượng và thực tế. Tôi đã học được nhiều kỹ năng mới và tìm được việc làm tốt sau khi hoàn thành khóa học.',
     rating: 5,
@@ -77,7 +77,7 @@ const testimonials = [
     id: 2,
     name: 'Trần Thị Hương',
     role: 'Nhân viên Marketing',
-    avatar: '/placeholder.svg?height=80&width=80',
+    avatar: 'images/avt2.jpg',
     content:
       'Giảng viên rất tâm huyết và chuyên nghiệp. Nội dung khóa học được cập nhật thường xuyên theo xu hướng mới nhất.',
     rating: 5,
@@ -86,7 +86,7 @@ const testimonials = [
     id: 3,
     name: 'Lê Hoàng Nam',
     role: 'Freelancer',
-    avatar: '/placeholder.svg?height=80&width=80',
+    avatar: 'images/avt3.jpg',
     content:
       'Tôi đã thử nhiều nền tảng học trực tuyến khác nhau, nhưng đây là nơi tôi thấy hiệu quả nhất. Giao diện dễ sử dụng và hỗ trợ rất tốt.',
     rating: 4,
