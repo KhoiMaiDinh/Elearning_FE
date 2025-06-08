@@ -61,7 +61,7 @@ const dejaVuSansBase64 = 'AAEAAA...'; // Replace with actual Base64-encoded TTF 
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'SUCCESS':
+    case 'SENT':
       return <CheckCircle className="h-4 w-4 text-green-500" />;
     case 'PENDING':
       return <Clock className="h-4 w-4 text-yellow-500" />;
@@ -76,33 +76,27 @@ const getStatusIcon = (status: string) => {
 
 const getStatusBadge = (status: string) => {
   const variants = {
-    SUCCESS: 'Thành công',
+    SENT: 'Thành công',
     PENDING: 'Chờ xử lý',
     PROCESSING: 'Đang xử lý',
     FAILED: 'Thất bại',
   };
   return (
     <Badge
-      variant={
-        (variants[status as keyof typeof variants] as
-          | 'default'
-          | 'secondary'
-          | 'outline'
-          | 'destructive') || 'secondary'
-      }
-      className={`capitalize ${
-        variants[status as keyof typeof variants] === 'SUCCESS'
+      variant="outline"
+      className={`${
+        status === 'SENT'
           ? 'bg-green-500 text-white'
-          : variants[status as keyof typeof variants] === 'PENDING'
+          : status === 'PENDING'
             ? 'bg-yellow-500 text-white'
-            : variants[status as keyof typeof variants] === 'PROCESSING'
+            : status === 'PROCESSING'
               ? 'bg-blue-500 text-white'
-              : variants[status as keyof typeof variants] === 'FAILED'
+              : status === 'FAILED'
                 ? 'bg-red-500 text-white'
                 : 'bg-gray-500 text-white'
       }`}
     >
-      {status === 'SUCCESS'
+      {status === 'SENT'
         ? 'Thành công'
         : status === 'PENDING'
           ? 'Chờ xử lý'
@@ -172,7 +166,7 @@ export default function InstructorPayouts() {
         'Người thanh toán': payout.payee?.username || '',
         'Số tiền': formatPrice(Number(payout.amount || 0)),
         'Trạng thái':
-          payout.payout_status === 'SUCCESS'
+          payout.payout_status === 'SENT'
             ? 'Thành công'
             : payout.payout_status === 'PENDING'
               ? 'Chờ xử lý'
@@ -225,7 +219,7 @@ export default function InstructorPayouts() {
         ['Số tiền', formatPrice(Number(payout.amount || 0))],
         [
           'Trạng thái',
-          payout.payout_status === 'SUCCESS'
+          payout.payout_status === 'SENT'
             ? 'Thành công'
             : payout.payout_status === 'PENDING'
               ? 'Chờ xử lý'
@@ -370,7 +364,7 @@ export default function InstructorPayouts() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search instructors or transaction ID..."
+                placeholder="Mã thanh toán..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-8"
@@ -382,7 +376,7 @@ export default function InstructorPayouts() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="SUCCESS">Đã thanh toán</SelectItem>
+                <SelectItem value="SENT">Đã thanh toán</SelectItem>
                 <SelectItem value="PENDING">Chờ xử lý</SelectItem>
                 <SelectItem value="PROCESSING">Đang xử lý</SelectItem>
                 <SelectItem value="FAILED">Thất bại</SelectItem>
@@ -404,10 +398,8 @@ export default function InstructorPayouts() {
                     <TableHead>Người thanh toán</TableHead>
                     <TableHead>Số tiền</TableHead>
                     <TableHead>Trạng thái</TableHead>
-                    <TableHead>Phương thức thanh toán (Bank)</TableHead>
                     <TableHead>Ngày thanh toán</TableHead>
-                    <TableHead>Ngày xử lý</TableHead>
-                    <TableHead>Lý do thất bại</TableHead>
+
                     <TableHead className="text-right">Hành động</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -425,9 +417,13 @@ export default function InstructorPayouts() {
                           {getStatusBadge(payout.payout_status as string)}
                         </div>
                       </TableCell>
-                      <TableCell>{payout.bank_code}</TableCell>
-                      <TableCell>{payout.paid_out_sent_at}</TableCell>
-                      <TableCell>{payout.failure_reason}</TableCell>
+                      <TableCell>
+                        {new Date(payout.issued_at).toLocaleDateString('vi-VN', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
+                      </TableCell>
                       <TableCell className="text-right">
                         <Dialog>
                           <DialogTrigger asChild>
@@ -484,22 +480,32 @@ export default function InstructorPayouts() {
                                           {getStatusBadge(selectedPayout.payout_status)}
                                         </div>
                                       </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Phương thức thanh toán (Bank):
-                                        </span>
-                                        <span className="font-medium">
-                                          {selectedPayout.bank_code}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Ngày thanh toán:
-                                        </span>
-                                        <span className="font-medium">
-                                          {selectedPayout.paid_out_sent_at}
-                                        </span>
-                                      </div>
+
+                                      {selectedPayout.payee?.email && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Email:</span>
+                                          <span className="font-medium">
+                                            {selectedPayout.payee?.email}
+                                          </span>
+                                        </div>
+                                      )}
+                                      {selectedPayout.paid_out_sent_at && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">
+                                            Ngày thanh toán:
+                                          </span>
+                                          <span className="font-medium">
+                                            {new Date(selectedPayout.issued_at).toLocaleDateString(
+                                              'vi-VN',
+                                              {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                              }
+                                            )}
+                                          </span>
+                                        </div>
+                                      )}
                                     </CardContent>
                                   </Card>
 
@@ -508,23 +514,17 @@ export default function InstructorPayouts() {
                                       <CardTitle className="text-lg">Chi tiết thanh toán</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-2">
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Ngày thanh toán:
-                                        </span>
-                                        <span className="font-medium">
-                                          {selectedPayout.paid_out_sent_at}
-                                        </span>
-                                      </div>
-                                      {selectedPayout.paid_out_sent_at && (
+                                      {selectedPayout.transaction_code && (
                                         <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Ngày xử lý:</span>
+                                          <span className="text-muted-foreground">
+                                            Mã giao dịch:
+                                          </span>
                                           <span className="font-medium">
-                                            {selectedPayout.paid_out_sent_at}
+                                            {selectedPayout.transaction_code}
                                           </span>
                                         </div>
                                       )}
-                                      {selectedPayout.failure_reason && (
+                                      {selectedPayout.failure_reason ? (
                                         <div className="flex justify-between">
                                           <span className="text-muted-foreground">
                                             Lý do thất bại:
@@ -533,7 +533,7 @@ export default function InstructorPayouts() {
                                             {selectedPayout.failure_reason}
                                           </span>
                                         </div>
-                                      )}
+                                      ) : null}
                                       {selectedPayout.bank_account_number && (
                                         <>
                                           <div className="flex justify-between">
@@ -554,12 +554,25 @@ export default function InstructorPayouts() {
                                           </div>
                                         </>
                                       )}
-                                      {selectedPayout.payee?.email && (
+
+                                      {selectedPayout.evidence && (
                                         <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Email:</span>
-                                          <span className="font-medium">
-                                            {selectedPayout.payee?.email}
-                                          </span>
+                                          <span className="text-muted-foreground">Chứng từ:</span>
+                                          <img
+                                            src={
+                                              process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                                              selectedPayout.evidence.key
+                                            }
+                                            alt="Chứng từ"
+                                            className="w-1/2 object-contain cursor-pointer"
+                                            onClick={() => {
+                                              window.open(
+                                                process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                                                  selectedPayout.evidence.key,
+                                                '_blank'
+                                              );
+                                            }}
+                                          />
                                         </div>
                                       )}
                                     </CardContent>

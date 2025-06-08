@@ -14,7 +14,18 @@ export interface PayoutType {
     first_name: string;
     last_name: string;
   };
-  evidence: { id: string };
+  evidence: { id: string; key: string };
+  contributions: [
+    {
+      course_title: string;
+      final_price: number;
+      platform_fee: number;
+      net_revenue: number;
+    },
+  ];
+  issued_at: string;
+  year: number;
+  month: number;
 }
 
 export interface PayoutRequestType {
