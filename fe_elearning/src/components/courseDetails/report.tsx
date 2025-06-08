@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Flag, X } from 'lucide-react';
 import { APICreateReport } from '@/utils/report';
-import AlertSuccess from '../alert/AlertSuccess';
-import AlertError from '../alert/AlertError';
 import { useForm, Controller, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
@@ -26,26 +28,19 @@ export default function ReportButton({ course_id, type }: { course_id: string; t
   });
 
   const [showReport, setShowReport] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
-
+  const theme = useTheme();
   const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
     if (response?.status === 201) {
       setShowReport(false);
-      setShowAlertSuccess(true);
-      setAlertDescription('Báo cáo đã được gửi thành công');
       handleClearData();
-      setTimeout(() => {
-        setShowAlertSuccess(false);
-      }, 3000);
+      toast.success(<ToastNotify status={1} message="Báo cáo đã được gửi thành công" />, {
+        style: styleSuccess,
+      });
     } else {
-      setShowAlertError(true);
-      setAlertDescription('Báo cáo không thành công');
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Báo cáo không thành công" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -67,7 +62,7 @@ export default function ReportButton({ course_id, type }: { course_id: string; t
   };
 
   return (
-    <div>
+    <>
       <div className="flex flex-col items-end gap-3">
         {/* Menu Options */}
         <TooltipProvider>
@@ -125,9 +120,6 @@ export default function ReportButton({ course_id, type }: { course_id: string; t
           </div>
         </div>
       )}
-
-      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-      {showAlertError && <AlertError description={alertDescription} />}
-    </div>
+    </>
   );
 }

@@ -33,6 +33,8 @@ import { APILoginEmail } from '@/utils/auth';
 import { setUser, clearUser } from '@/constants/userSlice';
 import { createLoginSchema } from '@/utils/validation';
 import { CustomModal } from '@/components/modal/custom-modal';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import AlertError from '@/components/alert/AlertError';
 
 // Form schema
 
@@ -44,7 +46,9 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+  const [showAlertError, setShowAlertError] = useState(false);
+  const [alertDescription, setAlertDescription] = useState('');
   const [showBannedModal, setShowBannedModal] = useState(false);
   const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
 
@@ -66,7 +70,6 @@ export default function LoginPage() {
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
-      setError(null);
 
       const response = await APILoginEmail({
         email: values.email,
@@ -96,10 +99,18 @@ export default function LoginPage() {
 
         router.push('/');
       } else {
-        setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+        setShowAlertError(true);
+        setAlertDescription('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+        setTimeout(() => {
+          setShowAlertError(false);
+        }, 3000);
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
+      setShowAlertError(true);
+      setAlertDescription(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
+      setTimeout(() => {
+        setShowAlertError(false);
+      }, 3000);
     } finally {
       setIsLoading(false);
     }
@@ -130,15 +141,8 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            {showAlertSuccess && <AlertSuccess description={alertDescription} />}
+            {showAlertError && <AlertError description={alertDescription} />}
 
             <Tabs defaultValue="email" className="w-full">
               <TabsContent value="email">

@@ -11,8 +11,7 @@ import SelectRegister from '@/components/selectComponent/selectRegister';
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import { APIGetPresignedUrl } from '@/utils/storage';
 import { APIInitCourse } from '@/utils/course';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
+
 import { APIGetCategory } from '@/utils/category';
 import { useRouter } from 'next/navigation';
 import { setCourse } from '@/constants/course';
@@ -24,6 +23,10 @@ import { steps } from '@/helpers/step';
 import ProgressBar from './[id]/components/progressBar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 // Hàm upload file lên MinIO
 const uploadToMinIO = async (
   file: File,
@@ -109,9 +112,6 @@ const _courseItemSchema = yup.object().shape({
 });
 
 const UploadCourse: React.FC = () => {
-  const [description, setDescription] = useState('');
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
   const [categoryData, setCategoryData] = useState<
     {
       id: string;
@@ -146,7 +146,7 @@ const UploadCourse: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const theme = useTheme();
   // Submit thông tin cơ bản
   const onSubmitBasic = async (data: CourseForm) => {
     try {
@@ -167,26 +167,20 @@ const UploadCourse: React.FC = () => {
       if (response?.status === 201) {
         dispatch(setCourse(response?.data));
 
-        setShowAlertSuccess(true);
-        setDescription('Khóa học đã được khởi tạo thành công');
+        toast.success(<ToastNotify status={1} message="Khóa học đã được khởi tạo thành công" />, {
+          style: styleSuccess,
+        });
         router.push(`/profile/lecture/course/${response?.data.id}`);
         dispatch(setCourse(response?.data));
 
         // Redirect to the details page after 2 seconds
-        setTimeout(() => {
-          setShowAlertSuccess(false);
-        }, 3000);
       }
 
       // console.log("🚀 ~ onSubmitBasic ~ newCourseId:", newCourseId);
     } catch (error) {
-      console.error('Error initializing course:', error);
-      setShowAlertError(true);
-      setDescription('Khóa học đã được khởi tạo thất bại');
-
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Khóa học đã được khởi tạo thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -245,17 +239,11 @@ const UploadCourse: React.FC = () => {
           <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
             <BasicInfoForm
               mode="create"
-              setShowAlertSuccess={setShowAlertSuccess}
-              setShowAlertError={setShowAlertError}
-              setDescription={setDescription}
               setCourseInfo={(data) => handleSetCourse(data as CourseForm)}
-              handleSubmitSuccess={() => {}}
             />
           </AnimateWrapper>
         </CardContent>
       </Card>
-      {showAlertSuccess && <AlertSuccess description={description} />}
-      {showAlertError && <AlertError description={description} />}
     </div>
   );
 };

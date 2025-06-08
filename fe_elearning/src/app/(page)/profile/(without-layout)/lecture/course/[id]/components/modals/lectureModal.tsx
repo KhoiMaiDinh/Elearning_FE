@@ -28,16 +28,18 @@ import { Controller } from 'react-hook-form';
 import Asterisk from '@/components/asterisk/asterisk';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MediaType } from '@/types/mediaType';
-
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
+// TODO: Remove this component
 interface LectureModalProps {
   open: boolean;
   section: Section;
   lecture: CourseItem | null;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess: () => void;
-  setShowAlertSuccess: (show: boolean) => void;
-  setShowAlertError: (show: boolean) => void;
-  setDescription: (desc: string) => void;
 }
 
 const LectureModal: React.FC<LectureModalProps> = ({
@@ -46,27 +48,20 @@ const LectureModal: React.FC<LectureModalProps> = ({
   lecture,
   onOpenChange,
   onSubmitSuccess,
-  setShowAlertSuccess,
-  setShowAlertError,
-  setDescription,
 }) => {
+  const theme = useTheme();
   const onSave = (successMessage: string) => {
-    setShowAlertSuccess(true);
-    setDescription(successMessage);
+    toast.success(<ToastNotify status={1} message={successMessage} />, { style: styleSuccess });
+    onSubmitSuccess();
     onSubmitSuccess();
     handleOpenChange(false);
-    setTimeout(() => {
-      setShowAlertSuccess(false);
-    }, 3000);
   };
 
   const onFail = (errorMessage: string) => {
-    setShowAlertError(true);
-    setDescription(errorMessage);
+    toast.error(<ToastNotify status={-1} message={errorMessage} />, {
+      style: styleError,
+    });
     handleOpenChange(false);
-    setTimeout(() => {
-      setShowAlertError(false);
-    }, 3000);
   };
 
   const {

@@ -29,6 +29,11 @@ import { Badge } from '@/components/ui/badge';
 import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
 import { APIGetCertificate } from '@/utils/certificate';
 import { CertificateType } from '@/types/certificateType';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
+
 // Yup schema for form validation
 const schema = yup.object().shape({
   first_name: yup.string().required('Họ không được bỏ trống').max(60, 'Tối đa 60 ký tự'),
@@ -54,9 +59,7 @@ const StudentProfile = () => {
   const [disable, setDisable] = useState(true);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
+
   const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
   const router = useRouter();
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -155,23 +158,18 @@ const StudentProfile = () => {
     try {
       const response = await APIUpdateCurrentUser(data);
       if (response?.status === 200) {
-        setAlertDescription('Cập nhật thành công');
-        setShowAlertSuccess(true);
+        toast.success(<ToastNotify status={1} message="Cập nhật thành công" />, {
+          style: styleSuccess,
+        });
         setDisable(true);
         setSelectedFile(null);
         handleGetStudentData();
         dispatch(setUser(response?.data));
-        setTimeout(() => setShowAlertSuccess(false), 3000);
       } else {
-        setAlertDescription('Cập nhật thất bại');
-        setShowAlertError(true);
-        setTimeout(() => setShowAlertError(false), 3000);
+        toast.error(<ToastNotify status={-1} message="Cập nhật thất bại" />, { style: styleError });
       }
     } catch (err) {
-      console.error('Error updating profile:', err);
-      setAlertDescription('Cập nhật thất bại');
-      setShowAlertError(true);
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Cập nhật thất bại" />, { style: styleError });
     }
   };
 
@@ -329,9 +327,10 @@ const StudentProfile = () => {
                                           rejected_reason: undefined,
                                         });
                                       } catch (error) {
-                                        setAlertDescription('Upload ảnh thất bại');
-                                        setShowAlertError(true);
-                                        setTimeout(() => setShowAlertError(false), 3000);
+                                        toast.error(
+                                          <ToastNotify status={-1} message="Upload ảnh thất bại" />,
+                                          { style: styleError }
+                                        );
                                       }
                                     }
                                   }}
@@ -591,7 +590,7 @@ const StudentProfile = () => {
                                 ? 'secondary'
                                 : 'outline'
                           }
-                          className={`w-fit ${
+                          className={`w-fit text-white ${
                             course.course_progress?.progress &&
                             course.course_progress.progress === 0
                               ? 'bg-darkSilver'
@@ -664,7 +663,7 @@ const StudentProfile = () => {
                                 ? 'secondary'
                                 : 'outline'
                           }
-                          className={`w-fit ${
+                          className={`w-fit text-white ${
                             course.level && course.level === 'BEGINNER'
                               ? 'bg-darkSilver'
                               : course.level && course.level === 'INTERMEDIATE'
@@ -739,7 +738,7 @@ const StudentProfile = () => {
                                   ? 'secondary'
                                   : 'outline'
                             }
-                            className={`w-fit ${
+                            className={`w-fit text-white  ${
                               certificate.course.level && certificate.course.level === 'BEGINNER'
                                 ? 'bg-darkSilver'
                                 : certificate.course.level &&
@@ -768,19 +767,7 @@ const StudentProfile = () => {
             </AnimateWrapper>
           </div>
         </div>
-
-        {/* Alerts */}
-        {showAlertSuccess && (
-          <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg">
-            {alertDescription}
-          </div>
-        )}
-        {showAlertError && (
-          <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg">
-            {alertDescription}
-          </div>
-        )}
-
+        {/* TODO: Remove this component */}
         <ChangePasswordDialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen} />
       </div>
     </div>

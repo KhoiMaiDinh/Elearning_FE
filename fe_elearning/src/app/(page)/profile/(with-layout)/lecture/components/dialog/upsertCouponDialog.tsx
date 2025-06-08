@@ -15,14 +15,15 @@ import * as Yup from 'yup';
 import CreateCouponCheckbox from '../input/createCouponCheckbox';
 import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip } from '@/components/ui/tooltip';
 import { useEffect, useMemo, useState } from 'react';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { APICreateCoupon, APIUpdateCoupon, APIUpdateCouponStatus } from '@/utils/coupon';
 import { CouponType } from '@/types/couponType';
 import { APIGetMyCourse } from '@/utils/course';
 import { isEqual } from 'lodash';
 import { AxiosError } from 'axios';
-
+import { useTheme } from 'next-themes';
 const today = new Date();
 const now = new Date();
 
@@ -99,6 +100,7 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
   status,
   handleError,
 }) => {
+  const theme = useTheme();
   const {
     control,
     handleSubmit,
@@ -129,20 +131,12 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
     }
   }, [expiresAt, trigger]);
 
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
-
   const showSuccess = (message: string) => {
-    setAlertDescription(message);
-    setShowAlertSuccess(true);
-    setTimeout(() => setShowAlertSuccess(false), 3000);
+    toast.success(<ToastNotify status={1} message={message} />, { style: styleSuccess });
   };
 
   const showError = (message: string) => {
-    setAlertDescription(message);
-    setShowAlertError(true);
-    setTimeout(() => setShowAlertError(false), 3000);
+    toast.error(<ToastNotify status={-1} message={message} />, { style: styleError });
   };
 
   const handleClearForm = () => {
@@ -472,8 +466,6 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
           </DialogFooter>
         </form>
       </DialogContent>
-      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-      {showAlertError && <AlertError description={alertDescription} />}
     </Dialog>
   );
 };

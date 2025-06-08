@@ -9,6 +9,7 @@ import { Inter, Manrope } from 'next/font/google'; // Import font từ next/font
 import { appWithTranslation } from 'next-i18next';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loader from '@/components/loading/loader';
+import { ToastContainer } from 'react-toastify';
 
 // import { PersistGate } from 'redux-persist/integration/react'
 
@@ -48,6 +49,17 @@ const RootLayout = ({ children }: any) => {
               }
             >
               {children}
+              <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme={'light'}
+              />
             </Suspense>
           </PersistGate>
         </Provider>

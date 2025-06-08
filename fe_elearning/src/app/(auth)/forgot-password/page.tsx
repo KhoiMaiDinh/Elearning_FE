@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -24,19 +24,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { APIForgotPassword } from '@/utils/auth';
 import { createForgotPasswordSchema } from '@/utils/validation';
-
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { toast, ToastContainer } from 'react-toastify';
+import { useTheme } from 'next-themes';
 // Use the validation schema from utils
 const formSchema = createForgotPasswordSchema();
 type FormData = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
+  const theme = useTheme();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,22 +47,46 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
-      setError(null);
-      setSuccess(null);
 
       const response = await APIForgotPassword({
         email: values.email,
       });
 
       if (response?.status === 200) {
-        setSuccess('Yêu cầu đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn.');
+        toast.success(
+          <ToastNotify
+            status={1}
+            message="Yêu cầu đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn."
+          />,
+          { style: styleSuccess }
+        );
         form.reset();
+        setTimeout(() => {
+          toast.error(
+            <ToastNotify
+              status={-1}
+              message="Không thể gửi yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau."
+            />,
+            { style: styleError }
+          );
+        }, 3000);
       } else {
-        setError('Không thể gửi yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau.');
+        toast.error(
+          <ToastNotify
+            status={-1}
+            message="Không thể gửi yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau."
+          />,
+          { style: styleError }
+        );
       }
     } catch (err: any) {
-      console.error('Forgot password error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi gửi yêu cầu');
+      toast.error(
+        <ToastNotify
+          status={-1}
+          message={err?.response?.data?.message || 'Đã xảy ra lỗi khi gửi yêu cầu'}
+        />,
+        { style: styleError }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -88,23 +112,6 @@ export default function ForgotPasswordPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {success && (
-              <Alert className="border-green-500 text-green-500 bg-green-50 dark:bg-green-900/20">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField

@@ -205,7 +205,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({ lecture, course }) => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm text-gray-500 dark:text-gray-400 font-sans">Giá</span>
-              <span className="text-lg font-bold text-majorelleBlue dark:text-PaleViolet font-sans">
+              <span className="text-lg font-bold text-goGreen dark:text-goGreen font-sans">
                 {formatPrice(Number(course?.price))}
               </span>
             </div>

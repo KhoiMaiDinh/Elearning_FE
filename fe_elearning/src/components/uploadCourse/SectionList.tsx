@@ -11,15 +11,16 @@ import SectionModal from '@/app/(page)/profile/(without-layout)/lecture/course/[
 import SectionCard from '../cards/sectionCard';
 import { Globe } from 'lucide-react';
 import { APIChangeCourseStatus } from '@/utils/course';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 
 interface SectionListProps {
   sections: Section[];
   setSections: (sections: Section[]) => void;
   course: CourseForm;
   handleGetCourseInfo: (targetSection?: string) => void;
-  setShowAlertSuccess: (value: boolean) => void;
-  setShowAlertError: (value: boolean) => void;
-  setDescription: (value: string) => void;
 }
 
 interface CourseItemProps {
@@ -39,7 +40,7 @@ const CourseItemDisplay: React.FC<CourseItemProps> = ({
 }) => {
   const [uploadProgress, _setUploadProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-
+  const theme = useTheme();
   return (
     <div className="ml-6 mt-4 p-4  rounded-xl bg-AntiFlashWhite dark:bg-gray/20 border">
       {!isEditing ? (
@@ -133,15 +134,12 @@ const SectionList: React.FC<SectionListProps> = ({
   setSections,
   course,
   handleGetCourseInfo,
-  setShowAlertSuccess,
-  setShowAlertError,
-  setDescription,
 }) => {
   const [isAddingSection, setIsAddingSection] = useState<boolean>(false);
   const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(null);
   const [isAddingLecture, setIsAddingLecture] = useState<number | null>(null);
   const [openSectionIds, setOpenSections] = useState<Set<string>>(new Set());
-
+  const theme = useTheme();
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
 
@@ -221,143 +219,21 @@ const SectionList: React.FC<SectionListProps> = ({
         status: 'PUBLISHED',
       });
       if (response) {
-        setShowAlertSuccess(true);
-        setDescription('Bạn đã cập nhật trạng thái khóa học thành công');
+        toast.success(
+          <ToastNotify status={1} message="Bạn đã cập nhật trạng thái khóa học thành công" />,
+          { style: styleSuccess }
+        );
       }
     } catch (error) {
       console.log(error);
-      setShowAlertError(true);
-      setDescription('Cập nhật trạng thái khóa học thất bại');
+      toast.error(<ToastNotify status={-1} message="Cập nhật trạng thái khóa học thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
   return (
     <>
-      {/* Lessons Section */}
-      {/* <div className="bg-white dark:bg-black text-black dark:text-white rounded-lg shadow p-6">
-        {sections.length > 0 ? (
-          sections.map((section, index) => (
-            <div key={index} className="mb-6 pb-4 border-b">
-              {editingSectionIndex === index ? (
-                <SectionForm
-                  section={section}
-                  onSave={(updatedSection) => {
-                    const updatedSections = [...sections];
-                    updatedSections[index] = updatedSection;
-                    setSections(updatedSections);
-                    setEditingSectionIndex(null);
-                    handleGetCourseInfo(updatedSection.id);
-                    setShowAlertSuccess(true);
-                    setDescription('Phần bài giảng đã được cập nhật thành công!');
-                    setTimeout(() => setShowAlertSuccess(false), 3000);
-                  }}
-                  onCancel={() => setEditingSectionIndex(null)}
-                  courseId={courseId}
-                />
-              ) : (
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-semibold">
-                      Phần {index + 1}: {section.title}
-                    </h3>
-                    <Button
-                      type="button"
-                      className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue text-white hover:bg-black hover:text-white"
-                      onClick={() => setEditingSectionIndex(index)}
-                    >
-                      ✍️ Chỉnh sửa
-                    </Button>
-                  </div>
-
-                  {section.description && (
-                    <p className="mb-2 text-sm">
-                      <strong>Mô tả:</strong>{' '}
-                      <span
-                        className="ql-content"
-                        dangerouslySetInnerHTML={{ __html: section.description }}
-                      />
-                    </p>
-                  )}
-
-                  {section.items?.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="font-semibold text-md mb-2">📘 Bài giảng</h4>
-                      {section.items.map((item, itemIndex) => (
-                        <CourseItemDisplay
-                          key={itemIndex}
-                          item={item}
-                          sectionIndex={index}
-                          sections={sections}
-                          onSave={() => handleGetCourseInfo(section.id)}
-                          onCancel={() => setIsAddingLecture(null)}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {isAddingLecture === index ? (
-                    <CourseItemForm
-                      sectionIndex={index}
-                      section={section}
-                      onSave={() => {
-                        handleGetCourseInfo(section.id);
-                        setIsAddingLecture(null);
-                      }}
-                      onCancel={() => setIsAddingLecture(null)}
-                    />
-                  ) : (
-                    <Button
-                      type="button"
-                      className="mt-3 bg-custom-gradient-button-violet text-white dark:bg-custom-gradient-button-blue hover:brightness-110"
-                      onClick={() => setIsAddingLecture(index)}
-                    >
-                      + Thêm bài giảng
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="text-gray-500 italic mb-6 p-4 bg-AntiFlashWhite dark:bg-eerieBlack rounded-lg border border-dashed border-gray-300 text-center">
-            Chưa có bài học được thêm vào
-          </div>
-        )}
-        {isAddingSection ? (
-          <SectionForm
-            section={{
-              title: '',
-              description: '',
-              position: (sections.length + 1).toString(),
-              items: [],
-              id: '',
-              status: 'ACTIVE',
-              course_id: courseId,
-              quizzes: [],
-              articles: [],
-            }}
-            onSave={(newSection) => {
-              setSections([...sections, newSection]);
-              setIsAddingSection(false);
-              handleGetCourseInfo(newSection.id);
-              setShowAlertSuccess(true);
-              setDescription('Phần bài giảng đã được thêm thành công!');
-              setTimeout(() => setShowAlertSuccess(false), 3000);
-            }}
-            onCancel={() => setIsAddingSection(false)}
-            courseId={courseId}
-          />
-        ) : (
-          <Button
-            variant="outline"
-            className="bg-custom-gradient-button-violet text-white hover:text-white/90 hover:brightness-110 dark:bg-custom-gradient-button-blue"
-            onClick={() => setIsAddingSection(true)}
-          >
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Thêm Phầm Mới
-          </Button>
-        )}
-      </div> */}
       <div className="space-y-6">
         {/* Summary */}
         <Card>
@@ -399,9 +275,6 @@ const SectionList: React.FC<SectionListProps> = ({
           course={course!}
           section={selectedSection!}
           onSubmitSuccess={handleGetCourseInfo}
-          setShowAlertSuccess={setShowAlertSuccess}
-          setShowAlertError={setShowAlertError}
-          setDescription={setDescription}
         />
 
         {/* Lecture Modal */}
@@ -411,9 +284,6 @@ const SectionList: React.FC<SectionListProps> = ({
           section={selectedSection!}
           lecture={selectedLecture!}
           onSubmitSuccess={handleGetCourseInfo}
-          setShowAlertSuccess={setShowAlertSuccess}
-          setShowAlertError={setShowAlertError}
-          setDescription={setDescription}
         />
       </div>
     </>

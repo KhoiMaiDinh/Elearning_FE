@@ -10,33 +10,33 @@ import { Facebook, FileCheck, Globe, Linkedin, Trash2Icon } from 'lucide-react';
 import { APIGetCategory } from '@/utils/category';
 import { Category } from '@/types/categoryType';
 import SelectRegister from '../selectComponent/selectRegister';
-import AlertSuccess from '../alert/AlertSuccess';
-import AlertError from '../alert/AlertError';
 import RegisteredLecture, { TABS } from './registeredLecture';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import FilesPicker from '../inputComponent/filesPicker';
 import Asterisk from '../asterisk/asterisk';
 import { useInstructorForm } from '@/hooks/instructor/useInstructorForm';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 
 type Props = {
   mode: 'create' | 'update';
 };
 
 const UpsertInstructor: React.FC<Props> = ({ mode }) => {
-  const onSave = (description: string) => {
-    setAlertDescription(description);
-    setShowAlertSuccess(true);
-    setTimeout(() => {
-      setShowAlertSuccess(false);
-    }, 3000);
+  const theme = useTheme();
+  const onSave = () => {
+    toast.success(<ToastNotify status={1} message="Thêm tài khoản thành công" />, {
+      style: styleSuccess,
+    });
   };
 
-  const onFail = (description: string) => {
-    setAlertDescription(description);
-    setShowAlertError(true);
-    setTimeout(() => {
-      setShowAlertError(false);
-    }, 3000);
+  const onFail = () => {
+    toast.error(<ToastNotify status={-1} message="Thêm tài khoản thất bại" />, {
+      style: styleError,
+    });
   };
 
   const {
@@ -58,9 +58,6 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   } = useInstructorForm(null, onSave, onFail);
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
   const [category, setCategory] = useState<{ id: string; value: string }[]>([]);
   const [isViewMode, setViewMode] = useState(true);
 
@@ -68,8 +65,8 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   const certificates = watch('certificates');
 
   const pageDisabled = React.useCallback(
-    () => loading || showAlertSuccess || (isViewMode && mode == 'update'),
-    [loading, showAlertSuccess, isViewMode]
+    () => loading || (isViewMode && mode == 'update'),
+    [loading, isViewMode, mode]
   );
 
   const handleGetCategory = async () => {
@@ -102,8 +99,6 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   return (
     <>
       <div className=" px-6 py-8">
-        {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-        {showAlertError && <AlertError description={alertDescription} />}
         <h1 className="text-3xl font-bold text-center mb-8 text-majorelleBlue">
           {mode === 'create' ? 'Tạo Hồ sơ' : isViewMode ? 'Hồ sơ' : 'Cập nhật hồ sơ'}
         </h1>

@@ -23,13 +23,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APIRegisterEmail } from '@/utils/auth';
 import { Button } from '@/components/ui/button';
 import { createRegistrationSchema } from '@/utils/validation';
 import * as z from 'zod';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast, ToastContainer } from 'react-toastify';
+import { useTheme } from 'next-themes';
 
 // Use the validation schema from utils
 const formSchema = createRegistrationSchema();
@@ -40,9 +43,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
+  const theme = useTheme();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,8 +59,6 @@ export default function RegisterPage() {
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
-      setError(null);
-      setSuccess(null);
 
       const response = await APIRegisterEmail({
         first_name: values.first_name,
@@ -69,18 +68,29 @@ export default function RegisterPage() {
       });
 
       if (response?.status === 201) {
-        setSuccess('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
-
-        // Redirect to login page after 3 seconds
+        toast.success(
+          <ToastNotify
+            status={1}
+            message="Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+          />,
+          { style: styleSuccess }
+        );
         setTimeout(() => {
           router.push('/login');
         }, 3000);
       } else {
-        setError('Đăng ký thất bại. Vui lòng thử lại sau.');
+        toast.error(<ToastNotify status={-1} message="Đăng ký thất bại. Vui lòng thử lại sau." />, {
+          style: styleError,
+        });
       }
     } catch (err: any) {
-      console.error('Registration error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng ký');
+      toast.error(
+        <ToastNotify
+          status={-1}
+          message={err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng ký'}
+        />,
+        { style: styleError }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -106,23 +116,6 @@ export default function RegisterPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {success && (
-              <Alert className="border-green-500 text-green-500 bg-green-50 dark:bg-green-900/20">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
             <Tabs defaultValue="student" className="w-full">
               <TabsContent value="student">
                 <Form {...form}>

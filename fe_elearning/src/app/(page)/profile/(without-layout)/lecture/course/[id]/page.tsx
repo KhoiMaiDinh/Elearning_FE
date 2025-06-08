@@ -7,28 +7,25 @@ import { RootState } from '@/constants/store';
 import { APIGetFullCourse } from '@/utils/course';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
 import SectionList from '@/components/uploadCourse/SectionList';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
 import { Section } from '@/types/courseType';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import ToggleSwitchButton from '@/components/button/toggleSwitchButton';
-import { ArrowLeft, Ban, Loader2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressBar from './components/progressBar';
 import { Button } from '@/components/ui/button';
 import { steps } from '@/helpers/step';
-
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
   const params = useParams();
   const courseId = params.id as string;
   const [sections, setSections] = useState<Section[]>([]);
-  const [description, setDescription] = useState('');
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const theme = useTheme();
   const handleGetCourseInfo = async () => {
     try {
       setIsLoading(true);
@@ -43,9 +40,9 @@ const CourseDetails: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching course details:', error);
-      setShowAlertError(true);
-      setDescription('Không thể tải thông tin khóa học');
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Không thể tải thông tin khóa học" />, {
+        style: styleError,
+      });
       setIsLoading(false);
     }
   };
@@ -80,10 +77,6 @@ const CourseDetails: React.FC = () => {
               mode="edit"
               courseInfo={courseInfo}
               setCourseInfo={handleGetCourseInfo}
-              setShowAlertSuccess={setShowAlertSuccess}
-              setShowAlertError={setShowAlertError}
-              setDescription={setDescription}
-              handleSubmitSuccess={nextStep}
             />
           </AnimateWrapper>
         );
@@ -95,9 +88,6 @@ const CourseDetails: React.FC = () => {
               setSections={setSections}
               course={courseInfo}
               handleGetCourseInfo={handleGetCourseInfo}
-              setShowAlertSuccess={setShowAlertSuccess}
-              setShowAlertError={setShowAlertError}
-              setDescription={setDescription}
             />
           </AnimateWrapper>
         );
@@ -108,81 +98,12 @@ const CourseDetails: React.FC = () => {
     }
   };
 
-  // const validateStep = (step: number): boolean => {
-  //   switch (step) {
-  //     case 1:
-  //       return !!(
-  //         courseData.title &&
-  //         courseData.shortDescription &&
-  //         courseData.level &&
-  //         courseData.category &&
-  //         courseData.field &&
-  //         courseData.price
-  //       );
-  //     case 2:
-  //       return (
-  //         courseData.sections.length > 0 &&
-  //         courseData.sections.some((section) => section.lectures.length > 0)
-  //       );
-  //     case 3:
-  //       return true;
-  //     default:
-  //       return false;
-  //   }
-  // };
-
   const handlePageBack = () => {
     router.back();
   };
 
   return (
     <>
-      {/* <div className="w-full h-full gap-4 flex flex-col p-4 ">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-4 h-4 animate-spin" />
-          </div>
-        ) : (
-          <>
-            <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-              {courseInfo?.id && (
-                <div className="flex items-end w-full justify-end p-4">
-                  {courseInfo?.status === 'BANNED' ? (
-                    <div className="flex items-center gap-2">
-                      <Ban className="w-4 h-4 text-redPigment" />
-                      <p className="text-sm font-sans text-redPigment">Khóa học đã bị cấm</p>
-                    </div>
-                  ) : (
-                    <ToggleSwitchButton courseId={courseId} status={courseInfo?.status} />
-                  )}
-                </div>
-              )}
-              <BasicInfoForm
-                isEditingBasic={true}
-                courseInfo={courseInfo}
-                setCourseInfo={handleGetCourseInfo}
-                courseId={courseId}
-                setShowAlertSuccess={setShowAlertSuccess}
-                setShowAlertError={setShowAlertError}
-                setDescription={setDescription}
-              />
-            </AnimateWrapper>
-            <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-              <SectionList
-                sections={sections}
-                setSections={setSections}
-                courseId={courseId}
-                handleGetCourseInfo={handleGetCourseInfo}
-                setShowAlertSuccess={setShowAlertSuccess}
-                setShowAlertError={setShowAlertError}
-                setDescription={setDescription}
-              />
-            </AnimateWrapper>
-            {showAlertSuccess && <AlertSuccess description={description} />}
-            {showAlertError && <AlertError description={description} />}
-          </>
-        )}
-      </div> */}
       <div className="w-full h-full gap-4 flex flex-col p-4 ">
         <Button
           className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-125 text-white w-fit font-medium"
@@ -198,8 +119,6 @@ const CourseDetails: React.FC = () => {
           </CardHeader>
           <CardContent>{renderStepContent()}</CardContent>
         </Card>
-        {showAlertSuccess && <AlertSuccess description={description} />}
-        {showAlertError && <AlertError description={description} />}
       </div>
     </>
   );

@@ -6,8 +6,7 @@ import * as yup from 'yup';
 
 import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
 import { Button } from '../ui/button';
-import AlertSuccess from '../alert/AlertSuccess';
-import AlertError from '../alert/AlertError';
+
 import AnimateWrapper from '../animations/animateWrapper';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,6 +20,11 @@ import {
 } from '@/utils/payment';
 import { BankAccount } from '@/types/bankAccount';
 import ComboboxRegister from '../selectComponent/comboboxSelect';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 // Schema validation
 const schema = yup.object().shape({
   name: yup
@@ -41,13 +45,10 @@ const BankAccountLecture = () => {
 
   const [isEdit, setIsEdit] = useState(false);
   const [loading, _setLoading] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
   const [allPaymentBank, setAllPaymentBank] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
   const [disabled, setDisabled] = useState(true);
-
+  const theme = useTheme();
   const {
     control,
     handleSubmit,
@@ -102,13 +103,19 @@ const BankAccountLecture = () => {
   };
 
   const handleGetPaymentAccount = async () => {
-    const response = await APIGetPaymentAccount(userInfo.id);
-    if (response?.status === 200) {
-      dispatch(setBankAccount(response.data));
-      setHasBankAccount(true);
-    }
-    if (response?.status === 404) {
+    try {
+      const response = await APIGetPaymentAccount(userInfo.id);
+      if (response?.status === 200) {
+        dispatch(setBankAccount(response.data));
+        setHasBankAccount(true);
+      }
+    } catch (error) {
       setHasBankAccount(false);
+      setIsEdit(false);
+      setDisabled(true);
+      setValue('name', '');
+      setValue('bank_code', '');
+      setValue('bank_account_number', '');
     }
   };
 
@@ -122,21 +129,16 @@ const BankAccountLecture = () => {
       const response = await APIInitPaymentAccount(data);
       if (response?.status === 201) {
         dispatch(setBankAccount(response.data));
-        setAlertDescription('Thêm tài khoản thành công');
         setHasBankAccount(true);
-        setShowAlertSuccess(true);
         setIsEdit(false);
-
-        setTimeout(() => {
-          setShowAlertSuccess(false);
-        }, 3000);
+        toast.success(<ToastNotify status={1} message="Thêm tài khoản thành công" />, {
+          style: styleSuccess,
+        });
       }
     } catch (error) {
-      setAlertDescription(error instanceof Error ? error.message : 'Thêm tài khoản thất bại');
-      setShowAlertError(true);
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Thêm tài khoản thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -145,26 +147,23 @@ const BankAccountLecture = () => {
       const response = await APIUpdatePaymentAccount(userInfo.id, data);
       if (response?.status === 200) {
         dispatch(setBankAccount(response.data));
-        setAlertDescription('Cập nhật tài khoản thành công');
         setIsEdit(false);
-        setShowAlertSuccess(true);
-        setTimeout(() => {
-          setShowAlertSuccess(false);
-        }, 3000);
+        toast.success(<ToastNotify status={1} message="Cập nhật tài khoản thành công" />, {
+          style: styleSuccess,
+        });
       }
     } catch (error) {
-      setAlertDescription(error instanceof Error ? error.message : 'Cập nhật tài khoản thất bại');
-      setShowAlertError(true);
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Cập nhật tài khoản thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
   const onSubmit = async (data: BankAccount) => {
     if (!userInfo?.id) {
-      setAlertDescription('Không tìm thấy thông tin người dùng');
-      setShowAlertError(true);
+      toast.error(<ToastNotify status={-1} message="Không tìm thấy thông tin người dùng" />, {
+        style: styleError,
+      });
       return;
     }
 
@@ -268,9 +267,6 @@ const BankAccountLecture = () => {
           </div>
         )}
       </AnimateWrapper>
-
-      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-      {showAlertError && <AlertError description={alertDescription} />}
     </div>
   );
 };
