@@ -51,6 +51,8 @@ import type { CourseForm } from '@/types/courseType';
 import type { Lecture } from '@/types/registerLectureFormType';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
 import APIGetRecommendation from '@/utils/recommendation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 
 // Mock data for categories
 const categories = [
@@ -95,6 +97,7 @@ const testimonials = [
 
 export default function Page() {
   const router = useRouter();
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const [listLecture, setListLecture] = useState<Lecture[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
@@ -782,13 +785,15 @@ export default function Page() {
                 đầu.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  className="bg-white text-blue-600 hover:bg-gray-100 rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => router.push('/signup')}
-                >
-                  Đăng ký ngay
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
+                {!userInfo && (
+                  <Button
+                    className="bg-white text-blue-600 hover:bg-gray-100 rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => router.push('/signup')}
+                  >
+                    Đăng ký ngay
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   className="border-2 border-white text-black dark:text-white hover:bg-white/10 rounded-full px-8 py-6 font-semibold"
