@@ -349,16 +349,6 @@ const Header = () => {
           {!isSearchExpanded && (
             <>
               {/* Favorites Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/favorites')}
-                className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
-                title="Khóa học yêu thích"
-              >
-                <Heart className="h-5 w-5 transition-all text-redPigment" fill="red" />
-                <span className="sr-only">Khóa học yêu thích</span>
-              </Button>
 
               {/* Theme Toggle */}
               <Button
@@ -427,10 +417,6 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => router.push('/billing')}>
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>Thanh toán</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell className="mr-2 h-4 w-4" />
-                    <span>Thông báo</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
