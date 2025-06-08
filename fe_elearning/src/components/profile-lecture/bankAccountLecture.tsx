@@ -110,16 +110,12 @@ const BankAccountLecture = () => {
         setHasBankAccount(true);
       } else {
         setHasBankAccount(false);
-        setIsEdit(false);
-        setDisabled(true);
         setValue('name', '');
         setValue('bank_code', '');
         setValue('bank_account_number', '');
       }
     } catch (error) {
       setHasBankAccount(false);
-      setIsEdit(false);
-      setDisabled(true);
       setValue('name', '');
       setValue('bank_code', '');
       setValue('bank_account_number', '');
