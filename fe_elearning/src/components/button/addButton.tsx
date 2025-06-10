@@ -9,6 +9,8 @@ interface AddButtonProps {
   disabled?: boolean;
   loading?: boolean;
   icon?: LucideIcon;
+  className?: string;
+  size?: 'sm' | 'lg';
 }
 
 const AddButton = ({
@@ -16,13 +18,15 @@ const AddButton = ({
   label = 'Thêm yêu cầu',
   disabled,
   loading,
+  className,
   icon: Icon = Plus,
+  size,
 }: AddButtonProps) => {
   return (
     <Button
       variant="outline"
-      size="sm"
-      className="bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white"
+      size={size}
+      className={`bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white shadow-md shadow-majorelleBlue/40  ${className}`}
       onClick={onClick}
       disabled={disabled}
     >

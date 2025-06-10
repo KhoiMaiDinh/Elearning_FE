@@ -21,12 +21,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLecture } from '@/hooks/lecture/useLectureForm';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseItem, Section, SeriesType } from '@/types/courseType';
 import { Edit, FileCheck, Trash2Icon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Controller } from 'react-hook-form';
 import Asterisk from '@/components/asterisk/asterisk';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipContent } from '@radix-ui/react-tooltip';
 
 interface LectureModalProps {
   open: boolean;
@@ -69,9 +71,8 @@ const LectureModal: React.FC<LectureModalProps> = ({
   };
 
   const {
-    control,
+    isDirty,
     watch,
-    submitting,
     handleSubmit,
     handleAddCourseItem,
     handleUpdateCourseItem,
@@ -80,6 +81,8 @@ const LectureModal: React.FC<LectureModalProps> = ({
     handleUploadAndTrack,
     handleRemoveResource,
     handleChangeResourceName,
+    control,
+    submitting,
     uploadProgress,
     errors,
     MAX_RESOURCES,
@@ -89,17 +92,19 @@ const LectureModal: React.FC<LectureModalProps> = ({
   const resources = watch('resources') || [];
 
   const [reviewActive, setReviewActive] = useState(false);
-  const [selectedVersion, setSelectedVersion] = useState(lecture?.video);
+  const [selectedVersion, setSelectedVersion] = useState<SeriesType>();
 
   const isEditing = lecture !== null;
 
-  console.log(lecture);
-
-  console.log(errors);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const scrollTop = scrollRef.current?.scrollTop || 0;
     reset();
-    setSelectedVersion(lecture?.video || undefined);
+    setSelectedVersion(lecture?.series?.[0]);
+    setTimeout(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollTop;
+    }, 0);
   }, [lecture, section]);
 
   const handleOpenChange = (open: boolean) => {
@@ -109,9 +114,15 @@ const LectureModal: React.FC<LectureModalProps> = ({
   };
 
   const handleSelectVersion = (versionId: string) => {
-    const version = lecture?.videos?.find((v) => v.version === Number(versionId));
+    const version = lecture?.series?.find((v) => v.version === Number(versionId));
     setSelectedVersion(version);
   };
+
+  console.log(
+    selectedVersion?.video?.status === 'uploaded'
+      ? process.env.NEXT_PUBLIC_BASE_URL_TEMP_VIDEO + (selectedVersion?.video?.key ?? '')
+      : process.env.NEXT_PUBLIC_BASE_URL_VIDEO + (selectedVersion?.video?.key ?? '')
+  );
 
   const getVideoStatus = (status: 'uploaded' | 'validated' | 'pending' | 'rejected') => {
     switch (status) {
@@ -141,7 +152,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
               : `Thêm bài học cho Chương ${section?.title}`}
           </DialogDescription>
         </DialogHeader>
-        <div className=" max-h-[70vh] overflow-y-auto p-2">
+        <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto p-2">
           <div>
             <Controller
               name="title"
@@ -242,11 +253,18 @@ const LectureModal: React.FC<LectureModalProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {lecture?.videos?.map((version) => (
+                            {lecture?.series?.map((version) => (
                               <SelectItem key={version.version} value={version.version.toString()}>
                                 V
-                                {version.version + ' - ' + getVideoStatus(version.video.status) ||
-                                  0}
+                                {version.version +
+                                  ' - ' +
+                                  getVideoStatus(
+                                    version.video.status as
+                                      | 'uploaded'
+                                      | 'validated'
+                                      | 'pending'
+                                      | 'rejected'
+                                  )}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -271,6 +289,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                   onVideoRemoved={() => handleVideoRemove()}
                   error={errors.video?.message}
                   isRequired={true}
+                  maxSize={4 * 1024 * 1024 * 1024}
                 />
               )}
             </div>
@@ -352,13 +371,26 @@ const LectureModal: React.FC<LectureModalProps> = ({
             Hủy
           </Button>
           {isEditing ? (
-            <AddButton
-              label="Sửa bài học"
-              disabled={submitting}
-              loading={submitting}
-              onClick={handleSubmit(handleUpdateCourseItem)}
-              icon={Edit}
-            />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild disabled={isDirty}>
+                  <div>
+                    <AddButton
+                      label="Sửa bài học"
+                      disabled={submitting || !isDirty}
+                      loading={submitting}
+                      onClick={handleSubmit(handleUpdateCourseItem)}
+                      icon={Edit}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className={`bg-black70 text-AntiFlashWhite px-2 py-1 rounded-full text-sm ${isDirty ? 'hidden' : ''}`}
+                >
+                  <p>Chưa có chỉnh sửa</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           ) : (
             <AddButton
               label="Thêm bài học"

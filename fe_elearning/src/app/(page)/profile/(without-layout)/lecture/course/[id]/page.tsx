@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCourse } from '@/constants/course';
@@ -11,11 +11,8 @@ import AlertSuccess from '@/components/alert/AlertSuccess';
 import AlertError from '@/components/alert/AlertError';
 import { Section } from '@/types/courseType';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import ToggleSwitchButton from '@/components/button/toggleSwitchButton';
-import { ArrowLeft, Ban, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressBar from './components/progressBar';
-import { Button } from '@/components/ui/button';
 
 export const steps = [
   {
@@ -45,31 +42,41 @@ const CourseDetails: React.FC = () => {
   const [showAlertSuccess, setShowAlertSuccess] = useState(false);
   const [showAlertError, setShowAlertError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const previousShowDeletedRef = useRef(showDeleted);
 
   const handleGetCourseInfo = async () => {
     try {
       setIsLoading(true);
-      const response = await APIGetFullCourse(courseId);
+      previousShowDeletedRef.current = showDeleted;
+
+      const response = await APIGetFullCourse(courseId, {
+        include_deleted_lectures: showDeleted,
+      });
+
       if (response?.status === 200) {
         const sortedSections = response.data.sections.sort((a: Section, b: Section) =>
           a.position.localeCompare(b.position)
         );
         setSections(sortedSections);
         dispatch(setCourse(response.data));
-        setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error fetching course details:', error);
+      if (previousShowDeletedRef.current !== showDeleted) {
+        setShowDeleted(previousShowDeletedRef.current);
+      }
+
       setShowAlertError(true);
       setDescription('Không thể tải thông tin khóa học');
       setTimeout(() => setShowAlertError(false), 3000);
+    } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
     handleGetCourseInfo();
-  }, [courseId, dispatch]);
+  }, [courseId, showDeleted, dispatch]);
 
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -80,29 +87,33 @@ const CourseDetails: React.FC = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
         return (
-          <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-            <BasicInfoForm
-              mode="edit"
-              courseInfo={courseInfo}
-              setCourseInfo={handleGetCourseInfo}
-              setShowAlertSuccess={setShowAlertSuccess}
-              setShowAlertError={setShowAlertError}
-              setDescription={setDescription}
-              handleSubmitSuccess={nextStep}
-            />
-          </AnimateWrapper>
+          !isLoading && (
+            <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+              <BasicInfoForm
+                mode="edit"
+                courseInfo={courseInfo}
+                setCourseInfo={handleGetCourseInfo}
+                setShowAlertSuccess={setShowAlertSuccess}
+                setShowAlertError={setShowAlertError}
+                setDescription={setDescription}
+                handleNextStep={nextStep}
+              />
+            </AnimateWrapper>
+          )
         );
       case 2:
         return (
@@ -115,6 +126,10 @@ const CourseDetails: React.FC = () => {
               setShowAlertSuccess={setShowAlertSuccess}
               setShowAlertError={setShowAlertError}
               setDescription={setDescription}
+              showDeleted={showDeleted}
+              setShowDeleted={setShowDeleted}
+              handlePrevStep={prevStep}
+              handleNextStep={nextStep}
             />
           </AnimateWrapper>
         );
@@ -123,33 +138,6 @@ const CourseDetails: React.FC = () => {
       default:
         return null;
     }
-  };
-
-  // const validateStep = (step: number): boolean => {
-  //   switch (step) {
-  //     case 1:
-  //       return !!(
-  //         courseData.title &&
-  //         courseData.shortDescription &&
-  //         courseData.level &&
-  //         courseData.category &&
-  //         courseData.field &&
-  //         courseData.price
-  //       );
-  //     case 2:
-  //       return (
-  //         courseData.sections.length > 0 &&
-  //         courseData.sections.some((section) => section.lectures.length > 0)
-  //       );
-  //     case 3:
-  //       return true;
-  //     default:
-  //       return false;
-  //   }
-  // };
-
-  const handlePageBack = () => {
-    router.back();
   };
 
   return (
@@ -201,13 +189,6 @@ const CourseDetails: React.FC = () => {
         )}
       </div> */}
       <div className="w-full h-full gap-4 flex flex-col p-4 ">
-        <Button
-          className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-125 text-white w-fit font-medium"
-          onClick={handlePageBack}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Quay lại
-        </Button>
         <ProgressBar steps={steps} completedSteps={completedSteps} currentStep={currentStep} />
         <Card className="mb-8">
           <CardHeader>

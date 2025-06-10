@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { CourseItem, ResourceType, Section, VideoType } from '@/types/courseType';
+import { CourseItem, ResourceType, Section } from '@/types/courseType';
 import { APIInitCourseItem, APIUpdateCourseItem } from '@/utils/course';
 import { uploadToMinIO } from '@/utils/storage';
 import { MediaType } from '@/types/mediaType';
@@ -68,15 +68,17 @@ export const useLecture = (
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
     getValues,
   } = useForm<CourseItem>({
     resolver: yupResolver(courseItemSchema) as unknown as Resolver<CourseItem>,
     defaultValues: {
       title: initialValues?.title || '',
       description: initialValues?.description || '',
-      video: initialValues?.video || null,
-      resources: initialValues?.resources || [],
+      video: initialValues?.video
+        ? { ...initialValues.video, duration_in_seconds: initialValues.duration_in_seconds }
+        : null,
+      resources: initialValues?.resources || undefined,
       is_preview: initialValues?.is_preview || false,
       position: initialValues?.position || '',
       section_id: section?.id,
@@ -87,19 +89,26 @@ export const useLecture = (
   });
 
   useEffect(() => {
+    if (!initialValues) return;
+
     reset({
-      title: initialValues?.title || '',
-      description: initialValues?.description || '',
-      video: initialValues?.video || null,
-      resources: initialValues?.resources || [],
-      is_preview: initialValues?.is_preview || false,
-      position: initialValues?.position || '',
+      title: initialValues.series[0].title || '',
+      description: initialValues.series[0].description || '',
+      video: initialValues.series[0].video
+        ? {
+            ...initialValues.series[0].video,
+            duration_in_seconds: initialValues.series[0].duration_in_seconds,
+          }
+        : null,
+      resources: initialValues.series[0].resources || undefined,
+      is_preview: initialValues.series[0].is_preview || false,
+      position: initialValues.position || '',
       section_id: section?.id,
-      id: initialValues?.id || '',
-      status: initialValues?.status || 'ACTIVE',
+      id: initialValues.id || '',
+      status: initialValues.series[0].status,
       previous_position: undefined,
     });
-  }, [initialValues]);
+  }, [initialValues?.id]);
 
   // const currentVideo = watch('video');
 
@@ -171,7 +180,7 @@ export const useLecture = (
             }
           : null,
         description: data.description,
-        resources: data.resources || [],
+        resources: data.resources || undefined,
         previous_position: undefined,
         id: initialValues?.id,
       };
@@ -190,13 +199,12 @@ export const useLecture = (
   };
 
   const handleVideoUpload = async (mediaVideo: MediaType, duration: number) => {
-    console.log(duration);
-    const video: Partial<VideoType> = {
+    const video: Partial<MediaType & { duration_in_seconds: number }> = {
       id: mediaVideo.id,
       duration_in_seconds: duration,
     };
 
-    setValue('video', video as VideoType);
+    setValue('video', video as MediaType & { duration_in_seconds: number });
   };
 
   const handleVideoRemove = () => {
@@ -222,9 +230,13 @@ export const useLecture = (
         {
           resource_file: { id: media.id },
           name: file.name.replace(/\.[^/.]+$/, ''),
-        },
+        } as ResourceType,
       ];
-      setValue('resources', updatedResources);
+      console.log(updatedResources);
+      setValue('resources', updatedResources, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     } catch (error) {
       console.error('Upload failed', error);
     } finally {
@@ -239,17 +251,24 @@ export const useLecture = (
   const handleRemoveResource = (indexToRemove: number) => {
     const currentResources = getValues('resources') || [];
     const newResources = currentResources.filter((_, index) => index !== indexToRemove);
-    setValue('resources', newResources);
+    setValue('resources', newResources, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleChangeResourceName = (index: number, newName: string) => {
     const currentResources = getValues('resources') || [];
     const updated = [...currentResources];
     updated[index] = { ...updated[index], name: newName };
-    setValue('resources', updated);
+    setValue('resources', updated, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   return {
+    isDirty,
     control,
     watch,
     handleSubmit,

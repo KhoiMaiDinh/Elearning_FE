@@ -8,7 +8,7 @@ export interface VideoType {
 
   video: {
     key: string;
-    status: 'uploaded' | 'validated' | 'pending' | 'rejected';
+    status?: 'uploaded' | 'validated' | 'pending' | 'rejected';
     bucket: string;
     rejection_reason: string | null;
   };
@@ -20,12 +20,23 @@ export interface ResourceType {
   name: string;
 }
 
+export interface SeriesType {
+  version: number;
+  title: string;
+  is_preview?: boolean;
+  description?: string;
+  duration_in_seconds?: number;
+  status?: string;
+  video: MediaType;
+  resources?: ResourceType[];
+}
+
 export interface CourseItem {
   id: string;
   is_favorite?: boolean;
   title: string;
   description: string;
-  video?: MediaType | null;
+  video?: (MediaType & { duration_in_seconds: number }) | null;
   resources: ResourceType[];
   duration_in_seconds?: number;
   is_preview: boolean;
@@ -35,19 +46,9 @@ export interface CourseItem {
   previous_position?: string;
   fileUrl?: string;
   progresses?: ProgressItem[];
-
-  series?: [
-    {
-      version: number;
-      title: string;
-      is_preview?: boolean;
-      description?: string;
-      duration_in_seconds?: number;
-      status?: string;
-      video?: VideoType | null;
-      resources?: ResourceType[];
-    },
-  ];
+  series: SeriesType[];
+  is_hidden?: boolean;
+  deletedAt?: string;
 }
 
 export interface Section {

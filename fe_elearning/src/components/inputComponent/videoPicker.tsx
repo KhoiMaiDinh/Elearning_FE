@@ -34,8 +34,12 @@ type VideoPickerProps = {
   onVideoRemoved: () => void;
   previousMedia?: MediaType;
   error?: string;
+  maxSize?: number;
   isRequired?: boolean;
 };
+
+const ONE_GB = 1024 * 1024 * 1024;
+const MAX_FILE_SIZE = 20 * ONE_GB;
 
 const VideoPicker: React.FC<VideoPickerProps> = ({
   label = 'Tải lên video',
@@ -44,11 +48,9 @@ const VideoPicker: React.FC<VideoPickerProps> = ({
   onVideoRemoved,
   isRequired = false,
   ratio: aspect = 16 / 9,
-  previousMedia,
   error,
+  maxSize = MAX_FILE_SIZE,
 }) => {
-  const ONE_GB = 1024 * 1024;
-  const MAX_FILE_SIZE = 20 * ONE_GB;
   const ACCEPTED_EXTENSIONS = ['.mp4', '.webm', '.ogg'];
   const dropzone = useDropzone({
     onDropFile: async (file: File) => {

@@ -39,26 +39,29 @@ export const courseBasicSchema = yup.object().shape({
 });
 
 export function useCourseForm(courseInfo?: CourseForm) {
+  console.log('courseInfo', courseInfo);
+  const initValues = {
+    category: { slug: courseInfo?.category?.slug || '' },
+    title: courseInfo?.title || '',
+    subtitle: courseInfo?.subtitle || '',
+    description: courseInfo?.description || '',
+    level: courseInfo?.level || '',
+    price: courseInfo?.price || 0,
+    thumbnail: courseInfo?.thumbnail || null,
+    outcomes: courseInfo?.outcomes || [],
+    requirements: courseInfo?.requirements || [],
+  };
+
   const {
     control,
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
   } = useForm<CourseForm>({
     resolver: yupResolver(courseBasicSchema) as unknown as Resolver<CourseForm>,
-    defaultValues: {
-      category: { slug: '' },
-      title: '',
-      subtitle: '',
-      description: '',
-      level: '',
-      price: 0,
-      thumbnail: null,
-      outcomes: [],
-      requirements: [],
-    },
+    defaultValues: initValues,
   });
 
   const {
@@ -79,34 +82,6 @@ export function useCourseForm(courseInfo?: CourseForm) {
     name: 'outcomes' as any,
   });
 
-  useEffect(() => {
-    if (!courseInfo) return;
-
-    const {
-      title,
-      subtitle,
-      level,
-      price,
-      description,
-      thumbnail,
-      requirements,
-      outcomes,
-      category,
-    } = courseInfo;
-
-    setValue('title', title || '');
-    setValue('subtitle', subtitle || '');
-    setValue('level', level || '');
-    setValue('price', price || 0);
-    setValue('description', description || '');
-    setValue('thumbnail', thumbnail || null);
-    setValue('requirements', requirements || []);
-    setValue('outcomes', outcomes || []);
-    if (category?.slug) {
-      setValue('category.slug', category.slug);
-    }
-  }, [courseInfo, setValue]);
-
   const values = watch();
 
   const hasFormChanged = useMemo(() => {
@@ -118,14 +93,15 @@ export function useCourseForm(courseInfo?: CourseForm) {
   return {
     control,
     errors,
-    handleSubmit,
-    watch,
+    isDirty,
     values,
     hasFormChanged,
     requirementFields,
+    outcomeFields,
+    handleSubmit,
+    watch,
     appendRequirements,
     removeRequirements,
-    outcomeFields,
     appendOutcomes,
     removeOutcomes,
     setValue,

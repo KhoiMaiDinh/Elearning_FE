@@ -64,15 +64,22 @@ const APIInitSection = async (data: any) => {
   }
 };
 
-const APIGetFullCourse = async (course_id: string) => {
+const APIGetFullCourse = async (
+  course_id: string,
+  params?: {
+    include_deleted_lectures?: boolean;
+  }
+) => {
   try {
-    const response = await axiosInstance.get(`/courses/${course_id}/curriculums`);
+    const response = await axiosInstance.get(`/courses/${course_id}/curriculums`, {
+      params: params,
+    });
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
-    console.error('Error during get full course:', err);
+    console.log('Error during get full course:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };

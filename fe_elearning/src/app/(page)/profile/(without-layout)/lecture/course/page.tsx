@@ -18,56 +18,13 @@ import { useRouter } from 'next/navigation';
 import { setCourse } from '@/constants/course';
 import { useDispatch } from 'react-redux';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import { MediaType } from '@/types/mediaType';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
 import { steps } from './[id]/page';
 import ProgressBar from './[id]/components/progressBar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 // Hàm upload file lên MinIO
-const uploadToMinIO = async (
-  file: File,
-  entity: string,
-  entity_property: string
-): Promise<{ key: string; id: string }> => {
-  try {
-    const presignedData = await APIGetPresignedUrl({
-      filename: file.name,
-      entity: entity,
-      entity_property: entity_property,
-    });
-    const { postURL, formData } = presignedData?.data?.result ?? {};
-    const id = presignedData?.data?.id;
 
-    const uploadFormData = new FormData();
-    Object.entries(formData).forEach(([key, value]) => uploadFormData.append(key, value as string));
-    uploadFormData.append('file', file);
-    uploadFormData.append('id', id);
-
-    const response = await axios.post(postURL, uploadFormData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-
-    if (response.status === 204 || response.status === 200) {
-      const key = uploadFormData.get('key');
-      if (!key) throw new Error('Missing key in form data');
-      return { key: key.toString(), id };
-    } else {
-      throw new Error('Upload thất bại');
-    }
-  } catch (error) {
-    console.error('Error uploading to MinIO:', error);
-    throw error;
-  }
-};
-
-const data = [
-  { id: 'BEGINNER', value: 'Sơ cấp' },
-  { id: 'INTERMEDIATE', value: 'Trung cấp' },
-  { id: 'ADVANCED', value: 'Nâng cao' },
-];
-
-// Schema cho thông tin cơ bản
 const basicSchema = yup.object().shape({
   category: yup.object().shape({
     slug: yup.string().required('Danh mục không được để trống'),
@@ -249,7 +206,7 @@ const UploadCourse: React.FC = () => {
               setShowAlertError={setShowAlertError}
               setDescription={setDescription}
               setCourseInfo={(data) => handleSetCourse(data as CourseForm)}
-              handleSubmitSuccess={() => {}}
+              handleNextStep={() => {}}
             />
           </AnimateWrapper>
         </CardContent>

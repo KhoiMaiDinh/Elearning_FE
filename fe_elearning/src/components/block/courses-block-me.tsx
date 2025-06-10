@@ -64,7 +64,7 @@ const MyCourseCard: React.FC<CourseForm> = ({
             alt={title}
             className="h-48 w-full object-cover"
           />
-          <CourseStatusBadge status={status!} />
+          <CourseStatusBadge status={status!} className="absolute right-2 top-2" />
         </div>
         <CardHeader className="p-4">
           <div className="flex items-center justify-between">

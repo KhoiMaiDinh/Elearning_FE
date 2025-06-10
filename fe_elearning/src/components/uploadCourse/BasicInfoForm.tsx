@@ -10,6 +10,7 @@ import { APIInitCourse, APIUpdateCourse } from '@/utils/course';
 import { CourseForm } from '@/types/courseType';
 import Image from 'next/image';
 import {
+  ArrowLeft,
   ArrowRight,
   Check,
   CircleDot,
@@ -31,7 +32,8 @@ import Asterisk from '../asterisk/asterisk';
 import { useCourseForm } from '@/hooks/course/useCourseForm';
 import { useCategoryFetcher } from '@/hooks/course/useCategoryFetcher';
 import { Spinner } from '../ui/spinner';
-import { Switch } from '../ui/switch';
+import AddButton from '../button/addButton';
+import { ConfirmDialog } from '../alert/AlertConfirm';
 
 const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => {
   return (
@@ -55,8 +57,7 @@ interface BasicInfoFormProps {
   setShowAlertSuccess: (value: boolean) => void;
   setShowAlertError: (value: boolean) => void;
   setDescription: (value: string) => void;
-
-  handleSubmitSuccess: () => void;
+  handleNextStep: () => void;
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
@@ -66,18 +67,19 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   setShowAlertSuccess,
   setShowAlertError,
   setDescription,
-  handleSubmitSuccess,
+  handleNextStep,
 }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const {
+    isDirty,
     control,
     errors,
     handleSubmit,
-    values,
     hasFormChanged,
+    values,
     requirementFields,
     appendRequirements,
     removeRequirements,
@@ -87,8 +89,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     setValue,
   } = useCourseForm(courseInfo);
   const router = useRouter();
-
-  console.log(errors);
 
   useEffect(() => {
     if (courseInfo?.id) {
@@ -106,18 +106,17 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   const handleUpdateCourse = async (data: CourseForm) => {
     if (!courseInfo?.id) return;
 
-    if (hasFormChanged) {
+    if (isDirty) {
       const response = await APIUpdateCourse(courseInfo.id, data);
       if (response?.status === 200) {
         setCourseInfo(response.data);
         setShowAlertSuccess(true);
         setDescription('Thông tin khóa học đã được cập nhật thành công!');
-        handleSubmitSuccess();
         setTimeout(() => setShowAlertSuccess(false), 3000);
       }
-    } else {
-      handleSubmitSuccess(); // No change
     }
+
+    handleNextStep();
   };
 
   const handleCreateCourse = async (data: CourseForm) => {
@@ -126,7 +125,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       setCourseInfo(response.data);
       setShowAlertSuccess(true);
       setDescription('Khóa học đã được tạo thành công!');
-      handleSubmitSuccess();
+      handleNextStep();
       setTimeout(() => setShowAlertSuccess(false), 3000);
     }
   };
@@ -157,6 +156,18 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     setValue('category.slug', value);
   };
 
+  const handleClickBack = () => {
+    if (isDirty) {
+      setIsConfirmOpen(true);
+    } else {
+      router.back();
+    }
+  };
+
+  const handleConfirm = () => {
+    router.back();
+  };
+
   const EmptyInfoBox: React.FC<{ message: string }> = ({ message }) => {
     return (
       <div className="text-sm font-mono text-center italic bg-gray-50 p-3 rounded border border-gray-200">
@@ -171,6 +182,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     required?: boolean;
   }
 
+  const titleClassName = 'text-lg font-semibold text-gray-800 dark:text-white pb-3 mb-4 border-b';
+
   const LabelWithIcon: React.FC<LabelWithIconProps> = ({ icon, label, required }) => {
     return (
       <div className="flex flex-row gap-2 items-center mb-1 text-darkSilver">
@@ -182,9 +195,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   };
   return (
     <>
-      <div className="bg-AntiFlashWhite dark:bg-eerieBlack text-black dark:text-white  mx-auto border-gray-200 dark:border-gray-700 rounded-xl relative">
+      <div className="bg-AntiFlashWhite dark:bg-background/95 text-black dark:text-white mx-auto border-gray-200 dark:border-gray-700 rounded-xl relative">
         {/* Course Header Card */}
-        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20 dark:shadow-white/50">
           <div className="flex justify-between items-start">
             <div className="space-y-3 w-full">
               <div className="w-[85%]">
@@ -221,19 +234,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                 )}
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="mr-2 text-gray-700">Off</span>
-              <Switch />
-            </div>
           </div>
         </div>
 
         {/* Course Details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 ">
-          <div className="bg-white dark:bg-black rounded-lg shadow p-6 border border-black/20">
-            <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
-              Thông Tin Cơ Bản
-            </h3>
+          <div className="bg-white dark:bg-black rounded-lg shadow p-6 border border-black/20 dark:shadow-white/50">
+            <h3 className={titleClassName}>Thông Tin Cơ Bản</h3>
             <div className="space-y-4 text-darkSilver">
               <div>
                 <LabelWithIcon
@@ -344,8 +351,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
             </div>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-lg shadow p-6 col-span-2 border border-black/20">
-            <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+          <div className="bg-white dark:bg-black rounded-lg shadow p-6 col-span-2 border border-black/20 dark:shadow-white/50">
+            <h3 className={titleClassName}>
               Ảnh Bìa
               <Asterisk className="ml-1" />
             </h3>
@@ -394,8 +401,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
 
         {/* Course Description */}
-        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
-          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20 dark:shadow-white/50">
+          <h3 className={titleClassName}>
             Mô Tả
             <Asterisk className="ml-1" />
           </h3>
@@ -429,8 +436,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
 
         {/* Course Requirements */}
-        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
-          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20 dark:shadow-white/50">
+          <h3 className={titleClassName}>
             Kiến Thức Cần Có Trước Khi Tham Gia Khóa Học <Asterisk className="ml-1" />
           </h3>
           <div className="prose max-w-none">
@@ -492,8 +499,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         </div>
 
         {/* Course Outcomes */}
-        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20">
-          <h3 className="text-lg font-semibold text-gray-800 pb-3 mb-4 border-b">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6 mb-6 border border-black/20 dark:shadow-white/50">
+          <h3 className={titleClassName}>
             Kiến Thức Có Được Sau Khóa Học <Asterisk className="ml-1" />
           </h3>
           <div className="prose max-w-none">
@@ -551,20 +558,31 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           </div>
         </div>
 
-        <div className="mt-6 text-right ">
+        <div className="mt-6 text-right">
           {mode == 'edit' || mode == 'create' ? (
             <div className="flex flex-row gap-4 justify-between">
+              <ConfirmDialog
+                isOpen={isConfirmOpen}
+                onOpenChange={setIsConfirmOpen}
+                onConfirm={handleConfirm}
+                title="Xác nhận thoát"
+                description="
+Bạn có chắc chắn muốn thoát? Mọi thay đổi chưa lưu sẽ bị mất."
+                confirmText="Thoát"
+              />
+              <AddButton
+                label={'Thoát'}
+                icon={ArrowLeft}
+                onClick={handleClickBack}
+                className={
+                  'bg-AntiFlashWhite border border-black text-black hover:bg-white hover:shadow-redPigment/20 hover:text-redPigment hover:border-redPigment'
+                }
+              />
+
               <Button
-                type="button"
-                className=" bg-custom-gradient-button-red hover:brightness-125 text-white"
-                onClick={() => router.back()}
-              >
-                <CircleX className="stroke-[2px]" />
-                Hủy
-              </Button>
-              <Button
-                className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-125 text-white"
+                className="bg-custom-gradient-button-violet hover:bg-majorelleBlue hover:brightness-125 text-white shadow-md shadow-majorelleBlue/60"
                 onClick={handleSubmit(onSubmit)}
+                // size={'lg'}
               >
                 Tiếp theo
                 {loading ? (
