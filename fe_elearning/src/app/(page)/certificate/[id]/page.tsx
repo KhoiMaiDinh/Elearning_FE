@@ -1,44 +1,32 @@
+'use client';
+
 import Certificate from '@/components/certificate/certificate';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { APIGetCertificateById } from '@/utils/certificate';
+import { CertificateType } from '@/types/certificateType';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
+import { formatDuration } from '@/helpers/durationFormater';
+import { useParams } from 'next/navigation';
 
-// Mock data - trong thực tế sẽ fetch từ database
-const certificateData = {
-  '1': {
-    studentName: 'Nguyễn Văn An',
-    courseName: 'Lập Trình React Nâng Cao',
-    completionDate: '15/12/2024',
-    instructor: 'Thầy Minh Tuấn',
-    duration: '40 giờ',
-    certificateId: 'CERT-2024-001',
-  },
-  '2': {
-    studentName: 'Trần Thị Bình',
-    courseName: 'Thiết Kế UI/UX Chuyên Nghiệp',
-    completionDate: '20/12/2024',
-    instructor: 'Cô Hương Giang',
-    duration: '60 giờ',
-    certificateId: 'CERT-2024-002',
-  },
-  '3': {
-    studentName: 'Lê Minh Cường',
-    courseName: 'Data Science với Python',
-    completionDate: '10/12/2024',
-    instructor: 'Thầy Đức Anh',
-    duration: '80 giờ',
-    certificateId: 'CERT-2024-003',
-  },
-};
+const CertificatePage = () => {
+  const { id } = useParams<{ id: string }>();
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const [certificate, setCertificate] = useState<CertificateType | null>(null);
 
-interface PageProps {
-  params: {
-    id: string;
+  const handleGetCertificateById = async () => {
+    const response = await APIGetCertificateById(id);
+    if (response?.status === 200) {
+      setCertificate(response?.data || null);
+    }
   };
-}
 
-export default function CertificatePage({ params }: PageProps) {
-  const certificate = certificateData[params.id as keyof typeof certificateData];
+  useEffect(() => {
+    handleGetCertificateById();
+  }, [id]);
 
   if (!certificate) {
     return (
@@ -60,7 +48,7 @@ export default function CertificatePage({ params }: PageProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link href="/">
+          <Link href="/profile/student">
             <Button variant="outline">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Quay lại danh sách
@@ -69,14 +57,25 @@ export default function CertificatePage({ params }: PageProps) {
         </div>
 
         <Certificate
-          studentName={certificate.studentName}
-          courseName={certificate.courseName}
-          completionDate={certificate.completionDate}
-          instructor={certificate.instructor}
-          duration={certificate.duration}
-          certificateId={certificate.certificateId}
+          studentName={userInfo?.first_name + ' ' + userInfo?.last_name}
+          courseName={certificate.course.title}
+          completionDate={new Date(certificate.completed_at).toLocaleDateString('vi-VN')}
+          instructor={
+            certificate.course.instructor?.user?.first_name +
+            ' ' +
+            certificate.course.instructor?.user?.last_name
+          }
+          duration={formatDuration(
+            certificate.course.sections?.reduce(
+              (acc, section) =>
+                acc + section.items.reduce((acc, item) => acc + (item.duration_in_seconds || 0), 0),
+              0
+            ) || 0
+          )}
+          certificateId={certificate.certificate_code}
         />
       </div>
     </div>
   );
-}
+};
+export default CertificatePage;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Eye, EyeOff, Lock, KeySquare, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, KeySquare } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,10 +23,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { APIChangePassword } from '@/utils/user';
 import { createChangePasswordSchema } from '@/utils/validation';
-
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 // Form schema with password confirmation
 const passwordSchema = createChangePasswordSchema();
 type PasswordSchema = z.infer<typeof passwordSchema>;
@@ -41,9 +44,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
+  const theme = useTheme();
   const form = useForm<PasswordSchema>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -56,8 +57,6 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
   const onSubmit = async (values: PasswordSchema) => {
     try {
       setIsLoading(true);
-      setError(null);
-      setSuccess(null);
 
       const response = await APIChangePassword({
         current_password: values.current_password,
@@ -65,19 +64,26 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
       });
 
       if (response?.status === 200) {
-        setSuccess('Đổi mật khẩu thành công!');
         form.reset();
-
-        // Close dialog after 2 seconds
-        setTimeout(() => {
-          onOpenChange(false);
-        }, 2000);
+        toast.success(<ToastNotify status={1} message="Đổi mật khẩu thành công!" />, {
+          style: styleSuccess,
+        });
       } else {
-        setError('Đổi mật khẩu thất bại. Vui lòng kiểm tra lại thông tin.');
+        toast.error(
+          <ToastNotify
+            status={-1}
+            message="Đổi mật khẩu thất bại. Vui lòng kiểm tra lại thông tin."
+          />,
+          {
+            style: styleError,
+          }
+        );
       }
     } catch (err: any) {
       console.error('Change password error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đổi mật khẩu');
+      toast.error(<ToastNotify status={-1} message="Đã xảy ra lỗi khi đổi mật khẩu" />, {
+        style: styleError,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -95,24 +101,6 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
             Nhập mật khẩu hiện tại và mật khẩu mới để thay đổi
           </DialogDescription>
         </DialogHeader>
-
-        {error && (
-          <Alert
-            variant="destructive"
-            className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-          >
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {success && (
-          <Alert className="border-green-500 text-green-500 bg-green-50 dark:bg-green-900/20">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

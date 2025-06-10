@@ -15,6 +15,7 @@ const APIGetInstructorThreads = async (params?: {
   if (response.status === 200) {
     return response.data;
   }
+  return { data: null, status: response.status };
 };
 
 export { APIGetInstructorThreads };

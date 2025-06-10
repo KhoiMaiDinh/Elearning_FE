@@ -142,7 +142,7 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (currentCourseItem?.video) {
-      setVideoUrl(currentCourseItem?.video?.key);
+      setVideoUrl(currentCourseItem?.video?.video?.key);
     }
   }, [currentCourseItem]);
 

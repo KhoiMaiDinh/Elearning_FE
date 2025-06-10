@@ -9,7 +9,7 @@ const APIPostThread = async (data: any) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during post thread:', error);
     throw error;
@@ -25,7 +25,7 @@ const APIPostThreadReply = async (thread_id: string, data: any) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during post thread reply:', error);
     throw error;
@@ -41,7 +41,7 @@ const APIGetThreadReply = async (thread_id: string) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during get thread reply:', error);
     throw error;
@@ -57,7 +57,7 @@ const APIGetThread = async (lecture_id: string) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during get thread:', error);
     throw error;
@@ -73,7 +73,7 @@ const APILikeThreadReply = async (reply_id: string) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during like thread reply:', error);
     throw error;
@@ -89,7 +89,7 @@ const APIUnLikeThreadReply = async (reply_id: string) => {
         status: response.status,
       };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (error) {
     console.error('Error during un like thread reply:', error);
     throw error;

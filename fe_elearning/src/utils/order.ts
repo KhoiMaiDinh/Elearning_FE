@@ -5,7 +5,7 @@ const APICreateOrder = async (data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during create order:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -18,7 +18,7 @@ const APIGetOrderById = async (id: string) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get order by id:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -39,7 +39,7 @@ const APIGetListOrderByMe = async (params: { payment_status?: string }) => {
         status: response.status,
       };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during get list order:', err);
     throw err;

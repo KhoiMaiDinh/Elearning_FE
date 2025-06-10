@@ -8,6 +8,8 @@ import { Suspense, useEffect } from 'react';
 import { Inter, Manrope } from 'next/font/google'; // Import font từ next/font
 import { appWithTranslation } from 'next-i18next';
 import { PersistGate } from 'redux-persist/integration/react';
+import Loader from '@/components/loading/loader';
+import { ToastContainer } from 'react-toastify';
 
 // import { PersistGate } from 'redux-persist/integration/react'
 
@@ -39,7 +41,26 @@ const RootLayout = ({ children }: any) => {
       <body className={` ${inter.variable} ${manrope.variable}`}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+            <Suspense
+              fallback={
+                <div className="flex justify-center w-full items-center h-screen">
+                  <Loader />
+                </div>
+              }
+            >
+              {children}
+              <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme={'light'}
+              />
+            </Suspense>
           </PersistGate>
         </Provider>
       </body>

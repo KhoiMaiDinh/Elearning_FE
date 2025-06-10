@@ -21,7 +21,7 @@ const APIUpdateCurrentUser = async (data: any) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err) {
     console.error('Error during update current user:', err);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -34,9 +34,10 @@ const APIChangePassword = async (data: any) => {
     if (response.status === 201) {
       return { data: response.data, status: response.status };
     }
-    return null;
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during change password:', err);
+    return { data: null, status: 500 };
   }
 };
 

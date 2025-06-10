@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Download, Edit, Save, X } from 'lucide-react';
+import { Download } from 'lucide-react';
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 interface CertificateProps {
   studentName: string;
@@ -24,154 +25,105 @@ export default function Certificate({
   duration,
   certificateId,
 }: CertificateProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [studentName, setStudentName] = useState(initialStudentName);
-  const [courseName, setCourseName] = useState(initialCourseName);
+  const [studentName] = useState(initialStudentName);
+  const [courseName] = useState(initialCourseName);
 
   const handleDownloadPDF = async () => {
-    const html2canvas = (await import('html2canvas')).default;
-    const jsPDF = (await import('jspdf')).default;
     const certificate = document.getElementById('certificate');
     if (!certificate) return;
 
     try {
+      // Đảm bảo ảnh/logo được tải xong
+      await new Promise((res) => setTimeout(res, 300));
+
       const canvas = await html2canvas(certificate, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
         backgroundColor: '#ffffff',
       });
 
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      const imgWidth = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [1123, 794],
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, 1123, 794);
       pdf.save(`chung-chi-${certificateId}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.');
+      alert('Có lỗi xảy ra khi tạo PDF.');
     }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setStudentName(initialStudentName);
-    setCourseName(initialCourseName);
-    setIsEditing(false);
-  };
-
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Control Panel */}
-      <Card className="mb-6 border-blue-100 shadow-md">
-        <CardContent className="p-4">
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <Button
-              onClick={handleDownloadPDF}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Tải PDF
-            </Button>
-          </div>
-
-          {isEditing && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t">
-              <div>
-                <Label htmlFor="studentName">Tên học viên</Label>
-                <Input
-                  id="studentName"
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="courseName">Tên khóa học</Label>
-                <Input
-                  id="courseName"
-                  value={courseName}
-                  onChange={(e) => setCourseName(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Certificate */}
-      <div className="bg-white p-8 rounded-xl shadow-2xl border border-blue-200">
-        <div
-          id="certificate"
-          className="relative bg-white p-12 border-8 border-double border-blue-500"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23e0f2fe' fillOpacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
+    <div className=" mx-auto p-4">
+      <div className="flex justify-end mb-4">
+        <Button
+          onClick={handleDownloadPDF}
+          className="bg-majorelleBlue hover:brightness-110 hover:bg-majorelleBlue shadow-sm shadow-majorelleBlue text-white"
         >
-          {/* Decorative Corners */}
-          <div className="absolute top-4 left-4 w-16 h-16 border-l-4 border-t-4 border-blue-500"></div>
-          <div className="absolute top-4 right-4 w-16 h-16 border-r-4 border-t-4 border-blue-500"></div>
-          <div className="absolute bottom-4 left-4 w-16 h-16 border-l-4 border-b-4 border-blue-500"></div>
-          <div className="absolute bottom-4 right-4 w-16 h-16 border-r-4 border-b-4 border-blue-500"></div>
+          <Download className="mr-2 h-4 w-4" />
+          Tải PDF
+        </Button>
+      </div>
 
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <div className="text-white text-2xl font-bold">🎓</div>
+      <div
+        id="certificate"
+        className="mx-auto bg-white border border-blue-300  rounded-md overflow-hidden"
+        style={{
+          width: '1123px',
+          height: '794px',
+          padding: '48px',
+          boxSizing: 'border-box',
+          fontFamily: 'sans-serif',
+        }}
+      >
+        {/* Logo + Header */}
+        <div className="text-center mb-4">
+          <img src="/images/logo.png" alt="Logo" className="w-20 h-20 mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-blue-700 mb-2">CHỨNG NHẬN HOÀN THÀNH</h1>
+        </div>
+        <hr className="w-40 h-1 bg-blue-500 mt-2 mx-auto rounded mb-8" />
+
+        {/* Content */}
+        <div className="text-center space-y-6">
+          <p className="text-lg text-gray-700">Chứng nhận rằng</p>
+          <h2 className="text-5xl font-bold text-blue-900 pb-2">{studentName}</h2>
+          <p className="text-lg text-gray-700">đã hoàn thành khóa học</p>
+          <h3 className="text-3xl font-semibold text-blue-600">{courseName}</h3>
+
+          <div className="flex justify-center items-center space-x-16 text-gray-600 mt-8">
+            <div className="text-center">
+              <p className="font-semibold">Ngày hoàn thành</p>
+              <p className="text-lg">{completionDate}</p>
             </div>
-            <h1 className="text-4xl font-bold text-blue-700 mb-2 tracking-wide">
-              CHỨNG NHẬN HOÀN THÀNH
-            </h1>
-            <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded"></div>
+            <div className="text-center">
+              <p className="font-semibold">Thời lượng</p>
+              <p className="text-lg">{duration}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-end mt-12 pt-8 border-t border-gray-200">
+          <div className="text-center">
+            <div className="w-32 h-px bg-gray-400 mb-2"></div>
+            <p className="text-sm text-gray-600">Giảng viên</p>
+            <p className="font-semibold text-gray-800">{instructor}</p>
           </div>
 
-          {/* Content */}
-          <div className="text-center space-y-6">
-            <p className="text-lg text-gray-700">Chứng nhận rằng</p>
-            <h2 className="text-5xl font-bold text-blue-900 border-b-2 border-blue-500 pb-2 inline-block">
-              {studentName}
-            </h2>
-            <p className="text-lg text-gray-700">đã hoàn thành xuất sắc khóa học</p>
-            <h3 className="text-3xl font-semibold text-blue-600 px-8">{courseName}</h3>
-
-            <div className="flex justify-center items-center space-x-8 text-gray-600 mt-8">
-              <div className="text-center">
-                <p className="font-semibold">Ngày hoàn thành</p>
-                <p className="text-lg">{completionDate}</p>
-              </div>
-              <div className="w-px h-12 bg-gray-300"></div>
-              <div className="text-center">
-                <p className="font-semibold">Thời lượng</p>
-                <p className="text-lg">{duration}</p>
-              </div>
-            </div>
+          <div className="text-center">
+            <div className="w-32 h-px bg-gray-400 mb-2"></div>
+            <p className="text-sm text-gray-600">Mã chứng chỉ</p>
+            <p className="font-semibold text-gray-800">{certificateId}</p>
           </div>
 
-          {/* Footer */}
-          <div className="flex justify-between items-end mt-12 pt-8 border-t border-gray-200">
-            <div className="text-center">
-              <div className="w-32 h-px bg-gray-400 mb-2"></div>
-              <p className="text-sm text-gray-600">Giảng viên</p>
-              <p className="font-semibold text-gray-800">{instructor}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mb-2 shadow-md">
-                <div className="text-white font-bold text-sm">SEAL</div>
-              </div>
-              <p className="text-xs text-gray-500">Mã chứng chỉ: {certificateId}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-32 h-px bg-gray-400 mb-2"></div>
-              <p className="text-sm text-gray-600">Ngày cấp</p>
-              <p className="font-semibold text-gray-800">{completionDate}</p>
-            </div>
+          <div className="text-center">
+            <div className="w-32 h-px bg-gray-400 mb-2"></div>
+            <p className="text-sm text-gray-600">Ngày cấp</p>
+            <p className="font-semibold text-gray-800">{completionDate}</p>
           </div>
         </div>
       </div>

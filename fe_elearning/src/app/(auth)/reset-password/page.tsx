@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,9 +26,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { createResetPasswordSchema } from '@/utils/validation';
-
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 // Use the validation schema from utils
 const formSchema = createResetPasswordSchema();
 type FormData = z.infer<typeof formSchema>;
@@ -41,9 +43,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
+  const theme = useTheme();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,14 +54,14 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (values: FormData) => {
     if (!token) {
-      setError('Token không hợp lệ hoặc đã hết hạn');
+      toast.error(<ToastNotify status={-1} message="Token không hợp lệ hoặc đã hết hạn" />, {
+        style: styleError,
+      });
       return;
     }
 
     try {
       setIsLoading(true);
-      setError(null);
-      setSuccess(null);
 
       const response = await APIResetPassword({
         token,
@@ -69,18 +69,31 @@ export default function ResetPasswordPage() {
       });
 
       if (response?.status === 200) {
-        setSuccess('Đặt lại mật khẩu thành công! Bạn sẽ được chuyển hướng đến trang đăng nhập.');
-
-        // Redirect to login page after 3 seconds
+        toast.success(
+          <ToastNotify
+            status={1}
+            message="Đặt lại mật khẩu thành công! Bạn sẽ được chuyển hướng đến trang đăng nhập."
+          />,
+          { style: styleSuccess }
+        );
         setTimeout(() => {
           router.push('/login');
         }, 3000);
-      } else {
-        setError('Không thể đặt lại mật khẩu. Vui lòng thử lại sau.');
+
+        // Redirect to login page after 3 seconds
+        toast.error(
+          <ToastNotify status={-1} message="Không thể đặt lại mật khẩu. Vui lòng thử lại sau." />,
+          { style: styleError }
+        );
       }
     } catch (err: any) {
-      console.error('Reset password error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đặt lại mật khẩu');
+      toast.error(
+        <ToastNotify
+          status={-1}
+          message={err?.response?.data?.message || 'Đã xảy ra lỗi khi đặt lại mật khẩu'}
+        />,
+        { style: styleError }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -92,13 +105,6 @@ export default function ResetPasswordPage() {
         <div className="w-full max-w-md">
           <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
             <CardContent className="p-6">
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>Token không hợp lệ hoặc đã hết hạn</AlertDescription>
-              </Alert>
               <div className="mt-4 text-center">
                 <div
                   onClick={() => router.push('/forgot-password')}
@@ -134,23 +140,6 @@ export default function ResetPasswordPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {success && (
-              <Alert className="border-green-500 text-green-500 bg-green-50 dark:bg-green-900/20">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField

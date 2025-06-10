@@ -22,9 +22,14 @@ const Pagination: React.FC<PaginationProps> = ({
   const router = useRouter();
   const pathName = usePathname();
 
+  // If there's only one page or no items, don't render pagination
+  if (maxPage <= 1 || totalItem === 0) {
+    return null;
+  }
+
   const handleChangePage = (page: number) => {
     if (page < 1 || page > maxPage) return;
-    router.push(`${pathName}?page=${page}&&limit=${itemPerPage}`);
+    router.push(`${pathName}?page=${page}&limit=${itemPerPage}`);
     setCurrentPage(page);
   };
 
@@ -51,7 +56,7 @@ const Pagination: React.FC<PaginationProps> = ({
       pages.push('...');
     }
 
-    // Always include the last page
+    // Always include the last page if it's different from the first page
     if (maxPage > 1) {
       pages.push(maxPage);
     }
@@ -66,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8 rounded-md"
+        className={`h-8 w-8 rounded-md ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => handleChangePage(currentPage - 1)}
         disabled={currentPage === 1}
       >
@@ -82,10 +87,11 @@ const Pagination: React.FC<PaginationProps> = ({
             size="icon"
             className={`h-8 w-8 rounded-md ${
               currentPage === page
-                ? 'bg-majorelleBlue  text-white'
+                ? 'bg-majorelleBlue text-white'
                 : 'bg-majorelleBlue70 hover:bg-majorelleBlue'
             }`}
             onClick={() => handleChangePage(page)}
+            disabled={currentPage === page}
           >
             {page}
           </Button>
@@ -102,7 +108,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8 rounded-md"
+        className={`h-8 w-8 rounded-md ${currentPage === maxPage ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => handleChangePage(currentPage + 1)}
         disabled={currentPage === maxPage}
       >

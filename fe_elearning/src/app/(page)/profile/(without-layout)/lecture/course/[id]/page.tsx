@@ -7,30 +7,17 @@ import { RootState } from '@/constants/store';
 import { APIGetFullCourse } from '@/utils/course';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
 import SectionList from '@/components/uploadCourse/SectionList';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
 import { Section } from '@/types/courseType';
 import AnimateWrapper from '@/components/animations/animateWrapper';
+import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressBar from './components/progressBar';
-
-export const steps = [
-  {
-    id: 1,
-    title: 'Thông Tin Khóa Học',
-    description: 'Tiêu đề, mô tả và thông tin khóa học',
-  },
-  {
-    id: 2,
-    title: 'Chương trình học',
-    description: 'Tạo các chương và bài học',
-  },
-  {
-    id: 3,
-    title: 'Xem lại & Xuất bản',
-    description: 'Kiểm tra và xuất bản khóa học',
-  },
-];
+import { Button } from '@/components/ui/button';
+import { steps } from '@/helpers/step';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
@@ -66,9 +53,9 @@ const CourseDetails: React.FC = () => {
         setShowDeleted(previousShowDeletedRef.current);
       }
 
-      setShowAlertError(true);
-      setDescription('Không thể tải thông tin khóa học');
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Không thể tải thông tin khóa học" />, {
+        style: styleError,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -142,52 +129,6 @@ const CourseDetails: React.FC = () => {
 
   return (
     <>
-      {/* <div className="w-full h-full gap-4 flex flex-col p-4 ">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-4 h-4 animate-spin" />
-          </div>
-        ) : (
-          <>
-            <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-              {courseInfo?.id && (
-                <div className="flex items-end w-full justify-end p-4">
-                  {courseInfo?.status === 'BANNED' ? (
-                    <div className="flex items-center gap-2">
-                      <Ban className="w-4 h-4 text-redPigment" />
-                      <p className="text-sm font-sans text-redPigment">Khóa học đã bị cấm</p>
-                    </div>
-                  ) : (
-                    <ToggleSwitchButton courseId={courseId} status={courseInfo?.status} />
-                  )}
-                </div>
-              )}
-              <BasicInfoForm
-                isEditingBasic={true}
-                courseInfo={courseInfo}
-                setCourseInfo={handleGetCourseInfo}
-                courseId={courseId}
-                setShowAlertSuccess={setShowAlertSuccess}
-                setShowAlertError={setShowAlertError}
-                setDescription={setDescription}
-              />
-            </AnimateWrapper>
-            <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-              <SectionList
-                sections={sections}
-                setSections={setSections}
-                courseId={courseId}
-                handleGetCourseInfo={handleGetCourseInfo}
-                setShowAlertSuccess={setShowAlertSuccess}
-                setShowAlertError={setShowAlertError}
-                setDescription={setDescription}
-              />
-            </AnimateWrapper>
-            {showAlertSuccess && <AlertSuccess description={description} />}
-            {showAlertError && <AlertError description={description} />}
-          </>
-        )}
-      </div> */}
       <div className="w-full h-full gap-4 flex flex-col p-4 ">
         <ProgressBar steps={steps} completedSteps={completedSteps} currentStep={currentStep} />
         <Card className="mb-8">
@@ -196,8 +137,6 @@ const CourseDetails: React.FC = () => {
           </CardHeader>
           <CardContent>{renderStepContent()}</CardContent>
         </Card>
-        {showAlertSuccess && <AlertSuccess description={description} />}
-        {showAlertError && <AlertError description={description} />}
       </div>
     </>
   );

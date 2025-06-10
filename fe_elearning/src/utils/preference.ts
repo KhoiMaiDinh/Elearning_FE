@@ -6,8 +6,10 @@ const APIGetPreference = async () => {
     if (response.status === 200) {
       return { status: response.status, data: response.data };
     }
+    return { status: response.status, data: null };
   } catch (error) {
     console.error(error);
+    return { status: 500, data: null };
   }
 };
 
@@ -17,8 +19,10 @@ const APISavePreference = async (data: any) => {
     if (response.status === 200) {
       return { status: response.status, data: response.data };
     }
+    return { status: response.status, data: null };
   } catch (error) {
     console.error(error);
+    return { status: 500, data: null };
   }
 };
 

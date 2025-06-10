@@ -7,13 +7,11 @@ type AlertType = {
 };
 const AlertSuccess: React.FC<AlertType> = ({ description }) => {
   return (
-    <div className="fixed right-4 top-4 z-50 rounded-md bg-white font-sans shadow-xl">
+    <div className="fixed right-4 top-4 z-50 rounded-md border-[2px] bg-white shadow-xl">
       <Alert>
-        <RocketIcon color="#2a435d" className="h-4 w-4" />
-        <AlertTitle className="font-bold text-majorelleBlue dark:text-white/80">
-          Thông báo!
-        </AlertTitle>
-        <AlertDescription className="font-medium text-majorelleBlue dark:text-white/80">
+        <RocketIcon color="#7152f3" className="h-4 w-4" />
+        <AlertTitle className="font-bold text-PalatinateBlue">Thông báo!</AlertTitle>
+        <AlertDescription className="font-medium text-MajorelleBlue">
           {description}
         </AlertDescription>
       </Alert>

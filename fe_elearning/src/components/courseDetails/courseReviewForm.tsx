@@ -1,10 +1,12 @@
 // src/components/courseDetails/CourseReviewForm.tsx
 import { APIPostReview } from '@/utils/comment';
 import React, { useState } from 'react';
-import AlertSuccess from '../alert/AlertSuccess';
-import AlertError from '../alert/AlertError';
 import { useForm } from 'react-hook-form';
-
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 interface Review {
   course_id: string;
 }
@@ -12,10 +14,7 @@ interface Review {
 const CourseReviewForm: React.FC<Review> = ({ course_id }) => {
   const { register, handleSubmit, reset } = useForm();
   const [rating, setRating] = useState(0);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [description, setDescription] = useState('');
-
+  const theme = useTheme();
   const onSubmit = async (data: any) => {
     try {
       const dataSubmit = {
@@ -24,31 +23,20 @@ const CourseReviewForm: React.FC<Review> = ({ course_id }) => {
       };
       const response = await APIPostReview(course_id, dataSubmit);
       if (response?.status === 201) {
-        setShowAlertSuccess(true);
-        setDescription('Đánh giá đã được gửi thành công');
         reset();
-
-        setTimeout(() => {
-          setShowAlertSuccess(false);
-          setDescription('');
-        }, 3000);
+        toast.success(<ToastNotify status={1} message="Đánh giá đã được gửi thành công" />, {
+          style: styleSuccess,
+        });
       } else {
-        setShowAlertError(true);
-        setDescription('Đánh giá không thành công');
-        setTimeout(() => {
-          setShowAlertError(false);
-          setDescription('');
-        }, 3000);
+        toast.error(<ToastNotify status={-1} message="Đánh giá không thành công" />, {
+          style: styleError,
+        });
       }
     } catch (error) {
       console.error(error);
-      setShowAlertError(true);
-      setShowAlertSuccess(false);
-      setDescription('Đánh giá không thành công');
-      setTimeout(() => {
-        setShowAlertError(false);
-        setDescription('');
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Đánh giá không thành công" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -78,8 +66,6 @@ const CourseReviewForm: React.FC<Review> = ({ course_id }) => {
       >
         Gửi đánh giá
       </button>
-      {showAlertSuccess && <AlertSuccess description={description} />}
-      {showAlertError && <AlertError description={description} />}
     </form>
   );
 };

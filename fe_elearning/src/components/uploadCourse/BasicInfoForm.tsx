@@ -14,7 +14,6 @@ import {
   ArrowRight,
   Check,
   CircleDot,
-  CircleX,
   DiamondPlus,
   DollarSign,
   LayoutGrid,
@@ -34,15 +33,10 @@ import { useCategoryFetcher } from '@/hooks/course/useCategoryFetcher';
 import { Spinner } from '../ui/spinner';
 import AddButton from '../button/addButton';
 import { ConfirmDialog } from '../alert/AlertConfirm';
-
-const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => {
-  return (
-    <div className="flex flex-col gap-2 py-2">
-      <div className="font-semibold text-base text-cosmicCobalt dark:text-white ">{label}</div>
-      <div className="text-sm text-black dark:text-white/80">{children}</div>
-    </div>
-  );
-};
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
 
 const data = [
   { id: 'BEGINNER', value: 'Sơ cấp' },
@@ -110,9 +104,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       const response = await APIUpdateCourse(courseInfo.id, data);
       if (response?.status === 200) {
         setCourseInfo(response.data);
-        setShowAlertSuccess(true);
-        setDescription('Thông tin khóa học đã được cập nhật thành công!');
-        setTimeout(() => setShowAlertSuccess(false), 3000);
+        toast.success(
+          <ToastNotify status={1} message="Thông tin khóa học đã được cập nhật thành công!" />,
+          { style: styleSuccess }
+        );
+      } else {
+        toast.error(<ToastNotify status={-1} message="Không thể cập nhật thông tin khóa học" />, {
+          style: styleError,
+        });
       }
     }
 
@@ -123,10 +122,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     const response = await APIInitCourse(data);
     if (response?.status === 201) {
       setCourseInfo(response.data);
-      setShowAlertSuccess(true);
-      setDescription('Khóa học đã được tạo thành công!');
-      handleNextStep();
-      setTimeout(() => setShowAlertSuccess(false), 3000);
+      toast.success(<ToastNotify status={1} message="Khóa học đã được tạo thành công!" />, {
+        style: styleSuccess,
+      });
     }
   };
 
@@ -140,9 +138,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       }
     } catch (error) {
       console.error('Error saving course:', error);
-      setShowAlertError(true);
-      setDescription('Không thể lưu thông tin khóa học');
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Không thể lưu thông tin khóa học" />, {
+        style: styleError,
+      });
     } finally {
       setLoading(false);
     }

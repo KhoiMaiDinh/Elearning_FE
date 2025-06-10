@@ -9,6 +9,7 @@ const APIInstructorOverview = async (queryParams: { month: number; year: number 
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -24,6 +25,7 @@ const APIStudentGrowth = async (queryParams: { year: number }) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -37,6 +39,7 @@ const APICourseCompletionRate = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -52,6 +55,7 @@ const APIInstructorRevenue = async (queryParams: { year: number }) => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -65,6 +69,7 @@ const APIRevenueByCourse = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -78,6 +83,7 @@ const APIPayoutSummary = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -91,6 +97,7 @@ const APINextPayout = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -104,6 +111,7 @@ const APIAverageStudentEngagement = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;
@@ -117,6 +125,7 @@ const APIAverageCourseRating = async () => {
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
+    return { data: null, status: response.status };
   } catch (err) {
     console.error('Error during create order:', err);
     throw err;

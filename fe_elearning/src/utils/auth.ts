@@ -87,6 +87,26 @@ const APIResetPassword = async (data: any) => {
   }
 };
 
+const APIResendEmailVerification = async () => {
+  try {
+    const response = await axiosInstance.post('/auth/verify/email/resend');
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    console.error('Error during resend email verification:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
+const APIVerifyEmail = async (token: string) => {
+  try {
+    const response = await axiosInstance.post('/auth/verify/email', { token });
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    console.error('Error during verify email:', err);
+    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  }
+};
+
 export {
   APILoginEmail,
   APIRegisterEmail,
@@ -95,4 +115,6 @@ export {
   APIForgotPassword,
   APIResetPassword,
   APIRefreshToken,
+  APIResendEmailVerification,
+  APIVerifyEmail,
 };

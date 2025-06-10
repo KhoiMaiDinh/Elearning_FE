@@ -87,7 +87,7 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
                     )}
                   />
                   {item.image && (
-                    <Image
+                    <img
                       src={item.image}
                       alt={item.value}
                       className="w-auto md:h-5 h-2 object-contain"

@@ -10,9 +10,12 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import { Button } from '@/components/ui/button';
 import { APIInitSection, APIUpdateSection, APIGetFullCourse } from '@/utils/course';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
 import { Section } from '@/types/courseType';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 
 const sectionSchema = yup.object().shape({
   title: yup.string().required('Tiêu đề phần không được để trống'),
@@ -43,10 +46,7 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
 
   const sections = useSelector((state: RootState) => state.course.courseInfo?.sections || []);
   const dispatch = useDispatch();
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [description, setDescription] = useState('');
-
+  const theme = useTheme();
   const isNewSection = !section.id;
 
   const handleGetCourseInfo = async () => {
@@ -82,16 +82,16 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
           items: [],
         };
         onSave(newSection);
-        setShowAlertSuccess(true);
-        setDescription('Tạo phần bài giảng thành công');
-        setTimeout(() => setShowAlertSuccess(false), 3000);
+        toast.success(<ToastNotify status={1} message="Tạo phần bài giảng thành công" />, {
+          style: styleSuccess,
+        });
         await handleGetCourseInfo();
       }
     } catch (error) {
       console.error('Error creating section:', error);
-      setShowAlertError(true);
-      setDescription('Không thể tạo phần bài giảng');
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Không thể tạo phần bài giảng" />, {
+        style: styleError,
+      });
       throw error;
     }
   };
@@ -113,9 +113,9 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
       }
     } catch (error) {
       console.error('Error updating section:', error);
-      setShowAlertError(true);
-      setDescription('Không thể cập nhật phần bài giảng');
-      setTimeout(() => setShowAlertError(false), 3000);
+      toast.error(<ToastNotify status={-1} message="Không thể cập nhật phần bài giảng" />, {
+        style: styleError,
+      });
       throw error;
     }
   };
@@ -129,51 +129,48 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Controller
-        name="title"
-        control={control}
-        render={({ field }) => (
-          <InputRegisterLecture
-            {...field}
-            labelText={`Tiêu đề phần ${section.position}`}
-            error={errors.title?.message}
-          />
-        )}
-      />
-      <Controller
-        name="description"
-        control={control}
-        render={({ field }) => (
-          <TextAreaRegisterLecture
-            {...field}
-            labelText={`Mô tả phần ${section.position}`}
-            error={errors.description?.message}
-            onChange={(e) => {
-              field.onChange(e);
-              setDescription(e);
-            }}
-          />
-        )}
-      />
-      <div className="flex gap-2">
-        <Button
-          type="submit"
-          className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
-        >
-          {isNewSection ? '💡Tạo mới' : '💡Cập nhật'}
-        </Button>
-        <Button
-          type="button"
-          className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
-          onClick={onCancel}
-        >
-          Hủy
-        </Button>
-      </div>
-      {showAlertSuccess && <AlertSuccess description={description} />}
-      {showAlertError && <AlertError description={description} />}
-    </form>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <InputRegisterLecture
+              {...field}
+              labelText={`Tiêu đề phần ${section.position}`}
+              error={errors.title?.message}
+            />
+          )}
+        />
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <TextAreaRegisterLecture
+              {...field}
+              labelText={`Mô tả phần ${section.position}`}
+              error={errors.description?.message}
+              onChange={(e) => field.onChange(e)}
+            />
+          )}
+        />
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white"
+          >
+            {isNewSection ? '💡Tạo mới' : '💡Cập nhật'}
+          </Button>
+          <Button
+            type="button"
+            className="w-32 bg-custom-gradient-button-red text-white  hover:brightness-125 rounded-md font-sans font-medium text-[16px] p-2"
+            onClick={onCancel}
+          >
+            Hủy
+          </Button>
+        </div>
+      </form>
+    </>
   );
 };
 

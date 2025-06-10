@@ -15,16 +15,17 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import AddButton from '@/components/button/addButton';
 import { Edit } from 'lucide-react';
-
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 interface AddSectionDialogProps {
   open: boolean;
   course: CourseForm;
   section: Section | null;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess: () => void;
-  setShowAlertSuccess: (show: boolean) => void;
-  setShowAlertError: (show: boolean) => void;
-  setDescription: (desc: string) => void;
 }
 
 const SectionModal: React.FC<AddSectionDialogProps> = ({
@@ -33,27 +34,20 @@ const SectionModal: React.FC<AddSectionDialogProps> = ({
   section,
   onOpenChange,
   onSubmitSuccess,
-  setShowAlertSuccess,
-  setShowAlertError,
-  setDescription,
 }) => {
+  const theme = useTheme();
   const onSave = (successMessage: string) => {
-    setShowAlertSuccess(true);
-    setDescription(successMessage);
+    toast.success(<ToastNotify status={1} message={successMessage} />, { style: styleSuccess });
+    onSubmitSuccess();
     onSubmitSuccess();
     handleOpenChange(false);
-    setTimeout(() => {
-      setShowAlertSuccess(false);
-    }, 3000);
   };
 
   const onFail = (errorMessage: string) => {
-    setShowAlertError(true);
-    setDescription(errorMessage);
+    toast.error(<ToastNotify status={-1} message={errorMessage} />, {
+      style: styleError,
+    });
     handleOpenChange(false);
-    setTimeout(() => {
-      setShowAlertError(false);
-    }, 3000);
   };
   const { formMethods, submitting, handleCreateSection, handleUpdateSection } = useSectionForm(
     course,

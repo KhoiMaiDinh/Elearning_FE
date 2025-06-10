@@ -14,6 +14,10 @@ import { APIChangeCourseStatus } from '@/utils/course';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
 import { AxiosError } from 'axios';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 
 interface SectionListProps {
   sections: Section[];
@@ -51,7 +55,7 @@ const SectionList: React.FC<SectionListProps> = ({
   handlePrevStep,
 }) => {
   const [openSectionIds, setOpenSections] = useState<Set<string>>(new Set());
-
+  const theme = useTheme();
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
 
@@ -129,19 +133,22 @@ const SectionList: React.FC<SectionListProps> = ({
         status: 'PUBLISHED',
       });
       if (response) {
-        setShowAlertSuccess(true);
-        setDescription('Bạn đã cập nhật trạng thái khóa học thành công');
+        toast.success(
+          <ToastNotify status={1} message="Bạn đã cập nhật trạng thái khóa học thành công" />,
+          { style: styleSuccess }
+        );
       }
       handleNextStep();
     } catch (error) {
       console.log(error);
-      setShowAlertError(true);
-      if (error instanceof AxiosError) setDescription(error.response?.data.message);
-      else setDescription('Cập nhật trạng thái khóa học thất bại');
-      setTimeout(() => {
-        setShowAlertSuccess(false);
-        setShowAlertError(false);
-      }, 3000);
+      if (error instanceof AxiosError) {
+        toast.error(<ToastNotify status={-1} message={error.response?.data.message} />, {
+          style: styleError,
+        });
+      }
+      toast.error(<ToastNotify status={-1} message="Cập nhật trạng thái khóa học thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -213,9 +220,6 @@ const SectionList: React.FC<SectionListProps> = ({
           course={course!}
           section={selectedSection!}
           onSubmitSuccess={handleGetCourseInfo}
-          setShowAlertSuccess={setShowAlertSuccess}
-          setShowAlertError={setShowAlertError}
-          setDescription={setDescription}
         />
 
         {/* Lecture Modal */}
@@ -225,9 +229,6 @@ const SectionList: React.FC<SectionListProps> = ({
           section={selectedSection!}
           lecture={selectedLecture!}
           onSubmitSuccess={handleGetCourseInfo}
-          setShowAlertSuccess={setShowAlertSuccess}
-          setShowAlertError={setShowAlertError}
-          setDescription={setDescription}
         />
       </div>
     </>

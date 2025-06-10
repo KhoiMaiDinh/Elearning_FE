@@ -1,5 +1,4 @@
-import AlertError from '@/components/alert/AlertError';
-import AlertSuccess from '@/components/alert/AlertSuccess';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +13,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { CouponType } from '@/types/couponType';
 import { APIDeleteCoupon } from '@/utils/coupon';
 import React, { useState } from 'react';
-
+import { toast, ToastContainer } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 type DialogOptions = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,20 +32,13 @@ const DeleteCouponDialog: React.FC<DialogOptions> = ({
   handleError,
 }) => {
   const [loading, setIsLoading] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
-
+  const theme = useTheme();
   const showSuccess = (message: string) => {
-    setAlertDescription(message);
-    setShowAlertSuccess(true);
-    setTimeout(() => setShowAlertSuccess(false), 3000);
+    toast.success(<ToastNotify status={1} message={message} />, { style: styleSuccess });
   };
 
   const showError = (message: string) => {
-    setAlertDescription(message);
-    setShowAlertError(true);
-    setTimeout(() => setShowAlertError(false), 3000);
+    toast.error(<ToastNotify status={-1} message={message} />, { style: styleError });
   };
 
   const handleDelete = async () => {
@@ -93,8 +87,6 @@ const DeleteCouponDialog: React.FC<DialogOptions> = ({
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
-      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-      {showAlertError && <AlertError description={alertDescription} />}
     </AlertDialog>
   );
 };
