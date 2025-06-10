@@ -142,7 +142,7 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (currentCourseItem?.video) {
-      setVideoUrl(currentCourseItem?.video?.video?.key);
+      setVideoUrl(currentCourseItem?.video?.key);
     }
   }, [currentCourseItem]);
 
@@ -249,7 +249,13 @@ const LearnPage = () => {
       {courseData?.id && !isOwner && isRegistered && (
         <>
           <ButtonReview course_id={courseData?.id || ''} />
-          <ButtonMore course_id={courseData?.id || ''} />
+          <ButtonMore
+            course_id={courseData?.id || ''}
+            label={`Bạn đang ở bài học ${currentCourseItem?.title}, chương ${
+              sections.find((section) => section.items?.includes(currentCourseItem as CourseItem))
+                ?.title
+            }`}
+          />
         </>
       )}
     </AnimateWrapper>

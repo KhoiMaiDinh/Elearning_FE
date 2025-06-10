@@ -13,7 +13,7 @@ const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
 
-export default function ButtonMore({ course_id }: { course_id: string }) {
+export default function ButtonMore({ course_id, label }: { course_id: string; label: string }) {
   const {
     control,
     handleSubmit,
@@ -48,7 +48,7 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
     const dataReport = {
       type: 'COURSE',
       content_id: course_id,
-      reason: data.content,
+      reason: data.content + ' - ' + label,
     };
     await handleCreateReport(dataReport);
   };
@@ -98,16 +98,26 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
       {/* Popup Report Form */}
       {showReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-[90%] max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-eerieBlack">
+          <div className="relative w-[100%] max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-eerieBlack">
             <button
               className="absolute right-3 top-3 text-gray-400 hover:text-red-500"
               onClick={() => setShowReport(false)}
             >
               <X size={20} />
             </button>
-            <h2 className="mb-4 text-lg font-semibold text-eerieBlack dark:text-white">
+            <h2 className="mb-1 text-lg font-semibold text-eerieBlack dark:text-white">
               Gửi báo cáo khóa học
             </h2>
+            <div className="flex flex-col gap-4 mb-4">
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="content"
+                  className="text-sm font-medium text-gray-700 dark:text-white"
+                >
+                  {label}
+                </label>
+              </div>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <Controller
                 control={control}

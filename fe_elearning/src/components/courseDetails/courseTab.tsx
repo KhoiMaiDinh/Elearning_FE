@@ -75,7 +75,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     };
     try {
       const response = await APIPostThread(newPostData);
-      if (response?.status === 201) {
+      if (response?.status === 200) {
         setNewTitle('');
         setNewContent('');
         handleGetThread();
@@ -284,15 +284,16 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             </div>
           </div>
 
+          <hr className="my-4" />
           {currentCourseItem && (
             <div>
               <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-                {currentCourseItem.title}
+                {currentCourseItem?.title}
               </h3>
               <p
                 className="text-darkSilver dark:text-lightSilver ql-content"
                 dangerouslySetInnerHTML={{
-                  __html: currentCourseItem.description,
+                  __html: currentCourseItem?.description,
                 }}
               />
             </div>
