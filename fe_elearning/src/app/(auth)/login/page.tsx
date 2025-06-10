@@ -50,6 +50,7 @@ export default function LoginPage() {
   const [showAlertError, setShowAlertError] = useState(false);
   const [alertDescription, setAlertDescription] = useState('');
   const [showBannedModal, setShowBannedModal] = useState(false);
+  const [bannedUntil, setBannedUntil] = useState('');
   const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
 
   const form = useForm<FormData>({
@@ -85,6 +86,7 @@ export default function LoginPage() {
         // Check if user is banned
         if (decodedToken.banned_until) {
           clearLoginData();
+          setBannedUntil(decodedToken.banned_until);
           setShowBannedModal(true);
           return;
         }
@@ -333,7 +335,15 @@ export default function LoginPage() {
         isOpen={showBannedModal}
         onClose={() => setShowBannedModal(false)}
         title="Tài khoản bị khóa"
-        description="Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để biết thêm chi tiết."
+        description={`Tài khoản của bạn đã bị khóa đến ${new Date(bannedUntil).toLocaleDateString(
+          'vi-VN',
+          {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }
+        )}. Vui lòng liên hệ admin để biết thêm chi tiết.`}
+        showContactButton={true}
       />
 
       {/* Unverified Email Modal */}
@@ -347,6 +357,7 @@ export default function LoginPage() {
         description="Tài khoản của bạn chưa được xác thực qua email. Bạn có thể tiếp tục sử dụng với các tính năng hạn chế hoặc xác thực email để sử dụng đầy đủ tính năng."
         showContinueButton={true}
         onContinue={handleContinueUnverified}
+        showResendEmailVerification={true}
       />
     </div>
   );

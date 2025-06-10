@@ -24,7 +24,6 @@ import { APIGetCurrentUser, APIUpdateCurrentUser } from '@/utils/user';
 import { APIGetPreference } from '@/utils/preference';
 import { APIGetEnrolledCourse, APIGetFavoriteCourse } from '@/utils/course';
 import { APIGetPresignedUrl } from '@/utils/storage';
-import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
 import { APIGetCertificate } from '@/utils/certificate';
@@ -560,14 +559,13 @@ const StudentProfile = () => {
                     {learningProgress.map((course) => (
                       <div key={course.id} className="flex items-start gap-4 p-3 rounded-lg border">
                         <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
-                          <Image
+                          <img
                             src={
                               `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
                               '/images/logo.png'
                             }
                             alt={`Course ${course.title}`}
-                            fill
-                            className="object-cover"
+                            className="object-fill"
                           />
                         </div>
                         <div className="flex-1 space-y-1">
@@ -635,14 +633,13 @@ const StudentProfile = () => {
                     {favoriteCourse.map((course) => (
                       <div key={course.id} className="flex items-start gap-4 p-3 rounded-lg border">
                         <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
-                          <Image
+                          <img
                             src={
                               `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
                               '/images/logo.png'
                             }
                             alt={`Course ${course.title}`}
-                            fill
-                            className="object-cover"
+                            className="object-fill"
                           />
                         </div>
                         <div className="flex-1 space-y-1">

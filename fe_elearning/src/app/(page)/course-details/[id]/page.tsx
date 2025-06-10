@@ -251,7 +251,7 @@ const LearnPage = () => {
           <ButtonReview course_id={courseData?.id || ''} />
           <ButtonMore
             course_id={courseData?.id || ''}
-            label={`Bạn đang ở bài học ${currentCourseItem?.title}, chương ${
+            label={`Bài học ${currentCourseItem?.title}, chương ${
               sections.find((section) => section.items?.includes(currentCourseItem as CourseItem))
                 ?.title
             }`}
