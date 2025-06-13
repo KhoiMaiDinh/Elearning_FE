@@ -8,12 +8,13 @@ import { CourseForm, CourseItem, Section } from '@/types/courseType';
 import CourseItemList from '@/components/courseDetails/lessonList';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ButtonReview from '@/components/courseDetails/buttonReview';
 import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
+import { LectureComment } from '@/types/commentType';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefined => {
@@ -37,6 +38,9 @@ const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefine
 
 const LearnPage = () => {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const lecture = searchParams.get('lecture');
+  const comment = searchParams.get('comment');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const [courseData, setCourseData] = useState<CourseForm | undefined>(undefined);
@@ -48,7 +52,7 @@ const LearnPage = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-
+  const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (userInfo.id && courseData?.instructor?.user?.id) {
       setIsOwner(userInfo.id === courseData.instructor.user.id);
@@ -148,11 +152,30 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (userInfo.id) {
-      router.push(`/course-details/${id}`);
+      if (lecture && comment) {
+        router.push(`/course-details/${id}?lecture=${lecture}&comment=${comment}`);
+      } else {
+        router.push(`/course-details/${id}`);
+      }
     } else {
       router.push('/login');
     }
-  }, [userInfo.id]);
+  }, [userInfo.id, lecture, comment]);
+
+  useEffect(() => {
+    if (lecture && comment) {
+      const lectureId = lecture as string;
+      const commentId = comment as string;
+      const lectureItem = courseData?.sections
+        ?.flatMap((section) => section.items)
+        .find((item) => item.id === lectureId);
+
+      if (lectureItem && commentId) {
+        setCurrentCourseItem(lectureItem);
+        setCurrentCommentItem(commentId);
+      }
+    }
+  }, [lecture, comment]);
 
   return (
     <AnimateWrapper delay={0.2} direction="up">
@@ -225,6 +248,7 @@ const LearnPage = () => {
                 price={courseData.price}
                 priceFinal={courseData.priceFinal}
                 isOwner={isOwner}
+                currentCommentItem={currentCommentItem}
               />
             </div>
           )}

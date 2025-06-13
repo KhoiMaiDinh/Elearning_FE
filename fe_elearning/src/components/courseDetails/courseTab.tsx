@@ -38,6 +38,7 @@ interface CourseTabsProps {
   priceFinal?: number;
   currentCourseItem?: CourseItem;
   isOwner?: boolean;
+  currentCommentItem?: string;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
@@ -50,6 +51,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   priceFinal,
   currentCourseItem,
   isOwner,
+  currentCommentItem,
 }) => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState('description');
@@ -201,6 +203,12 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       handleGetReply(expandedThreadId);
     }
   }, [expandedThreadId]);
+
+  useEffect(() => {
+    if (currentCommentItem) {
+      setActiveTab('reviews');
+    }
+  }, [activeTab]);
 
   return (
     <>

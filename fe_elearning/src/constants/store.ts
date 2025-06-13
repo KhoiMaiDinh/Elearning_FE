@@ -11,6 +11,7 @@ import createOrderSlice from './orderSlice';
 import createStatisticItemCourseSlice from './statisticItemCourse';
 import createCommentSlice from './comment';
 import socketSlice from './socketSlice';
+import notificationSlice from './notificationSlice';
 // Cấu hình persist
 const persistConfig = {
   key: 'root',
@@ -24,6 +25,7 @@ const persistConfig = {
     'statisticItemCourse',
     'comment',
     'socket',
+    'notification',
   ], // Chỉ lưu slice `user`, có thể thêm `course` nếu muốn
 };
 
@@ -37,6 +39,7 @@ const rootReducer = combineReducers({
   statisticItemCourse: createStatisticItemCourseSlice,
   comment: createCommentSlice,
   socket: socketSlice,
+  notification: notificationSlice,
 });
 
 // Tạo reducer đã persist

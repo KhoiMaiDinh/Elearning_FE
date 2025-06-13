@@ -1,5 +1,7 @@
 import { getSocket } from '@/lib/socket';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { addNotification, markAsRead } from './notificationSlice';
+import { NotificationType } from '@/types/notificationType';
 
 interface SocketState {
   connected: boolean;
@@ -18,6 +20,10 @@ export const socketSlice = createSlice({
       const socket = getSocket(token);
       socket.emit('register', {
         user_id,
+      });
+      socket.on('notification', (data: NotificationType) => {
+        console.log('🚀 ~ socket.on ~ data:', data);
+        addNotification(data);
       });
 
       socket.on('disconnect', () => {
