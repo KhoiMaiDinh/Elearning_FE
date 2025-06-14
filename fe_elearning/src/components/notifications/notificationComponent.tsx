@@ -1,18 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Bell,
-  DollarSign,
-  MessageSquare,
-  Star,
-  CheckCircle,
-  AlertCircle,
-  BarChart,
-  Settings,
-  X,
-  Check,
-} from 'lucide-react';
+import { Bell } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,9 +21,7 @@ import {
 import { NotificationType } from '@/types/notificationType';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { toast } from 'react-toastify';
-import ToastNotify from '../ToastNotify/toastNotify';
 import { setIsNewNotification } from '@/constants/socketSlice';
 import { NotificationToast } from './NotificationToast';
 import { useTheme } from 'next-themes';
@@ -51,23 +38,35 @@ export function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [total, setTotal] = useState(0);
   const { theme } = useTheme();
+  const [afterCursor, setAfterCursor] = useState(undefined);
+  const [beforeCursor, setBeforeCursor] = useState(undefined);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   // Use socket hook
 
   const handleGetNotification = async () => {
     try {
-      setLoading(true);
-      const response = await APIGetNotification({ limit: 100 });
+      if (afterCursor) {
+        setIsLoadingMore(true);
+      }
+      if (!afterCursor && activeNotifications.length > 0) return;
+      const response = await APIGetNotification({ limit: 10, afterCursor, beforeCursor });
       if (response.status === 200) {
-        setActiveNotifications(response.data);
+        setActiveNotifications((prev) => [...prev, ...response.data]);
         setUnreadCount(response.unseen_count);
         setTotal(response.total);
+        setAfterCursor(response.afterCursor);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
-      setLoading(false);
+      setIsLoadingMore(false);
     }
   };
+
+  // Initial load - only run once when component mounts
+  useEffect(() => {
+    handleGetNotification();
+  }, []); // Empty dependency array
 
   const handleReadAllNotification = async () => {
     try {
@@ -113,11 +112,6 @@ export function NotificationCenter() {
     }
   }, [isNewNotification]);
 
-  // // Initial load - only run once when component mounts
-  useEffect(() => {
-    handleGetNotification();
-  }, []); // Empty dependency array
-
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -145,7 +139,19 @@ export function NotificationCenter() {
           </div>
         </div>
 
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div
+          className="max-h-[60vh] overflow-y-auto"
+          onScroll={(e) => {
+            const element = e.currentTarget;
+            const scrollPosition = Math.ceil(element.scrollTop + element.clientHeight);
+            const isAtBottom = scrollPosition >= element.scrollHeight;
+
+            if (isAtBottom && afterCursor && !loading) {
+              handleGetNotification();
+            }
+          }}
+        >
+          {' '}
           {loading ? (
             <div className="flex items-center justify-center p-8">
               <span className="text-muted-foreground">Đang tải...</span>
@@ -164,6 +170,11 @@ export function NotificationCenter() {
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <Bell className="h-10 w-10 text-muted-foreground mb-2" />
               <p className="text-muted-foreground">Không có thông báo nào</p>
+            </div>
+          )}{' '}
+          {isLoadingMore && (
+            <div className="flex items-center justify-center p-8">
+              <span className="text-muted-foreground">Đang tải...</span>
             </div>
           )}
         </div>
@@ -190,7 +201,9 @@ function NotificationItem({
           window.open(
             type === 'NEW_COMMENT'
               ? `/course-details/${notification?.metadata?.course_id}?lecture=${notification?.metadata?.lecture_id}&comment=${notification?.metadata?.comment_id}`
-              : '',
+              : type === 'INSTRUCTOR_REGISTERED'
+                ? `/profile/lecture?tab=ho-so`
+                : '',
             '_blank'
           );
           handleReadNotification(notification?.id);

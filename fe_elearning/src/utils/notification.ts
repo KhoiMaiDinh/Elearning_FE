@@ -18,6 +18,8 @@ const APIGetNotification = async (params?: {
         status: response.status,
         total: response?.data?.pagination?.totalRecords,
         unseen_count: response?.data?.unseen_count,
+        afterCursor: response?.data?.pagination?.afterCursor || undefined,
+        beforeCursor: response?.data?.pagination?.beforeCursor || undefined,
       };
     }
     return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm

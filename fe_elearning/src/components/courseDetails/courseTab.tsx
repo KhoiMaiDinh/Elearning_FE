@@ -188,6 +188,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     if (currentCourseItem?.id) {
       const response = await APIGetComment(currentCourseItem.id, {
         is_solved: filterOption === 'mostRelevant' ? false : undefined,
+        order: 'DESC',
       });
       if (response?.status === 200) {
         setComments(response?.data);

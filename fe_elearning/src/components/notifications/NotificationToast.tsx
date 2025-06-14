@@ -8,7 +8,7 @@ interface NotificationToastProps {
 }
 
 export const NotificationToast: React.FC<NotificationToastProps> = ({ notification }) => {
-  const { title, body, image } = notification;
+  const { title, body, image, type } = notification;
 
   return (
     <div className="flex items-start gap-3 p-3 rounded-md shadow-sm border-l-4 bg-white dark:bg-black  ">

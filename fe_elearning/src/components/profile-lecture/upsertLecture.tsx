@@ -28,13 +28,13 @@ type Props = {
 const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   const theme = useTheme();
   const onSave = () => {
-    toast.success(<ToastNotify status={1} message="Thêm tài khoản thành công" />, {
+    toast.success(<ToastNotify status={1} message="Gửi hồ sơ thành công" />, {
       style: styleSuccess,
     });
   };
 
   const onFail = () => {
-    toast.error(<ToastNotify status={-1} message="Thêm tài khoản thất bại" />, {
+    toast.error(<ToastNotify status={-1} message="Gửi hồ sơ thất bại" />, {
       style: styleError,
     });
   };
