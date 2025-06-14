@@ -248,20 +248,25 @@ const LectureModal: React.FC<LectureModalProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {lecture?.series?.map((version) => (
-                              <SelectItem key={version.version} value={version.version.toString()}>
-                                V
-                                {version.version +
-                                  ' - ' +
-                                  getVideoStatus(
-                                    version.video.status as
-                                      | 'uploaded'
-                                      | 'validated'
-                                      | 'pending'
-                                      | 'rejected'
-                                  )}
-                              </SelectItem>
-                            ))}
+                            {Array.isArray(lecture?.series) &&
+                              lecture?.series.length > 0 &&
+                              lecture?.series?.map((version) => (
+                                <SelectItem
+                                  key={version.version}
+                                  value={version.version.toString()}
+                                >
+                                  V
+                                  {version.version +
+                                    ' - ' +
+                                    getVideoStatus(
+                                      version.video.status as
+                                        | 'uploaded'
+                                        | 'validated'
+                                        | 'pending'
+                                        | 'rejected'
+                                    )}
+                                </SelectItem>
+                              ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -302,39 +307,41 @@ const LectureModal: React.FC<LectureModalProps> = ({
                   Số lượng tài liệu: {resources.length}/{MAX_RESOURCES} file
                 </div>
                 <div className="gap-3 grid">
-                  {resources.map((resource, index) => (
-                    <div
-                      className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
-                      key={resource.resource_file.id}
-                    >
-                      <div className="flex items-start justify-between w-full rounded-md gap-2">
-                        <div className="px-3 py-2">
-                          <FileCheck className="w-4 h-4 text-black dark:text-white" />
-                        </div>
-
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="flex flex-row gap-2 truncate  w-full">
-                            <InputRegisterLecture
-                              className="border-black"
-                              value={resource.name}
-                              placeholder="Tên tài liệu"
-                              onChange={(e) => handleChangeResourceName(index, e.target.value)}
-                              maxLength={60}
-                              error={errors.resources?.[index]?.name?.message}
-                            />
+                  {resources &&
+                    resources.length > 0 &&
+                    resources.map((resource, index) => (
+                      <div
+                        className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
+                        key={resource.resource_file.id}
+                      >
+                        <div className="flex items-start justify-between w-full rounded-md gap-2">
+                          <div className="px-3 py-2">
+                            <FileCheck className="w-4 h-4 text-black dark:text-white" />
                           </div>
-                        </div>
 
-                        <Button
-                          variant="ghost"
-                          className="hover:text-destructive"
-                          onClick={() => handleRemoveResource(index)}
-                        >
-                          <Trash2Icon className="w-4 h-4" />
-                        </Button>
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="flex flex-row gap-2 truncate  w-full">
+                              <InputRegisterLecture
+                                className="border-black"
+                                value={resource.name}
+                                placeholder="Tên tài liệu"
+                                onChange={(e) => handleChangeResourceName(index, e.target.value)}
+                                maxLength={60}
+                                error={errors.resources?.[index]?.name?.message}
+                              />
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            className="hover:text-destructive"
+                            onClick={() => handleRemoveResource(index)}
+                          >
+                            <Trash2Icon className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </div>

@@ -229,11 +229,11 @@ const TeacherProfile = () => {
               </p>
             </div>
 
-            {dataCourse.length > 0 ? (
+            {dataCourse && dataCourse.length > 0 ? (
               <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-                {dataCourse.map((course, index) => (
-                  <CoursesBlock key={index} {...course} />
-                ))}
+                {Array.isArray(dataCourse) &&
+                  dataCourse.length > 0 &&
+                  dataCourse.map((course, index) => <CoursesBlock key={index} {...course} />)}
               </div>
             ) : (
               <Card className="border-0 shadow-lg">

@@ -23,9 +23,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   isOwner,
 }) => {
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
-  const userInfo = useSelector((state: RootState) => state.user.userInfo)
-
-
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({
@@ -59,95 +57,102 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
       </h3>
 
       <div className="space-y-4">
-        {sections.map((section, sectionIndex) => {
-          if (!section) return null;
+        {sections &&
+          sections.length > 0 &&
+          sections.map((section, sectionIndex) => {
+            if (!section) return null;
 
-          const isOpen = openSections[sectionIndex] ?? true;
-          const sectionActive = isChildActive(section);
+            const isOpen = openSections[sectionIndex] ?? true;
+            const sectionActive = isChildActive(section);
 
-          return (
-            <div key={sectionIndex}>
-              {isExpanded && (
-                <div
-                  onClick={() => toggleSection(sectionIndex)}
-                  className={`flex items-center justify-between cursor-pointer px-3 py-2 rounded-md transition-colors ${
-                    sectionActive
-                      ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
-                      : 'bg-majorelleBlue/10 dark:bg-majorelleBlue/10 hover:bg-majorelleBlue/20'
-                  }`}
-                >
-                  <h4 className="text-sm font-medium text-cosmicCobalt dark:text-AntiFlashWhite">
-                    {section.title}
-                  </h4>
-                  {isOpen ? (
-                    <ChevronDown className="w-4 h-4 text-majorelleBlue" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-majorelleBlue" />
-                  )}
-                </div>
-              )}
+            return (
+              <div key={sectionIndex}>
+                {isExpanded && (
+                  <div
+                    onClick={() => toggleSection(sectionIndex)}
+                    className={`flex items-center justify-between cursor-pointer px-3 py-2 rounded-md transition-colors ${
+                      sectionActive
+                        ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
+                        : 'bg-majorelleBlue/10 dark:bg-majorelleBlue/10 hover:bg-majorelleBlue/20'
+                    }`}
+                  >
+                    <h4 className="text-sm font-medium text-cosmicCobalt dark:text-AntiFlashWhite">
+                      {section.title}
+                    </h4>
+                    {isOpen ? (
+                      <ChevronDown className="w-4 h-4 text-majorelleBlue" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-majorelleBlue" />
+                    )}
+                  </div>
+                )}
 
-              {isOpen && section.items && section.items.length > 0 && (
-                <ul className="space-y-1 mt-2">
-                  {section.items.map((courseItem) => {
-                    if (!courseItem) return null;
+                {isOpen && section.items && section.items.length > 0 && (
+                  <ul className="space-y-1 mt-2">
+                    {section.items &&
+                      section.items.length > 0 &&
+                      section.items.map((courseItem) => {
+                        if (!courseItem) return null;
 
-                    const isActive = courseItem.title === currentCourseItemId;
-                    const isLocked = !isRegistered && !courseItem.is_preview && !isOwner;
+                        const isActive = courseItem.title === currentCourseItemId;
+                        const isLocked = !isRegistered && !courseItem.is_preview && !isOwner;
 
-                    return (
-                      <li
-                        key={courseItem.title}
-                        onClick={() => !isLocked && onCourseItemSelect(courseItem)}
-                        className={`group px-3 py-2 flex items-center justify-between rounded-md ${
-                          isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-                        } transition-colors ${
-                          isActive
-                            ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
-                            : !isLocked
-                              ? 'hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10'
-                              : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <PlayCircle
-                            size={20}
-                            className={`text-majorelleBlue flex-shrink-0 transition-opacity group-hover:opacity-90 ${
-                              isActive ? 'opacity-100' : 'opacity-80'
+                        return (
+                          <li
+                            key={courseItem.title}
+                            onClick={() => !isLocked && onCourseItemSelect(courseItem)}
+                            className={`group px-3 py-2 flex items-center justify-between rounded-md ${
+                              isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                            } transition-colors ${
+                              isActive
+                                ? 'bg-majorelleBlue/20 dark:bg-majorelleBlue/30'
+                                : !isLocked
+                                  ? 'hover:bg-majorelleBlue/10 dark:hover:bg-majorelleBlue/10'
+                                  : ''
                             }`}
-                          />
-                          {isExpanded && (
-                            <span
-                              className={`text-sm ${
-                                isActive
-                                  ? 'font-semibold text-majorelleBlue'
-                                  : 'text-darkSilver dark:text-lightSilver'
-                              }`}
-                            >
-                              {courseItem.title}
-                            </span>
-                          )}
-                        </div>
-                        {/* ✅ Green checkmark if progress > 80% */}
-                        {isExpanded &&
-                          isRegistered &&
-                          courseItem.progresses &&
-                          courseItem.progresses[0]?.watch_time_in_percentage &&
-                          courseItem.progresses[0]?.watch_time_in_percentage > 80 && (
-                            <CheckCircle size={16} className="text-vividMalachite flex-shrink-0" />
-                          )}
-                        {/* 🔒 Lock icon for non-preview lessons when not registered */}
-                        {isExpanded && isLocked && !isOwner && (
-                          <Lock size={16} className="text-gray-400 flex-shrink-0" />
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          );
-        })}
+                          >
+                            <div className="flex items-center gap-3">
+                              <PlayCircle
+                                size={20}
+                                className={`text-majorelleBlue flex-shrink-0 transition-opacity group-hover:opacity-90 ${
+                                  isActive ? 'opacity-100' : 'opacity-80'
+                                }`}
+                              />
+                              {isExpanded && (
+                                <span
+                                  className={`text-sm ${
+                                    isActive
+                                      ? 'font-semibold text-majorelleBlue'
+                                      : 'text-darkSilver dark:text-lightSilver'
+                                  }`}
+                                >
+                                  {courseItem.title}
+                                </span>
+                              )}
+                            </div>
+                            {/* ✅ Green checkmark if progress > 80% */}
+                            {isExpanded &&
+                              isRegistered &&
+                              courseItem.progresses &&
+                              courseItem.progresses[0]?.watch_time_in_percentage &&
+                              courseItem.progresses[0]?.watch_time_in_percentage > 80 && (
+                                <CheckCircle
+                                  size={16}
+                                  className="text-vividMalachite flex-shrink-0"
+                                />
+                              )}
+                            {/* 🔒 Lock icon for non-preview lessons when not registered */}
+                            {isExpanded && isLocked && !isOwner && (
+                              <Lock size={16} className="text-gray-400 flex-shrink-0" />
+                            )}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   );

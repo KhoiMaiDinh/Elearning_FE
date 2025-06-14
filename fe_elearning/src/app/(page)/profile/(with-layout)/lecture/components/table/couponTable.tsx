@@ -98,6 +98,8 @@ const CouponTable = ({
                 </tr>
               )}
               {!loading &&
+                coupons &&
+                coupons.length > 0 &&
                 coupons?.map((coupon) => (
                   <tr
                     key={coupon.code}

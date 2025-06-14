@@ -16,6 +16,7 @@ const notificationSlice = createSlice({
   reducers: {
     addNotification(state, action: PayloadAction<NotificationType>) {
       state.list.unshift(action.payload); // push lên đầu
+      console.log('🚀 ~ addNotification ~ state.list:', state.list);
     },
     markAsRead(state, action: PayloadAction<string>) {
       const index = state.list.findIndex((n: NotificationType) => n.id === action.payload);

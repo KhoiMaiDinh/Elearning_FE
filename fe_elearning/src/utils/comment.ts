@@ -17,6 +17,7 @@ const APIGetComment = async (
     aspect?: string;
     emotion?: string;
     is_solved?: boolean;
+    order?: string;
   }
 ) => {
   const filteredParams = Object.fromEntries(
@@ -66,8 +67,8 @@ const APIGetCommentsForInstructor = async (params?: {
   aspect?: string;
   emotion?: string;
   is_solved?: boolean;
-  limit?: number;
-  afterCursor?: string;
+
+  order?: string;
 }) => {
   const filteredParams = Object.fromEntries(
     Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
@@ -80,4 +81,24 @@ const APIGetCommentsForInstructor = async (params?: {
   }
 };
 
-export { APIPostComment, APIGetComment, APIPostReview, APIGetReview, APIGetCommentsForInstructor };
+const APIGetCommentById = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/lecture-comments/${id}`);
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export {
+  APIPostComment,
+  APIGetComment,
+  APIPostReview,
+  APIGetReview,
+  APIGetCommentsForInstructor,
+  APIGetCommentById,
+};

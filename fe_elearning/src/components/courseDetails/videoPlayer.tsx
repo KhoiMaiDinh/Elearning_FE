@@ -154,18 +154,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       >
                         Tự động
                       </li>
-                      {qualityLevels.map((level) => (
-                        <li
-                          key={level.id}
-                          onClick={() => handleQualitySelect(level.id)}
-                          className={cn(
-                            'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
-                            selectedQuality === level.id && 'font-semibold text-blue-600'
-                          )}
-                        >
-                          {level.label}
-                        </li>
-                      ))}
+                      {qualityLevels &&
+                        qualityLevels.length > 0 &&
+                        qualityLevels.map((level) => (
+                          <li
+                            key={level.id}
+                            onClick={() => handleQualitySelect(level.id)}
+                            className={cn(
+                              'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
+                              selectedQuality === level.id && 'font-semibold text-blue-600'
+                            )}
+                          >
+                            {level.label}
+                          </li>
+                        ))}
                     </ul>
                   </div>
                 )}

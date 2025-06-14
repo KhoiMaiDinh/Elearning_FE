@@ -43,7 +43,6 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       setLevelShow('Nâng cao');
     }
   }, [level]);
-  
 
   return (
     <Card className="flex flex-col lg:w-80 md:w-72 p-4 w-full items-center justify-center gap-2 md:gap-4 ">
@@ -111,10 +110,6 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
               }}
             >
               Đăng ký ngay
-            </Button>
-
-            <Button className="bg-custom-gradient-button-blue w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
-              Thêm vào giỏ hàng
             </Button>
           </div>
         )}

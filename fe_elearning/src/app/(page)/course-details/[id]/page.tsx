@@ -14,7 +14,6 @@ import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
-import { LectureComment } from '@/types/commentType';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefined => {
@@ -52,12 +51,18 @@ const LearnPage = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>(undefined);
+  const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>('');
   useEffect(() => {
     if (userInfo.id && courseData?.instructor?.user?.id) {
       setIsOwner(userInfo.id === courseData.instructor.user.id);
     }
   }, [userInfo, courseData]);
+
+  useEffect(() => {
+    if (comment) {
+      setCurrentCommentItem(comment);
+    }
+  }, [comment]);
 
   const handleGetCourseData = useCallback(async () => {
     try {
@@ -127,7 +132,14 @@ const LearnPage = () => {
         // For registered users or owner, show first video from first section
         const firstSection = sections[0];
         if (firstSection && firstSection.items && firstSection.items.length > 0) {
-          setCurrentCourseItem(firstSection.items[0]);
+          if (lecture) {
+            const lectureItem = firstSection.items.find((item) => item.id === lecture);
+            if (lectureItem) {
+              setCurrentCourseItem(lectureItem);
+            }
+          } else {
+            setCurrentCourseItem(firstSection.items[0]);
+          }
         }
       } else {
         // For unregistered users, find first preview video
@@ -161,21 +173,6 @@ const LearnPage = () => {
       router.push('/login');
     }
   }, [userInfo.id, lecture, comment]);
-
-  useEffect(() => {
-    if (lecture && comment) {
-      const lectureId = lecture as string;
-      const commentId = comment as string;
-      const lectureItem = courseData?.sections
-        ?.flatMap((section) => section.items)
-        .find((item) => item.id === lectureId);
-
-      if (lectureItem && commentId) {
-        setCurrentCourseItem(lectureItem);
-        setCurrentCommentItem(commentId);
-      }
-    }
-  }, [lecture, comment]);
 
   return (
     <AnimateWrapper delay={0.2} direction="up">

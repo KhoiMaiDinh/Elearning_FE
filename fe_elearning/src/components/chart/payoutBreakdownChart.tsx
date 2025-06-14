@@ -26,9 +26,11 @@ export function PayoutBreakdownChart() {
             dataKey="value"
             label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
           >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
+            {data &&
+              data.length > 0 &&
+              data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
           </Pie>
           <Tooltip
             formatter={(value, name, props) => [

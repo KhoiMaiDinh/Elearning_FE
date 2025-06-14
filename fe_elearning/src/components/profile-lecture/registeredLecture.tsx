@@ -51,13 +51,15 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              router.replace(`/profile/lecture?tab=${tab.id}`);
-            }}
-            className={`
+        {tabs &&
+          tabs.length > 0 &&
+          tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                router.replace(`/profile/lecture?tab=${tab.id}`);
+              }}
+              className={`
               md:px-8 md:py-3 px-2 py-1 md:text-sm text-xs font-medium transition-all duration-200
               ${
                 activeTab === tab.id
@@ -65,10 +67,10 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
                   : 'text-black50 dark:text-darkSilver hover:bg-gray/10 dark:hover:bg-darkSilver/10'
               }
             `}
-          >
-            {tab.label}
-          </button>
-        ))}
+            >
+              {tab.label}
+            </button>
+          ))}
       </div>
 
       <div className="w-full flex-1 mt-6">

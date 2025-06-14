@@ -441,31 +441,33 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <div className="prose max-w-none">
             {mode == 'edit' || mode == 'create' ? (
               <div className="space-y-2">
-                {requirementFields.map((field, index) => (
-                  <div key={index} className="flex items-top gap-2 ">
-                    <Controller
-                      control={control}
-                      name={`requirements.${index}`}
-                      render={({ field }) => (
-                        <InputRegisterLecture
-                          {...field}
-                          placeholder={`Yêu cầu ${index + 1}`}
-                          className="flex-1"
-                          maxLength={160}
-                          error={errors.requirements?.[index]?.message}
-                        />
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeRequirements(index)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                {Array.isArray(requirementFields) &&
+                  requirementFields.length > 0 &&
+                  requirementFields.map((field, index) => (
+                    <div key={index} className="flex items-top gap-2 ">
+                      <Controller
+                        control={control}
+                        name={`requirements.${index}`}
+                        render={({ field }) => (
+                          <InputRegisterLecture
+                            {...field}
+                            placeholder={`Yêu cầu ${index + 1}`}
+                            className="flex-1"
+                            maxLength={160}
+                            error={errors.requirements?.[index]?.message}
+                          />
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeRequirements(index)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
 
                 <Button
                   variant="outline"
@@ -504,31 +506,33 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
           <div className="prose max-w-none">
             {mode == 'edit' || mode == 'create' ? (
               <div className="space-y-2">
-                {outcomeFields.map((field, index) => (
-                  <div key={index} className="flex items-start gap-2 ">
-                    <Controller
-                      control={control}
-                      name={`outcomes.${index}`}
-                      render={({ field }) => (
-                        <InputRegisterLecture
-                          {...field}
-                          placeholder={`Kết quả ${index + 1}`}
-                          className="flex-1"
-                          maxLength={160}
-                          error={errors.outcomes?.[index]?.message}
-                        />
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeOutcomes(index)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                {Array.isArray(outcomeFields) &&
+                  outcomeFields.length > 0 &&
+                  outcomeFields.map((field, index) => (
+                    <div key={index} className="flex items-start gap-2 ">
+                      <Controller
+                        control={control}
+                        name={`outcomes.${index}`}
+                        render={({ field }) => (
+                          <InputRegisterLecture
+                            {...field}
+                            placeholder={`Kết quả ${index + 1}`}
+                            className="flex-1"
+                            maxLength={160}
+                            error={errors.outcomes?.[index]?.message}
+                          />
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeOutcomes(index)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
 
                 <Button
                   variant="outline"

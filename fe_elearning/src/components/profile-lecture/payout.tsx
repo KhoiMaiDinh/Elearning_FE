@@ -410,204 +410,207 @@ export default function InstructorPayouts() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPayouts.map((payout) => (
-                    <TableRow key={payout.id}>
-                      <TableCell className="font-medium">{payout.id}</TableCell>
-                      <TableCell>{payout.payee?.username}</TableCell>
-                      <TableCell className="font-medium">
-                        {formatPrice(Number(payout.amount || 0))}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(payout.payout_status)}
-                          {getStatusBadge(payout.payout_status as string)}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(payout.issued_at).toLocaleDateString('vi-VN', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {payout.month}/{payout.year}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedPayout(payout)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>Chi tiết thanh toán - {payout.id}</DialogTitle>
-                              <DialogDescription>
-                                Chi tiết thanh toán cho {payout.payee?.username}
-                              </DialogDescription>
-                            </DialogHeader>
-                            {selectedPayout && (
-                              <div className="space-y-6" ref={detailsRef}>
-                                {/* Payment Overview */}
-                                <div className="grid gap-4 md:grid-cols-2">
-                                  <Card>
-                                    <CardHeader>
-                                      <CardTitle className="text-lg">
-                                        Tổng quan thanh toán
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Mã thanh toán:
-                                        </span>
-                                        <span className="font-medium">{selectedPayout.id}</span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">
-                                          Người thanh toán:
-                                        </span>
-                                        <span className="font-medium">
-                                          {selectedPayout.payee?.username}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Số tiền:</span>
-                                        <span className="font-bold text-lg">
-                                          {formatPrice(Number(selectedPayout.amount || 0))}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Trạng thái:</span>
-                                        <div className="flex items-center gap-2">
-                                          {getStatusIcon(selectedPayout.payout_status)}
-                                          {getStatusBadge(selectedPayout.payout_status)}
-                                        </div>
-                                      </div>
-
-                                      {selectedPayout.payee?.email && (
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Email:</span>
-                                          <span className="font-medium">
-                                            {selectedPayout.payee?.email}
-                                          </span>
-                                        </div>
-                                      )}
-                                      {selectedPayout.paid_out_sent_at && (
+                  {filteredPayouts &&
+                    filteredPayouts.length > 0 &&
+                    filteredPayouts.map((payout) => (
+                      <TableRow key={payout.id}>
+                        <TableCell className="font-medium">{payout.id}</TableCell>
+                        <TableCell>{payout.payee?.username}</TableCell>
+                        <TableCell className="font-medium">
+                          {formatPrice(Number(payout.amount || 0))}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(payout.payout_status)}
+                            {getStatusBadge(payout.payout_status as string)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(payout.issued_at).toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {payout.month}/{payout.year}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedPayout(payout)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>Chi tiết thanh toán - {payout.id}</DialogTitle>
+                                <DialogDescription>
+                                  Chi tiết thanh toán cho {payout.payee?.username}
+                                </DialogDescription>
+                              </DialogHeader>
+                              {selectedPayout && (
+                                <div className="space-y-6" ref={detailsRef}>
+                                  {/* Payment Overview */}
+                                  <div className="grid gap-4 md:grid-cols-2">
+                                    <Card>
+                                      <CardHeader>
+                                        <CardTitle className="text-lg">
+                                          Tổng quan thanh toán
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="space-y-2">
                                         <div className="flex justify-between">
                                           <span className="text-muted-foreground">
-                                            Ngày thanh toán:
+                                            Mã thanh toán:
+                                          </span>
+                                          <span className="font-medium">{selectedPayout.id}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">
+                                            Người thanh toán:
                                           </span>
                                           <span className="font-medium">
-                                            {new Date(selectedPayout.issued_at).toLocaleDateString(
-                                              'vi-VN',
-                                              {
+                                            {selectedPayout.payee?.username}
+                                          </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Số tiền:</span>
+                                          <span className="font-bold text-lg">
+                                            {formatPrice(Number(selectedPayout.amount || 0))}
+                                          </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Trạng thái:</span>
+                                          <div className="flex items-center gap-2">
+                                            {getStatusIcon(selectedPayout.payout_status)}
+                                            {getStatusBadge(selectedPayout.payout_status)}
+                                          </div>
+                                        </div>
+
+                                        {selectedPayout.payee?.email && (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Email:</span>
+                                            <span className="font-medium">
+                                              {selectedPayout.payee?.email}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {selectedPayout.paid_out_sent_at && (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">
+                                              Ngày thanh toán:
+                                            </span>
+                                            <span className="font-medium">
+                                              {new Date(
+                                                selectedPayout.issued_at
+                                              ).toLocaleDateString('vi-VN', {
                                                 day: '2-digit',
                                                 month: '2-digit',
                                                 year: 'numeric',
-                                              }
-                                            )}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
-
-                                  <Card>
-                                    <CardHeader>
-                                      <CardTitle className="text-lg">Chi tiết thanh toán</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                      {selectedPayout.transaction_code && (
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">
-                                            Mã giao dịch:
-                                          </span>
-                                          <span className="font-medium">
-                                            {selectedPayout.transaction_code}
-                                          </span>
-                                        </div>
-                                      )}
-                                      {selectedPayout.failure_reason ? (
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">
-                                            Lý do thất bại:
-                                          </span>
-                                          <span className="font-medium text-red-600">
-                                            {selectedPayout.failure_reason}
-                                          </span>
-                                        </div>
-                                      ) : null}
-                                      {selectedPayout.bank_account_number && (
-                                        <>
-                                          <div className="flex justify-between">
-                                            <span className="text-muted-foreground">
-                                              Ngân hàng:
-                                            </span>
-                                            <span className="font-medium">
-                                              {selectedPayout.bank_code}
+                                              })}
                                             </span>
                                           </div>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+
+                                    <Card>
+                                      <CardHeader>
+                                        <CardTitle className="text-lg">
+                                          Chi tiết thanh toán
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="space-y-2">
+                                        {selectedPayout.transaction_code && (
                                           <div className="flex justify-between">
                                             <span className="text-muted-foreground">
-                                              Số tài khoản:
+                                              Mã giao dịch:
                                             </span>
                                             <span className="font-medium">
-                                              {selectedPayout.bank_account_number}
+                                              {selectedPayout.transaction_code}
                                             </span>
                                           </div>
-                                        </>
-                                      )}
+                                        )}
+                                        {selectedPayout.failure_reason ? (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">
+                                              Lý do thất bại:
+                                            </span>
+                                            <span className="font-medium text-red-600">
+                                              {selectedPayout.failure_reason}
+                                            </span>
+                                          </div>
+                                        ) : null}
+                                        {selectedPayout.bank_account_number && (
+                                          <>
+                                            <div className="flex justify-between">
+                                              <span className="text-muted-foreground">
+                                                Ngân hàng:
+                                              </span>
+                                              <span className="font-medium">
+                                                {selectedPayout.bank_code}
+                                              </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                              <span className="text-muted-foreground">
+                                                Số tài khoản:
+                                              </span>
+                                              <span className="font-medium">
+                                                {selectedPayout.bank_account_number}
+                                              </span>
+                                            </div>
+                                          </>
+                                        )}
 
-                                      {selectedPayout.evidence && (
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Chứng từ:</span>
-                                          <img
-                                            src={
-                                              process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                                              selectedPayout.evidence.key
-                                            }
-                                            alt="Chứng từ"
-                                            className="w-1/2 object-contain cursor-pointer"
-                                            onClick={() => {
-                                              window.open(
+                                        {selectedPayout.evidence && (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Chứng từ:</span>
+                                            <img
+                                              src={
                                                 process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                                                  selectedPayout.evidence.key,
-                                                '_blank'
-                                              );
-                                            }}
-                                          />
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
+                                                selectedPayout.evidence.key
+                                              }
+                                              alt="Chứng từ"
+                                              className="w-1/2 object-contain cursor-pointer"
+                                              onClick={() => {
+                                                window.open(
+                                                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
+                                                    selectedPayout.evidence.key,
+                                                  '_blank'
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleExportIndividual(payout)}>
-                              Tải xuất kết quả
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Liên hệ người thanh toán</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleExportIndividual(payout)}>
+                                Tải xuất kết quả
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>Liên hệ người thanh toán</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </CardContent>

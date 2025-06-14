@@ -90,6 +90,7 @@ const CreateCouponInput: React.FC<InputConfig> = ({
             <SelectContent className="bg-white/70 backdrop-blur-md border border-gray-200 shadow-md rounded-md">
               <SelectGroup>
                 {data &&
+                  data.length > 0 &&
                   data.map((item) => (
                     <SelectItem key={item[dataKey!]} value={item[dataKey!]} className="">
                       {item[dataValue!]}

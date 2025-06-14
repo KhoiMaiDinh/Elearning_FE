@@ -222,24 +222,26 @@ const Header = () => {
                 </SheetHeader>
                 <div className="py-4">
                   <nav className="flex flex-col space-y-4">
-                    {menuItems.map((item) => (
-                      <Button
-                        key={item.path}
-                        variant="ghost"
-                        onClick={() => {
-                          router.push(item.path);
-                          const closeEvent = new Event('close-sheet');
-                          window.dispatchEvent(closeEvent);
-                        }}
-                        className={`justify-start ${
-                          pathname === item.path
-                            ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
-                            : ''
-                        }`}
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
+                    {Array.isArray(menuItems) &&
+                      menuItems.length > 0 &&
+                      menuItems.map((item) => (
+                        <Button
+                          key={item.path}
+                          variant="ghost"
+                          onClick={() => {
+                            router.push(item.path);
+                            const closeEvent = new Event('close-sheet');
+                            window.dispatchEvent(closeEvent);
+                          }}
+                          className={`justify-start ${
+                            pathname === item.path
+                              ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
+                              : ''
+                          }`}
+                        >
+                          {item.label}
+                        </Button>
+                      ))}
                     <Button
                       variant="ghost"
                       onClick={() => {
@@ -273,19 +275,21 @@ const Header = () => {
         {/* Desktop Navigation - Hidden when search is expanded */}
         {!isSearchExpanded && (
           <nav className="hidden sm:flex items-center space-x-8 ml-8">
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === item.path
-                    ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+            {Array.isArray(menuItems) &&
+              menuItems.length > 0 &&
+              menuItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => router.push(item.path)}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname === item.path
+                      ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
           </nav>
         )}
 
@@ -329,15 +333,17 @@ const Header = () => {
             {/* Search Dropdown */}
             {showDropdown && results.length > 0 && (
               <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-md mt-1 shadow-lg">
-                {results.map((course, index) => (
-                  <li
-                    key={course}
-                    onMouseDown={() => handleSelectCourse(course)}
-                    className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
-                  >
-                    {course}
-                  </li>
-                ))}
+                {results &&
+                  results.length > 0 &&
+                  results.map((course, index) => (
+                    <li
+                      key={course}
+                      onMouseDown={() => handleSelectCourse(course)}
+                      className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
+                    >
+                      {course}
+                    </li>
+                  ))}
               </ul>
             )}
           </div>

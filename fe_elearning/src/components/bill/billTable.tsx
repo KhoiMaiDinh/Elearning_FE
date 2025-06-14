@@ -52,6 +52,8 @@ const BillsTable: React.FC<BillsTableProps> = ({ bills, searchTerm, setSearchTer
         </TableHeader>
         <TableBody>
           {bills.length > 0 ? (
+            bills &&
+            bills.length > 0 &&
             bills.map((bill) => (
               <React.Fragment key={bill.id}>
                 <TableRow
@@ -60,9 +62,11 @@ const BillsTable: React.FC<BillsTableProps> = ({ bills, searchTerm, setSearchTer
                 >
                   <TableCell className="font-medium">{bill.id}</TableCell>
                   <TableCell>
-                    {bill.details.map((detail) => (
-                      <div key={detail.course.id}>{detail.course.title}</div>
-                    ))}
+                    {bill.details &&
+                      bill.details.length > 0 &&
+                      bill.details.map((detail) => (
+                        <div key={detail.course.id}>{detail.course.title}</div>
+                      ))}
                   </TableCell>
                   <TableCell className="text-beautyGreen font-semibold">
                     {formatPrice(Number(bill.total_amount))}

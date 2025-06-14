@@ -70,39 +70,41 @@ function CommentCard({ comment }: CommentCardProps) {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-end">
-            {comment.aspects.map((aspect) => {
-              const emotionColor =
-                aspect.emotion === 'positive'
-                  ? 'bg-greenCrayola/10 text-greenCrayola'
-                  : aspect.emotion === 'neutral'
-                    ? 'bg-blueberry/10 text-blueberry'
-                    : 'bg-carminePink/10 text-carminePink';
-              return (
-                <Badge
-                  key={aspect.comment_aspect_id}
-                  variant="outline"
-                  className={`flex items-center gap-1 ${emotionColor}`}
-                >
-                  <span>
-                    {aspect.aspect === 'instructor_quality'
-                      ? 'Chất lượng giảng viên'
-                      : aspect.aspect === 'content_quality'
-                        ? 'Chất lượng nội dung'
-                        : aspect.aspect === 'technology'
-                          ? 'Công nghệ'
-                          : aspect.aspect === 'teaching_pace'
-                            ? 'Tốc độ dạy'
-                            : aspect.aspect === 'study_materials'
-                              ? 'Tài liệu học tập'
-                              : aspect.aspect === 'assignments_practice'
-                                ? 'Bài tập và thực hành'
-                                : aspect.aspect === 'other'
-                                  ? 'Khác'
-                                  : aspect.aspect}
-                  </span>
-                </Badge>
-              );
-            })}
+            {comment.aspects &&
+              comment.aspects.length > 0 &&
+              comment.aspects.map((aspect) => {
+                const emotionColor =
+                  aspect.emotion === 'positive'
+                    ? 'bg-greenCrayola/10 text-greenCrayola'
+                    : aspect.emotion === 'neutral'
+                      ? 'bg-blueberry/10 text-blueberry'
+                      : 'bg-carminePink/10 text-carminePink';
+                return (
+                  <Badge
+                    key={aspect.comment_aspect_id}
+                    variant="outline"
+                    className={`flex items-center gap-1 ${emotionColor}`}
+                  >
+                    <span>
+                      {aspect.aspect === 'instructor_quality'
+                        ? 'Chất lượng giảng viên'
+                        : aspect.aspect === 'content_quality'
+                          ? 'Chất lượng nội dung'
+                          : aspect.aspect === 'technology'
+                            ? 'Công nghệ'
+                            : aspect.aspect === 'teaching_pace'
+                              ? 'Tốc độ dạy'
+                              : aspect.aspect === 'study_materials'
+                                ? 'Tài liệu học tập'
+                                : aspect.aspect === 'assignments_practice'
+                                  ? 'Bài tập và thực hành'
+                                  : aspect.aspect === 'other'
+                                    ? 'Khác'
+                                    : aspect.aspect}
+                    </span>
+                  </Badge>
+                );
+              })}
           </div>
         </div>
       </CardHeader>
@@ -180,33 +182,41 @@ export function CommentList({ comments }: { comments: LectureComment[] }) {
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
-          {filteredComments.map((comment: LectureComment) => (
-            <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-          ))}
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments.map((comment: LectureComment) => (
+              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+            ))}
         </TabsContent>
 
         <TabsContent value="positive" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'positive'))
-            .map((comment: LectureComment) => (
-              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-            ))}
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'positive'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
         </TabsContent>
 
         <TabsContent value="neutral" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'neutral'))
-            .map((comment: LectureComment) => (
-              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-            ))}
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'neutral'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
         </TabsContent>
 
         <TabsContent value="negative" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'negative'))
-            .map((comment: LectureComment) => (
-              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-            ))}
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'negative'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
         </TabsContent>
       </Tabs>
     </div>

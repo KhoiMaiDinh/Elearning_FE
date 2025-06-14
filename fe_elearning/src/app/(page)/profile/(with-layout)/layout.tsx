@@ -39,18 +39,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <Tabs defaultValue={currentTab}>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <TabsList>
-          {tabs.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="flex items-center gap-1"
-              onClick={() => handleTabClick(tab.value)}
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
+      <div className="flex flex-col p-4 sm:flex-row justify-between items-start sm:items-center gap-4">
+        <TabsList className="shadow">
+          {tabs &&
+            tabs.length > 0 &&
+            tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="flex items-center gap-1"
+                onClick={() => handleTabClick(tab.value)}
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
         </TabsList>
       </div>
 

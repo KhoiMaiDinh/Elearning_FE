@@ -180,11 +180,13 @@ const Page = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả danh mục</SelectItem>
-              {category.map((cat: Category) => (
-                <SelectItem key={cat.slug} value={cat.slug}>
-                  {cat.translations[0]?.name}
-                </SelectItem>
-              ))}
+              {Array.isArray(category) &&
+                category.length > 0 &&
+                category.map((cat: Category) => (
+                  <SelectItem key={cat.slug} value={cat.slug}>
+                    {cat.translations[0]?.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
@@ -228,33 +230,35 @@ const Page = () => {
         <div className="relative w-full whitespace-nowrap">
           <AnimateWrapper direction="up">
             <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
-              {listLecture.concat(listLecture).map((lecture: Lecture, idx: number) => (
-                <div
-                  key={idx}
-                  className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
-                >
-                  {/* <img
+              {listLecture &&
+                listLecture.length > 0 &&
+                listLecture.concat(listLecture).map((lecture: Lecture, idx: number) => (
+                  <div
+                    key={idx}
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
+                  >
+                    {/* <img
                     src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
                     alt={`Lecturer ${idx}`}
                     className="object-cover text-cosmicCobalt w-full h-full"
                   /> */}
-                  <Avatar className="w-full h-full border-4 shadow-lg">
-                    <AvatarImage
-                      src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
-                      alt={lecture?.user?.last_name + ' ' + lecture?.user?.first_name || ''}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-PaleViolet/50 text-white text-xl">
-                      {lecture?.user?.last_name +
-                        '' +
-                        lecture?.user?.first_name
-                          ?.split(' ')
-                          .map((n) => n[0])
-                          .join('') || 'GV'}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              ))}
+                    <Avatar className="w-full h-full border-4 shadow-lg">
+                      <AvatarImage
+                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
+                        alt={lecture?.user?.last_name + ' ' + lecture?.user?.first_name || ''}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-PaleViolet/50 text-white text-xl">
+                        {lecture?.user?.last_name +
+                          '' +
+                          lecture?.user?.first_name
+                            ?.split(' ')
+                            .map((n) => n[0])
+                            .join('') || 'GV'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                ))}
             </div>
           </AnimateWrapper>
         </div>
@@ -367,19 +371,21 @@ const Page = () => {
                       : 'grid-cols-1'
                   }`}
                 >
-                  {listLecture?.map((lecture: Lecture, index: number) => (
-                    <LecturersBlock
-                      key={index}
-                      avatar={lecture?.user?.profile_image?.key}
-                      name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
-                      rating={lecture?.avg_rating}
-                      major={lecture?.category?.translations[0]?.name}
-                      numberCourse={lecture?.total_courses}
-                      numberStudent={lecture?.total_students}
-                      description={lecture?.biography}
-                      username={lecture?.user?.username}
-                    />
-                  ))}
+                  {listLecture &&
+                    listLecture.length > 0 &&
+                    listLecture?.map((lecture: Lecture, index: number) => (
+                      <LecturersBlock
+                        key={index}
+                        avatar={lecture?.user?.profile_image?.key}
+                        name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
+                        rating={lecture?.avg_rating}
+                        major={lecture?.category?.translations[0]?.name}
+                        numberCourse={lecture?.total_courses}
+                        numberStudent={lecture?.total_students}
+                        description={lecture?.biography}
+                        username={lecture?.user?.username}
+                      />
+                    ))}
                 </div>
               ) : (
                 <div className="text-center py-12">

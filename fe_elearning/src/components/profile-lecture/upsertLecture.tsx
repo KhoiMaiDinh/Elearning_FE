@@ -222,28 +222,30 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
                       Tối đa: {certificates.length}/{MAX_CERTIFICATES} file
                     </div>
                     <div className="gap-3 grid">
-                      {certificates.map((certificate, index) => (
-                        <div
-                          className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
-                          key={certificate.id}
-                        >
-                          <div className="flex items-center justify-between w-full rounded-md gap-2 px-3">
-                            <div className="flex items-center gap-2">
-                              <FileCheck className="w-4 h-4 text-black dark:text-white" />
-                              <p>Bằng cấp số {index + 1}</p>
-                            </div>
+                      {certificates &&
+                        certificates.length > 0 &&
+                        certificates.map((certificate, index) => (
+                          <div
+                            className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
+                            key={certificate.id}
+                          >
+                            <div className="flex items-center justify-between w-full rounded-md gap-2 px-3">
+                              <div className="flex items-center gap-2">
+                                <FileCheck className="w-4 h-4 text-black dark:text-white" />
+                                <p>Bằng cấp số {index + 1}</p>
+                              </div>
 
-                            <Button
-                              variant="ghost"
-                              className="hover:text-destructive"
-                              onClick={() => removeCertificate(index)}
-                              disabled={pageDisabled()}
-                            >
-                              <Trash2Icon className="w-4 h-4" />
-                            </Button>
+                              <Button
+                                variant="ghost"
+                                className="hover:text-destructive"
+                                onClick={() => removeCertificate(index)}
+                                disabled={pageDisabled()}
+                              >
+                                <Trash2Icon className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </div>

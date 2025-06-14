@@ -312,11 +312,13 @@ const Page = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả danh mục</SelectItem>
-                {category.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.value}
-                  </SelectItem>
-                ))}
+                {Array.isArray(category) &&
+                  category.length > 0 &&
+                  category.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.value}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -565,21 +567,23 @@ const Page = () => {
                             : 'grid-cols-1'
                         }`}
                       >
-                        {listCourse.map((course: CourseForm, index: number) =>
-                          activeTab === 'all' || activeTab === 'favorites' ? (
-                            <CoursesBlock
-                              key={index}
-                              {...course}
-                              is_favorite={
-                                activeTab === 'favorites' ||
-                                (activeTab === 'all' &&
-                                  favoriteCourse.some((favorite) => favorite.id === course.id))
-                              }
-                            />
-                          ) : activeTab === 'my-courses' ? (
-                            <EnrolledCourseBlock key={course.id} course={course} />
-                          ) : null
-                        )}
+                        {listCourse &&
+                          listCourse.length > 0 &&
+                          listCourse.map((course: CourseForm, index: number) =>
+                            activeTab === 'all' || activeTab === 'favorites' ? (
+                              <CoursesBlock
+                                key={index}
+                                {...course}
+                                is_favorite={
+                                  activeTab === 'favorites' ||
+                                  (activeTab === 'all' &&
+                                    favoriteCourse.some((favorite) => favorite.id === course.id))
+                                }
+                              />
+                            ) : activeTab === 'my-courses' ? (
+                              <EnrolledCourseBlock key={course.id} course={course} />
+                            ) : null
+                          )}
                       </div>
                     ) : (
                       <div className="text-center py-12">

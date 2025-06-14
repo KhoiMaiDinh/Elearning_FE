@@ -20,6 +20,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
+import { MediaType } from '@/types/mediaType';
 
 const courseItemSchema = yup.object().shape({
   title: yup.string().required('Tiêu đề bài học không được để trống'),
@@ -118,8 +119,8 @@ const CourseItemForm = ({
 
   useEffect(() => {
     // Set initial video preview if exists
-    if (initialValues?.video?.video?.key) {
-      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.video.key);
+    if (initialValues?.video?.key && initialValues?.video?.key) {
+      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + initialValues.video.key);
     }
 
     // Set initial document previews if exists
@@ -134,8 +135,8 @@ const CourseItemForm = ({
 
   // Update video preview when video changes
   useEffect(() => {
-    if (currentVideo?.video?.key) {
-      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + currentVideo.video.key);
+    if (currentVideo?.key) {
+      setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + currentVideo.key);
     }
   }, [currentVideo]);
 
@@ -230,7 +231,7 @@ const CourseItemForm = ({
         version: 1,
       };
 
-      setValue('video', video);
+      setValue('video', video as MediaType & { duration_in_seconds: number });
       setValue('video.duration_in_seconds', Math.round(duration));
       setVideoPreview(process.env.NEXT_PUBLIC_BASE_URL_VIDEO + key);
       URL.revokeObjectURL(localPreviewUrl);
@@ -355,11 +356,11 @@ const CourseItemForm = ({
                   }}
                 />
               </p>
-              {createdItem.video?.video?.key && (
+              {createdItem.video?.key && (
                 <div>
                   <p className="font-semibold">🎥 Video:</p>
                   <VideoPlayer
-                    videoUrl={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem.video.video.key}`}
+                    videoUrl={`${process.env.NEXT_PUBLIC_BASE_URL_VIDEO}${createdItem.video.key}`}
                     title={createdItem.title}
                   />
                 </div>
@@ -428,7 +429,7 @@ const CourseItemForm = ({
                 {currentVideo && (
                   <div className="mb-4">
                     <p className="font-medium mb-2">Video hiện tại:</p>
-                    {currentVideo.video.status === 'validated' && videoPreview && (
+                    {currentVideo.status === 'validated' && videoPreview && (
                       <>
                         <VideoPlayer
                           videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoPreview}
@@ -447,7 +448,7 @@ const CourseItemForm = ({
                       </>
                     )}
 
-                    {currentVideo.video.status === 'pending' && (
+                    {currentVideo.status === 'pending' && (
                       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                         <div className="flex items-center gap-2 text-yellow-700">
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -466,7 +467,7 @@ const CourseItemForm = ({
                       </div>
                     )}
 
-                    {currentVideo.video.status === 'rejected' && (
+                    {currentVideo.status === 'rejected' && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                         <div className="flex items-center gap-2 text-red-700">
                           <p className="text-sm text-red-600">⛔ Video đã bị từ chối</p>
@@ -481,7 +482,7 @@ const CourseItemForm = ({
                   error={errors.video?.message}
                   labelText={`${
                     currentVideo
-                      ? currentVideo.video.status === 'rejected'
+                      ? currentVideo.status === 'rejected'
                         ? 'Upload lại video'
                         : 'Thay thế video'
                       : 'Thêm video'

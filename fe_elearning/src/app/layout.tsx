@@ -1,5 +1,6 @@
 'use client';
 import './globals.css';
+import 'react-toastify/dist/ReactToastify.css';
 import store, { persistor } from '@/constants/store';
 // import { Suspense } from 'react'
 import { Provider } from 'react-redux';
@@ -48,7 +49,7 @@ const RootLayout = ({ children }: any) => {
                 </div>
               }
             >
-              {children}
+              <main className="">{children}</main>
               <ToastContainer
                 position="top-right"
                 autoClose={2000}
