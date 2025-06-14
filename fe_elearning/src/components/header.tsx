@@ -59,24 +59,6 @@ const Header = () => {
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
 
-  // State cho thông báo
-  const [_notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: 'Khóa học mới đã được thêm!',
-      date: '2025-03-07',
-      link: '/course/new',
-      isRead: false,
-    },
-    {
-      id: 2,
-      message: 'Bạn có một tin nhắn mới.',
-      date: '2025-03-06',
-      link: '/messages',
-      isRead: true,
-    },
-  ]);
-
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
