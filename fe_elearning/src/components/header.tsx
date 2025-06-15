@@ -36,6 +36,12 @@ import { NotificationCenter } from './notifications/notificationComponent';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { APIGetListCourse } from '@/utils/course';
 import { debounce } from 'lodash';
+import { clearBankAccount } from '@/constants/bankAccount';
+import { clearComment } from '@/constants/comment';
+import { clearNotifications } from '@/constants/notificationSlice';
+import { clearCourse } from '@/constants/course';
+import { clearOrders } from '@/constants/orderSlice';
+import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -77,6 +83,17 @@ const Header = () => {
     localStorage.setItem('access_token', '');
     localStorage.setItem('refresh_token', '');
     localStorage.setItem('expires_at', '');
+    dispatch(clearUser());
+    window.location.reload();
+    router.push('/');
+    dispatch(clearUser());
+    dispatch(clearBankAccount({}));
+    dispatch(clearComment({}));
+    dispatch(clearNotifications());
+    dispatch(clearCourse({}));
+    dispatch(clearOrders({}));
+    dispatch(clearStatisticItemCourse({}));
+
     dispatch(clearUser());
   };
 
