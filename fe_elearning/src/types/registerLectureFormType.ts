@@ -17,6 +17,7 @@ export type RegisterLectureForm = {
 export type Lecture = RegisterLectureForm & {
   category: Category;
   is_approved: boolean;
+  disapproval_reason?: string;
   user: {
     id: string;
     username: string;

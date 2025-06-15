@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Check, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +55,7 @@ export function NotificationCenter() {
         setUnreadCount(response.unseen_count);
         setTotal(response.total);
         setAfterCursor(response.afterCursor);
+        setBeforeCursor(response.beforeCursor);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -73,6 +74,10 @@ export function NotificationCenter() {
       const response = await APIReadAllNotification();
       if (response.status === 200) {
         handleGetNotification();
+        setActiveNotifications((prev) => {
+          return prev.map((n) => ({ ...n, is_read: true }));
+        });
+        setUnreadCount(0);
       }
     } catch (error) {
       console.error('Error reading all notification:', error);
@@ -84,6 +89,16 @@ export function NotificationCenter() {
       const response = await APIReadNotification(id);
       if (response.status === 200) {
         handleGetNotification();
+        setActiveNotifications((prev) => {
+          const index = prev.findIndex((n) => n.id === id);
+          if (index !== -1 && !prev[index].is_read) {
+            const newNotifications = [...prev];
+            newNotifications[index].is_read = true;
+            setUnreadCount(unreadCount - 1);
+            return newNotifications;
+          }
+          return prev;
+        });
       }
     } catch (error) {
       console.error('Error reading notification:', error);
@@ -203,7 +218,11 @@ function NotificationItem({
               ? `/course-details/${notification?.metadata?.course_id}?lecture=${notification?.metadata?.lecture_id}&comment=${notification?.metadata?.comment_id}`
               : type === 'INSTRUCTOR_REGISTERED'
                 ? `/profile/lecture?tab=ho-so`
-                : '',
+                : type === 'PROFILE_APPROVED'
+                  ? `/profile/lecture?tab=ho-so`
+                  : type === 'PROFILE_REJECTED'
+                    ? `/profile/lecture?tab=ho-so&rejected=true&reason=${notification?.body}`
+                    : '',
             '_blank'
           );
           handleReadNotification(notification?.id);
@@ -235,6 +254,14 @@ function NotificationItem({
               className="h-full w-full object-cover"
             />
           </div>
+        ) : type === 'PROFILE_APPROVED' ? (
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+            <Check className="h-4 w-4 text-vividMalachite" />
+          </div>
+        ) : type === 'PROFILE_REJECTED' ? (
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+            <X className="h-4 w-4 text-redPigment" />
+          </div>
         ) : (
           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
             <Bell className="h-4 w-4" />
@@ -246,7 +273,7 @@ function NotificationItem({
         <div className="flex flex-col items-start gap-2">
           <h4 className="text-sm font-medium line-clamp-1">{title}</h4>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
               {new Date(createdAt).toLocaleString('vi-VN', {
                 day: '2-digit',
                 month: '2-digit',
@@ -258,7 +285,7 @@ function NotificationItem({
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{body}</p>
+        <p className="text-xs text-muted-foreground line-clamp-3 mt-1">{body}</p>
       </div>
     </div>
   );
