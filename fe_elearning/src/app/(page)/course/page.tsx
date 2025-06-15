@@ -31,10 +31,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
 
 type TabType = 'all' | 'my-courses' | 'favorites';
 
 const Page = () => {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -410,12 +413,11 @@ const Page = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Tabs */}
         <div className="mb-8">
-          <Tabs
-            value={activeTab}
-            onValueChange={(value) => handleTabChange(value as TabType)}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3">
+          <Tabs value={activeTab} onValueChange={(value) => handleTabChange(value as TabType)}>
+            <TabsList
+              className={`grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3 
+            ${userInfo.id ? '' : 'hidden'}`}
+            >
               <TabsTrigger value="all" className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
                 <span className="hidden sm:inline">Tất cả khóa học</span>

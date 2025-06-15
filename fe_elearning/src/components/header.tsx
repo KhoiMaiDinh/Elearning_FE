@@ -84,7 +84,7 @@ const Header = () => {
     localStorage.setItem('refresh_token', '');
     localStorage.setItem('expires_at', '');
     dispatch(clearUser());
-    window.location.reload();
+    // window.location.reload();
     router.push('/');
     dispatch(clearUser());
     dispatch(clearBankAccount({}));
