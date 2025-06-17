@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
 import { CourseItem, Section } from '@/types/courseType';
 import { useSelector } from 'react-redux';
@@ -23,9 +23,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   isOwner,
 }) => {
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
-  const userInfo = useSelector((state: RootState) => state.user.userInfo)
-
-
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({

@@ -109,7 +109,9 @@ export interface CourseForm {
   total_enrolled?: number;
   course_progress?: CourseProgress | null;
   total_revenue?: number;
+  createdAt?: string;
   updatedAt?: string;
+  warning?: { reports: { reason: string }[] }[];
 }
 
 export interface CourseProgress {

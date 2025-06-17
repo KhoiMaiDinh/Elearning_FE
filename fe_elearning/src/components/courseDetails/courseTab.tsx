@@ -27,7 +27,7 @@ import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
 import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
 import ReplyList from './replyList';
 import ReportButton from './report';
-import { useTheme } from 'next-themes';
+
 interface CourseTabsProps {
   description: string;
   sections?: Section[];
@@ -51,7 +51,6 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   currentCourseItem,
   isOwner,
 }) => {
-  const theme = useTheme();
   const [activeTab, setActiveTab] = useState('description');
   const [newReview, setNewReview] = useState('');
   const [newTitle, setNewTitle] = useState('');

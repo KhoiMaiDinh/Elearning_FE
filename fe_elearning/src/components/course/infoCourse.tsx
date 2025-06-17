@@ -4,7 +4,6 @@ import { Star, Users, Heart, Clock, BookOpen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import CourseMain from './courseMain';
 import type { CourseForm } from '@/types/courseType';
-
 import { APIGetReview } from '@/utils/comment';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
@@ -16,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { useRouter } from 'next/navigation';
 import { LoginRequiredPopup } from '../alert/LoginRequire';
+
 type InfoCourseProps = {
   lecture: string;
   course: CourseForm;

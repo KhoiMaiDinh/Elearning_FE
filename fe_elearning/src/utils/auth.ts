@@ -47,7 +47,7 @@ const APIRegisterGoogle = async (data: any) => {
 
 const APIRefreshToken = async () => {
   try {
-    const response = await axiosInstance.post(`/auth/refresh`);
+    const response = await axiosInstance.post(`/auth/refresh`, {}, { withCredentials: true });
 
     return { data: response.data, status: response.status };
   } catch (err) {

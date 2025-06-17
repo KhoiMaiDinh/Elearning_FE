@@ -5,7 +5,6 @@ import {
   Download,
   Eye,
   Search,
-  DollarSign,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -43,11 +42,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { APIGetPayout } from '@/utils/payout';
 import { PayoutType } from '@/types/payoutType';
 import { formatPrice } from '../formatPrice';
@@ -55,9 +53,6 @@ import Pagination from '../pagination/pagination';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
-
-// DejaVu Sans font in Base64 (simplified for brevity; in practice, use the full Base64 string)
-const dejaVuSansBase64 = 'AAEAAA...'; // Replace with actual Base64-encoded TTF file for DejaVu Sans
 
 const getStatusIcon = (status: string) => {
   switch (status) {

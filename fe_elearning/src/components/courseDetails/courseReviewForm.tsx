@@ -3,10 +3,9 @@ import { APIPostReview } from '@/utils/comment';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ToastNotify from '../ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
 interface Review {
   course_id: string;
 }
@@ -14,7 +13,6 @@ interface Review {
 const CourseReviewForm: React.FC<Review> = ({ course_id }) => {
   const { register, handleSubmit, reset } = useForm();
   const [rating, setRating] = useState(0);
-  const theme = useTheme();
   const onSubmit = async (data: any) => {
     try {
       const dataSubmit = {

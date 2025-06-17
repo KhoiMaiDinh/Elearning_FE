@@ -1,7 +1,7 @@
 'use client';
 import './globals.css';
+import 'react-toastify/dist/ReactToastify.css';
 import store, { persistor } from '@/constants/store';
-// import { Suspense } from 'react'
 import { Provider } from 'react-redux';
 import { metadata } from './metadata';
 import { Suspense, useEffect } from 'react';

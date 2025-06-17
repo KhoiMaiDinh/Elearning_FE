@@ -39,7 +39,7 @@ const CourseStatusBadge = ({ status, className = '' }: { status: string; classNa
         status === CourseStatus.PUBLISHED
           ? 'bg-vividMalachite/80 hover:bg-vividMalachite'
           : status === CourseStatus.BANNED
-            ? 'bg-carminePink/25 hover:bg-carminePink/35'
+            ? 'bg-redPigment/65 hover:bg-redPigment/75'
             : status === CourseItemStatus.MODIFIED
               ? 'bg-orange-600/80 hover:bg-orange-600'
               : status === CourseItemStatus.DELETED

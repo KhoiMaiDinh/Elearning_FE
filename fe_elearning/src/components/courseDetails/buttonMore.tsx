@@ -5,10 +5,10 @@ import { useForm, Controller, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import ToastNotify from '../ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
+
 const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
@@ -28,7 +28,6 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
 
   const [showMore, setShowMore] = useState(false);
   const [showReport, setShowReport] = useState(false);
-  const theme = useTheme();
   const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
     if (response?.status === 201) {

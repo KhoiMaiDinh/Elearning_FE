@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import CourseItemForm from './CourseItemForm';
+import React, { useState } from 'react';
 import { CourseForm, CourseItem, Section } from '@/types/courseType';
-import VideoPlayer from '@/components/courseDetails/videoPlayer';
 
 import { Card, CardContent } from '../ui/card';
 import AddButton from '../button/addButton';
@@ -15,47 +12,34 @@ import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
 import { AxiosError } from 'axios';
 import ToastNotify from '../ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
+import InformTooltip from '../tooltip/informTooltip';
 
 interface SectionListProps {
+  mode: 'edit' | 'view';
   sections: Section[];
   course: CourseForm;
   showDeleted: boolean;
   setSections: (sections: Section[]) => void;
-  setShowAlertSuccess: (value: boolean) => void;
-  setShowAlertError: (value: boolean) => void;
-  setDescription: (value: string) => void;
   setShowDeleted: (value: boolean) => void;
   handleGetCourseInfo: () => void;
   handleNextStep: () => void;
   handlePrevStep: () => void;
 }
 
-interface CourseItemProps {
-  item: CourseItem;
-  sectionIndex: number;
-  sections: Section[];
-  onSave: () => void;
-  onCancel: () => void;
-}
-
 const SectionList: React.FC<SectionListProps> = ({
+  mode,
   course,
   sections,
   showDeleted,
-  setSections,
-  setShowAlertSuccess,
-  setShowAlertError,
-  setDescription,
   setShowDeleted,
   handleGetCourseInfo,
   handleNextStep,
   handlePrevStep,
 }) => {
   const [openSectionIds, setOpenSections] = useState<Set<string>>(new Set());
-  const theme = useTheme();
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
 
@@ -145,10 +129,11 @@ const SectionList: React.FC<SectionListProps> = ({
         toast.error(<ToastNotify status={-1} message={error.response?.data.message} />, {
           style: styleError,
         });
+      } else {
+        toast.error(<ToastNotify status={-1} message="Cập nhật trạng thái khóa học thất bại" />, {
+          style: styleError,
+        });
       }
-      toast.error(<ToastNotify status={-1} message="Cập nhật trạng thái khóa học thất bại" />, {
-        style: styleError,
-      });
     }
   };
 
@@ -167,21 +152,25 @@ const SectionList: React.FC<SectionListProps> = ({
                 </p>
               </div>
               <div className="flex justify-between items-center gap-5 ">
-                <div className="flex items-center space-x-2 hover:ring-1 ring-majorelleBlue rounded-sm h-8 px-3 text-xs">
-                  <Switch
-                    id="show-deleted"
-                    checked={showDeleted}
-                    onCheckedChange={setShowDeleted}
-                    className="data-[state=checked]:bg-red-600"
-                  />
-                  <div className="flex items-center space-x-1">
-                    {showDeleted ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                    <Label htmlFor="show-deleted" className="text-sm">
-                      Hiển thị đã xóa
-                    </Label>
-                  </div>
-                </div>
-                <AddButton onClick={handleAddSection} label="Thêm Chương Mới" />
+                {mode === 'edit' && (
+                  <>
+                    <div className="flex items-center space-x-2 hover:ring-1 ring-majorelleBlue rounded-sm h-8 px-3 text-xs">
+                      <Switch
+                        id="show-deleted"
+                        checked={showDeleted}
+                        onCheckedChange={setShowDeleted}
+                        className="data-[state=checked]:bg-red-600"
+                      />
+                      <div className="flex items-center space-x-1">
+                        {showDeleted ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        <Label htmlFor="show-deleted" className="text-sm">
+                          Hiển thị đã xóa
+                        </Label>
+                      </div>
+                    </div>
+                    <AddButton onClick={handleAddSection} label="Thêm Chương Mới" />
+                  </>
+                )}
               </div>
             </div>
           </CardContent>
@@ -191,6 +180,7 @@ const SectionList: React.FC<SectionListProps> = ({
         <div className="space-y-4">
           {sections.map((section, sectionIndex) => (
             <SectionCard
+              mode={mode}
               section={section}
               sectionIndex={sectionIndex}
               openSectionIds={openSectionIds}
@@ -203,15 +193,29 @@ const SectionList: React.FC<SectionListProps> = ({
           ))}
         </div>
 
-        <div className="flex justify-between">
-          <AddButton label={'Quay lại'} icon={ArrowLeft} onClick={handlePrevStep} />
-          <AddButton
-            label={'Xuất bản'}
-            icon={Globe}
-            onClick={handlePublicCourse}
-            className="bg-custom-gradient-button-violet"
-          />
-        </div>
+        {mode === 'edit' && (
+          <div className="flex justify-between">
+            <AddButton label={'Quay lại'} icon={ArrowLeft} onClick={handlePrevStep} />
+            <div className="relative justify-center">
+              {course.status === 'BANNED' && (
+                <InformTooltip
+                  className="absolute top-0 right-0 translate-x-[50%] -translate-y-[50%] z-50"
+                  content={
+                    'Vì khóa học đã bị cấm trước đó nên hành động này sẽ chỉ cập nhật nội dung khóa học. \nHành động tiếp theo: Yêu cầu phê duyệt để có thể mở khóa'
+                  }
+                />
+              )}
+
+              <AddButton
+                label={'Xuất bản'}
+                icon={Globe}
+                onClick={handlePublicCourse}
+                className="bg-custom-gradient-button-violet"
+                iconPosition="right"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Section Modal */}
         <SectionModal

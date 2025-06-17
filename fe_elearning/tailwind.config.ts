@@ -453,6 +453,9 @@ export default {
         'linear-gradient(to top left, theme("colors.indigo.500"), theme("colors.fuchsia.500"))',
     },
   },
+  corePlugins: {
+    animation: true,
+  },
   plugins: [
     require('tailwindcss-animate'),
     require('@vidstack/react/tailwind.cjs')({

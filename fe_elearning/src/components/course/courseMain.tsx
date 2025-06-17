@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useState, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { PlayCircle, Lock, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { PlayCircle, CheckCircle, Clock, ChevronRight } from 'lucide-react';
 import type { CourseForm, CourseItem, Section } from '@/types/courseType';
 import { cn } from '@/lib/utils';
 import { formatDuration } from '@/helpers/durationFormater';

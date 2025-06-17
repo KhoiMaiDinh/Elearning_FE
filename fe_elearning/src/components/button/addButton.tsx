@@ -11,6 +11,7 @@ interface AddButtonProps {
   icon?: LucideIcon;
   className?: string;
   size?: 'sm' | 'lg';
+  iconPosition?: 'left' | 'right';
 }
 
 const AddButton = ({
@@ -21,7 +22,14 @@ const AddButton = ({
   className,
   icon: Icon = Plus,
   size,
+  iconPosition = 'left',
 }: AddButtonProps) => {
+  const iconElement = loading ? (
+    <Spinner size="small" className="text-white" />
+  ) : (
+    <Icon className={iconPosition === 'left' ? 'mr-1' : 'ml-1'} />
+  );
+
   return (
     <Button
       variant="outline"
@@ -30,8 +38,17 @@ const AddButton = ({
       onClick={onClick}
       disabled={disabled}
     >
-      {loading ? <Spinner size="small" className="text-white" /> : <Icon className="mr-1" />}
-      {label}
+      {iconPosition === 'left' ? (
+        <>
+          {iconElement}
+          {label}
+        </>
+      ) : (
+        <>
+          {label}
+          {iconElement}
+        </>
+      )}
     </Button>
   );
 };

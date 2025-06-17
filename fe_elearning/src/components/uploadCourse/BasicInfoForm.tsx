@@ -48,19 +48,13 @@ interface BasicInfoFormProps {
   mode: 'edit' | 'create' | 'view';
   courseInfo?: CourseForm;
   setCourseInfo: React.Dispatch<React.SetStateAction<CourseForm | null>>;
-  setShowAlertSuccess: (value: boolean) => void;
-  setShowAlertError: (value: boolean) => void;
-  setDescription: (value: string) => void;
-  handleNextStep: () => void;
+  handleNextStep?: () => void;
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   mode,
   courseInfo,
   setCourseInfo,
-  setShowAlertSuccess,
-  setShowAlertError,
-  setDescription,
   handleNextStep,
 }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -115,7 +109,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
       }
     }
 
-    handleNextStep();
+    if (handleNextStep) {
+      handleNextStep();
+    }
   };
 
   const handleCreateCourse = async (data: CourseForm) => {
@@ -590,15 +586,7 @@ Bạn có chắc chắn muốn thoát? Mọi thay đổi chưa lưu sẽ bị m�
                 )}
               </Button>
             </div>
-          ) : (
-            <Button
-              type="button"
-              className={` text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:bg-majorelleBlue70 hover:text-white dark:hover:text-black bg-majorelleBlue `}
-              // onClick={() => setIsEditingBasic(true)}
-            >
-              ✍️ Chỉnh sửa
-            </Button>
-          )}
+          ) : null}
         </div>
       </div>
     </>

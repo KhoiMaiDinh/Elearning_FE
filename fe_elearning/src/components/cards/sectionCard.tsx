@@ -29,6 +29,7 @@ import { ConfirmDialog } from '../alert/AlertConfirm';
 import { Badge } from '../ui/badge';
 
 type SectionCardProps = {
+  mode: 'edit' | 'view';
   section: Section;
   sectionIndex: number;
   openSectionIds: Set<string>;
@@ -40,6 +41,7 @@ type SectionCardProps = {
 };
 
 const SectionCard: React.FC<SectionCardProps> = ({
+  mode,
   section,
   sectionIndex,
   openSectionIds,
@@ -110,7 +112,9 @@ const SectionCard: React.FC<SectionCardProps> = ({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1">
-            <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+            {mode === 'edit' && (
+              <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -134,17 +138,19 @@ const SectionCard: React.FC<SectionCardProps> = ({
               <p className="text-xs text-muted-foreground mt-1">{section?.items?.length} bài học</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => handleAddLecture(section)}>
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleEditSection(section)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          {mode === 'edit' && (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => handleAddLecture(section)}>
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => handleEditSection(section)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </CardHeader>
       {openSectionIds.has(section.id) && (
@@ -186,7 +192,9 @@ const SectionCard: React.FC<SectionCardProps> = ({
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1 text-xs text-black text-opacity-50">
-                        <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                        {mode === 'edit' && (
+                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                        )}
                         <div className="bg-white rounded-lg p-1 ring-1">
                           <GitBranch className="h-3 w-3 text-majorelleBlue" /> v
                           {lecture?.series?.[0]?.version}
@@ -229,56 +237,58 @@ const SectionCard: React.FC<SectionCardProps> = ({
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <ConfirmDialog
-                          isOpen={openConfirmDialog}
-                          onOpenChange={setOpenConfirmDialog}
-                          onConfirm={() => handleRemoveDraft(lecture.id)}
-                          title="Xác nhận hủy bản nháp"
-                          description="Bạn có chắc chắn muốn hủy bản nháp của bài học này? "
-                          confirmText="Xác nhận"
-                          confirmClassName="bg-majorelleBlue hover:brightness-110 hover:bg-majorelleBlue"
-                        />
-                        {status === 'DELETED' ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="hover:bg-white hover:shadow-md"
-                            onClick={() => handleUnhideLecture(lecture.id)}
-                          >
-                            <RefreshCcw className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <>
-                            {lecture.series?.[0]?.status === 'DRAFT' && (
+                      {mode === 'edit' && (
+                        <div className="flex items-center gap-2">
+                          <ConfirmDialog
+                            isOpen={openConfirmDialog}
+                            onOpenChange={setOpenConfirmDialog}
+                            onConfirm={() => handleRemoveDraft(lecture.id)}
+                            title="Xác nhận hủy bản nháp"
+                            description="Bạn có chắc chắn muốn hủy bản nháp của bài học này? "
+                            confirmText="Xác nhận"
+                            confirmClassName="bg-majorelleBlue hover:brightness-110 hover:bg-majorelleBlue"
+                          />
+                          {status === 'DELETED' ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="hover:bg-white hover:shadow-md"
+                              onClick={() => handleUnhideLecture(lecture.id)}
+                            >
+                              <RefreshCcw className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <>
+                              {lecture.series?.[0]?.status === 'DRAFT' && (
+                                <Button
+                                  className="hover:bg-white hover:shadow-md"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setOpenConfirmDialog(true)}
+                                >
+                                  <Undo2 className="h-4 w-4" />
+                                </Button>
+                              )}
                               <Button
                                 className="hover:bg-white hover:shadow-md"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setOpenConfirmDialog(true)}
+                                onClick={() => handleEditLecture(section, lecture)}
                               >
-                                <Undo2 className="h-4 w-4" />
+                                <Edit className="h-4 w-4" />
                               </Button>
-                            )}
-                            <Button
-                              className="hover:bg-white hover:shadow-md"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditLecture(section, lecture)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-white hover:shadow-md"
-                              onClick={() => handleHideLecture(lecture.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="hover:bg-white hover:shadow-md"
+                                onClick={() => handleHideLecture(lecture.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
