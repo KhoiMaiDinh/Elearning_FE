@@ -49,7 +49,7 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { APIGetPayout } from '@/utils/payout';
 import { PayoutType } from '@/types/payoutType';
 import { formatPrice } from '../formatPrice';
-import Pagination from '../pagination/pagination';
+import Pagination from '../pagination/paginations';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';

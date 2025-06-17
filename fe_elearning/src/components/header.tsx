@@ -272,30 +272,46 @@ const Header = () => {
         </div>
 
         {/* Desktop Navigation - Hidden when search is expanded */}
-        {!isSearchExpanded && (
-          <nav className="hidden sm:flex items-center space-x-8 ml-8">
+        {
+          <nav
+            className={`sm:flex items-center space-x-8 ml-8 transition-all duration-500 ${
+              isSearchExpanded ? 'opacity-0 w-[0.1px]' : 'w-full opacity-100'
+            }`}
+          >
             {Array.isArray(menuItems) &&
               menuItems.length > 0 &&
               menuItems.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => router.push(item.path)}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                  className={`text-sm font-medium hover:text-primary  ${
                     pathname === item.path
                       ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {item.label}
+                  <p
+                    style={{
+                      textShadow: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.textShadow = '3px 3px 5px rgba(136, 68, 255, 0.8)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.textShadow = 'none';
+                    }}
+                  >
+                    {item.label}
+                  </p>
                 </button>
               ))}
           </nav>
-        )}
+        }
 
         {/* Search Section - Expands to fill available space */}
         <div
-          className={`flex items-center transition-all duration-300 ${
-            isSearchExpanded ? 'flex-1 mx-4' : 'ml-auto mr-4 w-48 sm:w-64'
+          className={`flex items-center transition-all duration-500 mx-4 ${
+            isSearchExpanded ? 'w-full ' : ' w-48 sm:w-80'
           }`}
         >
           <div className="relative w-full">
@@ -314,7 +330,7 @@ const Header = () => {
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
                   onKeyDown={handleKeyDown}
-                  className="pl-10 pr-20 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo w-full outline-none"
+                  className="pl-10 pr-5 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo w-full outline-none"
                 />
                 {searchValue && (
                   <button
@@ -351,7 +367,7 @@ const Header = () => {
         {/* Right Side Actions */}
         <div className="flex items-center space-x-3">
           {/* Action Buttons - Hidden when search is expanded on mobile */}
-          {!isSearchExpanded && (
+          {
             <>
               {/* Favorites Button */}
 
@@ -370,7 +386,7 @@ const Header = () => {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             </>
-          )}
+          }
 
           {/* Notifications */}
           <NotificationCenter />

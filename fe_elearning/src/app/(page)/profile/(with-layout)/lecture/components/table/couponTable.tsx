@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Edit, BarChart3, Trash2 } from 'lucide-react';
 import CouponTableSkeleton from '@/components/skeleton/couponTableSkeleton';
 import { CouponType } from '@/types/couponType';
-import Pagination from '@/components/pagination/pagination';
+import Pagination from '@/components/pagination/paginations';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import {
