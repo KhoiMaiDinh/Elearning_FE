@@ -138,7 +138,7 @@ const MyCourseCard: React.FC<CourseForm> = ({
             <span>Cập nhật {updatedAt && new Date(updatedAt).toLocaleDateString()}</span>
           </div>
           <Button variant="outline" size="sm" className="h-8">
-            Manage
+            Quản lý
           </Button>
         </CardFooter>
       </Card>

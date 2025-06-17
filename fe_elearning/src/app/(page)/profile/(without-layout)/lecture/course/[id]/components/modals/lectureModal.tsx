@@ -113,12 +113,6 @@ const LectureModal: React.FC<LectureModalProps> = ({
     setSelectedVersion(version);
   };
 
-  console.log(
-    selectedVersion?.video?.status === 'uploaded'
-      ? process.env.NEXT_PUBLIC_BASE_URL_TEMP_VIDEO + (selectedVersion?.video?.key ?? '')
-      : process.env.NEXT_PUBLIC_BASE_URL_VIDEO + (selectedVersion?.video?.key ?? '')
-  );
-
   const getVideoStatus = (status: 'uploaded' | 'validated' | 'pending' | 'rejected') => {
     switch (status) {
       case 'uploaded':
@@ -171,7 +165,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
               render={({ field }) => (
                 <TextAreaRegisterLecture
                   {...field}
-                  labelText="Mô tả bài học"
+                  label="Mô tả bài học"
                   className="text-black font-normal mb-2"
                   error={errors.description?.message}
                 />

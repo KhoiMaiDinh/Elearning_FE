@@ -144,7 +144,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
             </div>
           </div>
           {mode === 'edit' && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-black dark:text-white">
               <Button variant="ghost" size="sm" onClick={() => handleAddLecture(section)}>
                 <Plus className="h-4 w-4" />
               </Button>
@@ -242,7 +242,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                           </div>
                         </div>
                         {mode === 'edit' && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 text-black hover:text-black">
                             {status === 'DELETED' ? (
                               <Button
                                 variant="ghost"

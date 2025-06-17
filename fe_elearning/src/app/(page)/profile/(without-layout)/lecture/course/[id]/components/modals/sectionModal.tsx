@@ -97,7 +97,7 @@ const SectionModal: React.FC<AddSectionDialogProps> = ({
                 <TextAreaRegisterLecture
                   {...field}
                   value={field.value ?? ''}
-                  labelText="Mô tả chương"
+                  label="Mô tả chương"
                   className="text-black font-normal mb-2 h-[300px]"
                   error={formMethods.formState.errors.description?.message}
                 />
