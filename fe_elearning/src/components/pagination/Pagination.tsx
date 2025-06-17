@@ -79,31 +79,33 @@ const Pagination: React.FC<PaginationProps> = ({
         <span className="sr-only">Previous page</span>
       </Button>
 
-      {displayedPages.map((page, index) =>
-        typeof page === 'number' ? (
-          <Button
-            key={index}
-            variant={currentPage === page ? 'default' : 'outline'}
-            size="icon"
-            className={`h-8 w-8 rounded-md ${
-              currentPage === page
-                ? 'bg-majorelleBlue text-white'
-                : 'bg-majorelleBlue70 hover:bg-majorelleBlue'
-            }`}
-            onClick={() => handleChangePage(page)}
-            disabled={currentPage === page}
-          >
-            {page}
-          </Button>
-        ) : (
-          <span
-            key={index}
-            className="text-gray-500 flex h-8 w-8 items-center justify-center text-sm"
-          >
-            &#8230;
-          </span>
-        )
-      )}
+      {displayedPages &&
+        displayedPages.length > 0 &&
+        displayedPages.map((page, index) =>
+          typeof page === 'number' ? (
+            <Button
+              key={index}
+              variant={currentPage === page ? 'default' : 'outline'}
+              size="icon"
+              className={`h-8 w-8 rounded-md ${
+                currentPage === page
+                  ? 'bg-majorelleBlue text-white'
+                  : 'bg-majorelleBlue70 hover:bg-majorelleBlue'
+              }`}
+              onClick={() => handleChangePage(page)}
+              disabled={currentPage === page}
+            >
+              {page}
+            </Button>
+          ) : (
+            <span
+              key={index}
+              className="text-gray-500 flex h-8 w-8 items-center justify-center text-sm"
+            >
+              &#8230;
+            </span>
+          )
+        )}
 
       <Button
         variant="outline"

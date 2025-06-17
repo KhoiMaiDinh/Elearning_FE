@@ -314,7 +314,7 @@ export default function Page() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <AnimateWrapper direction="up" amount={0.5} delay={0.1}>
             <InfoDashboard
-              number={listLecture.length || 10}
+              number={listLecture ? listLecture?.length : 10}
               title={'Giảng viên'}
               Icon={IdCard}
               color="#1568DF"
@@ -377,7 +377,7 @@ export default function Page() {
               </Button> */}
             </div>
 
-            {recommendation.length > 0 ? (
+            {Array.isArray(recommendation) && recommendation.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
                 {recommendation.map((course) => (
                   <CoursesBlock key={course.id} {...course} />
@@ -432,7 +432,7 @@ export default function Page() {
               </Button>
             </div>
 
-            {enrolledCourse.length > 0 ? (
+            {Array.isArray(enrolledCourse) && enrolledCourse?.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {enrolledCourse.map((course) => (
                   <EnrolledCourseBlock key={course.id} course={course} />
@@ -479,25 +479,27 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {categories.map((category) => (
-                <Card
-                  key={category.id}
-                  className="border-0 shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer"
-                  onClick={() => router.push(`/course?category=${category.id}`)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {category.icon}
-                    </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                      {category.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {category.count} khóa học
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              {Array.isArray(categories) &&
+                categories.length > 0 &&
+                categories.map((category) => (
+                  <Card
+                    key={category.id}
+                    className="border-0 shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                    onClick={() => router.push(`/course?category=${category.id}`)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        {category.icon}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        {category.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {category.count} khóa học
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </AnimateWrapper>
         </div>
@@ -543,22 +545,24 @@ export default function Page() {
                     className="w-full"
                   >
                     <CarouselContent className="-ml-2 md:-ml-4">
-                      {listCourse.slice(0, 8).map((course, index) => (
-                        <CarouselItem
-                          key={index}
-                          className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
-                        >
-                          <FadeContent
-                            blur={true}
-                            duration={100}
-                            easing="ease-out"
-                            initialOpacity={0}
-                            className="transform transition-all hover:-translate-y-2 p-2"
+                      {Array.isArray(listCourse) &&
+                        listCourse.length > 0 &&
+                        listCourse.slice(0, 8).map((course, index) => (
+                          <CarouselItem
+                            key={index}
+                            className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
                           >
-                            <CoursesBlock {...course} />
-                          </FadeContent>
-                        </CarouselItem>
-                      ))}
+                            <FadeContent
+                              blur={true}
+                              duration={100}
+                              easing="ease-out"
+                              initialOpacity={0}
+                              className="transform transition-all hover:-translate-y-2 p-2"
+                            >
+                              <CoursesBlock {...course} />
+                            </FadeContent>
+                          </CarouselItem>
+                        ))}
                     </CarouselContent>
                     <CarouselPrevious />
                     <CarouselNext />
@@ -606,28 +610,30 @@ export default function Page() {
                 className="w-full"
               >
                 <CarouselContent className="-ml-2 md:-ml-4">
-                  {listLecture.slice(0, 6).map((lecture, index) => (
-                    <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                      <FadeContent
-                        blur={true}
-                        duration={100}
-                        easing="ease-out"
-                        initialOpacity={0}
-                        className="transform transition-all hover:-translate-y-2 p-2"
-                      >
-                        <LecturersBlock
-                          avatar={lecture?.user?.profile_image?.key}
-                          name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
-                          rating={lecture?.avg_rating}
-                          major={lecture?.category?.translations[0]?.name}
-                          numberCourse={lecture?.total_courses}
-                          numberStudent={lecture?.total_students}
-                          description={lecture?.biography}
-                          username={lecture?.user?.username}
-                        />
-                      </FadeContent>
-                    </CarouselItem>
-                  ))}
+                  {Array.isArray(listLecture) &&
+                    listLecture.length > 0 &&
+                    listLecture.slice(0, 6).map((lecture, index) => (
+                      <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                        <FadeContent
+                          blur={true}
+                          duration={100}
+                          easing="ease-out"
+                          initialOpacity={0}
+                          className="transform transition-all hover:-translate-y-2 p-2"
+                        >
+                          <LecturersBlock
+                            avatar={lecture?.user?.profile_image?.key}
+                            name={lecture?.user?.first_name + ' ' + lecture?.user?.last_name}
+                            rating={lecture?.avg_rating}
+                            major={lecture?.category?.translations[0]?.name}
+                            numberCourse={lecture?.total_courses}
+                            numberStudent={lecture?.total_students}
+                            description={lecture?.biography}
+                            username={lecture?.user?.username}
+                          />
+                        </FadeContent>
+                      </CarouselItem>
+                    ))}
                 </CarouselContent>
                 <CarouselPrevious />
                 <CarouselNext />
@@ -652,43 +658,45 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <Card
-                  key={testimonial.id}
-                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <CardContent className="p-8">
-                    <div className="flex items-center mb-6">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                        />
-                      ))}
-                    </div>
-
-                    <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
-                      "{testimonial.content}"
-                    </p>
-
-                    <div className="flex items-center">
-                      <img
-                        src={testimonial.avatar || '/placeholder.svg'}
-                        alt={testimonial.name}
-                        className="w-12 h-12 rounded-full object-cover mr-4"
-                      />
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-white">
-                          {testimonial.name}
-                        </h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {testimonial.role}
-                        </p>
+              {Array.isArray(testimonials) &&
+                testimonials.length > 0 &&
+                testimonials.map((testimonial) => (
+                  <Card
+                    key={testimonial.id}
+                    className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <CardContent className="p-8">
+                      <div className="flex items-center mb-6">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                          />
+                        ))}
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                      <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
+                        "{testimonial.content}"
+                      </p>
+
+                      <div className="flex items-center">
+                        <img
+                          src={testimonial.avatar || '/placeholder.svg'}
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full object-cover mr-4"
+                        />
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {testimonial.name}
+                          </h4>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {testimonial.role}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </AnimateWrapper>
         </div>

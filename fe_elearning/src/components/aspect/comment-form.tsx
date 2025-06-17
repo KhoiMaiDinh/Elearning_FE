@@ -58,35 +58,37 @@ export function CommentForm() {
           <div className="space-y-3">
             <Label>Chọn các khía cạnh (Chọn tất cả các khía cạnh)</Label>
             <div className="grid grid-cols-2 gap-3">
-              {aspects.map((aspect) => {
-                const AspectIcon = aspect.icon;
-                return (
-                  <div key={aspect.id} className="flex items-start space-x-2">
-                    <Checkbox
-                      id={`aspect-${aspect.id}`}
-                      checked={selectedAspects.includes(aspect.id)}
-                      onCheckedChange={() => handleAspectChange(aspect.id)}
-                    />
-                    <div className="grid gap-1.5 leading-none">
-                      <Label
-                        htmlFor={`aspect-${aspect.id}`}
-                        className="flex items-center gap-1.5 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        <AspectIcon className="h-4 w-4" />
-                        {aspect.name === 'teaching_pace'
-                          ? 'Tốc độ dạy'
-                          : aspect.name === 'instructor_quality'
-                            ? 'Chất lượng giảng viên'
-                            : aspect.name === 'content_quality'
-                              ? 'Chất lượng nội dung'
-                              : aspect.name === 'technology'
-                                ? 'Công nghệ'
-                                : aspect.name}
-                      </Label>
+              {aspects &&
+                aspects.length > 0 &&
+                aspects.map((aspect) => {
+                  const AspectIcon = aspect.icon;
+                  return (
+                    <div key={aspect.id} className="flex items-start space-x-2">
+                      <Checkbox
+                        id={`aspect-${aspect.id}`}
+                        checked={selectedAspects.includes(aspect.id)}
+                        onCheckedChange={() => handleAspectChange(aspect.id)}
+                      />
+                      <div className="grid gap-1.5 leading-none">
+                        <Label
+                          htmlFor={`aspect-${aspect.id}`}
+                          className="flex items-center gap-1.5 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          <AspectIcon className="h-4 w-4" />
+                          {aspect.name === 'teaching_pace'
+                            ? 'Tốc độ dạy'
+                            : aspect.name === 'instructor_quality'
+                              ? 'Chất lượng giảng viên'
+                              : aspect.name === 'content_quality'
+                                ? 'Chất lượng nội dung'
+                                : aspect.name === 'technology'
+                                  ? 'Công nghệ'
+                                  : aspect.name}
+                        </Label>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
 

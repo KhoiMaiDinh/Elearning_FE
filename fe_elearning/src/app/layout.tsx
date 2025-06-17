@@ -48,7 +48,7 @@ const RootLayout = ({ children }: any) => {
                 </div>
               }
             >
-              {children}
+              <main className="">{children}</main>
               <ToastContainer
                 position="top-right"
                 autoClose={2000}

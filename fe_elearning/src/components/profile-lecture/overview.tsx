@@ -136,13 +136,13 @@ export const Overview = () => {
       setNextPayoutData(nextPayoutResponse?.data);
       setAverageStudentEngagementData(avgStudentEngagementResponse?.data);
       setCourseRatingData(avgCourseRatingResponse?.data);
-      setRecentComments(comments?.data);
+      setRecentComments(Array.isArray(comments?.data) ? comments.data : []);
       setCommentsAfterCursor(comments?.pagination.afterCursor);
-      setRecentRatings(ratings?.data);
+      setRecentRatings(Array.isArray(ratings?.data) ? ratings.data : []);
       setRatingsAfterCursor(ratings?.pagination.afterCursor);
-      setRecentThreads(threads?.data);
+      setRecentThreads(Array.isArray(threads?.data) ? threads.data : []);
       setThreadsAfterCursor(threads?.pagination.afterCursor);
-      setRecentThreadsToReply(threadsToReply?.data);
+      setRecentThreadsToReply(Array.isArray(threadsToReply?.data) ? threadsToReply.data : []);
       setThreadsToReplyAfterCursor(threadsToReply?.pagination.afterCursor);
     } catch (err) {
       setError('Failed to fetch overview data');
@@ -162,7 +162,10 @@ export const Overview = () => {
     });
 
     setCommentsAfterCursor(newComments?.pagination.afterCursor);
-    setRecentComments((prev) => [...prev, ...newComments.data]);
+    setRecentComments((prev) => [
+      ...(Array.isArray(prev) ? prev : []),
+      ...(Array.isArray(newComments?.data) ? newComments.data : []),
+    ]);
 
     setIsLoadingComments(false);
   };
@@ -177,7 +180,10 @@ export const Overview = () => {
     });
 
     setRatingsAfterCursor(newRatings?.pagination.afterCursor);
-    setRecentRatings((prev) => [...prev, ...newRatings.data]);
+    setRecentRatings((prev) => [
+      ...(Array.isArray(prev) ? prev : []),
+      ...(Array.isArray(newRatings?.data) ? newRatings.data : []),
+    ]);
 
     setIsLoadingComments(false);
   };
@@ -193,10 +199,16 @@ export const Overview = () => {
     });
     if (has_replied == false) {
       setThreadsToReplyAfterCursor(newThreads?.pagination.afterCursor);
-      setRecentThreadsToReply((prev) => [...prev, ...newThreads.data]);
+      setRecentThreadsToReply((prev) => [
+        ...(Array.isArray(prev) ? prev : []),
+        ...(Array.isArray(newThreads?.data) ? newThreads.data : []),
+      ]);
     } else {
       setThreadsAfterCursor(newThreads?.pagination.afterCursor);
-      setRecentThreads((prev) => [...prev, ...newThreads.data]);
+      setRecentThreads((prev) => [
+        ...(Array.isArray(prev) ? prev : []),
+        ...(Array.isArray(newThreads?.data) ? newThreads.data : []),
+      ]);
     }
 
     setIsLoadingThreads(false);
@@ -249,7 +261,8 @@ export const Overview = () => {
   };
 
   const transformEngagementData = (rawData: StudentEngagementType[]) => {
-    const sortedData = rawData.sort((a, b) => b.avg_engagement - a.avg_engagement);
+    const safeData = Array.isArray(rawData) ? rawData : [];
+    const sortedData = safeData.sort((a, b) => b.avg_engagement - a.avg_engagement);
     return sortedData.map((item) => ({
       name: item.title,
       value: Math.round(item.avg_engagement),
@@ -257,7 +270,8 @@ export const Overview = () => {
   };
 
   const transformCourseRatingData = (rawData: CourseRatingType[]) => {
-    const sortedData = rawData.sort((a, b) => b.average_rating - a.average_rating);
+    const safeData = Array.isArray(rawData) ? rawData : [];
+    const sortedData = safeData.sort((a, b) => b.average_rating - a.average_rating);
     return sortedData.map((item) => ({
       name: item.title,
       value: item.average_rating,
@@ -493,17 +507,19 @@ export const Overview = () => {
                   </Dialog>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {sortCourseCompletionRateData(courseCompletionRateData ?? [])
-                    .slice(0, 5)
-                    .map((item, index) => (
-                      <div className="space-y-2" key={index}>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">{item.title}</span>
-                          <span className="text-sm font-medium">{item.completion_rate}%</span>
+                  {courseCompletionRateData &&
+                    courseCompletionRateData.length > 0 &&
+                    sortCourseCompletionRateData(courseCompletionRateData)
+                      .slice(0, 5)
+                      .map((item, index) => (
+                        <div className="space-y-2" key={index}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">{item.title}</span>
+                            <span className="text-sm font-medium">{item.completion_rate}%</span>
+                          </div>
+                          <Progress value={item.completion_rate} className="h-2" />
                         </div>
-                        <Progress value={item.completion_rate} className="h-2" />
-                      </div>
-                    ))}
+                      ))}
                 </CardContent>
               </Card>
             </div>
@@ -683,12 +699,14 @@ export const Overview = () => {
                 <div className="space-y-2">
                   <p className="font-medium">Phân tích doanh thu theo khóa học</p>
                   <div className="space-y-3">
-                    {nextPayoutData?.breakdown?.map((item, index) => (
-                      <div className="flex items-center justify-between text-sm" key={index}>
-                        <span>{item.title}</span>
-                        <span className="font-medium">{item.amount}₫</span>
-                      </div>
-                    ))}
+                    {nextPayoutData?.breakdown &&
+                      nextPayoutData?.breakdown?.length > 0 &&
+                      nextPayoutData?.breakdown?.map((item, index) => (
+                        <div className="flex items-center justify-between text-sm" key={index}>
+                          <span>{item.title}</span>
+                          <span className="font-medium">{item.amount}₫</span>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -786,7 +804,9 @@ export const Overview = () => {
                   onScroll={handleCommentScroll}
                 >
                   {feedbackViewMode == 'feedback'
-                    ? recentComments?.map((comment, index) => (
+                    ? recentComments &&
+                      recentComments.length > 0 &&
+                      recentComments?.map((comment, index) => (
                         <div className="border-b pb-4" key={index}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
@@ -819,43 +839,47 @@ export const Overview = () => {
                           </div>
                           <p className="mt-2 text-sm">"{comment.content}"</p>
                           <div className="flex flex-wrap gap-2 justify-end pr-2">
-                            {comment.aspects.map((aspect) => {
-                              const emotionColor =
-                                aspect.emotion === 'positive'
-                                  ? 'bg-greenCrayola/10 text-greenCrayola'
-                                  : aspect.emotion === 'neutral'
-                                    ? 'bg-blueberry/10 text-blueberry'
-                                    : 'bg-carminePink/10 text-carminePink';
-                              return (
-                                <Badge
-                                  key={aspect.comment_aspect_id}
-                                  variant="outline"
-                                  className={`flex items-center gap-1 ${emotionColor}`}
-                                >
-                                  <span>
-                                    {aspect.aspect === 'instructor_quality'
-                                      ? 'Chất lượng giảng viên'
-                                      : aspect.aspect === 'content_quality'
-                                        ? 'Chất lượng nội dung'
-                                        : aspect.aspect === 'technology'
-                                          ? 'Công nghệ'
-                                          : aspect.aspect === 'teaching_pace'
-                                            ? 'Tốc độ dạy'
-                                            : aspect.aspect === 'study_materials'
-                                              ? 'Tài liệu học tập'
-                                              : aspect.aspect === 'assignments_practice'
-                                                ? 'Bài tập và thực hành'
-                                                : aspect.aspect === 'other'
-                                                  ? 'Khác'
-                                                  : aspect.aspect}
-                                  </span>
-                                </Badge>
-                              );
-                            })}
+                            {comment.aspects &&
+                              comment.aspects.length > 0 &&
+                              comment.aspects.map((aspect) => {
+                                const emotionColor =
+                                  aspect.emotion === 'positive'
+                                    ? 'bg-greenCrayola/10 text-greenCrayola'
+                                    : aspect.emotion === 'neutral'
+                                      ? 'bg-blueberry/10 text-blueberry'
+                                      : 'bg-carminePink/10 text-carminePink';
+                                return (
+                                  <Badge
+                                    key={aspect.comment_aspect_id}
+                                    variant="outline"
+                                    className={`flex items-center gap-1 ${emotionColor}`}
+                                  >
+                                    <span>
+                                      {aspect.aspect === 'instructor_quality'
+                                        ? 'Chất lượng giảng viên'
+                                        : aspect.aspect === 'content_quality'
+                                          ? 'Chất lượng nội dung'
+                                          : aspect.aspect === 'technology'
+                                            ? 'Công nghệ'
+                                            : aspect.aspect === 'teaching_pace'
+                                              ? 'Tốc độ dạy'
+                                              : aspect.aspect === 'study_materials'
+                                                ? 'Tài liệu học tập'
+                                                : aspect.aspect === 'assignments_practice'
+                                                  ? 'Bài tập và thực hành'
+                                                  : aspect.aspect === 'other'
+                                                    ? 'Khác'
+                                                    : aspect.aspect}
+                                    </span>
+                                  </Badge>
+                                );
+                              })}
                           </div>
                         </div>
                       ))
-                    : recentRatings?.map((rating, index) => (
+                    : recentRatings &&
+                      recentRatings.length > 0 &&
+                      recentRatings?.map((rating, index) => (
                         <div className="border-b pb-4" key={index}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
@@ -925,7 +949,9 @@ export const Overview = () => {
                   onScroll={handleThreadScroll}
                 >
                   {threadViewMode == 'not_replied'
-                    ? recentThreadsToReply.map((thread, index) => (
+                    ? recentThreadsToReply &&
+                      recentThreadsToReply.length > 0 &&
+                      recentThreadsToReply.map((thread, index) => (
                         <div className="flex items-start gap-4 rounded-lg border p-4" key={index}>
                           <FileQuestion className="mt-0.5 h-5 w-5 text-orange-500" />
                           <div>
@@ -945,7 +971,9 @@ export const Overview = () => {
                           </div>
                         </div>
                       ))
-                    : recentThreads.map((thread, index) => (
+                    : recentThreads &&
+                      recentThreads.length > 0 &&
+                      recentThreads.map((thread, index) => (
                         <div className="flex items-start gap-4 rounded-lg border p-4" key={index}>
                           <FileQuestion className="mt-0.5 h-5 w-5 text-orange-500" />
                           <div>
@@ -969,8 +997,6 @@ export const Overview = () => {
               </CardContent>
             </Card>
           </div>
-
-       
         </div>
       )}
     </AnimateWrapper>

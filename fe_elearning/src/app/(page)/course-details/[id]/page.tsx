@@ -8,7 +8,7 @@ import { CourseForm, CourseItem, Section } from '@/types/courseType';
 import CourseItemList from '@/components/courseDetails/lessonList';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ButtonReview from '@/components/courseDetails/buttonReview';
 import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
@@ -37,6 +37,9 @@ const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefine
 
 const LearnPage = () => {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const lecture = searchParams.get('lecture');
+  const comment = searchParams.get('comment');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const [courseData, setCourseData] = useState<CourseForm | undefined>(undefined);
@@ -48,12 +51,18 @@ const LearnPage = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-
+  const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>('');
   useEffect(() => {
     if (userInfo.id && courseData?.instructor?.user?.id) {
       setIsOwner(userInfo.id === courseData.instructor.user.id);
     }
   }, [userInfo, courseData]);
+
+  useEffect(() => {
+    if (comment) {
+      setCurrentCommentItem(comment);
+    }
+  }, [comment]);
 
   const handleGetCourseData = useCallback(async () => {
     try {
@@ -123,7 +132,14 @@ const LearnPage = () => {
         // For registered users or owner, show first video from first section
         const firstSection = sections[0];
         if (firstSection && firstSection.items && firstSection.items.length > 0) {
-          setCurrentCourseItem(firstSection.items[0]);
+          if (lecture) {
+            const lectureItem = firstSection.items.find((item) => item.id === lecture);
+            if (lectureItem) {
+              setCurrentCourseItem(lectureItem);
+            }
+          } else {
+            setCurrentCourseItem(firstSection.items[0]);
+          }
         }
       } else {
         // For unregistered users, find first preview video
@@ -142,17 +158,21 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (currentCourseItem?.video) {
-      setVideoUrl(currentCourseItem?.video?.video?.key);
+      setVideoUrl(currentCourseItem?.video?.key);
     }
   }, [currentCourseItem]);
 
   useEffect(() => {
     if (userInfo.id) {
-      router.push(`/course-details/${id}`);
+      if (lecture && comment) {
+        router.push(`/course-details/${id}?lecture=${lecture}&comment=${comment}`);
+      } else {
+        router.push(`/course-details/${id}`);
+      }
     } else {
       router.push('/login');
     }
-  }, [userInfo.id]);
+  }, [userInfo.id, lecture, comment]);
 
   return (
     <AnimateWrapper delay={0.2} direction="up">
@@ -225,6 +245,7 @@ const LearnPage = () => {
                 price={courseData.price}
                 priceFinal={courseData.priceFinal}
                 isOwner={isOwner}
+                currentCommentItem={currentCommentItem}
               />
             </div>
           )}
@@ -249,7 +270,13 @@ const LearnPage = () => {
       {courseData?.id && !isOwner && isRegistered && (
         <>
           <ButtonReview course_id={courseData?.id || ''} />
-          <ButtonMore course_id={courseData?.id || ''} />
+          <ButtonMore
+            course_id={courseData?.id || ''}
+            label={`Bài học ${currentCourseItem?.title}, chương ${
+              sections.find((section) => section.items?.includes(currentCourseItem as CourseItem))
+                ?.title
+            }`}
+          />
         </>
       )}
     </AnimateWrapper>

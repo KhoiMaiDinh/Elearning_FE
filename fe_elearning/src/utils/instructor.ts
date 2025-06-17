@@ -56,9 +56,9 @@ const APIGetListInstructor = async (params: {
     });
     if (response.status === 200) {
       return {
-        data: response.data.data,
-        status: response.status,
-        total: response.data.pagination.totalRecords,
+        data: response?.data?.data,
+        status: response?.status,
+        total: response?.data?.pagination?.totalRecords,
       };
     }
     return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm

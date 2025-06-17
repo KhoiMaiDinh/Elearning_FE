@@ -144,8 +144,9 @@ export function CategorySelectionPopup({
         {/* Categories grid */}
         <ScrollArea className="flex-1 max-h-[60vh] overflow-y-auto  ">
           <div className="grid grid-cols-2 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {categories.length > 0 &&
-              categories?.map((category) => {
+            {Array.isArray(categories) &&
+              categories.length > 0 &&
+              categories.map((category) => {
                 const isSelected = selectedCategories.includes(category.slug);
                 const isDisabled = !isSelected && selectedCategories.length >= maxSelections;
 

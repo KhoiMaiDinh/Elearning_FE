@@ -172,32 +172,34 @@ export function AspectDistributionChart({ comments }: { comments: any }) {
           <canvas ref={canvasRef} width={400} height={400} className="w-full h-full"></canvas>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4">
-          {aspects.map((aspect) => {
-            const AspectIcon = aspect.icon;
-            return (
-              <div key={aspect.id} className="flex items-center gap-2">
-                <div className="w-3 h-3" style={{ backgroundColor: aspect.color }}></div>
-                <AspectIcon className="h-4 w-4" />
-                <span className="text-sm">
-                  {aspect.name === 'teaching_pace'
-                    ? 'Tốc độ dạy'
-                    : aspect.name === 'instructor_quality'
-                      ? 'Chất lượng giảng viên'
-                      : aspect.name === 'content_quality'
-                        ? 'Chất lượng nội dung'
-                        : aspect.name === 'technology'
-                          ? 'Công nghệ'
-                          : aspect.name === 'study_materials'
-                            ? 'Tài liệu học tập'
-                            : aspect.name === 'assignments_practice'
-                              ? 'Bài tập và thực hành'
-                              : aspect.name === 'other'
-                                ? 'Khác'
-                                : aspect.name}
-                </span>
-              </div>
-            );
-          })}
+          {aspects &&
+            aspects.length > 0 &&
+            aspects.map((aspect) => {
+              const AspectIcon = aspect.icon;
+              return (
+                <div key={aspect.id} className="flex items-center gap-2">
+                  <div className="w-3 h-3" style={{ backgroundColor: aspect.color }}></div>
+                  <AspectIcon className="h-4 w-4" />
+                  <span className="text-sm">
+                    {aspect.name === 'teaching_pace'
+                      ? 'Tốc độ dạy'
+                      : aspect.name === 'instructor_quality'
+                        ? 'Chất lượng giảng viên'
+                        : aspect.name === 'content_quality'
+                          ? 'Chất lượng nội dung'
+                          : aspect.name === 'technology'
+                            ? 'Công nghệ'
+                            : aspect.name === 'study_materials'
+                              ? 'Tài liệu học tập'
+                              : aspect.name === 'assignments_practice'
+                                ? 'Bài tập và thực hành'
+                                : aspect.name === 'other'
+                                  ? 'Khác'
+                                  : aspect.name}
+                  </span>
+                </div>
+              );
+            })}
         </div>
       </CardContent>
     </Card>

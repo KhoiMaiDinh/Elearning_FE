@@ -178,19 +178,21 @@ const SectionList: React.FC<SectionListProps> = ({
 
         {/* Sections */}
         <div className="space-y-4">
-          {sections.map((section, sectionIndex) => (
-            <SectionCard
-              mode={mode}
-              section={section}
-              sectionIndex={sectionIndex}
-              openSectionIds={openSectionIds}
-              toggleSection={toggleSection}
-              handleAddLecture={handleAddLecture}
-              handleEditSection={handleEditSection}
-              handleEditLecture={handleEditLecture}
-              handleGetCourseInfo={handleGetCourseInfo}
-            />
-          ))}
+          {sections &&
+            sections.length > 0 &&
+            sections.map((section, sectionIndex) => (
+              <SectionCard
+                mode={mode}
+                section={section}
+                sectionIndex={sectionIndex}
+                openSectionIds={openSectionIds}
+                toggleSection={toggleSection}
+                handleAddLecture={handleAddLecture}
+                handleEditSection={handleEditSection}
+                handleEditLecture={handleEditLecture}
+                handleGetCourseInfo={handleGetCourseInfo}
+              />
+            ))}
         </div>
 
         {mode === 'edit' && (

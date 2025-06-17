@@ -17,14 +17,16 @@ const FilterRadioGroup: React.FC<filterGroup> = ({ title, data, value, onChange 
     </Label>
     <RadioGroup id={title} value={value} onValueChange={onChange}>
       <div className="flex flex-col gap-3">
-        {data.map((item) => (
-          <div className="flex items-center space-x-2" key={item.id}>
-            <RadioGroupItem value={item.id} id={item.id} />
-            <Label htmlFor={item.id} className="text-[12px]">
-              {item.value}
-            </Label>
-          </div>
-        ))}
+        {Array.isArray(data) &&
+          data.length > 0 &&
+          data.map((item) => (
+            <div className="flex items-center space-x-2" key={item.id}>
+              <RadioGroupItem value={item.id} id={item.id} />
+              <Label htmlFor={item.id} className="text-[12px]">
+                {item.value}
+              </Label>
+            </div>
+          ))}
       </div>
     </RadioGroup>
   </div>

@@ -185,70 +185,72 @@ const ChartTooltipContent = React.forwardRef<
       >
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">
-          {payload.map((item, index) => {
-            const key = `${nameKey || item.name || item.dataKey || 'value'}`;
-            const itemConfig = getPayloadConfigFromPayload(config, item, key);
-            const indicatorColor = color || item.payload.fill || item.color;
+          {Array.isArray(payload) &&
+            payload.length > 0 &&
+            payload.map((item, index) => {
+              const key = `${nameKey || item.name || item.dataKey || 'value'}`;
+              const itemConfig = getPayloadConfigFromPayload(config, item, key);
+              const indicatorColor = color || item.payload.fill || item.color;
 
-            return (
-              <div
-                key={item.dataKey}
-                className={cn(
-                  'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground',
-                  indicator === 'dot' && 'items-center'
-                )}
-              >
-                {formatter && item?.value !== undefined && item.name ? (
-                  formatter(item.value, item.name, item, index, item.payload)
-                ) : (
-                  <>
-                    {itemConfig?.icon ? (
-                      <itemConfig.icon />
-                    ) : (
-                      !hideIndicator && (
-                        <div
-                          className={cn(
-                            'shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]',
-                            {
-                              'h-2.5 w-2.5': indicator === 'dot',
-                              'w-1': indicator === 'line',
-                              'w-0 border-[1.5px] border-dashed bg-transparent':
-                                indicator === 'dashed',
-                              'my-0.5': nestLabel && indicator === 'dashed',
+              return (
+                <div
+                  key={item.dataKey}
+                  className={cn(
+                    'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground',
+                    indicator === 'dot' && 'items-center'
+                  )}
+                >
+                  {formatter && item?.value !== undefined && item.name ? (
+                    formatter(item.value, item.name, item, index, item.payload)
+                  ) : (
+                    <>
+                      {itemConfig?.icon ? (
+                        <itemConfig.icon />
+                      ) : (
+                        !hideIndicator && (
+                          <div
+                            className={cn(
+                              'shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]',
+                              {
+                                'h-2.5 w-2.5': indicator === 'dot',
+                                'w-1': indicator === 'line',
+                                'w-0 border-[1.5px] border-dashed bg-transparent':
+                                  indicator === 'dashed',
+                                'my-0.5': nestLabel && indicator === 'dashed',
+                              }
+                            )}
+                            style={
+                              {
+                                '--color-bg': indicatorColor,
+                                '--color-border': indicatorColor,
+                              } as React.CSSProperties
                             }
-                          )}
-                          style={
-                            {
-                              '--color-bg': indicatorColor,
-                              '--color-border': indicatorColor,
-                            } as React.CSSProperties
-                          }
-                        />
-                      )
-                    )}
-                    <div
-                      className={cn(
-                        'flex flex-1 justify-between leading-none',
-                        nestLabel ? 'items-end' : 'items-center'
+                          />
+                        )
                       )}
-                    >
-                      <div className="grid gap-1.5">
-                        {nestLabel ? tooltipLabel : null}
-                        <span className="text-muted-foreground">
-                          {itemConfig?.label || item.name}
-                        </span>
+                      <div
+                        className={cn(
+                          'flex flex-1 justify-between leading-none',
+                          nestLabel ? 'items-end' : 'items-center'
+                        )}
+                      >
+                        <div className="grid gap-1.5">
+                          {nestLabel ? tooltipLabel : null}
+                          <span className="text-muted-foreground">
+                            {itemConfig?.label || item.name}
+                          </span>
+                        </div>
+                        {item.value && (
+                          <span className="font-mono font-medium tabular-nums text-foreground">
+                            {item.value.toLocaleString()}
+                          </span>
+                        )}
                       </div>
-                      {item.value && (
-                        <span className="font-mono font-medium tabular-nums text-foreground">
-                          {item.value.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
+                    </>
+                  )}
+                </div>
+              );
+            })}
         </div>
       </div>
     );
@@ -281,31 +283,33 @@ const ChartLegendContent = React.forwardRef<
         className
       )}
     >
-      {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || 'value'}`;
-        const itemConfig = getPayloadConfigFromPayload(config, item, key);
+      {Array.isArray(payload) &&
+        payload.length > 0 &&
+        payload.map((item) => {
+          const key = `${nameKey || item.dataKey || 'value'}`;
+          const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
-        return (
-          <div
-            key={item.value}
-            className={cn(
-              'flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground'
-            )}
-          >
-            {itemConfig?.icon && !hideIcon ? (
-              <itemConfig.icon />
-            ) : (
-              <div
-                className="h-2 w-2 shrink-0 rounded-[2px]"
-                style={{
-                  backgroundColor: item.color,
-                }}
-              />
-            )}
-            {itemConfig?.label}
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={item.value}
+              className={cn(
+                'flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground'
+              )}
+            >
+              {itemConfig?.icon && !hideIcon ? (
+                <itemConfig.icon />
+              ) : (
+                <div
+                  className="h-2 w-2 shrink-0 rounded-[2px]"
+                  style={{
+                    backgroundColor: item.color,
+                  }}
+                />
+              )}
+              {itemConfig?.label}
+            </div>
+          );
+        })}
     </div>
   );
 });
@@ -397,17 +401,19 @@ export function Chart({
           }}
         />
         {showLegend && <Legend />}
-        {categories.map((category, index) => (
-          <Line
-            key={category}
-            type="monotone"
-            dataKey={category}
-            stroke={colors[index % colors.length]}
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-        ))}
+        {Array.isArray(categories) &&
+          categories.length > 0 &&
+          categories.map((category, index) => (
+            <Line
+              key={category}
+              type="monotone"
+              dataKey={category}
+              stroke={colors[index % colors.length]}
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          ))}
       </RechartsLineChart>
     </ResponsiveContainer>
   );
@@ -439,14 +445,16 @@ export function Chart({
           }}
         />
         {showLegend && <Legend />}
-        {categories.map((category, index) => (
-          <Bar
-            key={category}
-            dataKey={category}
-            fill={colors[index % colors.length]}
-            radius={[4, 4, 0, 0]}
-          />
-        ))}
+        {Array.isArray(categories) &&
+          categories.length > 0 &&
+          categories.map((category, index) => (
+            <Bar
+              key={category}
+              dataKey={category}
+              fill={colors[index % colors.length]}
+              radius={[4, 4, 0, 0]}
+            />
+          ))}
       </RechartsBarChart>
     </ResponsiveContainer>
   );
@@ -478,16 +486,18 @@ export function Chart({
           }}
         />
         {showLegend && <Legend />}
-        {categories.map((category, index) => (
-          <Area
-            key={category}
-            type="monotone"
-            dataKey={category}
-            fill={colors[index % colors.length]}
-            stroke={colors[index % colors.length]}
-            fillOpacity={0.3}
-          />
-        ))}
+        {Array.isArray(categories) &&
+          categories.length > 0 &&
+          categories.map((category, index) => (
+            <Area
+              key={category}
+              type="monotone"
+              dataKey={category}
+              fill={colors[index % colors.length]}
+              stroke={colors[index % colors.length]}
+              fillOpacity={0.3}
+            />
+          ))}
       </RechartsAreaChart>
     </ResponsiveContainer>
   );
@@ -506,9 +516,11 @@ export function Chart({
           nameKey={index}
           label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
         >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
+          {Array.isArray(data) &&
+            data.length > 0 &&
+            data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
         </Pie>
         <Tooltip
           formatter={(value: number) => [valueFormatter(value), '']}
@@ -547,21 +559,23 @@ export function Chart({
           overflowY: 'auto',
         }}
       >
-        {payload.map((entry, index) => (
-          <li key={`item-${index}`} style={{ marginBottom: 4, color: entry.color }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: 10,
-                height: 10,
-                backgroundColor: entry.color,
-                marginRight: 6,
-                borderRadius: '50%',
-              }}
-            />
-            {entry.value}
-          </li>
-        ))}
+        {Array.isArray(payload) &&
+          payload.length > 0 &&
+          payload.map((entry, index) => (
+            <li key={`item-${index}`} style={{ marginBottom: 4, color: entry.color }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 10,
+                  height: 10,
+                  backgroundColor: entry.color,
+                  marginRight: 6,
+                  borderRadius: '50%',
+                }}
+              />
+              {entry.value}
+            </li>
+          ))}
       </ul>
     );
   };

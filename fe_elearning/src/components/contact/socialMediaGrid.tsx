@@ -57,15 +57,17 @@ export function SocialMediaGrid({
 
   return (
     <div className={cn('grid grid-cols-2 sm:grid-cols-4 gap-4', className)}>
-      {platforms.map((item) => (
-        <SocialMediaLink
-          key={item.platform}
-          platform={item.platform}
-          url={item.url}
-          icon={getIconForPlatform(item.platform)}
-          size={size}
-        />
-      ))}
+      {platforms &&
+        platforms.length > 0 &&
+        platforms.map((item) => (
+          <SocialMediaLink
+            key={item.platform}
+            platform={item.platform}
+            url={item.url}
+            icon={getIconForPlatform(item.platform)}
+            size={size}
+          />
+        ))}
     </div>
   );
 }

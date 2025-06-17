@@ -217,6 +217,8 @@ const Page = () => {
 
             <div className="space-y-6">
               {sections?.length > 0 ? (
+                sections &&
+                sections.length > 0 &&
                 sections.map((section) => (
                   <div key={section.id} className="space-y-4">
                     <h2 className="text-lg font-bold text-persianIndigo/80 dark:text-white/80">
@@ -224,6 +226,8 @@ const Page = () => {
                     </h2>
                     <div className="space-y-2">
                       {section.items?.length > 0 ? (
+                        section.items &&
+                        section.items.length > 0 &&
                         section.items.map((item) => (
                           <div key={item.id} className="border rounded-md p-4 space-y-2">
                             <div
@@ -270,9 +274,9 @@ const Page = () => {
         <Popup onClose={() => setShowReviews(false)}>
           <h3 className="text-lg font-semibold">Tất cả đánh giá</h3>
           <div className="flex flex-col gap-4">
-            {reviews.map((review, index) => (
-              <ReviewListUser key={index} reviews={review} />
-            ))}
+            {reviews &&
+              reviews.length > 0 &&
+              reviews.map((review, index) => <ReviewListUser key={index} reviews={review} />)}
           </div>
         </Popup>
       )}

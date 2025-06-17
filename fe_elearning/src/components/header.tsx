@@ -36,6 +36,12 @@ import { NotificationCenter } from './notifications/notificationComponent';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { APIGetListCourse } from '@/utils/course';
 import { debounce } from 'lodash';
+import { clearBankAccount } from '@/constants/bankAccount';
+import { clearComment } from '@/constants/comment';
+import { clearNotifications } from '@/constants/notificationSlice';
+import { clearCourse } from '@/constants/course';
+import { clearOrders } from '@/constants/orderSlice';
+import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -59,24 +65,6 @@ const Header = () => {
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
 
-  // State cho thông báo
-  const [_notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: 'Khóa học mới đã được thêm!',
-      date: '2025-03-07',
-      link: '/course/new',
-      isRead: false,
-    },
-    {
-      id: 2,
-      message: 'Bạn có một tin nhắn mới.',
-      date: '2025-03-06',
-      link: '/messages',
-      isRead: true,
-    },
-  ]);
-
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
@@ -95,6 +83,17 @@ const Header = () => {
     localStorage.setItem('access_token', '');
     localStorage.setItem('refresh_token', '');
     localStorage.setItem('expires_at', '');
+    dispatch(clearUser());
+    // window.location.reload();
+    router.push('/');
+    dispatch(clearUser());
+    dispatch(clearBankAccount({}));
+    dispatch(clearComment({}));
+    dispatch(clearNotifications());
+    dispatch(clearCourse({}));
+    dispatch(clearOrders({}));
+    dispatch(clearStatisticItemCourse({}));
+
     dispatch(clearUser());
   };
 
@@ -222,24 +221,26 @@ const Header = () => {
                 </SheetHeader>
                 <div className="py-4">
                   <nav className="flex flex-col space-y-4">
-                    {menuItems.map((item) => (
-                      <Button
-                        key={item.path}
-                        variant="ghost"
-                        onClick={() => {
-                          router.push(item.path);
-                          const closeEvent = new Event('close-sheet');
-                          window.dispatchEvent(closeEvent);
-                        }}
-                        className={`justify-start ${
-                          pathname === item.path
-                            ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
-                            : ''
-                        }`}
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
+                    {Array.isArray(menuItems) &&
+                      menuItems.length > 0 &&
+                      menuItems.map((item) => (
+                        <Button
+                          key={item.path}
+                          variant="ghost"
+                          onClick={() => {
+                            router.push(item.path);
+                            const closeEvent = new Event('close-sheet');
+                            window.dispatchEvent(closeEvent);
+                          }}
+                          className={`justify-start ${
+                            pathname === item.path
+                              ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
+                              : ''
+                          }`}
+                        >
+                          {item.label}
+                        </Button>
+                      ))}
                     <Button
                       variant="ghost"
                       onClick={() => {
@@ -273,19 +274,21 @@ const Header = () => {
         {/* Desktop Navigation - Hidden when search is expanded */}
         {!isSearchExpanded && (
           <nav className="hidden sm:flex items-center space-x-8 ml-8">
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === item.path
-                    ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+            {Array.isArray(menuItems) &&
+              menuItems.length > 0 &&
+              menuItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => router.push(item.path)}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname === item.path
+                      ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
           </nav>
         )}
 
@@ -329,15 +332,17 @@ const Header = () => {
             {/* Search Dropdown */}
             {showDropdown && results.length > 0 && (
               <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-md mt-1 shadow-lg">
-                {results.map((course, index) => (
-                  <li
-                    key={course}
-                    onMouseDown={() => handleSelectCourse(course)}
-                    className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
-                  >
-                    {course}
-                  </li>
-                ))}
+                {results &&
+                  results.length > 0 &&
+                  results.map((course, index) => (
+                    <li
+                      key={course}
+                      onMouseDown={() => handleSelectCourse(course)}
+                      className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
+                    >
+                      {course}
+                    </li>
+                  ))}
               </ul>
             )}
           </div>

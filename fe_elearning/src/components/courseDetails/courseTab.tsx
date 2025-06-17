@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, Star, Users, Send, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Giả sử bạn có component Input
+import { Input } from '@/components/ui/input';
 import { CourseItem, Section } from '@/types/courseType';
 import { Lecture } from '@/types/registerLectureFormType';
-import { APIPostComment, APIGetComment } from '@/utils/comment';
+import { APIPostComment, APIGetComment, APIGetCommentById } from '@/utils/comment';
 import InputWithSendButton from '../inputComponent/inputComment';
 import { LectureComment } from '@/types/commentType';
 import CommentListUser from './commentListUser';
-import Popup from './popup'; // Import your Popup component
+import Popup from './popup';
 import ToastNotify from '../ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
 import SelectFilter from '../selectComponent/selectFilter';
@@ -38,6 +38,7 @@ interface CourseTabsProps {
   priceFinal?: number;
   currentCourseItem?: CourseItem;
   isOwner?: boolean;
+  currentCommentItem?: string;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
@@ -50,6 +51,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   priceFinal,
   currentCourseItem,
   isOwner,
+  currentCommentItem,
 }) => {
   const [activeTab, setActiveTab] = useState('description');
   const [newReview, setNewReview] = useState('');
@@ -65,6 +67,8 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [filterOption, setFilterOption] = useState('all'); // New state for filter option
 
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [showCommentId, setShowCommentId] = useState<boolean>(false);
+  const [comment, setComment] = useState<LectureComment | null>(null);
 
   const handlePostThread = async () => {
     const newPostData = {
@@ -74,7 +78,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     };
     try {
       const response = await APIPostThread(newPostData);
-      if (response?.status === 201) {
+      if (response?.status === 200) {
         setNewTitle('');
         setNewContent('');
         handleGetThread();
@@ -166,7 +170,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         if (response?.status === 201) {
           setNewReview('');
           handleGetComment();
-          toast.success(<ToastNotify status={1} message="Bài đăng đã được đăng thành công" />, {
+          toast.success(<ToastNotify status={1} message="Feedback đã được gửi thành công" />, {
             style: styleSuccess,
           });
         }
@@ -183,10 +187,19 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     if (currentCourseItem?.id) {
       const response = await APIGetComment(currentCourseItem.id, {
         is_solved: filterOption === 'mostRelevant' ? false : undefined,
+        order: 'DESC',
       });
       if (response?.status === 200) {
         setComments(response?.data);
       }
+    }
+  };
+
+  const handleGetCommentById = async (id: string) => {
+    const response = await APIGetCommentById(id);
+    if (response) {
+      setComment(response);
+      setShowCommentId(true);
     }
   };
 
@@ -200,6 +213,15 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       handleGetReply(expandedThreadId);
     }
   }, [expandedThreadId]);
+
+  useEffect(() => {
+    if (currentCommentItem && currentCommentItem.length > 0) {
+      setActiveTab('reviews');
+      handleGetCommentById(currentCommentItem);
+    } else {
+      setActiveTab('description');
+    }
+  }, [currentCommentItem]);
 
   return (
     <>
@@ -228,7 +250,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             // className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
             className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
           >
-            Cảm nhận
+            Feedback
             <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1 " />{' '}
           </TabsTrigger>
         </TabsList>
@@ -283,15 +305,16 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             </div>
           </div>
 
+          <hr className="my-4" />
           {currentCourseItem && (
             <div>
               <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-                {currentCourseItem.title}
+                {currentCourseItem?.title}
               </h3>
               <p
                 className="text-darkSilver dark:text-lightSilver ql-content"
                 dangerouslySetInnerHTML={{
-                  __html: currentCourseItem.description,
+                  __html: currentCourseItem?.description,
                 }}
               />
             </div>
@@ -376,80 +399,84 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
           {/* Danh sách bài đăng */}
           <div className="space-y-6">
-            {communityPosts.map((post) => {
-              const isExpanded = expandedThreadId === post.id;
+            {Array.isArray(communityPosts) &&
+              communityPosts.length > 0 &&
+              communityPosts.map((post) => {
+                const isExpanded = expandedThreadId === post.id;
 
-              return (
-                <div
-                  key={post.id}
-                  className="border border-gray-200 dark:border-darkSilver/30 rounded-lg p-4 shadow-sm bg-white dark:bg-eerieBlack"
-                >
-                  <div className="flex justify-between items-start">
-                    <h4 className="text-xl font-semibold text-majorelleBlue dark:text-white">
-                      {post.title}
-                    </h4>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="link"
-                        className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
-                        onClick={() => setExpandedThreadId(isExpanded ? null : post.id)}
-                      >
-                        {isExpanded ? (
-                          <ChevronDown className="w-6 h-6" />
-                        ) : (
-                          <ChevronRight className="w-6 h-6" />
-                        )}
-                      </Button>
+                return (
+                  <div
+                    key={post.id}
+                    className="border border-gray-200 dark:border-darkSilver/30 rounded-lg p-4 shadow-sm bg-white dark:bg-eerieBlack"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-xl font-semibold text-majorelleBlue dark:text-white">
+                        {post.title}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="link"
+                          className="text-sm text-cosmicCobalt dark:text-lightSilver underline"
+                          onClick={() => setExpandedThreadId(isExpanded ? null : post.id)}
+                        >
+                          {isExpanded ? (
+                            <ChevronDown className="w-6 h-6" />
+                          ) : (
+                            <ChevronRight className="w-6 h-6" />
+                          )}
+                        </Button>
 
-                      <ReportButton course_id={post.id} type="THREAD" />
+                        <ReportButton course_id={post.id} type="THREAD" />
+                      </div>
                     </div>
-                  </div>
 
-                  {isExpanded && (
-                    <div className="mt-2">
-                      {/* Nội dung bài viết */}
-                      <p
-                        className="text-richBlack dark:text-lightSilver mb-2 ql-content"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                      />
-                      {/* <p className="text-sm text-darkSilver/70 dark:text-lightSilver/50 italic">
+                    {isExpanded && (
+                      <div className="mt-2">
+                        {/* Nội dung bài viết */}
+                        <p
+                          className="text-richBlack dark:text-lightSilver mb-2 ql-content"
+                          dangerouslySetInnerHTML={{ __html: post.content }}
+                        />
+                        {/* <p className="text-sm text-darkSilver/70 dark:text-lightSilver/50 italic">
               Đăng ngày {new Date(post.date).toLocaleDateString("vi-VN")}
             </p> */}
 
-                      {/* Phần trả lời */}
-                      <div className="mt-4 border-t pt-3">
-                        <h5 className="text-sm font-semibold text-cosmicCobalt dark:text-lightSilver mb-2">
-                          Trả lời
-                        </h5>
+                        {/* Phần trả lời */}
+                        <div className="mt-4 border-t pt-3">
+                          <h5 className="text-sm font-semibold text-cosmicCobalt dark:text-lightSilver mb-2">
+                            Trả lời
+                          </h5>
 
-                        {replies.map((reply, index) => (
-                          <ReplyList key={index} replies={reply} />
-                        ))}
+                          {Array.isArray(replies) &&
+                            replies.length > 0 &&
+                            replies.map((reply, index) => (
+                              <ReplyList key={index} replies={reply} />
+                            ))}
 
-                        <div className="flex gap-2 mt-2">
-                          <Input
-                            value={newReply}
-                            onChange={(e) => setNewReply(e.target.value)}
-                            placeholder="Thêm câu trả lời..."
-                            className="flex-1"
-                          />
-                          <Button
-                            onClick={() => handleReplySubmit(post.id)}
-                            disabled={!newReply.trim()}
-                            type="button"
-                            size="sm"
-                            className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
-                          >
-                            <Send size={16} />
-                            Gửi
-                          </Button>
+                          <div className="flex gap-2 mt-2">
+                            <Input
+                              value={newReply}
+                              onChange={(e) => setNewReply(e.target.value)}
+                              placeholder="Thêm câu trả lời..."
+                              className="flex-1"
+                            />
+                            <Button
+                              onClick={() => handleReplySubmit(post.id)}
+                              disabled={!newReply.trim()}
+                              type="button"
+                              size="sm"
+                              className="flex items-center text-white justify-center gap-1 px-3 py-2 bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125"
+                            >
+                              <Send size={16} />
+                              Gửi
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </TabsContent>
 
@@ -461,7 +488,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
             <div className="flex gap-2 mb-4 items-center">
               <InputWithSendButton
                 labelText=""
-                placeholder="Viết cảm nhận của bạn..."
+                placeholder="Viết feedback của bạn..."
                 onChange={(e) => setNewReview(e.target.value)}
                 value={newReview}
                 onSubmit={handlePostComment}
@@ -478,7 +505,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                 onClick={() => setShowPopup(true)}
                 className="mt-2 text-darkSilver dark:text-lightSilver cursor-pointer text-xs"
               >
-                Xem tất cả
+                Xem tất cả ({comments.length})
               </text>
             )}
           </div>
@@ -506,11 +533,22 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
         {/* Popup for displaying all comments */}
         {showPopup && (
           <Popup onClose={() => setShowPopup(false)}>
-            <h3 className="text-lg font-semibold">Tất cả cảm nhận</h3>
+            <h3 className="text-lg font-semibold">Tất cả feedback</h3>
             <div className="flex flex-col gap-4">
-              {comments.map((comment, index) => (
-                <CommentListUser key={index} comments={comment} />
-              ))}
+              {Array.isArray(comments) &&
+                comments.length > 0 &&
+                comments.map((comment, index) => (
+                  <CommentListUser key={index} comments={comment} />
+                ))}
+            </div>
+          </Popup>
+        )}
+
+        {showCommentId && (
+          <Popup onClose={() => setShowCommentId(false)}>
+            <h3 className="text-lg font-semibold">Feedback</h3>
+            <div className="flex flex-col gap-4">
+              <CommentListUser comments={comment as LectureComment} />
             </div>
           </Popup>
         )}

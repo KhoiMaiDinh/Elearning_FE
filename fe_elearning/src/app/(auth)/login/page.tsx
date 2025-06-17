@@ -35,6 +35,7 @@ import { createLoginSchema } from '@/utils/validation';
 import { CustomModal } from '@/components/modal/custom-modal';
 import AlertSuccess from '@/components/alert/AlertSuccess';
 import AlertError from '@/components/alert/AlertError';
+import { APIGetCurrentUser } from '@/utils/user';
 
 // Form schema
 
@@ -46,11 +47,13 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
+
   const [alertDescription, setAlertDescription] = useState('');
   const [showBannedModal, setShowBannedModal] = useState(false);
+  const [bannedUntil, setBannedUntil] = useState('');
   const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
+  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+  const [showAlertError, setShowAlertError] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -67,6 +70,13 @@ export default function LoginPage() {
     dispatch(clearUser());
   };
 
+  const handleGetCurrentUser = async () => {
+    const response = await APIGetCurrentUser();
+    if (response?.status === 200) {
+      dispatch(setUser(response.data));
+    }
+  };
+
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
@@ -81,10 +91,10 @@ export default function LoginPage() {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.setItem('token_expires', response.data.token_expires);
-        dispatch(setUser(response.data.user));
         // Check if user is banned
         if (decodedToken.banned_until) {
           clearLoginData();
+          setBannedUntil(decodedToken.banned_until);
           setShowBannedModal(true);
           return;
         }
@@ -95,6 +105,7 @@ export default function LoginPage() {
           return;
         }
 
+        handleGetCurrentUser();
         // Store tokens and proceed with login
 
         router.push('/');
@@ -333,7 +344,15 @@ export default function LoginPage() {
         isOpen={showBannedModal}
         onClose={() => setShowBannedModal(false)}
         title="Tài khoản bị khóa"
-        description="Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để biết thêm chi tiết."
+        description={`Tài khoản của bạn đã bị khóa đến ${new Date(bannedUntil).toLocaleDateString(
+          'vi-VN',
+          {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }
+        )}. Vui lòng liên hệ admin để biết thêm chi tiết.`}
+        showContactButton={true}
       />
 
       {/* Unverified Email Modal */}
@@ -347,6 +366,7 @@ export default function LoginPage() {
         description="Tài khoản của bạn chưa được xác thực qua email. Bạn có thể tiếp tục sử dụng với các tính năng hạn chế hoặc xác thực email để sử dụng đầy đủ tính năng."
         showContinueButton={true}
         onContinue={handleContinueUnverified}
+        showResendEmailVerification={true}
       />
     </div>
   );

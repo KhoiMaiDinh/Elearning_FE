@@ -14,7 +14,15 @@ const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
 
-export default function ReportButton({ course_id, type }: { course_id: string; type: string }) {
+export default function ReportButton({
+  course_id,
+  type,
+  label,
+}: {
+  course_id: string;
+  type: string;
+  label?: string;
+}) {
   const {
     control,
     handleSubmit,
@@ -97,6 +105,16 @@ export default function ReportButton({ course_id, type }: { course_id: string; t
             <h2 className="mb-4 text-lg font-semibold text-eerieBlack dark:text-white">
               Gửi báo cáo vi phạm
             </h2>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="content"
+                  className="text-sm font-medium text-gray-700 dark:text-white"
+                >
+                  {label}
+                </label>
+              </div>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <Controller
                 control={control}

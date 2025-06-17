@@ -62,6 +62,7 @@ const NotRegisteredLecture = () => {
           <AnimateWrapper delay={0.2} direction="up" className="w-full">
             <div className="w-full  flex flex-col gap-3 items-center justify-center p-4">
               {dataBenefit &&
+                dataBenefit.length > 0 &&
                 dataBenefit.map((item, index) => (
                   <BenefitsBar key={index} description={item.description} />
                 ))}

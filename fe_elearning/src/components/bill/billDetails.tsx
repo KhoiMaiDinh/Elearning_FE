@@ -60,14 +60,16 @@ const BillDetails: React.FC<BillDetailsProps> = ({ bill }) => {
           <div>
             <p className="font-medium text-richBlack dark:text-AntiFlashWhite">Khóa học đã mua:</p>
             <ul className="list-disc list-inside">
-              {bill.details.map((detail, index) => (
-                <li key={index}>
-                  {detail.course.title} -{' '}
-                  <span className="text-beautyGreen">
-                    {formatPrice(Number(detail.final_price))}
-                  </span>
-                </li>
-              ))}
+              {bill.details &&
+                bill.details.length > 0 &&
+                bill.details.map((detail, index) => (
+                  <li key={index}>
+                    {detail.course.title} -{' '}
+                    <span className="text-beautyGreen">
+                      {formatPrice(Number(detail.final_price))}
+                    </span>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

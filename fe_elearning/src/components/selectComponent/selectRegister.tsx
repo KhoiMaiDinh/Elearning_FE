@@ -46,19 +46,19 @@ const SelectRegister: React.FC<selectFilter> = ({
         </Label>
       )}
       <Select disabled={disabled} onValueChange={onValueChange} value={value}>
-        <SelectTrigger
-          className={`w-full sm:min-w-28 md:min-w-32 lg:min-w-36 ${inputClassName} `}
-        >
+        <SelectTrigger className={`w-full sm:min-w-28 md:min-w-32 lg:min-w-36 ${inputClassName} `}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup className="text-[12px] font-sans font-medium">
             {/* <SelectLabel>{placeholder}</SelectLabel> */}
-            {data.map((item, index) => (
-              <SelectItem key={index} value={item.id}>
-                {item.value}
-              </SelectItem>
-            ))}
+            {data &&
+              data.length > 0 &&
+              data.map((item, index) => (
+                <SelectItem key={index} value={item.id}>
+                  {item.value}
+                </SelectItem>
+              ))}
           </SelectGroup>
         </SelectContent>
       </Select>

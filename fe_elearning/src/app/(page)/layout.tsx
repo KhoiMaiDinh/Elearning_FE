@@ -38,7 +38,7 @@ export default function RootLayout({
   };
   useEffect(() => {
     if (token) {
-      dispatch(connectSocket({ token, user_id: userInfo.id }));
+      dispatch(connectSocket({ token, user_id: userInfo.id }) as any);
       handleGetPreference();
     }
   }, [token, dispatch, userInfo.id]);

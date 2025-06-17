@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import ToastNotify from '../ToastNotify/toastNotify';
 import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { useRouter } from 'next/navigation';
 
 interface CustomModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ interface CustomModalProps {
   description: string;
   showContinueButton?: boolean;
   onContinue?: () => void;
+  showResendEmailVerification?: boolean;
+  showContactButton?: boolean;
 }
 
 export function CustomModal({
@@ -32,9 +35,11 @@ export function CustomModal({
   description,
   showContinueButton = false,
   onContinue,
+  showResendEmailVerification = false,
+  showContactButton = false,
 }: CustomModalProps) {
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const handleResendEmailVerification = async () => {
     try {
       const response = await APIResendEmailVerification();
@@ -74,7 +79,12 @@ export function CustomModal({
               Tiếp tục ẩn danh
             </Button>
           )}
-          <Button onClick={handleResendEmailVerification}>Gửi lại xác thực</Button>
+          {showResendEmailVerification && (
+            <Button onClick={handleResendEmailVerification}>Gửi lại xác thực</Button>
+          )}
+          {showContactButton && (
+            <Button onClick={() => router.push('/contact')}>Liên hệ admin</Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

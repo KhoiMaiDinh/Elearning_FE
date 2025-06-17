@@ -6,7 +6,7 @@ import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { Facebook, FileCheck, Globe, Linkedin, Trash2Icon } from 'lucide-react';
+import { AlertTriangle, Dot, Facebook, FileCheck, Globe, Linkedin, Trash2Icon } from 'lucide-react';
 import { APIGetCategory } from '@/utils/category';
 import { Category } from '@/types/categoryType';
 import SelectRegister from '../selectComponent/selectRegister';
@@ -20,21 +20,23 @@ import { toast, ToastContainer } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import Popup from '../courseDetails/popup';
 
 type Props = {
   mode: 'create' | 'update';
 };
 
 const UpsertInstructor: React.FC<Props> = ({ mode }) => {
-  const theme = useTheme();
   const onSave = () => {
-    toast.success(<ToastNotify status={1} message="Thêm tài khoản thành công" />, {
+    toast.success(<ToastNotify status={1} message="Gửi hồ sơ thành công" />, {
       style: styleSuccess,
     });
   };
 
   const onFail = () => {
-    toast.error(<ToastNotify status={-1} message="Thêm tài khoản thất bại" />, {
+    toast.error(<ToastNotify status={-1} message="Gửi hồ sơ thất bại" />, {
       style: styleError,
     });
   };
@@ -57,6 +59,10 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
     resumeUploadProgress,
   } = useInstructorForm(null, onSave, onFail);
 
+  const searchParams = useSearchParams();
+  const rejected = searchParams.get('rejected');
+  const reason = searchParams.get('reason');
+  const tab = searchParams.get('tab');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const [category, setCategory] = useState<{ id: string; value: string }[]>([]);
   const [isViewMode, setViewMode] = useState(true);
@@ -99,9 +105,28 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   return (
     <>
       <div className=" px-6 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8 text-majorelleBlue">
+        <h1 className="text-3xl font-bold text-center  text-majorelleBlue">
           {mode === 'create' ? 'Tạo Hồ sơ' : isViewMode ? 'Hồ sơ' : 'Cập nhật hồ sơ'}
         </h1>
+
+        <div className="w-full items-end justify-end flex py-4">
+          <div
+            className={`h-full w-fit p-2 rounded-full flex  items-center gap-2 px-4 ${userInfo?.instructor_profile?.is_approved === null ? 'bg-Sunglow/20' : userInfo?.instructor_profile?.is_approved === false ? 'bg-redPigment/20' : 'bg-vividMalachite/20'}`}
+          >
+            <Dot
+              className={`w-8 h-8 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
+            />
+            <p
+              className={`text-red-500 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
+            >
+              {userInfo?.instructor_profile?.is_approved === null
+                ? 'Chưa xét duyệt'
+                : userInfo?.instructor_profile?.is_approved === false
+                  ? 'Bị từ chối: ' + userInfo?.instructor_profile?.disapproval_reason
+                  : 'Đã xét duyệt '}
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
@@ -222,28 +247,30 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
                       Tối đa: {certificates.length}/{MAX_CERTIFICATES} file
                     </div>
                     <div className="gap-3 grid">
-                      {certificates.map((certificate, index) => (
-                        <div
-                          className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
-                          key={certificate.id}
-                        >
-                          <div className="flex items-center justify-between w-full rounded-md gap-2 px-3">
-                            <div className="flex items-center gap-2">
-                              <FileCheck className="w-4 h-4 text-black dark:text-white" />
-                              <p>Bằng cấp số {index + 1}</p>
-                            </div>
+                      {certificates &&
+                        certificates.length > 0 &&
+                        certificates.map((certificate, index) => (
+                          <div
+                            className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
+                            key={certificate.id}
+                          >
+                            <div className="flex items-center justify-between w-full rounded-md gap-2 px-3">
+                              <div className="flex items-center gap-2">
+                                <FileCheck className="w-4 h-4 text-black dark:text-white" />
+                                <p>Bằng cấp số {index + 1}</p>
+                              </div>
 
-                            <Button
-                              variant="ghost"
-                              className="hover:text-destructive"
-                              onClick={() => removeCertificate(index)}
-                              disabled={pageDisabled()}
-                            >
-                              <Trash2Icon className="w-4 h-4" />
-                            </Button>
+                              <Button
+                                variant="ghost"
+                                className="hover:text-destructive"
+                                onClick={() => removeCertificate(index)}
+                                disabled={pageDisabled()}
+                              >
+                                <Trash2Icon className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </div>

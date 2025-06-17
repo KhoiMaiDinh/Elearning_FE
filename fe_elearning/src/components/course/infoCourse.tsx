@@ -266,6 +266,8 @@ const InfoCourse: React.FC<InfoCourseProps> = ({ lecture, course }) => {
           </h3>
           <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-2">
             {reviews.length > 0 ? (
+              reviews &&
+              reviews.length > 0 &&
               reviews.map((review, index) => <ReviewListUser key={index} reviews={review} />)
             ) : (
               <p className="text-center text-gray-500 py-4 font-sans">Chưa có đánh giá nào</p>

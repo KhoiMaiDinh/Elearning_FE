@@ -247,18 +247,20 @@ export function AspectEmotionCircles({ comments }: { comments: LectureComment[] 
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex justify-center gap-4">
-          {emotions.map((emotion) => {
-            const EmotionIcon = emotion.icon;
-            return (
-              <div key={emotion.id} className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
-                ></div>
-                <EmotionIcon className={`h-4 w-4 text-${emotion.color}`} color={emotion.color} />
-                <span className="text-sm">{emotion.name}</span>
-              </div>
-            );
-          })}
+          {Array.isArray(emotions) &&
+            emotions.length > 0 &&
+            emotions.map((emotion) => {
+              const EmotionIcon = emotion.icon;
+              return (
+                <div key={emotion.id} className="flex items-center gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
+                  ></div>
+                  <EmotionIcon className={`h-4 w-4 text-${emotion.color}`} color={emotion.color} />
+                  <span className="text-sm">{emotion.name}</span>
+                </div>
+              );
+            })}
         </div>
         <div
           ref={containerRef}

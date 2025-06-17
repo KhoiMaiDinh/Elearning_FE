@@ -148,9 +148,9 @@ const APIGetListCourse = async (params: {
 
     if (response.status === 200) {
       return {
-        data: response.data.data,
-        status: response.status,
-        total: response.data.pagination.totalRecords,
+        data: response?.data?.data,
+        status: response?.status,
+        total: response?.data?.pagination?.totalRecords,
       };
     }
     return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
@@ -164,7 +164,7 @@ const APIGetMyCourse = async () => {
   try {
     const response = await axiosInstance.get(`/courses/me`);
     if (response.status === 200) {
-      return { data: response.data, status: response.status };
+      return { data: response?.data, status: response?.status };
     }
   } catch (err) {
     console.error('Error during get my course:', err);

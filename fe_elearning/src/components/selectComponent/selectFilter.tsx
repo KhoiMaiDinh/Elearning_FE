@@ -44,11 +44,13 @@ const SelectFilter: React.FC<selectFilter> = ({
         <SelectContent>
           <SelectGroup className="text-[12px] font-sans font-medium">
             {/* <SelectLabel>{placeholder}</SelectLabel> */}
-            {data.map((item, index) => (
-              <SelectItem key={index} value={item.id}>
-                {item.value}
-              </SelectItem>
-            ))}
+            {data &&
+              data.length > 0 &&
+              data.map((item, index) => (
+                <SelectItem key={index} value={item.id}>
+                  {item.value}
+                </SelectItem>
+              ))}
           </SelectGroup>
         </SelectContent>
       </Select>

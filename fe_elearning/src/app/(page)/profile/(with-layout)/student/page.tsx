@@ -24,7 +24,6 @@ import { APIGetCurrentUser, APIUpdateCurrentUser } from '@/utils/user';
 import { APIGetPreference } from '@/utils/preference';
 import { APIGetEnrolledCourse, APIGetFavoriteCourse } from '@/utils/course';
 import { APIGetPresignedUrl } from '@/utils/storage';
-import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
 import { APIGetCertificate } from '@/utils/certificate';
@@ -33,6 +32,7 @@ import ToastNotify from '@/components/ToastNotify/toastNotify';
 import { toast, ToastContainer } from 'react-toastify';
 import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
+import CourseLevelBadge from '@/components/badge/courseLevelBadge';
 
 // Yup schema for form validation
 const schema = yup.object().shape({
@@ -279,13 +279,13 @@ const StudentProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="">
+      <div className="container mx-auto px-4  max-w-7xl">
         <div className="relative grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Profile Info */}
           <div className="lg:col-span-1 lg:sticky top-8">
             <AnimateWrapper delay={0.2} direction="left">
-              <Card className="border-0 shadow-lg  flex flex-col ">
+              <Card className="border-0 shadow-md  flex flex-col ">
                 <CardContent className="p-6 text-center">
                   <form onSubmit={handleSubmit(onSubmit)}>
                     {/* Avatar */}
@@ -468,7 +468,7 @@ const StudentProfile = () => {
           <div className="lg:col-span-3 space-y-8">
             {/* Favorite Categories */}
             <AnimateWrapper delay={0.3} direction="right">
-              <Card className="border-0 shadow-lg bg-blue-50 dark:bg-gray-800">
+              <Card className="border-0 shadow bg-blue-50 dark:bg-gray-800">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-start mb-6">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -481,17 +481,19 @@ const StudentProfile = () => {
 
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-3">
-                      {favoriteCategories?.map((category, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600 rounded-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                        >
-                          {category.translations.find(
-                            (translation) => translation.language === 'vi'
-                          )?.name || 'Category Name'}
-                        </Button>
-                      ))}
+                      {favoriteCategories &&
+                        favoriteCategories.length > 0 &&
+                        favoriteCategories.map((category, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600 rounded-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            {category.translations.find(
+                              (translation) => translation.language === 'vi'
+                            )?.name || 'Category Name'}
+                          </Button>
+                        ))}
                     </div>
                   </div>
                 </CardContent>
@@ -499,7 +501,7 @@ const StudentProfile = () => {
             </AnimateWrapper>
             {/* Learning Progress */}
             <AnimateWrapper delay={0.4} direction="up">
-              <Card className="border-0 shadow-lg">
+              <Card className="border-0 shadow">
                 <CardContent className="p-6">
                   <CardTitle>Tiến độ học tập</CardTitle>
 
@@ -508,32 +510,34 @@ const StudentProfile = () => {
                   </CardDescription>
 
                   <div className="space-y-6">
-                    {learningProgress.map((course) => (
-                      <div key={course.id} className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                              <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    {learningProgress &&
+                      learningProgress.length > 0 &&
+                      learningProgress.map((course) => (
+                        <div key={course.id} className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                                <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-gray-900 dark:text-white">
+                                  {course.title}
+                                </h4>
+                                <p className="text-sm text-gray-500">
+                                  {course.sections?.length} bài học
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <h4 className="font-medium text-gray-900 dark:text-white">
-                                {course.title}
-                              </h4>
-                              <p className="text-sm text-gray-500">
-                                {course.sections?.length} bài học
-                              </p>
+                            <div className="text-right">
+                              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                                {course.course_progress?.progress}%
+                              </span>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                              {course.course_progress?.progress}%
-                            </span>
-                          </div>
-                        </div>
 
-                        <Progress value={course.course_progress?.progress} className="h-2" />
-                      </div>
-                    ))}
+                          <Progress value={course.course_progress?.progress} className="h-2" />
+                        </div>
+                      ))}
                     {learningProgress.length > 3 && (
                       <Button
                         variant="outline"
@@ -557,58 +561,64 @@ const StudentProfile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {learningProgress.map((course) => (
-                      <div key={course.id} className="flex items-start gap-4 p-3 rounded-lg border">
-                        <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
-                          <Image
-                            src={
-                              `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
-                              '/images/logo.png'
-                            }
-                            alt={`Course ${course.title}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-medium">{course.title}</h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>
-                              Giảng viên: {course.instructor?.user?.first_name}{' '}
-                              {course.instructor?.user?.last_name}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge
-                          variant={
-                            course.course_progress?.progress &&
-                            course.course_progress.progress === 0
-                              ? 'default'
-                              : course.course_progress?.progress &&
-                                  course.course_progress.progress === 100
-                                ? 'secondary'
-                                : 'outline'
-                          }
-                          className={`w-fit text-white ${
-                            course.course_progress?.progress &&
-                            course.course_progress.progress === 0
-                              ? 'bg-darkSilver'
-                              : course.course_progress?.progress &&
-                                  course.course_progress.progress === 100
-                                ? 'bg-blueberry'
-                                : 'bg-vividMalachite'
-                          }`}
+                    {learningProgress &&
+                      learningProgress.length > 0 &&
+                      learningProgress.map((course) => (
+                        <div
+                          key={course.id}
+                          className="flex items-start gap-4 p-3 rounded-lg border"
+                          onClick={() => router.push(`/course-details/${course.id}`)}
                         >
-                          {course.course_progress?.progress && course.course_progress.progress === 0
-                            ? 'Chưa bắt đầu'
-                            : course.course_progress?.progress &&
-                                course.course_progress.progress === 100
-                              ? 'Đã hoàn thành'
-                              : 'Đang học'}
-                        </Badge>
-                      </div>
-                    ))}
+                          <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
+                            <img
+                              src={
+                                `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
+                                '/images/logo.png'
+                              }
+                              alt={`Course ${course.title}`}
+                              className="object-fill"
+                            />
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <h4 className="font-medium">{course.title}</h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Users className="h-3.5 w-3.5" />
+                              <span>
+                                Giảng viên: {course.instructor?.user?.first_name}{' '}
+                                {course.instructor?.user?.last_name}
+                              </span>
+                            </div>
+                          </div>
+                          <Badge
+                            variant={
+                              course.course_progress?.progress &&
+                              course.course_progress.progress === 0
+                                ? 'default'
+                                : course.course_progress?.progress &&
+                                    course.course_progress.progress === 100
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                            className={`w-fit text-white ${
+                              course.course_progress?.progress &&
+                              course.course_progress.progress === 0
+                                ? 'bg-darkSilver'
+                                : course.course_progress?.progress &&
+                                    course.course_progress.progress === 100
+                                  ? 'bg-blueberry'
+                                  : 'bg-vividMalachite'
+                            }`}
+                          >
+                            {course.course_progress?.progress &&
+                            course.course_progress.progress === 0
+                              ? 'Chưa bắt đầu'
+                              : course.course_progress?.progress &&
+                                  course.course_progress.progress === 100
+                                ? 'Đã hoàn thành'
+                                : 'Đang học'}
+                          </Badge>
+                        </div>
+                      ))}
                     {learningProgress.length > 3 && (
                       <Button
                         variant="outline"
@@ -632,53 +642,39 @@ const StudentProfile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {favoriteCourse.map((course) => (
-                      <div key={course.id} className="flex items-start gap-4 p-3 rounded-lg border">
-                        <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
-                          <Image
-                            src={
-                              `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
-                              '/images/logo.png'
-                            }
-                            alt={`Course ${course.title}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-medium text-black dark:text-white">{course.title}</h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>
-                              Giảng viên: {course.instructor?.user?.first_name}{' '}
-                              {course.instructor?.user?.last_name}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge
-                          variant={
-                            course.level && course.level === 'BEGINNER'
-                              ? 'default'
-                              : course.level && course.level === 'INTERMEDIATE'
-                                ? 'secondary'
-                                : 'outline'
-                          }
-                          className={`w-fit text-white ${
-                            course.level && course.level === 'BEGINNER'
-                              ? 'bg-darkSilver'
-                              : course.level && course.level === 'INTERMEDIATE'
-                                ? 'bg-blueberry'
-                                : 'bg-vividMalachite'
-                          }`}
+                    {favoriteCourse &&
+                      favoriteCourse.length > 0 &&
+                      favoriteCourse.map((course) => (
+                        <div
+                          key={course.id}
+                          className="flex items-start gap-4 p-3 rounded-lg border"
+                          onClick={() => router.push(`/course/${course.id}`)}
                         >
-                          {course.level && course.level === 'BEGINNER'
-                            ? 'Cơ bản'
-                            : course.level && course.level === 'INTERMEDIATE'
-                              ? 'Trung bình'
-                              : 'Nâng cao'}
-                        </Badge>
-                      </div>
-                    ))}
+                          <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
+                            <img
+                              src={
+                                `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||
+                                '/images/logo.png'
+                              }
+                              alt={`Course ${course.title}`}
+                              className="object-fill"
+                            />
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <h4 className="font-medium text-black dark:text-white">
+                              {course.title}
+                            </h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Users className="h-3.5 w-3.5" />
+                              <span>
+                                Giảng viên: {course.instructor?.user?.first_name}{' '}
+                                {course.instructor?.user?.last_name}
+                              </span>
+                            </div>
+                          </div>
+                          <CourseLevelBadge level={course.level || ''} />
+                        </div>
+                      ))}
                     {favoriteCourse.length > 3 && (
                       <Button
                         variant="outline"
@@ -703,64 +699,42 @@ const StudentProfile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {certificate.map((certificate) => (
-                      <div
-                        key={certificate.certificate_code}
-                        className="flex items-start gap-4 p-3 rounded-lg border flex-col cursor-pointer"
-                        onClick={() =>
-                          window.open(`/certificate/${certificate.certificate_code}`, '_blank')
-                        }
-                      >
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-medium text-black dark:text-white">
-                            {certificate.course.title}
-                          </h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>
-                              Giảng viên: {certificate.course.instructor?.user?.first_name}{' '}
-                              {certificate.course.instructor?.user?.last_name}
-                            </span>
-                          </div>
+                    {certificate &&
+                      certificate.length > 0 &&
+                      certificate.map((certificate) => (
+                        <div
+                          key={certificate.certificate_code}
+                          className="flex items-start gap-4 p-3 rounded-lg border flex-col cursor-pointer"
+                          onClick={() =>
+                            window.open(`/certificate/${certificate.certificate_code}`, '_blank')
+                          }
+                        >
+                          <div className="flex-1 space-y-1">
+                            <h4 className="font-medium text-black dark:text-white">
+                              {certificate.course.title}
+                            </h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Users className="h-3.5 w-3.5" />
+                              <span>
+                                Giảng viên: {certificate.course.instructor?.user?.first_name}{' '}
+                                {certificate.course.instructor?.user?.last_name}
+                              </span>
+                            </div>
 
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="h-3.5 w-3.5" />
-                            <span>Ngày nhận: {formatDate(certificate.completed_at)}</span>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="h-3.5 w-3.5" />
+                              <span>Ngày nhận: {formatDate(certificate.completed_at)}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <Badge
-                            variant={
-                              certificate.course.level && certificate.course.level === 'BEGINNER'
-                                ? 'default'
-                                : certificate.course.level &&
-                                    certificate.course.level === 'INTERMEDIATE'
-                                  ? 'secondary'
-                                  : 'outline'
-                            }
-                            className={`w-fit text-white  ${
-                              certificate.course.level && certificate.course.level === 'BEGINNER'
-                                ? 'bg-darkSilver'
-                                : certificate.course.level &&
-                                    certificate.course.level === 'INTERMEDIATE'
-                                  ? 'bg-blueberry'
-                                  : 'bg-vividMalachite'
-                            }`}
-                          >
-                            {certificate.course.level && certificate.course.level === 'BEGINNER'
-                              ? 'Cơ bản'
-                              : certificate.course.level &&
-                                  certificate.course.level === 'INTERMEDIATE'
-                                ? 'Trung bình'
-                                : 'Nâng cao'}
-                          </Badge>
-                          {/* 
+                          <div>
+                            <CourseLevelBadge level={certificate.course.level || ''} />
+                            {/* 
                           <Badge variant="outline" className="w-fit">
                             {certificate.course.category?.translations[0]?.name || 'Category Name'}
                           </Badge> */}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </CardContent>
               </Card>
