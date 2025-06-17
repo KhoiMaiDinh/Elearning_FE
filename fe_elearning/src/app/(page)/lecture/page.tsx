@@ -1,8 +1,5 @@
 'use client';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import CoursesBlock from '@/components/block/courses-block';
-import type { CourseForm } from '@/types/courseType';
-import { APIGetListCourse } from '@/utils/course';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
@@ -47,7 +44,7 @@ const Page = () => {
     page: 1,
     limit: 12,
     specialty: searchParams.get('specialty') || undefined,
-
+    is_approved: true,
     q: searchParams.get('search') || undefined,
   });
 
@@ -124,6 +121,7 @@ const Page = () => {
       limit: 12,
       specialty: undefined,
       q: undefined,
+      is_approved: true,
     };
     setParamsLecture(clearedParams);
     setSortBy('newest');
@@ -367,7 +365,7 @@ const Page = () => {
                 <div
                   className={`grid gap-6 ${
                     viewMode === 'grid'
-                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
                       : 'grid-cols-1'
                   }`}
                 >

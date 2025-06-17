@@ -411,7 +411,7 @@ export const Overview = () => {
                     categories={['value']}
                     index="name"
                     colors={['#0ea5e9']}
-                    valueFormatter={(value) => `${value} students`}
+                    valueFormatter={(value) => `${value} học viên`}
                     showLegend={false}
                     showGridLines={false}
                     startEndOnly={false}
@@ -982,7 +982,8 @@ export const Overview = () => {
                               Học viên {thread.author.first_name} {thread.author.last_name} đã đặt
                               câu hỏi trong khóa{' '}
                               <span className=" text-black">
-                                "{thread.lecture.section.course.title}"
+                                {thread?.lecture?.section?.course?.title} -
+                                {thread?.lecture?.section?.title} - {thread?.lecture?.title}
                               </span>
                             </p>
                             <div className="mt-2">

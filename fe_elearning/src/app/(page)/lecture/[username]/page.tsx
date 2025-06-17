@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation';
 import { APIGetInstructorByUserName } from '@/utils/instructor';
 import { useEffect, useState } from 'react';
 import type { Lecture } from '@/types/registerLectureFormType';
-import { APIGetListCourse } from '@/utils/course';
+import { APIGetFavoriteCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import Link from 'next/link';
 
@@ -19,6 +19,7 @@ const TeacherProfile = () => {
   const { username } = useParams();
   const [teacherData, setTeacherData] = useState<Lecture>();
   const [dataCourse, setDataCourse] = useState<CourseForm[]>([]);
+  const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
 
   const handleGetLectureByUserName = async () => {
     try {
@@ -46,9 +47,17 @@ const TeacherProfile = () => {
     }
   };
 
+  const handleGetFavoriteCourse = async () => {
+    const response = await APIGetFavoriteCourse();
+    if (response && response.data) {
+      setFavoriteCourse(response.data);
+    }
+  };
+
   useEffect(() => {
     handleGetLectureByUserName();
     handleGetCourseByLectureUserName();
+    handleGetFavoriteCourse();
   }, [username]);
 
   const renderStars = (rating: number) => {
@@ -233,7 +242,15 @@ const TeacherProfile = () => {
               <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
                 {Array.isArray(dataCourse) &&
                   dataCourse.length > 0 &&
-                  dataCourse.map((course, index) => <CoursesBlock key={index} {...course} />)}
+                  dataCourse.map((course, index) => (
+                    <CoursesBlock
+                      key={index}
+                      {...course}
+                      is_favorite={
+                        favoriteCourse?.some((favorite) => favorite?.id === course?.id) || false
+                      }
+                    />
+                  ))}
               </div>
             ) : (
               <Card className="border-0 shadow-lg">

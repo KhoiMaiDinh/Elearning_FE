@@ -126,7 +126,7 @@ const Page = () => {
     <div className="bg-white dark:bg-eerieBlack min-h-screen w-full space-y-8 rounded-xl p-6 shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-gray-800 text-2xl font-bold">Quản lý khóa học</h1>
+        <h1 className="text-gray-800 dark:text-white text-2xl font-bold">Quản lý khóa học</h1>
       </div>
 
       {/* Data Table */}
@@ -144,7 +144,7 @@ const Page = () => {
       {course?.id && (
         <div id="formProduct" className="flex flex-col gap-6">
           {/* Info Card */}
-          <div className="bg-gray-50 space-y-6 rounded-2xl p-6 shadow-md">
+          <div className="bg-gray-50 dark:bg-eerieBlack space-y-6 rounded-2xl p-6 shadow-md">
             <h2 className="text-xl font-semibold text-persianIndigo dark:text-white">
               Thông tin khóa học
             </h2>
@@ -210,7 +210,7 @@ const Page = () => {
           </div>
 
           {/* Courses Detail */}
-          <div className="bg-gray-50 space-y-6 rounded-2xl p-6 shadow-md">
+          <div className="bg-gray-50 dark:bg-eerieBlack space-y-6 rounded-2xl p-6 shadow-md">
             <h2 className="text-xl font-semibold text-persianIndigo dark:text-white">
               Chi tiết khoá học
             </h2>

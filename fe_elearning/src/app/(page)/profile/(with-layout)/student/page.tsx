@@ -513,7 +513,11 @@ const StudentProfile = () => {
                     {learningProgress &&
                       learningProgress.length > 0 &&
                       learningProgress.map((course) => (
-                        <div key={course.id} className="space-y-3">
+                        <div
+                          key={course.id}
+                          className="space-y-3 hover:cursor-pointer hover:scale-[1.01] transition-all duration-300"
+                          onClick={() => router.push(`/course-details/${course.id}`)}
+                        >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                               <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
@@ -566,7 +570,7 @@ const StudentProfile = () => {
                       learningProgress.map((course) => (
                         <div
                           key={course.id}
-                          className="flex items-start gap-4 p-3 rounded-lg border"
+                          className="flex items-start gap-4 p-3 rounded-lg border hover:cursor-pointer hover:scale-[1.01] transition-all duration-300"
                           onClick={() => router.push(`/course-details/${course.id}`)}
                         >
                           <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
@@ -647,7 +651,7 @@ const StudentProfile = () => {
                       favoriteCourse.map((course) => (
                         <div
                           key={course.id}
-                          className="flex items-start gap-4 p-3 rounded-lg border"
+                          className="flex items-start gap-4 p-3 rounded-lg border hover:cursor-pointer hover:scale-[1.01] transition-all duration-300"
                           onClick={() => router.push(`/course/${course.id}`)}
                         >
                           <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
@@ -704,9 +708,9 @@ const StudentProfile = () => {
                       certificate.map((certificate) => (
                         <div
                           key={certificate.certificate_code}
-                          className="flex items-start gap-4 p-3 rounded-lg border flex-col cursor-pointer"
+                          className="flex items-start gap-4 p-3 rounded-lg border flex-col cursor-pointer hover:scale-[1.01] transition-all duration-300"
                           onClick={() =>
-                            window.open(`/certificate/${certificate.certificate_code}`, '_blank')
+                            router.push(`/certificate/${certificate.certificate_code}`)
                           }
                         >
                           <div className="flex-1 space-y-1">

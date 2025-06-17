@@ -143,9 +143,12 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
 
                                   {/* Preview text or additional info */}
                                   {lesson.description && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
-                                      {lesson.description}
-                                    </p>
+                                    <p
+                                      className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1"
+                                      dangerouslySetInnerHTML={{
+                                        __html: lesson.description,
+                                      }}
+                                    ></p>
                                   )}
                                 </div>
                                 {/* Action indicator */}

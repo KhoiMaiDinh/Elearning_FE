@@ -36,6 +36,7 @@ import { CustomModal } from '@/components/modal/custom-modal';
 import AlertSuccess from '@/components/alert/AlertSuccess';
 import AlertError from '@/components/alert/AlertError';
 import { APIGetCurrentUser } from '@/utils/user';
+import Image from 'next/image';
 
 // Form schema
 
@@ -143,6 +144,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md z-10">
         <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
           <CardHeader className="space-y-1 text-center">
+            <div className="flex justify-center items-center">
+              <Image src="/images/logo.png" alt="logo" width={50} height={50} />
+            </div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
               Đăng nhập
             </CardTitle>

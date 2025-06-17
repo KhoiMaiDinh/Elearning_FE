@@ -173,7 +173,7 @@ const CouponManagement = () => {
   }, [searchInput]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <DeleteCouponDialog
         onOpenChange={setDeleteDialogOpen}
         open={deleteDialogOpen}
@@ -196,7 +196,7 @@ const CouponManagement = () => {
         }}
         handleError={() => setDialogOpen(false)}
       />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         <div>
           <h2 className="text-2xl font-bold">Quản lý Coupon</h2>
           <p className="text-muted-foreground">

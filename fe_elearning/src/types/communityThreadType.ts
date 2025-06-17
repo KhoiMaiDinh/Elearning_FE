@@ -15,10 +15,15 @@ export interface CommunityThread {
     };
   };
   lecture: {
+    id: string;
+    title: string;
     section: {
       course: {
         title: string;
+        id: string;
       };
+      id: string;
+      title: string;
     };
   };
 }

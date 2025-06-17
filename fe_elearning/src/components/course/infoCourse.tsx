@@ -118,9 +118,9 @@ const InfoCourse: React.FC<InfoCourseProps> = ({ lecture, course }) => {
           <img
             src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${course?.thumbnail?.key || ''}`}
             alt={course?.title || 'Khóa học'}
-            className="w-full h-auto aspect-video object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full h-auto object-cover transition-transform duration-300"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /> */}
         </div>
 
         {/* Course Content */}

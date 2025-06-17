@@ -67,8 +67,9 @@ const APIGetCommentsForInstructor = async (params?: {
   aspect?: string;
   emotion?: string;
   is_solved?: boolean;
-
+  limit?: number;
   order?: string;
+  afterCursor?: string;
 }) => {
   const filteredParams = Object.fromEntries(
     Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)

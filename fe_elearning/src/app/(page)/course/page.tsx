@@ -264,6 +264,7 @@ const Page = () => {
   const handleGetFavoriteCourse = async () => {
     const response = await APIGetFavoriteCourse();
     if (response && response?.data) {
+      console.log(response.data);
       setFavoriteCourse(response.data);
     }
   };
@@ -276,6 +277,7 @@ const Page = () => {
   useEffect(() => {
     handleGetCategory();
     handleGetFavoriteCourse();
+    handleGetCourses();
   }, []);
 
   // Update tab from URL on mount and URL changes
@@ -565,7 +567,9 @@ const Page = () => {
                       <div
                         className={`grid gap-6 ${
                           viewMode === 'grid'
-                            ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                            ? activeTab === 'all'
+                              ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
+                              : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
                             : 'grid-cols-1'
                         }`}
                       >
@@ -579,7 +583,7 @@ const Page = () => {
                                 is_favorite={
                                   activeTab === 'favorites' ||
                                   (activeTab === 'all' &&
-                                    favoriteCourse.some((favorite) => favorite.id === course.id))
+                                    favoriteCourse?.some((favorite) => favorite?.id === course?.id))
                                 }
                               />
                             ) : activeTab === 'my-courses' ? (
