@@ -4,7 +4,12 @@ import InfoBlockCourse from '@/components/course/infoBlockCourse';
 import InfoCourse from '@/components/course/infoCourse';
 import { RootState } from '@/constants/store';
 import { CourseForm } from '@/types/courseType';
-import { APIGetCourseById, APIGetEnrolledCourse, APIGetFullCourse } from '@/utils/course';
+import {
+  APIGetCourseById,
+  APIGetEnrolledCourse,
+  APIGetFavoriteCourse,
+  APIGetFullCourse,
+} from '@/utils/course';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
