@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';

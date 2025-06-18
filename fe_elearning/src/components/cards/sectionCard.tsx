@@ -66,14 +66,24 @@ const SectionCard: React.FC<SectionCardProps> = ({
       bgColor: 'bg-orange-50',
     },
     BANNED: {
-      color: 'bg-orange-500',
-      textColor: 'text-orange-700',
-      bgColor: 'bg-orange-50',
+      color: 'bg-gray-500',
+      textColor: 'text-gray-700',
+      bgColor: 'bg-gray-50',
     },
     DELETED: {
       color: 'bg-red-500',
       textColor: 'text-red-700',
-      bgColor: 'bg-gray-50',
+      bgColor: 'bg-red-50',
+    },
+    TO_DELETE: {
+      color: 'bg-green-500',
+      textColor: 'text-green-700',
+      bgColor: 'bg-green-100',
+    },
+    TO_RECOVER: {
+      color: 'bg-red-500',
+      textColor: 'text-red-700',
+      bgColor: 'bg-red-50',
     },
   };
 
@@ -164,9 +174,13 @@ const SectionCard: React.FC<SectionCardProps> = ({
             {section?.items?.length > 0 ? (
               section.items.map((lecture) => {
                 const status: string =
-                  lecture.deletedAt || lecture.is_hidden
+                  lecture.is_hidden && lecture.deletedAt
                     ? 'DELETED'
-                    : (lecture.series?.[0]?.status ?? 'DRAFT');
+                    : lecture.is_hidden && !lecture.deletedAt
+                      ? 'TO_DELETE'
+                      : !lecture.is_hidden && lecture.deletedAt
+                        ? 'TO_RECOVER'
+                        : (lecture.series?.[0]?.status ?? 'DRAFT');
                 const config = statusConfig[status as keyof typeof statusConfig];
                 const videoConfigs = {
                   uploaded: {
@@ -204,15 +218,17 @@ const SectionCard: React.FC<SectionCardProps> = ({
                             {lecture?.series?.[0]?.version}
                           </div>
                           <div className="flex-1">
-                            <div className="flex flex-row items-center gap-2">
+                            <div className="flex flex-row w-full items-center justify-between ">
                               <h4 className="font-semibold">{lecture?.series?.[0]?.title}</h4>
-                              <CourseStatusBadge status={status} className="relative" />
-                              {lecture?.series?.[0]?.is_preview && (
-                                <Badge className="relative gap-2 rounded-2xl bg-green-100 text-green-800 hover:bg-green-200">
-                                  Xem trước
-                                  <Eye className="h-3 w-3" />
-                                </Badge>
-                              )}
+                              <div className="flex gap-2">
+                                {lecture?.series?.[0]?.is_preview && (
+                                  <Badge className="relative gap-2 rounded-2xl bg-green-100 text-green-800 hover:bg-green-200">
+                                    Xem trước
+                                    <Eye className="h-3 w-3" />
+                                  </Badge>
+                                )}
+                                <CourseStatusBadge status={status} className="relative" />
+                              </div>
                             </div>
                             <p
                               className="ql-content text-xs/3 text-muted-foreground truncate text-DarkBlueGray"
@@ -272,14 +288,16 @@ const SectionCard: React.FC<SectionCardProps> = ({
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="hover:bg-white hover:shadow-md"
-                                  onClick={() => handleHideLecture(lecture.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                {lecture.series?.[0]?.status !== 'DRAFT' && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hover:bg-white hover:shadow-md"
+                                    onClick={() => handleHideLecture(lecture.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
                               </>
                             )}
                           </div>

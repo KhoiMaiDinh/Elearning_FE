@@ -407,10 +407,10 @@ const StudentProfile = () => {
                       </div>
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="w-4 h-4 mr-3" />
-                        <span>Ngày tham gia</span>
-                      </div>
-                      <div className="text-sm text-gray-500 ml-7">
-                        {studentData?.createdAt ? formatDate(studentData.createdAt) : '15/03/2023'}
+                        <span>
+                          Tham gia từ{' '}
+                          {studentData?.createdAt ? formatDate(studentData.createdAt) : ''}
+                        </span>
                       </div>
 
                       <div className="pt-4 flex justify-start">
@@ -419,7 +419,7 @@ const StudentProfile = () => {
                           onClick={() => setIsPasswordDialogOpen(true)}
                         >
                           <KeySquare
-                            className="w-3 h-3 mr-2 dark:text-yellow-100 text-yellow-300"
+                            className="w-4 h-4 mr-2 dark:text-yellow-100 text-yellow-300 stroke-black stroke-[1px]"
                             fill="currentColor"
                           />
                           Đổi mật khẩu
@@ -654,7 +654,7 @@ const StudentProfile = () => {
                           className="flex items-start gap-4 p-3 rounded-lg border hover:cursor-pointer hover:scale-[1.01] transition-all duration-300"
                           onClick={() => router.push(`/course/${course.id}`)}
                         >
-                          <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md">
+                          <div className="relative h-16  flex-shrink-0 overflow-hidden rounded-md aspect-video">
                             <img
                               src={
                                 `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key} ` ||

@@ -171,7 +171,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
               render={({ field }) => (
                 <TextAreaRegisterLecture
                   {...field}
-                  labelText="Mô tả bài học"
+                  label="Mô tả bài học"
                   className="text-black font-normal mb-2"
                   error={errors.description?.message}
                 />

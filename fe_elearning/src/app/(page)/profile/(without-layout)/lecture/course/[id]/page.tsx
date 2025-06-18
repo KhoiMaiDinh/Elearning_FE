@@ -7,7 +7,7 @@ import { RootState } from '@/constants/store';
 import { APIGetFullCourse } from '@/utils/course';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
 import SectionList from '@/components/uploadCourse/SectionList';
-import { Section } from '@/types/courseType';
+import { CourseForm, Section } from '@/types/courseType';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { AlertCircle, Ban, CheckCircle, ChevronRight, Clock, ListEnd, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,19 +24,23 @@ import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/helpers';
 import { Separator } from '@/components/ui/separator';
 import UnbanRequestModal from './components/modals/unbanRequestModal';
+import { Noto_Sans_Anatolian_Hieroglyphs } from 'next/font/google';
 
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
   const params = useParams();
+  const router = useRouter();
   const courseId = params.id as string;
   const [sections, setSections] = useState<Section[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNewlyCreated, setIsNewlyCreated] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
   const [isBasicInfoOpen, setBasicInfoOpen] = useState(true);
   const [isSectionListOpen, setSectionListOpen] = useState(true);
   const [unbanRequests, setUnbanRequests] = useState<UnbanRequestType[]>([]);
   const previousShowDeletedRef = useRef(showDeleted);
+  const mode: 'create' | 'edit' = courseId === 'new' ? 'create' : 'edit';
 
   const handleGetCourseInfo = async () => {
     try {
@@ -45,6 +49,7 @@ const CourseDetails: React.FC = () => {
 
       const response = await APIGetFullCourse(courseId, {
         include_deleted_lectures: showDeleted,
+        is_show_hidden: true,
       });
 
       if (response?.status === 200) {
@@ -81,16 +86,28 @@ const CourseDetails: React.FC = () => {
   };
 
   useEffect(() => {
-    handleGetCourseInfo();
+    if (mode == 'edit') handleGetCourseInfo();
   }, [courseId, showDeleted, dispatch]);
 
   useEffect(() => {
     handleGetUnbanRequests();
   }, [courseId, dispatch]);
 
-  const router = useRouter();
+  useEffect(() => {
+    if (isNewlyCreated) {
+      setIsNewlyCreated(false);
+      setCurrentStep(2);
+    }
+  }, [isNewlyCreated]);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (currentStep === 3) {
+      setShowDeleted(false);
+    }
+  }, [currentStep]);
 
   const nextStep = () => {
     setCompletedSteps([...completedSteps, currentStep]);
@@ -108,7 +125,15 @@ const CourseDetails: React.FC = () => {
   };
 
   const handleGoBack = () => {
-    router.back();
+    router.push('../?tab=khoa-hoc');
+  };
+
+  const handleCreateSuccess = (course: CourseForm | null) => {
+    console.log(course);
+    if (course) {
+      setIsNewlyCreated(true);
+      router.replace(`./${course.id}`);
+    }
   };
 
   const renderStepContent = () => {
@@ -118,10 +143,20 @@ const CourseDetails: React.FC = () => {
           !isLoading && (
             <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
               <BasicInfoForm
-                mode="edit"
-                courseInfo={courseInfo}
-                setCourseInfo={handleGetCourseInfo}
-                handleNextStep={nextStep}
+                mode={mode}
+                courseInfo={mode == 'edit' ? courseInfo : undefined}
+                setCourseInfo={
+                  mode == 'edit'
+                    ? () => {
+                        setShowDeleted(false);
+                        handleGetCourseInfo();
+                      }
+                    : handleCreateSuccess
+                }
+                handleNextStep={() => {
+                  setShowDeleted(false);
+                  nextStep();
+                }}
               />
             </AnimateWrapper>
           )
@@ -192,7 +227,7 @@ const CourseDetails: React.FC = () => {
                       <ChevronRight className="h-4 w-4" />
                     </div>
                   </Button>
-                  <h3 className="text-lg font-semibold">Course Content</h3>
+                  <h3 className="text-lg font-semibold">Nội dung khóa học</h3>
                 </div>
                 {isSectionListOpen && (
                   <AnimateWrapper delay={0.2} direction="down" amount={0.01}>
@@ -287,74 +322,78 @@ const CourseDetails: React.FC = () => {
                 </ul>
               </CardContent>
             </Card>
-          </>
-        )}
-        <Card>
-          <CardHeader className="flex flex-row item-end justify-between">
-            <div>
-              <CardTitle>Lịch sử yêu cầu mở khóa</CardTitle>
-              <CardDescription>
-                Xem trạng thái và chi tiết các yêu cầu mở khóa trước đây của bạn.
-              </CardDescription>
-            </div>
-            <UnbanRequestModal
-              courseId={courseId}
-              hasPendingRequest={hasPendingRequest()}
-              handleSubmitSuccess={handleSubmitRequestSuccess}
-            />
-          </CardHeader>
-          <CardContent>
-            {unbanRequests.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Ban className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No unban requests found.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {[...unbanRequests]
-                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                  .map((request, index) => (
-                    <div key={index}>
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              {getStatusBadge(request)}
-                              <span className="text-sm text-muted-foreground">
-                                Gửi vào {formatDate(request.createdAt)}
-                              </span>
+            <Card>
+              <CardHeader className="flex flex-row item-end justify-between">
+                <div>
+                  <CardTitle>Lịch sử yêu cầu mở khóa</CardTitle>
+                  <CardDescription>
+                    Xem trạng thái và chi tiết các yêu cầu mở khóa trước đây của bạn.
+                  </CardDescription>
+                </div>
+                <UnbanRequestModal
+                  courseId={courseId}
+                  hasPendingRequest={hasPendingRequest()}
+                  handleSubmitSuccess={handleSubmitRequestSuccess}
+                />
+              </CardHeader>
+              <CardContent>
+                {unbanRequests.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Ban className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No unban requests found.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {[...unbanRequests]
+                      .sort(
+                        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                      )
+                      .map((request, index) => (
+                        <div key={index}>
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  {getStatusBadge(request)}
+                                  <span className="text-sm text-muted-foreground">
+                                    Gửi vào {formatDate(request.createdAt)}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                        <div className="space-y-2">
-                          <div>
-                            <h4 className="font-medium text-sm">Lý do yêu cầu:</h4>
-                            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                              {request.reason}
-                            </p>
-                          </div>
-
-                          {request.is_reviewed &&
-                            !request.is_approved &&
-                            request.disapproval_reason && (
+                            <div className="space-y-2">
                               <div>
-                                <h4 className="font-medium text-sm text-red-600">Lý do từ chối:</h4>
-                                <p className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
-                                  {request.disapproval_reason}
+                                <h4 className="font-medium text-sm">Lý do yêu cầu:</h4>
+                                <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
+                                  {request.reason}
                                 </p>
                               </div>
-                            )}
-                        </div>
-                      </div>
 
-                      {index < unbanRequests.length - 1 && <Separator className="mt-4" />}
-                    </div>
-                  ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                              {request.is_reviewed &&
+                                !request.is_approved &&
+                                request.disapproval_reason && (
+                                  <div>
+                                    <h4 className="font-medium text-sm text-red-600">
+                                      Lý do từ chối:
+                                    </h4>
+                                    <p className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
+                                      {request.disapproval_reason}
+                                    </p>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+
+                          {index < unbanRequests.length - 1 && <Separator className="mt-4" />}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-xl">{steps[currentStep - 1].title}</CardTitle>

@@ -38,7 +38,7 @@ const CourseLecture = () => {
 
   return (
     <AnimateWrapper delay={0.2} direction="up" amount={0}>
-      <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-black50 font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">
+      <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">
         <div className="w-full h-full flex items-center justify-end">
           <AddButton
             onClick={() => router.push('/profile/lecture/course')}

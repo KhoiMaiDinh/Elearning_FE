@@ -47,7 +47,7 @@ const data = [
 interface BasicInfoFormProps {
   mode: 'edit' | 'create' | 'view';
   courseInfo?: CourseForm;
-  setCourseInfo: React.Dispatch<React.SetStateAction<CourseForm | null>>;
+  setCourseInfo: (courseInfo: CourseForm | null) => void;
   handleNextStep?: () => void;
 }
 
@@ -350,7 +350,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
               Ảnh Bìa
               <Asterisk className="ml-1" />
             </h3>
-            <div className="relative justify-center h-[320px] rounded-lg overflow-hidden flex items-center flex-col aspect-video w-full">
+            <div className="relative justify-center h-[320px] rounded-lg overflow-hidden flex items-center flex-col aspect-video w-full ">
               {mode == 'edit' || mode == 'create' ? (
                 <Controller
                   name="thumbnail"
@@ -383,12 +383,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   )}
                 />
               ) : (
-                <Image
-                  src={imagePreview || '/images/placeholder.svg?height=320&width=569'}
-                  alt="HTML CSS for beginners"
-                  fill
-                  className="object-cover aspect-video bg-black"
-                />
+                <div className="flex flex-col items-center gap-4 bg-transparent text-center text-sm rounded-md aspect-video h-full justify-center overflow-hidden relative">
+                  <Image
+                    src={imagePreview || '/images/placeholder.svg?height=320&width=569'}
+                    alt="HTML CSS for beginners"
+                    fill
+                    className="object-contain overflow-hidden"
+                  />
+                </div>
               )}
             </div>
           </div>

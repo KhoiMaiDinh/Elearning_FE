@@ -32,7 +32,6 @@ const AddButton = ({
 
   return (
     <Button
-      variant="outline"
       size={size}
       className={`bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white shadow-md shadow-majorelleBlue/40  ${className}`}
       onClick={onClick}

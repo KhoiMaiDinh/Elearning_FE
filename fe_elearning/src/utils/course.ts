@@ -68,6 +68,7 @@ const APIGetFullCourse = async (
   course_id: string,
   params?: {
     include_deleted_lectures?: boolean;
+    is_show_hidden?: boolean;
   }
 ) => {
   try {

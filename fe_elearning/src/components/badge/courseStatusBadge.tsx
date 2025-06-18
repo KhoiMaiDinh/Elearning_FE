@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
-import { Ban, Bolt, Globe, PencilRuler, Trash2 } from 'lucide-react';
+import { Ban, Bolt, Globe, PencilRuler, Timer, Trash2, Undo } from 'lucide-react';
 
 enum CourseStatus {
   DRAFT = 'DRAFT',
@@ -15,6 +15,8 @@ enum CourseItemStatus {
   MODIFIED = 'MODIFIED',
   BANNED = 'BANNED',
   DELETED = 'DELETED',
+  TO_DELETE = 'TO_DELETE',
+  TO_RECOVER = 'TO_RECOVER',
 }
 
 const CourseStatusBadge = ({ status, className = '' }: { status: string; className?: string }) => {
@@ -27,6 +29,10 @@ const CourseStatusBadge = ({ status, className = '' }: { status: string; classNa
       return 'Chỉnh sửa';
     } else if (status === CourseItemStatus.DELETED) {
       return 'Đã xóa';
+    } else if (status === CourseItemStatus.TO_DELETE) {
+      return 'Chờ xóa';
+    } else if (status === CourseItemStatus.TO_RECOVER) {
+      return 'Chờ khôi phục';
     } else {
       return 'Bị cấm';
     }
@@ -39,12 +45,16 @@ const CourseStatusBadge = ({ status, className = '' }: { status: string; classNa
         status === CourseStatus.PUBLISHED
           ? 'bg-vividMalachite/80 hover:bg-vividMalachite'
           : status === CourseStatus.BANNED
-            ? 'bg-redPigment/65 hover:bg-redPigment/75'
+            ? 'bg-gray-600/80 hover:bg-gray-600'
             : status === CourseItemStatus.MODIFIED
               ? 'bg-orange-600/80 hover:bg-orange-600'
               : status === CourseItemStatus.DELETED
-                ? 'bg-gray-600/80 hover:bg-gray-600'
-                : 'bg-amber-500/80 hover:bg-amber-500',
+                ? 'bg-redPigment/65 hover:bg-redPigment/75'
+                : status === CourseItemStatus.TO_DELETE
+                  ? 'bg-red-400/80 hover:bg-red-400'
+                  : status === CourseItemStatus.TO_RECOVER
+                    ? 'bg-sky-500/80 hover:bg-sky-500'
+                    : 'bg-amber-500/80 hover:bg-amber-500',
         className
       )}
     >
@@ -54,6 +64,9 @@ const CourseStatusBadge = ({ status, className = '' }: { status: string; classNa
       {status === CourseItemStatus.MODIFIED && <Bolt className="w-3 h-3" />}
       {status === CourseStatus.BANNED && <Ban className="w-3 h-3" />}
       {status === CourseItemStatus.DELETED && <Trash2 className="w-3 h-3" />}
+      {status === CourseItemStatus.TO_DELETE && <Timer className="w-3 h-3" />}
+      {status === CourseItemStatus.TO_DELETE && <Trash2 className="w-3 h-3" />}
+      {status === CourseItemStatus.TO_RECOVER && <Undo className="w-3 h-3" />}
     </Badge>
   );
 };

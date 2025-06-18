@@ -295,7 +295,10 @@ const Header = () => {
                       textShadow: 'none',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.textShadow = '3px 3px 5px rgba(136, 68, 255, 0.8)';
+                      e.currentTarget.style.textShadow =
+                        theme === 'light'
+                          ? '3px 3px 6px rgba(0, 0, 0, 0.5)'
+                          : '3px 3px 6px rgba(255, 255, 255, 0.8)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.textShadow = 'none';

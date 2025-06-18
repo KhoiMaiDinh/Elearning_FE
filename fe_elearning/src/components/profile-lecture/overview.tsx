@@ -12,6 +12,7 @@ import {
   FileQuestion,
   Star,
   Users,
+  ArrowRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -60,6 +61,7 @@ import { APIGetInstructorRatings } from '@/utils/rating';
 import { ReviewCourseType } from '@/types/reviewCourseType';
 import { APIGetInstructorThreads } from '@/utils/thread';
 import { CommunityThread } from '@/types/communityThreadType';
+import { formatPrice } from '../formatPrice';
 
 export const Overview = () => {
   const [overviewData, setOverviewData] = useState<InstructorOverviewType | null>(null);
@@ -360,7 +362,9 @@ export const Overview = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{overviewData?.total_payout}₫</div>
+                <div className="text-2xl font-bold">
+                  {formatPrice(overviewData?.total_payout ?? 0)}
+                </div>
                 <div className="mt-1 flex flex-col gap-1 text-xs"></div>
               </CardContent>
             </Card>
@@ -539,7 +543,7 @@ export const Overview = () => {
                   categories={['value']}
                   index="name"
                   colors={['#10b981']}
-                  valueFormatter={(value) => `$${value}`}
+                  valueFormatter={(value) => `${formatPrice(value)}`}
                   showLegend={false}
                   showGridLines={false}
                   startEndOnly={false}
@@ -559,7 +563,7 @@ export const Overview = () => {
                   data={revenueByCourseData ? transformToChartData(revenueByCourseData) : []}
                   category="value"
                   index="name"
-                  valueFormatter={(value) => `$${value}`}
+                  valueFormatter={(value) => `${formatPrice(value)}`}
                   showLegend={true}
                   showGridLines={false}
                   showXAxis={false}
@@ -586,14 +590,16 @@ export const Overview = () => {
                       {new Date().toLocaleString('en-EN', { month: 'long', year: 'numeric' })}
                     </p>
                   </div>
-                  <div className="text-2xl font-bold">{payoutSummaryData?.total}₫</div>
+                  <div className="text-2xl font-bold">
+                    {formatPrice(payoutSummaryData?.total ?? 0)}
+                  </div>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Số tiền có thể thanh toán</span>
                       <span className="text-sm font-medium text-vividMalachite">
-                        {payoutSummaryData?.available_for_payout}₫ (
+                        {formatPrice(payoutSummaryData?.available_for_payout || 0)} (
                         {payoutSummaryData?.available_percentage}%)
                       </span>
                     </div>
@@ -608,7 +614,7 @@ export const Overview = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Tiền đang giữ (Tháng hiện tại)</span>
                       <span className="text-sm font-medium text-majorelleBlue">
-                        {payoutSummaryData?.in_30_day_holding}₫ (
+                        {formatPrice(payoutSummaryData?.in_30_day_holding || 0)} (
                         {payoutSummaryData?.holding_percentage}%)
                       </span>
                     </div>
@@ -623,7 +629,7 @@ export const Overview = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Tiền đang giữ (Tháng sau)</span>
                       <span className="text-sm font-medium text-amber">
-                        {payoutSummaryData?.next_holding}₫ (
+                        {formatPrice(payoutSummaryData?.next_holding || 0)} (
                         {payoutSummaryData?.next_holding_percentage}%)
                       </span>
                     </div>
@@ -680,7 +686,7 @@ export const Overview = () => {
                     </p>
                   </div>
                   <div className="text-2xl font-bold text-green-500">
-                    {nextPayoutData?.available_to_pay}₫
+                    {formatPrice(nextPayoutData?.available_to_pay ?? 0)}
                   </div>
                 </div>
 
@@ -704,7 +710,7 @@ export const Overview = () => {
                       nextPayoutData?.breakdown?.map((item, index) => (
                         <div className="flex items-center justify-between text-sm" key={index}>
                           <span>{item.title}</span>
-                          <span className="font-medium">{item.amount}₫</span>
+                          <span className="font-medium">{formatPrice(item.amount)}</span>
                         </div>
                       ))}
                   </div>
@@ -828,11 +834,11 @@ export const Overview = () => {
                                   {comment.user.first_name} {comment.user.last_name}
                                 </span>
                               </div>
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs text-muted-foreground flex justify-center">
                                 {comment.lecture.section.course.title}
-                                {'>'}
+                                <ChevronRight className="w-4 h-4" />
                                 {comment.lecture.section.title}
-                                {'>'}
+                                <ChevronRight className="w-4 h-4" />
                                 {comment.lecture.title}
                               </span>
                             </div>
@@ -959,8 +965,9 @@ export const Overview = () => {
                             <p className="text-sm text-muted-foreground">
                               Học viên {thread.author.first_name} {thread.author.last_name} đã đặt
                               câu hỏi trong khóa{' '}
-                              <span className=" text-black">
-                                "{thread.lecture.section.course.title}"
+                              <span className=" text-black font-semibold">
+                                {thread?.lecture?.section?.course?.title} -{' '}
+                                {thread?.lecture?.section?.title} - {thread?.lecture?.title}
                               </span>
                             </p>
                             <div className="mt-2">
@@ -981,8 +988,8 @@ export const Overview = () => {
                             <p className="text-sm text-muted-foreground">
                               Học viên {thread.author.first_name} {thread.author.last_name} đã đặt
                               câu hỏi trong khóa{' '}
-                              <span className=" text-black">
-                                {thread?.lecture?.section?.course?.title} -
+                              <span className=" text-black font-semibold">
+                                {thread?.lecture?.section?.course?.title} -{' '}
                                 {thread?.lecture?.section?.title} - {thread?.lecture?.title}
                               </span>
                             </p>

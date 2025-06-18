@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
 import InformTooltip from '../tooltip/informTooltip';
+import { formatDuration } from '@/helpers';
 
 interface SectionListProps {
   mode: 'edit' | 'view';
@@ -122,6 +123,7 @@ const SectionList: React.FC<SectionListProps> = ({
           { style: styleSuccess }
         );
       }
+      handleGetCourseInfo();
       handleNextStep();
     } catch (error) {
       console.log(error);
@@ -147,8 +149,8 @@ const SectionList: React.FC<SectionListProps> = ({
               <div>
                 <h3 className="font-semibold">Tổng quan chương trình</h3>
                 <p className="text-sm text-muted-foreground">
-                  {sections.length} chương • {getTotalLectures()} bài học • {getTotalDuration()}{' '}
-                  thời lượng
+                  {sections.length} chương • {getTotalLectures()} bài học •{' '}
+                  {formatDuration(getTotalDuration())} thời lượng
                 </p>
               </div>
               <div className="flex justify-between items-center gap-5 ">

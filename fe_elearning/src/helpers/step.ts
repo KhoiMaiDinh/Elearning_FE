@@ -11,7 +11,7 @@ export const steps = [
   },
   {
     id: 3,
-    title: 'Xem lại & Xuất bản',
-    description: 'Kiểm tra và xuất bản khóa học',
+    title: 'Xem lại',
+    description: 'Xem lại tất cả',
   },
 ];

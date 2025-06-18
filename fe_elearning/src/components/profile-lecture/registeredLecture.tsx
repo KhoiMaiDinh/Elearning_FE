@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Overview } from './overview';
 import CouponManagement from '@/app/(page)/profile/(with-layout)/lecture/components/couponManagement';
 import Payout from './payout';
+import { useTheme } from 'next-themes';
 
 export enum TABS {
   OVERVIEW = 'tong-quan',
@@ -19,6 +20,7 @@ export enum TABS {
 }
 
 const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean }) => {
+  const theme = useTheme();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TABS | null>(null);
 
@@ -64,9 +66,22 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
               ${
                 activeTab === tab.id
                   ? 'bg-white dark:bg-black50 text-majorelleBlue dark:text-white border-b-2 border-majorelleBlue'
-                  : 'text-black50 dark:text-darkSilver hover:bg-gray/10 dark:hover:bg-darkSilver/10'
+                  : 'text-black50 dark:text-darkSilver hover:bg-gray/90 dark:hover:bg-darkSilver/10'
               }
+              
             `}
+              style={{
+                textShadow: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textShadow =
+                  theme.theme === 'light'
+                    ? '3px 3px 6px rgba(0, 0, 0, 0.5)'
+                    : '3px 3px 6px rgba(255, 255, 255, 0.8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textShadow = 'none';
+              }}
             >
               {tab.label}
             </button>
