@@ -113,12 +113,6 @@ const LectureModal: React.FC<LectureModalProps> = ({
     setSelectedVersion(version);
   };
 
-  console.log(
-    selectedVersion?.video?.status === 'uploaded'
-      ? process.env.NEXT_PUBLIC_BASE_URL_TEMP_VIDEO + (selectedVersion?.video?.key ?? '')
-      : process.env.NEXT_PUBLIC_BASE_URL_VIDEO + (selectedVersion?.video?.key ?? '')
-  );
-
   const getVideoStatus = (status: 'uploaded' | 'validated' | 'pending' | 'rejected') => {
     switch (status) {
       case 'uploaded':

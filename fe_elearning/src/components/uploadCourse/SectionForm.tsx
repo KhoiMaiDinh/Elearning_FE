@@ -148,7 +148,7 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
           render={({ field }) => (
             <TextAreaRegisterLecture
               {...field}
-              labelText={`Mô tả phần ${section.position}`}
+              label={`Mô tả phần ${section.position}`}
               error={errors.description?.message}
               onChange={(e) => field.onChange(e)}
             />

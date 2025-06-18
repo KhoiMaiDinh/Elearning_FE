@@ -59,7 +59,7 @@ const Page = () => {
 
   // Initialize params from URL
   const [paramsCourse, setParamsCourse] = useState({
-    page: 1,
+    page: Number(searchParams.get('page')) || 1,
     limit: 12,
     category_slug: searchParams.get('category_slug') || undefined,
     level: searchParams.get('level') || undefined,
@@ -87,7 +87,7 @@ const Page = () => {
     paramsCourse.max_price || 5000000,
   ]);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
 
   // API call based on active tab
   const handleGetCourses = async () => {
@@ -104,7 +104,6 @@ const Page = () => {
           break;
         default:
           response = await APIGetListCourse(paramsCourse);
-
           break;
       }
 
@@ -167,7 +166,13 @@ const Page = () => {
     setActiveTab(tab);
     setCurrentPage(1);
     setParamsCourse((prev) => ({ ...prev, page: 1 }));
-    updateURL({ tab: tab === 'all' ? undefined : tab, page: 1 });
+
+    // Clear filters when switching to non-'all' tabs
+    if (tab !== 'all') {
+      clearFilters();
+    }
+
+    updateURL({ tab: tab, page: 1 });
   };
 
   const handleFilterChange = (key: string, value: any) => {
@@ -193,23 +198,23 @@ const Page = () => {
     });
   };
 
+  const clearedParams = {
+    page: 1,
+    limit: 12,
+    category_slug: undefined,
+    level: undefined,
+    min_price: undefined,
+    max_price: undefined,
+    min_rating: undefined,
+    q: undefined,
+    instructor_username: undefined,
+    with_instructor: true,
+    with_category: true,
+    include_disabled: false,
+    with_thumbnail: true,
+    is_approved: true,
+  };
   const clearFilters = () => {
-    const clearedParams = {
-      page: 1,
-      limit: 12,
-      category_slug: undefined,
-      level: undefined,
-      min_price: undefined,
-      max_price: undefined,
-      min_rating: undefined,
-      q: undefined,
-      instructor_username: undefined,
-      with_instructor: true,
-      with_category: true,
-      include_disabled: false,
-      with_thumbnail: true,
-      is_approved: true,
-    };
     setParamsCourse(clearedParams);
     setPriceRange([0, 5000000]);
     setSortBy('newest');
@@ -285,6 +290,9 @@ const Page = () => {
     const tabFromUrl = (searchParams.get('tab') as TabType) || 'all';
     if (tabFromUrl !== activeTab) {
       setActiveTab(tabFromUrl);
+      if (tabFromUrl !== 'all') {
+        clearFilters();
+      }
     }
   }, [searchParams]);
 
@@ -463,19 +471,21 @@ const Page = () => {
                       </div>
 
                       {/* Mobile Filter Button */}
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowMobileFilter(true)}
-                        className="lg:hidden"
-                      >
-                        <SlidersHorizontal className="h-4 w-4 mr-2" />
-                        Bộ lọc
-                        {getActiveFiltersCount() > 0 && (
-                          <Badge variant="secondary" className="ml-2">
-                            {getActiveFiltersCount()}
-                          </Badge>
-                        )}
-                      </Button>
+                      {activeTab === 'all' && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowMobileFilter(true)}
+                          className="lg:hidden"
+                        >
+                          <SlidersHorizontal className="h-4 w-4 mr-2" />
+                          Bộ lọc
+                          {getActiveFiltersCount() > 0 && (
+                            <Badge variant="secondary" className="ml-2">
+                              {getActiveFiltersCount()}
+                            </Badge>
+                          )}
+                        </Button>
+                      )}
                     </div>
 
                     {/* Top Controls */}
@@ -520,7 +530,7 @@ const Page = () => {
                     </div>
 
                     {/* Active Filters */}
-                    {getActiveFiltersCount() > 0 && (
+                    {activeTab === 'all' && getActiveFiltersCount() > 0 && (
                       <div className="flex flex-wrap gap-2 mt-4">
                         {paramsCourse.category_slug && (
                           <Badge variant="secondary" className="gap-1">
@@ -600,7 +610,7 @@ const Page = () => {
                               ? 'Bạn chưa có khóa học yêu thích nào.'
                               : 'Không tìm thấy khóa học nào phù hợp với bộ lọc của bạn.'}
                         </p>
-                        {getActiveFiltersCount() > 0 && (
+                        {getActiveFiltersCount() > 0 && activeTab === 'all' && (
                           <Button onClick={clearFilters} className="mt-4">
                             Xóa bộ lọc
                           </Button>
@@ -650,7 +660,7 @@ const Page = () => {
       </div>
 
       {/* Mobile Filter Modal */}
-      {showMobileFilter && (
+      {showMobileFilter && activeTab === 'all' && (
         <div className="fixed inset-0 bg-black/50 z-50 lg:hidden">
           <div className="fixed right-0 top-0 h-full w-80 bg-background shadow-xl">
             <div className="p-4 border-b">
