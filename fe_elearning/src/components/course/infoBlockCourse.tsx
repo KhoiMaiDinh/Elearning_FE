@@ -98,7 +98,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
 
       <div className="flex flex-col ">
         {!isRegistered && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid  gap-2">
             <Button
               className="bg-custom-gradient-button-violet w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
               onClick={() => {
