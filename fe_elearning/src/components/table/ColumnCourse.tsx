@@ -5,7 +5,7 @@ import { CaretSortIcon } from '@radix-ui/react-icons';
 import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'next/navigation';
 import { Translation } from '@/types/courseType';
-import { clearCourse, setCourse } from '@/constants/course';
+import { clearCourse, setCourse } from '@/constants/courseSlice';
 import { APIGetFullCourse } from '@/utils/course';
 import { EyeIcon } from 'lucide-react';
 import { formatPrice } from '@/components/formatPrice';

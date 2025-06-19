@@ -11,6 +11,7 @@ const initialState = {
     description: '',
     level: '',
     status: '',
+
     price: 0,
 
     thumbnail: {
@@ -36,6 +37,8 @@ const initialState = {
       translations: [],
     },
     createdAt: '',
+    updatedAt: '',
+    published_at: '',
     instructor_profile: <Lecture | null>null,
     sections: <Section[]>[],
     course_progress: <CourseProgress | null>null,

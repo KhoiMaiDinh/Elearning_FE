@@ -15,7 +15,7 @@ export enum TABS {
   COURSE = 'khoa-hoc',
   STATISTIC = 'phan-tich-phan-hoi',
   BANK_ACCOUNT = 'tai-khoan-ngan-hang',
-  COUPON_MANAGEMENT = 'ma-giam-gia',
+  COUPON_MANAGEMENT = 'ưu đãi',
   PAYOUT = 'thanh-khoan',
 }
 
@@ -31,8 +31,8 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
         { id: TABS.COURSE, label: 'Khóa học' },
         { id: TABS.STATISTIC, label: 'Phân tích phản hồi' },
         { id: TABS.BANK_ACCOUNT, label: 'Tài khoản ngân hàng' },
-        { id: TABS.COUPON_MANAGEMENT, label: 'Mã giảm giá' },
-        { id: TABS.PAYOUT, label: 'Thanh khoản' },
+        { id: TABS.COUPON_MANAGEMENT, label: 'Ưu đãi' },
+        { id: TABS.PAYOUT, label: 'Thanh toán' },
       ]
     : [{ id: TABS.PROFILE, label: 'Hồ sơ' }];
 

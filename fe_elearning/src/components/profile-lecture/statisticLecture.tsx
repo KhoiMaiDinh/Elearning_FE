@@ -13,7 +13,7 @@ import { RootState } from '@/constants/store';
 import { APIGetMyCourse } from '@/utils/course';
 import { APIGetComment, APIGetReview } from '@/utils/comment';
 import ColumnCourse from '../table/ColumnCourse';
-import { clearCourse } from '@/constants/course';
+import { clearCourse } from '@/constants/courseSlice';
 import { setStatisticItemCourse } from '@/constants/statisticItemCourse';
 import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 import StaticDetails from './staticDetails';
@@ -46,7 +46,8 @@ const Page = () => {
     try {
       const response = await APIGetMyCourse();
       if (response?.status === 200 && Array.isArray(response.data)) {
-        setDataTable(response.data);
+        const validCourses = response.data.filter((course: any) => course.status != 'DRAFT');
+        setDataTable(validCourses);
       } else {
         setError('Dữ liệu khoá học không hợp lệ.');
       }
@@ -126,7 +127,7 @@ const Page = () => {
     <div className="bg-white dark:bg-eerieBlack min-h-screen w-full space-y-8 rounded-xl p-6 shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-gray-800 dark:text-white text-2xl font-bold">Quản lý khóa học</h1>
+        <h1 className=" text-2xl font-bold text-majorelleBlue">Phân tích phản hồi</h1>
       </div>
 
       {/* Data Table */}
@@ -144,7 +145,7 @@ const Page = () => {
       {course?.id && (
         <div id="formProduct" className="flex flex-col gap-6">
           {/* Info Card */}
-          <div className="bg-gray-50 dark:bg-eerieBlack space-y-6 rounded-2xl p-6 shadow-md">
+          {/* <div className="bg-gray-50 dark:bg-eerieBlack space-y-6 rounded-2xl p-6 shadow-md">
             <h2 className="text-xl font-semibold text-persianIndigo dark:text-white">
               Thông tin khóa học
             </h2>
@@ -207,7 +208,7 @@ const Page = () => {
                 Chỉnh sửa
               </Button>
             </div>
-          </div>
+          </div> */}
 
           {/* Courses Detail */}
           <div className="bg-gray-50 dark:bg-eerieBlack space-y-6 rounded-2xl p-6 shadow-md">

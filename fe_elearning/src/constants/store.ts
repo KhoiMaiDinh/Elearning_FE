@@ -4,7 +4,7 @@ import { combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Sử dụng localStorage
 import createUserSlice from './userSlice';
-import createCourseSlice from './course';
+import createCourseSlice from './courseSlice';
 import createBankAccountSlice from './bankAccount';
 import createCartSlice from './cart';
 import createOrderSlice from './orderSlice';

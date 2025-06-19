@@ -14,7 +14,7 @@ import { APIInitCourse } from '@/utils/course';
 
 import { APIGetCategory } from '@/utils/category';
 import { useRouter } from 'next/navigation';
-import { setCourse } from '@/constants/course';
+import { setCourse } from '@/constants/courseSlice';
 import { useDispatch } from 'react-redux';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';

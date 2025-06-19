@@ -45,9 +45,15 @@ const MyCourseCard: React.FC<CourseForm> = ({
   thumbnail,
   id,
   updatedAt,
+  published_at,
+  createdAt,
   // priceFinal,
 }) => {
   const router = useRouter();
+
+  const handleNavigateToAnalytics = () => {
+    router.replace(`?tab=phan-tich-phan-hoi&id=${id}`);
+  };
 
   return (
     <>
@@ -135,10 +141,43 @@ const MyCourseCard: React.FC<CourseForm> = ({
         <CardFooter className="flex items-center justify-between border-t p-4">
           <div className="flex items-center text-xs text-muted-foreground">
             <Clock className="mr-1 h-3 w-3" />
-            <span>Cập nhật {updatedAt && new Date(updatedAt).toLocaleDateString()}</span>
+            <span className="text-right">
+              {createdAt
+                ? `Tạo vào ${new Date(createdAt).toLocaleDateString('vi-VN', {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}`
+                : 'N/A'}{' '}
+              <br />
+              {published_at
+                ? `Xuất bản ${new Date(published_at).toLocaleDateString('vi-VN', {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}`
+                : `Cập nhật ${
+                    updatedAt
+                      ? new Date(updatedAt).toLocaleDateString('vi-VN', {
+                          year: '2-digit',
+                          month: '2-digit',
+                          day: '2-digit',
+                        })
+                      : 'N/A'
+                  }`}
+            </span>
           </div>
-          <Button variant="outline" size="sm" className="h-8">
-            Quản lý
+          <Button
+            variant="outline"
+            size="sm"
+            className={`h-8 w-fit ${status === 'DRAFT' ? 'invisible' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNavigateToAnalytics();
+            }}
+          >
+            <BarChart3 className="" />
+            Phân tích phản hồi
           </Button>
         </CardFooter>
       </Card>

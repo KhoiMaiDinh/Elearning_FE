@@ -4,18 +4,7 @@ import type React from 'react';
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import {
-  BadgeCheck,
-  Bell,
-  CreditCard,
-  Heart,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  Search,
-  X,
-} from 'lucide-react';
+import { BadgeCheck, CreditCard, Heart, LogOut, Menu, Moon, Sun, Search, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { APIGetCurrentUser } from '@/utils/user';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,7 +28,7 @@ import { debounce } from 'lodash';
 import { clearBankAccount } from '@/constants/bankAccount';
 import { clearComment } from '@/constants/comment';
 import { clearNotifications } from '@/constants/notificationSlice';
-import { clearCourse } from '@/constants/course';
+import { clearCourse } from '@/constants/courseSlice';
 import { clearOrders } from '@/constants/orderSlice';
 import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 
@@ -265,12 +254,11 @@ const Header = () => {
         )}
 
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center min-w-[40px]">
           <div className="cursor-pointer" onClick={() => router.push('/')}>
-            <img src="/images/logo.png" alt="NovaLearn Logo" className="w-10 h-10" />
+            <img src="/images/logo.png" alt="NovaLearn Logo" className="w-10 h-10 object-contain" />
           </div>
         </div>
-
         {/* Desktop Navigation - Hidden when search is expanded */}
         {
           <nav
@@ -381,10 +369,10 @@ const Header = () => {
                 onClick={toggleTheme}
                 className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
               >
-                {theme === 'dark' ? (
-                  <Moon className="h-5 w-5 transition-all" />
-                ) : (
+                {theme === 'light' ? (
                   <Sun className="h-5 w-5 transition-all" />
+                ) : (
+                  <Moon className="h-5 w-5 transition-all" />
                 )}
                 <span className="sr-only">Toggle theme</span>
               </Button>
@@ -440,7 +428,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/billing')}>
                     <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Thanh toán</span>
+                    <span>Lịch sử mua</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

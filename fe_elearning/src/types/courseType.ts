@@ -87,7 +87,7 @@ export interface CourseForm {
     parent?: { slug: string; translations: Translation[] };
     translations: Translation[];
   };
-
+  published_at: string;
   title: string;
   subtitle: string;
   slug?: string;

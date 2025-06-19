@@ -16,7 +16,7 @@ const CourseLevelBadge = ({ level, className = '' }: { level: string; className?
   return (
     <Badge
       className={cn(
-        'py-[2px] rounded-sm w-fit text-white px-2 hover:opacity-90 hover:bg-majorelleBlue',
+        'py-[2px] rounded-sm w-fit text-white px-2 hover:opacity-90 hover:bg-majorelleBlue border-none',
         {
           'bg-majorelleBlue': level === CourseLevel.BEGINNER,
           'bg-intermediate-gradient': level === CourseLevel.INTERMEDIATE,

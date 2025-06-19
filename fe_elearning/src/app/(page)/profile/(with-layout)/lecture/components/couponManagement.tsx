@@ -199,9 +199,7 @@ const CouponManagement = () => {
       <div className="flex items-center justify-between ">
         <div>
           <h2 className="text-2xl font-bold">Quản lý Coupon</h2>
-          <p className="text-muted-foreground">
-            Tạo và quản lý mã khuyến mãi cho các khóa học của bạn
-          </p>
+          <p className="text-muted-foreground">Tạo và quản lý mã ưu đãi cho các khóa học của bạn</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-4 w-4" />

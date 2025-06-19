@@ -93,7 +93,7 @@ const CouponTable = ({
                     colSpan={status !== 'scheduled' ? 8 : 7}
                     className="p-4 text-center text-muted-foreground"
                   >
-                    Không tìm thấy mã giảm giá nào.
+                    Không tìm thấy mã ưu đãi nào.
                   </td>
                 </tr>
               )}

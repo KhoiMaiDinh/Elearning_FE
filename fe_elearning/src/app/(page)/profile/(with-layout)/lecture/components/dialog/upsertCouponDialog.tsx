@@ -16,7 +16,7 @@ import CreateCouponCheckbox from '../input/createCouponCheckbox';
 import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip } from '@/components/ui/tooltip';
 import { useEffect, useMemo, useState } from 'react';
 import ToastNotify from '@/components/ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { APICreateCoupon, APIUpdateCoupon, APIUpdateCouponStatus } from '@/utils/coupon';
 import { CouponType } from '@/types/couponType';
@@ -100,7 +100,6 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
   status,
   handleError,
 }) => {
-  const theme = useTheme();
   const {
     control,
     handleSubmit,
@@ -418,24 +417,6 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              {/* <Controller
-                name="is_active"
-                control={control}
-                render={({ field }) => (
-                  <CreateCouponCheckbox
-                    {...field}
-                    labelText="Active"
-                    disabled={mode == 'create' || (mode == 'edit' && status == 'expired')}
-                  />
-                )}
-              /> */}
-              {/* <Controller
-                name="is_active"
-                control={control}
-                render={({ field }) => (
-                  <CreateCouponCheckbox {...field} labelText="Hiển thị công khai" />
-                )}
-              /> */}
             </div>
           </div>
           <DialogFooter>

@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { setCourse } from '@/constants/course';
+import { setCourse } from '@/constants/courseSlice';
 import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import { Button } from '@/components/ui/button';

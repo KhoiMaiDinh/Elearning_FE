@@ -91,7 +91,7 @@ DataTableProps<TData, TValue>) {
   const _totalRows = data ? data.length : 0;
 
   return (
-    <div className="flex w-full flex-col rounded-md ">
+    <div className="flex w-full flex-col rounded-md overflow-hidden">
       {tableTitle ||
         (onClickAddNew && (
           <div className="flex w-full flex-col items-center justify-between pt-4 md:flex-row">

@@ -21,8 +21,6 @@ const CreateCouponCheckbox: React.FC<CheckboxConfig> = ({
   placeholder,
   value,
   disabled,
-  min,
-  max,
 }) => {
   return (
     <div className="flex items-center space-x-2">
@@ -33,9 +31,8 @@ const CreateCouponCheckbox: React.FC<CheckboxConfig> = ({
         placeholder={placeholder}
         onChange={onChange}
         checked={value}
-        multiple
         disabled={disabled}
-        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+        className="focus-within:ring-0 ring-0 border-0 focus:border-0 shadow-none"
       />
       <label htmlFor={name} className="text-sm">
         {labelText}

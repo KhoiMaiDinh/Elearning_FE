@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCourse } from '@/constants/course';
+import { setCourse } from '@/constants/courseSlice';
 import { RootState } from '@/constants/store';
 import { APIGetFullCourse } from '@/utils/course';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
