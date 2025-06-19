@@ -10,7 +10,11 @@ import { cn } from '@/lib/utils';
 import { formatPrice } from '../formatPrice';
 import Popup from '../courseDetails/popup';
 import ReviewListUser from './reviewListUser';
-import { APIAddFavoriteCourse, APIRemoveFavoriteCourse } from '@/utils/course';
+import {
+  APIAddFavoriteCourse,
+  APIGetFavoriteCourse,
+  APIRemoveFavoriteCourse,
+} from '@/utils/course';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { useRouter } from 'next/navigation';
@@ -97,8 +101,16 @@ const InfoCourse: React.FC<InfoCourseProps> = ({ lecture, course }) => {
   useEffect(() => {
     if (course.id) {
       handleGetReviews(course.id);
+      handleGetFavoriteCourse();
     }
   }, [course.id]);
+
+  const handleGetFavoriteCourse = async () => {
+    const response = await APIGetFavoriteCourse();
+    if (response && response.data) {
+      setIsFavorite(response.data.some((item: any) => item.id === course.id));
+    }
+  };
 
   useEffect(() => {
     if (course?.level === 'BEGINNER') {

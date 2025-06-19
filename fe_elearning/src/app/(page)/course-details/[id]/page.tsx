@@ -220,6 +220,7 @@ const LearnPage = () => {
                   coverPhoto={courseData?.thumbnail?.key}
                   lecture_id={currentCourseItem.id}
                   progress={currentCourseItem.progresses?.[0]?.watch_time_in_percentage}
+                  isOwner={isOwner}
                 />
               ) : (
                 <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md">

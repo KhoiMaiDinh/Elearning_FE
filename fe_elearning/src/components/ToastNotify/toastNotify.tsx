@@ -26,9 +26,8 @@ const ToastNotify = (props: ToastNotifyProps) => {
           fontSize: '13px',
           fontWeight: '400',
         }}
-      >
-        {message}
-      </div>
+        dangerouslySetInnerHTML={{ __html: message }}
+      />
     </div>
   );
 };

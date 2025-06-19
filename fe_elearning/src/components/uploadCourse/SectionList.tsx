@@ -17,7 +17,6 @@ import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
 import InformTooltip from '../tooltip/informTooltip';
 import { formatDuration } from '@/helpers';
-
 interface SectionListProps {
   mode: 'edit' | 'view';
   sections: Section[];
