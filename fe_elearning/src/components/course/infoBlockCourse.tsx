@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle } from '../ui/card';
 import { formatPrice } from '../formatPrice';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
+import { formatDuration } from '@/helpers';
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -17,6 +18,7 @@ type infoBlockCourse = {
   totalLessons?: number;
   courseProgress?: number;
   thumbnail?: any;
+  totalDuration?: number;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -28,6 +30,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   totalLessons,
   courseProgress,
   thumbnail,
+  totalDuration,
 }) => {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -133,7 +136,10 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       <div className="flex flex-col lg:gap-4 md:gap-4 gap-2 w-full">
         <IconWithText IconComponent={Gauge} title={`Trình độ ${levelShow}`} />
         <IconWithText IconComponent={TableOfContents} title={`Tổng số ${totalLessons} bài học`} />
-        <IconWithText IconComponent={Clock3} title={`Thời lượng ${'dcc'}`} />
+        <IconWithText
+          IconComponent={Clock3}
+          title={`Thời lượng ${formatDuration(totalDuration || 0)}`}
+        />
         <IconWithText IconComponent={Infinity} title={`Học mọi lúc mọi nơi`} />
       </div>
     </Card>

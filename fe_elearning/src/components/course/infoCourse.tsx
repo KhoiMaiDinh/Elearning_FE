@@ -7,7 +7,7 @@ import type { CourseForm } from '@/types/courseType';
 import { APIGetReview } from '@/utils/comment';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import { formatPrice } from '../formatPrice';
+
 import Popup from '../courseDetails/popup';
 import ReviewListUser from './reviewListUser';
 import {
@@ -19,23 +19,23 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { useRouter } from 'next/navigation';
 import { LoginRequiredPopup } from '../alert/LoginRequire';
-
+import { formatDuration } from '@/helpers';
+import { formatPrice } from '../formatPrice';
 type InfoCourseProps = {
   lecture: string;
   course: CourseForm;
+  totalDuration: number;
+  totalLessons: number;
 };
 
-const InfoCourse: React.FC<InfoCourseProps> = ({ lecture, course }) => {
+const InfoCourse: React.FC<InfoCourseProps> = ({
+  lecture,
+  course,
+  totalDuration,
+  totalLessons,
+}) => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
-  const totalLessons =
-    course.sections?.reduce((total, section) => total + section.items.length, 0) || 0;
-  const totalDuration =
-    course.sections?.reduce(
-      (total, section) =>
-        total + section.items.reduce((sum, item) => sum + (item.duration_in_seconds || 0), 0),
-      0
-    ) || 0;
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 

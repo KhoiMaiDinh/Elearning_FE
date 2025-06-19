@@ -14,7 +14,6 @@ import { AxiosError } from 'axios';
 import ToastNotify from '../ToastNotify/toastNotify';
 import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '../ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
 import InformTooltip from '../tooltip/informTooltip';
 import { formatDuration } from '@/helpers';
 interface SectionListProps {
