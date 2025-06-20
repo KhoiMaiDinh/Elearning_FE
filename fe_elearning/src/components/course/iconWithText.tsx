@@ -1,25 +1,19 @@
-type iconWithText = {
-  IconComponent: React.ElementType; // The type for a React component
-  title: string; // The type for the title string
-};
+import type React from 'react';
+import type { LucideIcon } from 'lucide-react';
 
-const IconWithText: React.FC<iconWithText> = ({ IconComponent: Icon, title }) => {
+interface IconWithTextProps {
+  IconComponent: LucideIcon;
+  title: string;
+  className?: string;
+}
+
+const IconWithText: React.FC<IconWithTextProps> = ({ IconComponent, title, className = '' }) => {
   return (
-    <div className="flex flex-row w-full items-center gap-4   justify-center">
-      <div className="flex flex-row items-center px-10 w-72 lg:w-full md:w-full border dark:border-white/20 border-black/20 shadow-sm  ">
-        <div className="flex w-fit p-2 ">
-          <Icon
-            // color={"#000000"}
-            size={16}
-            className="dark:text-AntiFlashWhite text-black70"
-          />
-        </div>
-        <div className="flex w-full">
-          <span className="flex text-black70 dark:text-AntiFlashWhite text-left w-full   font-medium font-sans text-[16px]">
-            {title}
-          </span>
-        </div>
+    <div className={`flex items-center gap-3 ${className}`}>
+      <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <IconComponent className="w-4 h-4 text-gray-600 dark:text-gray-400" />
       </div>
+      <span className="text-sm text-gray-700 dark:text-gray-300">{title}</span>
     </div>
   );
 };

@@ -291,7 +291,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
                 <div className="flex items-center font-sans gap-1 px-3 py-1.5 bg-purple-50 dark:bg-black50 rounded-full border border-white">
                   <Clock size={14} className="text-purple-500" />
                   <span className="text-xs font-medium text-purple-500">
-                    {formatDuration(totalDuration)}
+                    {formatDuration(totalDuration || 0)}
                   </span>
                 </div>
               </div>
@@ -417,7 +417,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
             <div className="flex items-start space-x-6 mb-3">
               <Avatar className="w-16 h-16">
                 <AvatarImage
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${course?.instructor?.user.profile_image.key || ''}`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${course?.instructor?.user?.profile_image?.key || ''}`}
                 />
                 <AvatarFallback>
                   {' '}

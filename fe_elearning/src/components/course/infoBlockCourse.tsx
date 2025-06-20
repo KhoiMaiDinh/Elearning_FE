@@ -1,14 +1,27 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { Clock3, Gauge, Infinity, PlayCircle, TableOfContents } from 'lucide-react';
-import IconWithText from './iconWithText';
+import {
+  Clock3,
+  Gauge,
+  Infinity,
+  PlayCircle,
+  TableIcon as TableOfContents,
+  Heart,
+} from 'lucide-react';
 import PieChartProgress from '../chart/pieChartProgress';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
 import { formatPrice } from '../formatPrice';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/constants/store';
+import type { RootState } from '@/constants/store';
 import { formatDuration } from '@/helpers';
+import IconWithText from './iconWithText';
+
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -24,7 +37,6 @@ type infoBlockCourse = {
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   id,
   isRegistered,
-  // progress,
   price,
   level,
   totalLessons,
@@ -47,63 +59,87 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
     }
   }, [level]);
 
+  const getLevelColor = () => {
+    switch (level) {
+      case 'BEGINNER':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'INTERMEDIATE':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'ADVANCED':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    }
+  };
+
   return (
-    <Card className="flex flex-col lg:w-80 md:w-72 p-4 w-full items-center justify-center gap-2 md:gap-4 ">
-      {isRegistered && (
-        <div className="flex flex-col w-full">
+    <Card className="w-full max-w-sm mx-auto shadow-lg border-0 bg-white dark:bg-gray-900">
+      {isRegistered ? (
+        // Registered User Section
+        <div className="p-6">
           {courseProgress !== 0 && courseProgress && (
-            <CardHeader>
-              <CardTitle className="font-sans text-center font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
-                Tiến độ
-              </CardTitle>
-            </CardHeader>
-          )}
-          {courseProgress !== 0 && courseProgress && (
-            <PieChartProgress courseProgress={courseProgress} />
-          )}
-        </div>
-      )}
-      {!isRegistered && (
-        <div className="flex flex-col items-center justify-center rounded-md overflow-hidden">
-          <CardHeader>
-            <CardTitle className="font-sans font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
-              Tiến độ
-            </CardTitle>
-          </CardHeader>
-          <div
-            className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden"
-            onClick={() => {
-              router.push(`/course-details/${id}`);
-            }}
-          >
-            <img
-              src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${thumbnail || ''}`}
-              alt="Học thử"
-              className="w-full  relative transition-transform duration-300 ease-in-out group-hover:scale-105"
-            />
-            <div className="absolute top-0 w-full h-full bg-black50 flex flex-col justify-between items-center p-4">
-              {/* Icon ở giữa */}
-              <div className="flex-grow flex justify-center items-center">
-                <PlayCircle size={32} fill="#000000" color="#ffffff" className="" />
+            <>
+              <div className="mb-6">
+                <PieChartProgress courseProgress={courseProgress} />
               </div>
+            </>
+          )}
 
-              {/* Chữ ở dưới cùng */}
-              <text className="text-AntiFlashWhite text-[16px] font-sans font-medium">
-                Học thử miễn phí
-              </text>
-            </div>
-          </div>
-          <text className="flex flex-col text-[20px] font-sans font-bold text-black dark:text-AntiFlashWhite ">
-            {formatPrice(Number(price))}
-          </text>
+          <Button
+            size="lg"
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+            onClick={() => router.push(`/course-details/${id}`)}
+          >
+            {courseProgress !== 0 && courseProgress
+              ? 'Tiếp tục học'
+              : courseProgress === 100 && courseProgress
+                ? 'Đã hoàn thành'
+                : 'Bắt đầu học'}
+          </Button>
         </div>
-      )}
+      ) : (
+        // Unregistered User Section
+        <>
+          <CardHeader className="pb-4">
+            <div className="text-center">
+              <Badge
+                variant="secondary"
+                className="mb-3 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              >
+                Học thử miễn phí
+              </Badge>
+              <div
+                className="relative group cursor-pointer rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                onClick={() => router.push(`/course-details/${id}`)}
+              >
+                <div className="aspect-video relative">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${thumbnail || ''}`}
+                    alt="Học thử"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center group-hover:bg-black/50 transition-colors duration-300">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <PlayCircle size={32} className="text-white" />
+                    </div>
+                    <span className="text-white font-medium text-sm">Xem video giới thiệu</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
 
-      <div className="flex flex-col ">
-        {!isRegistered && (
-          <div className="grid  gap-2">
+          <CardContent className="pt-0">
+            <div className="text-center mb-6">
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {formatPrice(Number(price))}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Truy cập trọn đời</p>
+            </div>
+
             <Button
-              className="bg-custom-gradient-button-violet w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
+              size="lg"
+              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-4"
               onClick={() => {
                 if (userInfo.id) {
                   router.push(`/checkout/${id}`);
@@ -114,34 +150,64 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             >
               Đăng ký ngay
             </Button>
+          </CardContent>
+        </>
+      )}
+
+      <Separator className="" />
+
+      {/* <CardContent className="pt-6">
+        <h4 className="font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Thông tin khóa học
+        </h4>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <Gauge className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Trình độ</span>
+            </div>
+            <Badge className={getLevelColor()}>{levelShow}</Badge>
           </div>
-        )}
 
-        {isRegistered && (
-          <Button
-            className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
-            onClick={() => {
-              router.push(`/course-details/${id}`);
-            }}
-          >
-            {courseProgress !== 0 && courseProgress
-              ? 'Tiếp tục'
-              : courseProgress === 100 && courseProgress
-                ? 'Đã hoàn thành'
-                : 'Bắt đầu'}
-          </Button>
-        )}
-      </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                <TableOfContents className="w-4 h-4 text-green-600 dark:text-green-400" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Bài học</span>
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              {totalLessons} bài
+            </span>
+          </div>
 
-      <div className="flex flex-col lg:gap-4 md:gap-4 gap-2 w-full">
-        <IconWithText IconComponent={Gauge} title={`Trình độ ${levelShow}`} />
-        <IconWithText IconComponent={TableOfContents} title={`Tổng số ${totalLessons} bài học`} />
-        <IconWithText
-          IconComponent={Clock3}
-          title={`Thời lượng ${formatDuration(totalDuration || 0)}`}
-        />
-        <IconWithText IconComponent={Infinity} title={`Học mọi lúc mọi nơi`} />
-      </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                <Clock3 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Thời lượng</span>
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              {formatDuration(totalDuration || 0)}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <Infinity className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Truy cập</span>
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              Mọi lúc, mọi nơi
+            </span>
+          </div>
+        </div>
+      </CardContent> */}
     </Card>
   );
 };

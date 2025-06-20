@@ -272,7 +272,7 @@ const Header = () => {
                 <button
                   key={item.path}
                   onClick={() => router.push(item.path)}
-                  className={`text-sm font-medium hover:text-primary  ${
+                  className={`text-sm hidden sm:block font-medium hover:text-primary  ${
                     pathname === item.path
                       ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
                       : 'text-muted-foreground'
