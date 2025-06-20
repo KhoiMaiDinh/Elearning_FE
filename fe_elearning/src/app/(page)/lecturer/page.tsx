@@ -125,7 +125,7 @@ const Page = () => {
     };
     setParamsLecture(clearedParams);
     setSortBy('newest');
-    router.push('/lecture');
+    router.push('/lecturer');
   };
 
   const getActiveFiltersCount = () => {

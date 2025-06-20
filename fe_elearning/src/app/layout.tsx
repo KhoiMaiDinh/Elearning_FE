@@ -39,6 +39,7 @@ const RootLayout = ({ children }: any) => {
         <link rel="apple-touch-icon" href={(metadata.icons as any)?.apple} /> */}
       </head>
       <body className={` ${inter.variable} ${manrope.variable}`}>
+        <script async src="https://sp.zalo.me/plugins/sdk.js"></script>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <Suspense

@@ -52,7 +52,7 @@ const data = {
     },
     {
       title: 'Giảng viên',
-      url: '/lecture',
+      url: '/lecturer',
       icon: IdCard,
     },
   ],

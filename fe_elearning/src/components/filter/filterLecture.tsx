@@ -29,7 +29,7 @@ const LectureFilter: React.FC<LectureFilterProps> = ({
         min_rating: paramsLecture.min_rating.toString(),
       }),
     }).toString();
-    router.push(`/lecture?${query}`);
+    router.push(`/lecturer?${query}`);
   };
 
   const handleRatingChange = (value: string) => {
@@ -43,7 +43,7 @@ const LectureFilter: React.FC<LectureFilterProps> = ({
       }),
       ...(ratingValue && { min_rating: ratingValue }),
     }).toString();
-    router.push(`/lecture?${query}`);
+    router.push(`/lecturer?${query}`);
   };
 
   const handleCategoryChange = (value: string) => {

@@ -47,7 +47,7 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
       <Accordion
         type="multiple"
         value={expandedSections}

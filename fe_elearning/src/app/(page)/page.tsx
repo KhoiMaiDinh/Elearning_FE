@@ -589,7 +589,7 @@ export default function Page() {
               <Button
                 variant="outline"
                 className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
-                onClick={() => router.push('/lecture')}
+                onClick={() => router.push('/lecturer')}
               >
                 Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
               </Button>

@@ -62,6 +62,7 @@ import { ReviewCourseType } from '@/types/reviewCourseType';
 import { APIGetInstructorThreads } from '@/utils/thread';
 import { CommunityThread } from '@/types/communityThreadType';
 import { formatPrice } from '../formatPrice';
+import ViewMoreButton from '../button/viewMoreButton';
 
 export const Overview = () => {
   const [overviewData, setOverviewData] = useState<InstructorOverviewType | null>(null);
@@ -434,10 +435,7 @@ export const Overview = () => {
                   </div>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                        View More
-                        <ChevronRight className="h-3 w-3" />
-                      </Button>
+                     <ViewMoreButton />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[625px]">
                       <DialogHeader>

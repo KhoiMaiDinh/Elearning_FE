@@ -47,7 +47,7 @@ const Header = () => {
   const menuItems = [
     { label: 'Trang chủ', path: '/' },
     { label: 'Khóa học', path: '/course' },
-    { label: 'Giảng viên', path: '/lecture' },
+    { label: 'Giảng viên', path: '/lecturer' },
     { label: 'Liên hệ', path: '/contact' },
   ];
 

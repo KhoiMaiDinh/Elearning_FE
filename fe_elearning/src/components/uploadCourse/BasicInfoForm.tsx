@@ -37,6 +37,9 @@ import ToastNotify from '../ToastNotify/toastNotify';
 import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
+import EmptyInfoBox from '../courseDetails/emptyInfoBox';
+import CourseOutcomes from '../courseDetails/courseOutcomes';
+import CourseRequirements from '../courseDetails/courseRequirements';
 
 const data = [
   { id: 'BEGINNER', value: 'Sơ cấp' },
@@ -160,14 +163,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
 
   const handleConfirm = () => {
     router.back();
-  };
-
-  const EmptyInfoBox: React.FC<{ message: string }> = ({ message }) => {
-    return (
-      <div className="text-sm font-mono text-center italic bg-gray-50 p-3 rounded border border-gray-200">
-        {message}
-      </div>
-    );
   };
 
   interface LabelWithIconProps {
@@ -477,21 +472,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                 </Button>
               </div>
             ) : (
-              <ul className="space-y-4 text-left ">
-                {courseInfo?.requirements?.length ? (
-                  courseInfo?.requirements.map((requirement, index) => (
-                    <li className="flex items-center  gap-3 rtl:space-x-reverse" key={index}>
-                      <CircleDot
-                        key={index}
-                        className="w-4 h-4 dark:text-PaleViolet text-majorelleBlue"
-                      />
-                      {requirement}
-                    </li>
-                  ))
-                ) : (
-                  <EmptyInfoBox message="Chưa điền phần Kiến thức cần có trước khi tham gia khóa học" />
-                )}
-              </ul>
+              <CourseRequirements requirements={courseInfo?.requirements} />
             )}
           </div>
         </div>
@@ -542,18 +523,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                 </Button>
               </div>
             ) : (
-              <ul className="space-y-4 text-left text-gray-500 dark:text-gray-400">
-                {courseInfo?.outcomes?.length ? (
-                  courseInfo?.outcomes.map((outcome, index) => (
-                    <li key={index} className="flex items-center gap-3 rtl:space-x-reverse">
-                      <Check className="w-4 h-4 text-goGreen stroke-[2.5]" />
-                      {outcome}
-                    </li>
-                  ))
-                ) : (
-                  <EmptyInfoBox message="Chưa điền phần Kiến thức có được sau khóa học" />
-                )}
-              </ul>
+              <CourseOutcomes outcomes={courseInfo?.outcomes} />
             )}
           </div>
         </div>
