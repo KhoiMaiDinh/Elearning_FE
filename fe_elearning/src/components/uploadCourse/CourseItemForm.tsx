@@ -169,7 +169,6 @@ const CourseItemForm = ({
         onSave();
       }
     } catch (error) {
-      console.log('Error handling course item:', error);
       toast.error(<ToastNotify status={-1} message="Không thể cập nhật bài giảng" />, {
         style: styleError,
       });
@@ -413,7 +412,7 @@ const CourseItemForm = ({
             render={({ field }) => (
               <TextAreaRegisterLecture
                 {...field}
-                labelText={`Nội dung bài ${
+                label={`Nội dung bài ${
                   (section.items?.length || 0) + 1
                 } (Phần ${section.position})`}
                 error={errors.description?.message}

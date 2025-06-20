@@ -129,7 +129,6 @@ const CourseDetails: React.FC = () => {
   };
 
   const handleCreateSuccess = (course: CourseForm | null) => {
-    console.log(course);
     if (course) {
       setIsNewlyCreated(true);
       router.replace(`./${course.id}`);

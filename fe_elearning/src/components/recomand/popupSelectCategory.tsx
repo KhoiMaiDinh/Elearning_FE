@@ -37,7 +37,6 @@ export function CategorySelectionPopup({
   minSelections = 1,
 }: CategorySelectionPopupProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialSelectedCategories);
-  console.log('🚀 ~ selectedCategories:', selectedCategories);
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 

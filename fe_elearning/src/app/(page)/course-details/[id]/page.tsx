@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import VideoPlayer from '@/components/courseDetails/videoPlayer';
 import CourseTabs from '@/components/courseDetails/courseTab';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
@@ -42,141 +42,187 @@ const LearnPage = () => {
   const comment = searchParams.get('comment');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
-  const [courseData, setCourseData] = useState<CourseForm | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
 
+  // Combined loading state
+  const [loadingStates, setLoadingStates] = useState({
+    isLoading: true,
+    isLoadingRegister: false,
+  });
+
+  // Main course data state
+  const [courseData, setCourseData] = useState<CourseForm | undefined>(undefined);
   const [currentCourseItem, setCurrentCourseItem] = useState<CourseItem | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>('');
-  useEffect(() => {
-    if (userInfo.id && courseData?.instructor?.user?.id) {
-      setIsOwner(userInfo.id === courseData.instructor.user.id);
-    }
-  }, [userInfo, courseData]);
 
-  useEffect(() => {
-    if (comment) {
-      setCurrentCommentItem(comment);
-    }
-  }, [comment]);
+  // Derived states using useMemo
+  const sections = useMemo(() => {
+    if (!courseData?.sections) return [];
+    return courseData.sections.sort((a: Section, b: Section) =>
+      a.position.localeCompare(b.position)
+    );
+  }, [courseData?.sections]);
 
+  const isOwner = useMemo(() => {
+    if (!userInfo.id || !courseData?.instructor?.user?.id) return false;
+    return userInfo.id === courseData.instructor.user.id;
+  }, [userInfo.id, courseData?.instructor?.user?.id]);
+
+  // API calls
   const handleGetCourseData = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setLoadingStates((prev) => ({ ...prev, isLoading: true }));
       const response = await APIGetFullCourse(id as string);
       if (response?.status === 200) {
         setCourseData(response?.data);
-        const sortedSections = response.data.sections.sort((a: Section, b: Section) =>
-          a.position.localeCompare(b.position)
-        );
-        setSections(sortedSections);
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
     } finally {
-      setIsLoading(false);
+      setLoadingStates((prev) => ({ ...prev, isLoading: false }));
     }
   }, [id]);
 
   const handleGetEnrolledCourse = useCallback(async () => {
-    const response = await APIGetEnrolledCourse();
-    if (response?.status === 200) {
-      setIsRegistered(response?.data?.some((item: any) => item.id === id));
+    setLoadingStates((prev) => ({ ...prev, isLoadingRegister: true }));
+    try {
+      const response = await APIGetEnrolledCourse();
+      if (response?.status === 200) {
+        setIsRegistered(response?.data?.some((item: any) => item.id === id));
+      }
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, isLoadingRegister: false }));
     }
   }, [id]);
 
   const handleGetCourseDataNotEnrolled = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setLoadingStates((prev) => ({ ...prev, isLoading: true }));
       const response = await APIGetCourseById(id as string, {
         with_sections: true,
         with_thumbnail: true,
       });
       if (response?.status === 200) {
         setCourseData(response?.data);
-        const sortedSections = response.data.sections.sort((a: Section, b: Section) =>
-          a.position.localeCompare(b.position)
-        );
-        setSections(sortedSections);
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
     } finally {
-      setIsLoading(false);
+      setLoadingStates((prev) => ({ ...prev, isLoading: false }));
     }
   }, [id]);
 
+  // Initial data fetch
   useEffect(() => {
-    handleGetEnrolledCourse();
+    const fetchInitialData = async () => {
+      await handleGetEnrolledCourse();
+    };
+    fetchInitialData();
+  }, [handleGetEnrolledCourse]);
+
+  // Fetch course data based on registration status
+  useEffect(() => {
     if (isRegistered || isOwner) {
       handleGetCourseData();
     } else {
       handleGetCourseDataNotEnrolled();
     }
-  }, [
-    id,
-    isRegistered,
-    isOwner,
-    handleGetEnrolledCourse,
-    handleGetCourseData,
-    handleGetCourseDataNotEnrolled,
-  ]);
+  }, [isRegistered, isOwner, handleGetCourseData, handleGetCourseDataNotEnrolled]);
 
+  // Handle comment from URL
   useEffect(() => {
-    if (courseData?.sections && sections) {
-      if (isRegistered || isOwner) {
-        // For registered users or owner, show first video from first section
+    if (comment) {
+      setCurrentCommentItem(comment);
+    }
+  }, [comment]);
+
+  // Set current course item based on registration status
+  useEffect(() => {
+    if (!courseData?.sections || !sections || loadingStates.isLoadingRegister) return;
+
+    const setInitialCourseItem = () => {
+      if (isOwner) {
         const firstSection = sections[0];
-        if (firstSection && firstSection.items && firstSection.items.length > 0) {
-          if (lecture) {
-            const lectureItem = firstSection.items.find((item) => item.id === lecture);
-            if (lectureItem) {
-              setCurrentCourseItem(lectureItem);
-            }
-          } else {
-            setCurrentCourseItem(firstSection.items[0]);
+        if (!firstSection?.items?.length) return;
+
+        if (lecture) {
+          const lectureItem = firstSection.items.find((item) => item.id === lecture);
+          if (lectureItem) {
+            setCurrentCourseItem(lectureItem);
+            return;
           }
         }
-      } else {
-        // For unregistered users, find first preview video
-        let previewItem: CourseItem | undefined;
+        setCurrentCourseItem(firstSection.items[0]);
+      } else if (isRegistered) {
+        let lectureToSet: CourseItem | undefined;
+
+        // Find first incomplete lecture
         for (const section of sections) {
-          const previewInSection = section.items?.find((item) => item.is_preview);
-          if (previewInSection) {
-            previewItem = previewInSection;
+          const lectureInProgress = section.items?.find(
+            (item) => (item.progresses?.[0]?.watch_time_in_percentage ?? 0) < 80
+          );
+          if (lectureInProgress) {
+            lectureToSet = lectureInProgress;
             break;
           }
         }
-        setCurrentCourseItem(previewItem);
-      }
-    }
-  }, [courseData, sections, isRegistered, isOwner]);
 
+        // If all complete, set to last lecture
+        if (!lectureToSet) {
+          const lastSectionWithItems = [...sections]
+            .reverse()
+            .find((s) => s.items && s.items.length > 0);
+          if (lastSectionWithItems) {
+            lectureToSet = lastSectionWithItems.items[lastSectionWithItems.items.length - 1];
+          }
+        }
+
+        if (lectureToSet) {
+          setCurrentCourseItem(lectureToSet);
+        }
+      } else {
+        // For unregistered users, find first preview
+        for (const section of sections) {
+          const previewItem = section.items?.find((item) => item.is_preview);
+          if (previewItem) {
+            setCurrentCourseItem(previewItem);
+            break;
+          }
+        }
+      }
+    };
+
+    setInitialCourseItem();
+  }, [courseData, sections, isRegistered, isOwner, loadingStates.isLoadingRegister, lecture]);
+
+  // Update video URL when course item changes
   useEffect(() => {
     if (currentCourseItem?.video) {
-      setVideoUrl(currentCourseItem?.video?.key);
+      setVideoUrl(currentCourseItem.video.key);
     }
   }, [currentCourseItem]);
 
+  // Handle authentication and routing
   useEffect(() => {
-    if (userInfo.id) {
-      if (lecture && comment) {
-        router.push(`/course-details/${id}?lecture=${lecture}&comment=${comment}`);
-      } else {
-        router.push(`/course-details/${id}`);
-      }
-    } else {
+    if (!userInfo.id) {
       router.push('/login');
+      return;
     }
-  }, [userInfo.id, lecture, comment]);
+
+    const queryParams = new URLSearchParams();
+    if (lecture) queryParams.append('lecture', lecture);
+    if (comment) queryParams.append('comment', comment);
+
+    const url = `/course-details/${id}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    router.push(url);
+  }, [userInfo.id, lecture, comment, id, router]);
 
   return (
-    <AnimateWrapper delay={0.2} direction="up">
-      {isLoading ? (
+    // <AnimateWrapper delay={0.2} direction="up">
+    <>
+      {loadingStates.isLoading || loadingStates.isLoadingRegister ? (
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="animate-spin" size={24} />
         </div>
@@ -280,7 +326,8 @@ const LearnPage = () => {
           />
         </>
       )}
-    </AnimateWrapper>
+    </>
+    // </AnimateWrapper>
   );
 };
 

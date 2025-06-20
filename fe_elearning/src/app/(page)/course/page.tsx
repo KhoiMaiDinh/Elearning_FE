@@ -269,7 +269,6 @@ const Page = () => {
   const handleGetFavoriteCourse = async () => {
     const response = await APIGetFavoriteCourse();
     if (response && response?.data) {
-      console.log(response.data);
       setFavoriteCourse(response.data);
     }
   };

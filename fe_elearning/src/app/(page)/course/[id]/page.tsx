@@ -30,6 +30,8 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [totalLessons, setTotalLessons] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -117,6 +119,16 @@ const Page = () => {
 
   useEffect(() => {
     if (dataCourse && userInfo) {
+      const totalDuration =
+        dataCourse.sections?.reduce(
+          (total, section) =>
+            total + section.items.reduce((sum, item) => sum + (item.duration_in_seconds || 0), 0),
+          0
+        ) || 0;
+      const totalLessons =
+        dataCourse.sections?.reduce((total, section) => total + section.items.length, 0) || 0;
+      setTotalDuration(totalDuration);
+      setTotalLessons(totalLessons);
       setLoading(false);
     } else {
       setLoading(true);
@@ -136,6 +148,8 @@ const Page = () => {
                   ' ' +
                   dataCourse.instructor?.user?.last_name
                 }
+                totalDuration={totalDuration}
+                totalLessons={totalLessons}
               />
             )}
           </div>
@@ -317,16 +331,12 @@ const Page = () => {
             <div className="lg:w-1/4">
               <InfoBlockCourse
                 thumbnail={dataCourse?.thumbnail?.key}
+                totalDuration={totalDuration}
                 id={id || ''}
                 isRegistered={isRegistered}
                 price={dataCourse?.price}
                 level={dataCourse?.level || ''}
-                totalLessons={
-                  dataCourse?.sections?.reduce(
-                    (total, section) => total + section.items.length,
-                    0
-                  ) || 0
-                }
+                totalLessons={totalLessons}
                 courseProgress={dataCourse?.course_progress?.progress}
                 // courseProgress={0.00001}
               />

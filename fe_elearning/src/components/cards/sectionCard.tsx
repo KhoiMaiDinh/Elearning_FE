@@ -36,6 +36,7 @@ type SectionCardProps = {
   handleEditSection: (section: Section) => void;
   handleEditLecture: (section: Section, lecture: CourseItem) => void;
   handleGetCourseInfo: () => void;
+  handleViewLecture: (section: Section, lecture: CourseItem) => void;
 };
 
 const SectionCard: React.FC<SectionCardProps> = ({
@@ -48,6 +49,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
   handleEditSection,
   handleEditLecture,
   handleGetCourseInfo,
+  handleViewLecture,
 }) => {
   const statusConfig = {
     DRAFT: {
@@ -280,6 +282,14 @@ const SectionCard: React.FC<SectionCardProps> = ({
                                     <Undo2 className="h-4 w-4" />
                                   </Button>
                                 )}
+                                <Button
+                                  className="hover:bg-white hover:shadow-md"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleViewLecture(section, lecture)}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
                                 <Button
                                   className="hover:bg-white hover:shadow-md"
                                   variant="ghost"

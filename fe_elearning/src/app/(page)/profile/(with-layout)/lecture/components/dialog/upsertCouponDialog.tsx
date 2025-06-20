@@ -147,7 +147,6 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
   const handleGetOwnedCourses = async () => {
     const response = await APIGetMyCourse();
     if (response?.status === 200) {
-      console.log('response', response);
       const filteredCourses = response.data.filter((course: any) => course.published_at !== null);
       const dataCourse = [...filteredCourses];
       setDataCourse(dataCourse);
@@ -230,13 +229,11 @@ const UpsertCouponDialog: React.FC<DialogOptions> = ({
           }
         } else {
           const res = await APIUpdateCouponStatus(coupon.code);
-          console.log('res', res);
           if (res?.status === 204) {
             showSuccess('Cập nhật trạng thái của ưu đãi thành công!');
             handleSuccess?.();
             handleClearForm();
           } else {
-            console.log('err', res);
             showError('Cập nhật trạng thái của ưu đãi thất bại!');
             handleError?.();
           }

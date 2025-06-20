@@ -89,7 +89,7 @@ const TeacherProfile = () => {
                       className="object-cover"
                     />
                   </Avatar>
-                  <div className="w-8 h-8 bg-green-500 rounded-full border-4 border-white -mt-6 ml-20 lg:ml-20" />
+                  {/* <div className="w-8 h-8 bg-green-500 rounded-full border-4 border-white -mt-6 ml-20 lg:ml-20" /> */}
                 </div>
 
                 {/* Info Section */}

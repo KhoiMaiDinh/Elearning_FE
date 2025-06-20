@@ -69,14 +69,12 @@ export const useSectionForm = (
       course: data.course,
       previous_section_id: data.previous_section_id,
     };
-    console.log('payload', payload);
     try {
       const response = await APIInitSection(payload);
       if (response?.status === 201) {
         onSave(`Tạo chương ${data.title} thành công`);
       }
     } catch (error) {
-      console.log('Error creating section:', error);
       onFail('Không thể tạo chương mới');
     } finally {
       setSubmitting(false);
@@ -96,7 +94,6 @@ export const useSectionForm = (
         onSave(`Cập nhật chương ${data.title}thành công`);
       }
     } catch (error) {
-      console.log('Error updating section:', error);
       onFail('Không thể cập nhật chương');
     } finally {
       setSubmitting(false);

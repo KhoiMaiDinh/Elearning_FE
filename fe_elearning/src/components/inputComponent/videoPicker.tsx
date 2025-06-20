@@ -114,7 +114,6 @@ const VideoPicker: React.FC<VideoPickerProps> = ({
   };
 
   const formatSize = (size: number): string => {
-    console.log(size);
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     let i = 0;
     while (size >= 1024) {

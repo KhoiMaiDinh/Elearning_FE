@@ -213,7 +213,6 @@ export const useInstructorForm = (
         setLoading(false);
       }
     } catch (err) {
-      console.log(err);
       onFail('Đăng ký thất bại');
       setLoading(false);
     }
@@ -240,7 +239,6 @@ export const useInstructorForm = (
         setLoading(false);
       }
     } catch (err) {
-      console.log(err);
       onFail('Cập nhật thất bại');
       setLoading(false);
     }

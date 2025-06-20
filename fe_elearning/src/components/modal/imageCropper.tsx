@@ -96,7 +96,6 @@ export function ImageCropperModal({
     });
 
     const previewUrl = URL.createObjectURL(blob);
-    console.log(previewUrl);
     handleSave(
       new File([blob], 'cropped-image.jpg', { type: 'image/jpeg', lastModified: Date.now() })
     );

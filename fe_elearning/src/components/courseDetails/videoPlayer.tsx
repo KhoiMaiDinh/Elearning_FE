@@ -31,7 +31,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!video || !lecture_id || !video.duration) return;
     const percent = Math.floor((video.currentTime / video.duration) * 100);
     if (isOwner) return;
-    APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    else {
+      APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    }
   };
 
   // Load video và HLS

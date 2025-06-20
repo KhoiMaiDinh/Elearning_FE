@@ -35,7 +35,6 @@ export const connectSocket =
     socket.emit('register', { user_id });
 
     socket.on('notification', (data: NotificationType) => {
-      console.log('🚀 ~ socket.on ~ data:', data);
       dispatch(addNotification(data));
       dispatch(setIsNewNotification(true));
     });
@@ -46,7 +45,6 @@ export const connectSocket =
 
     socket.on('disconnect', () => {
       dispatch(setConnected(false));
-      console.log('Socket disconnected');
     });
 
     socket.on('error', (error) => {

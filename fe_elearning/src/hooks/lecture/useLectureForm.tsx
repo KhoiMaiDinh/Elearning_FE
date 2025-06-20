@@ -159,7 +159,6 @@ export const useLecture = (
         // setCreatedItem(response.data);
       }
     } catch (error) {
-      console.log('Error handling course item:', error);
       onFail('Không thể thêm bài giảng');
     } finally {
       setSubmitting(false);
@@ -191,7 +190,6 @@ export const useLecture = (
         // setCreatedItem(response.data);
       }
     } catch (error) {
-      console.log('Error handling course item:', error);
       onFail('Không thể cập nhật bài giảng');
     } finally {
       setSubmitting(false);
@@ -232,13 +230,12 @@ export const useLecture = (
           name: file.name.replace(/\.[^/.]+$/, ''),
         } as ResourceType,
       ];
-      console.log(updatedResources);
       setValue('resources', updatedResources, {
         shouldValidate: true,
         shouldDirty: true,
       });
     } catch (error) {
-      console.error('Upload failed', error);
+      console.log('🚀 ~ handleUploadAndTrack ~ error:', error);
     } finally {
       setUploadProgress((prev) => {
         const newProgress = { ...prev };

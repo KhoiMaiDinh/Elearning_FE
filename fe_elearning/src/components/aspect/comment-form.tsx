@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Meh, ChevronsRightLeft } from 'lucide-react';
 import { aspects } from './comment-list';
 
 export function CommentForm() {
@@ -27,9 +27,7 @@ export function CommentForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log({ comment, aspects: selectedAspects, emotion });
-    // Reset form
+    // Here you would typically send the data to your backend    // Reset form
     setComment('');
     setSelectedAspects([]);
     setEmotion('');
@@ -115,6 +113,12 @@ export function CommentForm() {
                 value="3"
                 icon={ThumbsDown}
                 label="Tiêu cực"
+                className="bg-red-50 border-red-200 data-[state=checked]:border-red-500"
+              />
+              <EmotionOption
+                value="4"
+                icon={ChevronsRightLeft}
+                label="Xung đột"
                 className="bg-red-50 border-red-200 data-[state=checked]:border-red-500"
               />
             </RadioGroup>
