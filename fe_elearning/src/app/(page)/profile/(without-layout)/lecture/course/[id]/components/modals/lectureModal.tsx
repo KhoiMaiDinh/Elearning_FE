@@ -108,7 +108,10 @@ const LectureModal: React.FC<LectureModalProps> = ({
 
   const handleOpenChange = (open: boolean) => {
     if (submitting) return;
-    if (!open) reset();
+    if (!open) {
+      reset();
+      setReviewActive(false);
+    }
     onOpenChange(open);
   };
   const handleSelectVersion = (versionId: string) => {
@@ -188,13 +191,17 @@ const LectureModal: React.FC<LectureModalProps> = ({
             />
           </div>
 
-          <div className="flex flex-row gap-4 mb-2 items-start justify-start">
-            <div className="flex flex-1 flex-col gap-1 self-start">
+          <div
+            className={`flex  gap-4 mb-2 items-start justify-start ${
+              mode === 'view' ? 'flex-col' : 'flex-row'
+            }`}
+          >
+            <div className="flex w-full flex-1 flex-col gap-1 self-start">
               {isEditing ? (
                 <>
                   <div className="flex flex-1 w-full aspect-video">
                     <AnimatePresence mode="wait">
-                      {reviewActive ? (
+                      {mode === 'view' || reviewActive ? (
                         <motion.div
                           key="video-player"
                           initial={{ x: 100, opacity: 0, position: 'relative', width: '100%' }}
@@ -246,7 +253,11 @@ const LectureModal: React.FC<LectureModalProps> = ({
                     >
                       <div
                         className={`transition-all duration-300 ${
-                          reviewActive ? 'w-2/3 opacity-100' : 'w-[0.1px] opacity-0'
+                          mode === 'view'
+                            ? 'w-full opacity-100'
+                            : reviewActive
+                              ? 'w-2/3 opacity-100'
+                              : 'w-[0.1px] opacity-0'
                         } overflow-hidden`}
                       >
                         <Select
@@ -279,13 +290,15 @@ const LectureModal: React.FC<LectureModalProps> = ({
                           </SelectContent>
                         </Select>
                       </div>
-                      <div
-                        className={`transition-all duration-300 ${reviewActive ? 'w-1/3' : 'w-full'}`}
-                      >
-                        <Button className="w-full" onClick={() => setReviewActive(!reviewActive)}>
-                          Xem lại
-                        </Button>
-                      </div>
+                      {mode !== 'view' && (
+                        <div
+                          className={`transition-all duration-300 ${reviewActive ? 'w-1/3' : 'w-full'}`}
+                        >
+                          <Button className="w-full" onClick={() => setReviewActive(!reviewActive)}>
+                            Xem lại
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
@@ -303,7 +316,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
               )}
             </div>
 
-            <div className="flex flex-1 flex-col self-start">
+            <div className="flex flex-1 flex-col self-start w-full ">
               {mode !== 'view' ? (
                 <FilesPicker
                   onChange={handleUploadAndTrack}
@@ -317,7 +330,11 @@ const LectureModal: React.FC<LectureModalProps> = ({
                 </div>
               )}
 
-              <div className="grid gap-0 p-0 max-h-20 overflow-y-auto relative">
+              <div
+                className={`grid gap-0 p-0  max-h-20 overflow-y-auto relative ${
+                  mode === 'view' ? 'w-full pb-2' : ''
+                }`}
+              >
                 <div className="text-[10px] text-muted-foreground text-end">
                   Số lượng tài liệu: {resources.length}/{MAX_RESOURCES} file
                 </div>
@@ -338,7 +355,11 @@ const LectureModal: React.FC<LectureModalProps> = ({
                           }
                         }}
                       >
-                        <div className="flex items-start justify-between w-full rounded-md gap-2">
+                        <div
+                          className={`flex  justify-between w-full rounded-md gap-2 ${
+                            mode === 'view' ? 'items-center' : 'items-start'
+                          }`}
+                        >
                           <div className="px-3 py-2">
                             <FileCheck className="w-4 h-4 text-black dark:text-white" />
                           </div>
@@ -362,14 +383,15 @@ const LectureModal: React.FC<LectureModalProps> = ({
                             </div>
                           </div>
 
-                          <Button
-                            variant="ghost"
-                            className="hover:text-destructive"
-                            onClick={() => handleRemoveResource(index)}
-                            disabled={mode === 'view'}
-                          >
-                            <Trash2Icon className="w-4 h-4" />
-                          </Button>
+                          {mode !== 'view' && (
+                            <Button
+                              variant="ghost"
+                              className="hover:text-destructive"
+                              onClick={() => handleRemoveResource(index)}
+                            >
+                              <Trash2Icon className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -384,17 +406,30 @@ const LectureModal: React.FC<LectureModalProps> = ({
               control={control}
               render={({ field }) => (
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <p className="text-sm text-black dark:text-lightSilver">
-                    Cho phép xem trước miễn phí
+                  <p
+                    className={`text-sm ${
+                      mode === 'view'
+                        ? field.value === false
+                          ? 'text-darkSilver dark:text-lightSilver'
+                          : 'text-vividMalachite'
+                        : 'text-black dark:text-lightSilver'
+                    }`}
+                  >
+                    {field.value === true
+                      ? 'Cho phép xem trước miễn phí'
+                      : mode === 'view'
+                        ? 'Không cho phép xem trước miễn phí'
+                        : 'Cho phép xem trước miễn phí'}
                   </p>
-                  <input
-                    type="checkbox"
-                    id="is_preview"
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    className="accent-majorelleBlue w-4 h-4"
-                    disabled={mode === 'view'}
-                  />
+                  {mode !== 'view' && (
+                    <input
+                      type="checkbox"
+                      id="is_preview"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="accent-majorelleBlue w-4 h-4"
+                    />
+                  )}
                 </label>
               )}
             />
@@ -402,7 +437,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={submitting}>
-            Hủy
+            {mode === 'view' ? 'Đóng' : 'Hủy'}
           </Button>
           {mode === 'edit' && isEditing ? (
             <TooltipProvider>
