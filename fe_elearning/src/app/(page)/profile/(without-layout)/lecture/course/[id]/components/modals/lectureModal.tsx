@@ -35,7 +35,6 @@ import ToastNotify from '@/components/ToastNotify/toastNotify';
 import { toast, ToastContainer } from 'react-toastify';
 import { styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
 // TODO: Remove this component
 interface LectureModalProps {
   open: boolean;
@@ -43,6 +42,8 @@ interface LectureModalProps {
   lecture: CourseItem | null;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess: () => void;
+  mode: 'edit' | 'view' | 'create';
+  setMode: (mode: 'edit' | 'view' | 'create') => void;
 }
 
 const LectureModal: React.FC<LectureModalProps> = ({
@@ -51,6 +52,8 @@ const LectureModal: React.FC<LectureModalProps> = ({
   lecture,
   onOpenChange,
   onSubmitSuccess,
+  mode,
+  setMode,
 }) => {
   const onSave = (successMessage: string) => {
     toast.success(<ToastNotify status={1} message={successMessage} />, { style: styleSuccess });
@@ -133,12 +136,22 @@ const LectureModal: React.FC<LectureModalProps> = ({
       <DialogContent className="max-w-3xl px-4">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? `Chỉnh sửa bài học ${lecture.title}` : 'Thêm bài học mới'}
+            {mode === 'edit' && isEditing
+              ? `Chỉnh sửa bài học ${lecture?.title}`
+              : mode === 'view'
+                ? `Xem bài học ${lecture?.title ?? ''}`
+                : mode === 'create'
+                  ? `Thêm bài học mới `
+                  : ''}
           </DialogTitle>
           <DialogDescription>
-            {isEditing
+            {mode === 'edit' && isEditing
               ? `Chỉnh sửa bài học trong Chương ${section?.title}`
-              : `Thêm bài học cho Chương ${section?.title}`}
+              : mode === 'view'
+                ? `Xem bài học trong Chương ${section?.title}`
+                : mode === 'create'
+                  ? `Thêm bài học cho Chương ${section?.title}`
+                  : ''}
           </DialogDescription>
         </DialogHeader>
         <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto p-2">
@@ -153,6 +166,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                   isRequired={true}
                   error={errors.title?.message}
                   maxLength={60}
+                  disabled={mode === 'view'}
                 />
               )}
             />
@@ -168,6 +182,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                   label="Mô tả bài học"
                   className="text-black font-normal mb-2"
                   error={errors.description?.message}
+                  disabled={mode === 'view'}
                 />
               )}
             />
@@ -289,12 +304,18 @@ const LectureModal: React.FC<LectureModalProps> = ({
             </div>
 
             <div className="flex flex-1 flex-col self-start">
-              <FilesPicker
-                onChange={handleUploadAndTrack}
-                disabled={resources.length >= MAX_RESOURCES}
-                loading={Object.keys(uploadProgress).length > 0}
-                label="Tài liệu"
-              />
+              {mode !== 'view' ? (
+                <FilesPicker
+                  onChange={handleUploadAndTrack}
+                  disabled={resources.length >= MAX_RESOURCES}
+                  loading={Object.keys(uploadProgress).length > 0}
+                  label="Tài liệu"
+                />
+              ) : (
+                <div className="text-sm w-full flex flex-row text-black dark:text-lightSilver relative mb-1">
+                  Tài liệu
+                </div>
+              )}
 
               <div className="grid gap-0 p-0 max-h-20 overflow-y-auto relative">
                 <div className="text-[10px] text-muted-foreground text-end">
@@ -305,8 +326,17 @@ const LectureModal: React.FC<LectureModalProps> = ({
                     resources.length > 0 &&
                     resources.map((resource, index) => (
                       <div
-                        className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
+                        className="overflow-hidden rounded-md p-0 hover:cursor-pointer shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
                         key={resource.resource_file.id}
+                        onClick={() => {
+                          if (mode === 'view') {
+                            window.open(
+                              process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT +
+                                (resource?.resource_file?.key ?? ''),
+                              '_blank'
+                            );
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between w-full rounded-md gap-2">
                           <div className="px-3 py-2">
@@ -315,14 +345,20 @@ const LectureModal: React.FC<LectureModalProps> = ({
 
                           <div className="flex items-center gap-3 flex-1">
                             <div className="flex flex-row gap-2 truncate  w-full">
-                              <InputRegisterLecture
-                                className="border-black"
-                                value={resource.name}
-                                placeholder="Tên tài liệu"
-                                onChange={(e) => handleChangeResourceName(index, e.target.value)}
-                                maxLength={60}
-                                error={errors.resources?.[index]?.name?.message}
-                              />
+                              {mode === 'view' ? (
+                                <p className="text-sm text-black dark:text-lightSilver">
+                                  {resource.name}
+                                </p>
+                              ) : (
+                                <InputRegisterLecture
+                                  className="border-black"
+                                  value={resource.name}
+                                  placeholder="Tên tài liệu"
+                                  onChange={(e) => handleChangeResourceName(index, e.target.value)}
+                                  maxLength={60}
+                                  error={errors.resources?.[index]?.name?.message}
+                                />
+                              )}
                             </div>
                           </div>
 
@@ -330,6 +366,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                             variant="ghost"
                             className="hover:text-destructive"
                             onClick={() => handleRemoveResource(index)}
+                            disabled={mode === 'view'}
                           >
                             <Trash2Icon className="w-4 h-4" />
                           </Button>
@@ -356,6 +393,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
                     className="accent-majorelleBlue w-4 h-4"
+                    disabled={mode === 'view'}
                   />
                 </label>
               )}
@@ -366,7 +404,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={submitting}>
             Hủy
           </Button>
-          {isEditing ? (
+          {mode === 'edit' && isEditing ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild disabled={isDirty}>
@@ -387,6 +425,13 @@ const LectureModal: React.FC<LectureModalProps> = ({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          ) : mode === 'view' ? (
+            <Button
+              className={`bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white shadow-md shadow-majorelleBlue/40  `}
+              onClick={() => setMode('edit')}
+            >
+              Chỉnh sửa bài học
+            </Button>
           ) : (
             <AddButton
               label="Thêm bài học"

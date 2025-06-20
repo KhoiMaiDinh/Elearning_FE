@@ -44,7 +44,7 @@ const SectionList: React.FC<SectionListProps> = ({
 
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedLecture, setSelectedLecture] = useState<CourseItem | null>(null);
-
+  const [lectureMode, setLectureMode] = useState<'edit' | 'view' | 'create'>('create');
   const toggleSection = (sectionId: string) => {
     setOpenSections((prevOpenSections) => {
       const newOpenSections = new Set(prevOpenSections);
@@ -74,6 +74,14 @@ const SectionList: React.FC<SectionListProps> = ({
     setSelectedSection(section);
     setSelectedLecture(lecture);
     setIsLectureModalOpen(true);
+    setLectureMode('edit');
+  };
+
+  const handleViewLecture = (section: Section, lecture: CourseItem) => {
+    setSelectedSection(section);
+    setSelectedLecture(lecture);
+    setIsLectureModalOpen(true);
+    setLectureMode('view');
   };
 
   const handleCancelEditLecture = (open: boolean) => {
@@ -85,6 +93,7 @@ const SectionList: React.FC<SectionListProps> = ({
   const handleAddLecture = (section: Section) => {
     setSelectedSection(section);
     setIsLectureModalOpen(true);
+    setLectureMode('create');
   };
 
   const handleCancelAddLecture = (open: boolean) => {
@@ -191,6 +200,7 @@ const SectionList: React.FC<SectionListProps> = ({
                 handleEditSection={handleEditSection}
                 handleEditLecture={handleEditLecture}
                 handleGetCourseInfo={handleGetCourseInfo}
+                handleViewLecture={handleViewLecture}
               />
             ))}
         </div>
@@ -230,7 +240,9 @@ const SectionList: React.FC<SectionListProps> = ({
 
         {/* Lecture Modal */}
         <LectureModal
+          mode={lectureMode}
           open={isLectureModalOpen}
+          setMode={setLectureMode}
           onOpenChange={selectedLecture ? handleCancelEditLecture : handleCancelAddLecture}
           section={selectedSection!}
           lecture={selectedLecture!}
