@@ -413,7 +413,7 @@ const CourseItemForm = ({
             render={({ field }) => (
               <TextAreaRegisterLecture
                 {...field}
-                labelText={`Nội dung bài ${
+                label={`Nội dung bài ${
                   (section.items?.length || 0) + 1
                 } (Phần ${section.position})`}
                 error={errors.description?.message}

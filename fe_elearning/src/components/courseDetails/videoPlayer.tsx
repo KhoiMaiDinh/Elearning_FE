@@ -20,6 +20,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   progress,
   isOwner,
 }) => {
+  console.log('🚀 ~ isOwner:', isOwner);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hls, setHls] = useState<Hls | null>(null);
   const [qualityLevels, setQualityLevels] = useState<{ id: number; label: string }[]>([]);
@@ -31,7 +32,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!video || !lecture_id || !video.duration) return;
     const percent = Math.floor((video.currentTime / video.duration) * 100);
     if (isOwner) return;
-    APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    else {
+      APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    }
   };
 
   // Load video và HLS
