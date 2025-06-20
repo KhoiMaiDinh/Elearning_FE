@@ -33,6 +33,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
 import CourseLevelBadge from '@/components/badge/courseLevelBadge';
+import { CategorySelectionPopup } from '@/components/recomand/popupSelectCategory';
 
 // Yup schema for form validation
 const schema = yup.object().shape({
@@ -64,6 +65,8 @@ const StudentProfile = () => {
   const router = useRouter();
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [certificate, setCertificate] = useState<CertificateType[]>([]);
+  const [show, setShow] = useState(false);
+  const [preference, setPreference] = useState<Preference | null>(null);
 
   const {
     control,
@@ -104,6 +107,7 @@ const StudentProfile = () => {
     const response = await APIGetPreference();
     if (response?.status === 200) {
       setFavoriteCategories(response?.data?.categories || []);
+      setPreference(response?.data);
     }
   };
 
@@ -267,6 +271,12 @@ const StudentProfile = () => {
     handleGetFavoriteCourse();
     handleGetCertificateList();
   }, [username]);
+
+  useEffect(() => {
+    if (!show) {
+      handleGetFavoriteCategories();
+    }
+  }, [show]);
 
   // Format the date
   const formatDate = (dateString: string) => {
@@ -470,13 +480,23 @@ const StudentProfile = () => {
             <AnimateWrapper delay={0.3} direction="right">
               <Card className="border-0 shadow bg-blue-50 dark:bg-gray-800">
                 <CardContent className="p-6">
-                  <div className="flex flex-col items-start mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      Danh mục yêu thích
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                      Chuyên môn và sở thích học tập của bạn
-                    </p>
+                  <div className="flex flex-row justify-between items-start mb-6">
+                    <div className="flex flex-col items-start ">
+                      <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                        Danh mục yêu thích
+                      </CardTitle>
+                      <CardDescription className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        Chuyên môn và sở thích học tập của bạn
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-row gap-2">
+                      <p
+                        className="text-gray-600 hover:cursor-pointer hover:text-blueberry dark:text-gray-400 text-sm mt-1"
+                        onClick={() => setShow(true)}
+                      >
+                        Chỉnh sửa
+                      </p>
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -502,13 +522,14 @@ const StudentProfile = () => {
             {/* Learning Progress */}
             <AnimateWrapper delay={0.4} direction="up">
               <Card className="border-0 shadow">
-                <CardContent className="p-6">
+                <CardHeader>
                   <CardTitle>Tiến độ học tập</CardTitle>
 
                   <CardDescription className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
                     Theo dõi quá trình học tập của bạn
                   </CardDescription>
-
+                </CardHeader>
+                <CardContent className="p-6">
                   <div className="space-y-6">
                     {learningProgress &&
                       learningProgress.length > 0 &&
@@ -550,6 +571,11 @@ const StudentProfile = () => {
                       >
                         Xem tất cả khóa học
                       </Button>
+                    )}
+                    {learningProgress.length === 0 && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        Bạn chưa có khóa học nào đang học
+                      </p>
                     )}
                   </div>
                 </CardContent>
@@ -632,6 +658,11 @@ const StudentProfile = () => {
                         Xem tất cả
                       </Button>
                     )}
+                    {learningProgress.length === 0 && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        Bạn chưa có khóa học nào đã đăng ký
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -688,6 +719,11 @@ const StudentProfile = () => {
                         Xem tất cả
                       </Button>
                     )}
+                    {favoriteCourse.length === 0 && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        Bạn chưa có khóa học nào đã yêu thích
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -739,6 +775,11 @@ const StudentProfile = () => {
                           </div>
                         </div>
                       ))}
+                    {certificate.length === 0 && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        Bạn chưa có chứng chỉ nào
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -747,6 +788,11 @@ const StudentProfile = () => {
         </div>
         {/* TODO: Remove this component */}
         <ChangePasswordDialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen} />
+        <CategorySelectionPopup
+          onClose={() => setShow(false)}
+          isOpen={show}
+          initialSelectedCategories={preference?.categories.map((category) => category.slug) || []}
+        />
       </div>
     </div>
   );

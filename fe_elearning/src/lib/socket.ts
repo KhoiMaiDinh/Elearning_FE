@@ -13,7 +13,6 @@ export const getSocket = (token?: string) => {
       },
     });
   }
-  console.log('🚀 ~ getSocket ~ socket:', socket);
   return socket;
 };
 

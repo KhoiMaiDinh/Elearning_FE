@@ -39,7 +39,6 @@ export const courseBasicSchema = yup.object().shape({
 });
 
 export function useCourseForm(courseInfo?: CourseForm) {
-  console.log('courseInfo', courseInfo);
   const initValues = {
     category: { slug: courseInfo?.category?.slug || '' },
     title: courseInfo?.title || '',

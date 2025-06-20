@@ -142,10 +142,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log('Form values:', values);
-  }, [values]);
-
   const handleChildCategoryChange = (value: string) => {
     setValue('category.slug', value);
   };

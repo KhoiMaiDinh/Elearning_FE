@@ -132,8 +132,6 @@ const UploadCourse: React.FC = () => {
 
         // Redirect to the details page after 2 seconds
       }
-
-      // console.log("🚀 ~ onSubmitBasic ~ newCourseId:", newCourseId);
     } catch (error) {
       toast.error(<ToastNotify status={-1} message="Khóa học đã được khởi tạo thất bại" />, {
         style: styleError,

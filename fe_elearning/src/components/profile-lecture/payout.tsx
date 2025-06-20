@@ -331,7 +331,6 @@ export default function InstructorPayouts() {
     if (detailsRef.current) {
       html2canvas(detailsRef.current).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
-        console.log(imgData);
       });
     }
   }, [selectedPayout]);

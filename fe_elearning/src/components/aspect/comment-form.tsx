@@ -27,9 +27,7 @@ export function CommentForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log({ comment, aspects: selectedAspects, emotion });
-    // Reset form
+    // Here you would typically send the data to your backend    // Reset form
     setComment('');
     setSelectedAspects([]);
     setEmotion('');

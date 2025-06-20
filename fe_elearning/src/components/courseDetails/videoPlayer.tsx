@@ -20,7 +20,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   progress,
   isOwner,
 }) => {
-  console.log('🚀 ~ isOwner:', isOwner);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hls, setHls] = useState<Hls | null>(null);
   const [qualityLevels, setQualityLevels] = useState<{ id: number; label: string }[]>([]);

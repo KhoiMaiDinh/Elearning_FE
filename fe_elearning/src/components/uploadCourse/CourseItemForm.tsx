@@ -169,7 +169,6 @@ const CourseItemForm = ({
         onSave();
       }
     } catch (error) {
-      console.log('Error handling course item:', error);
       toast.error(<ToastNotify status={-1} message="Không thể cập nhật bài giảng" />, {
         style: styleError,
       });

@@ -58,7 +58,6 @@ const APIUpdateStatusCoupon = async (code: string) => {
   try {
     const response = await axiosInstance.put(`/coupons/${code}/toggle`);
     if (response.status === 204) {
-      console.log('success');
       return { status: response.status };
     }
     return { data: null, status: response.status };

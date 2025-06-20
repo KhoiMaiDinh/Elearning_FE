@@ -98,7 +98,6 @@ const Page = () => {
           dispatch(setComment([]));
         }
       } catch (err) {
-        console.log(err);
         dispatch(setStatisticItemCourse({}));
         dispatch(setComment([]));
       }

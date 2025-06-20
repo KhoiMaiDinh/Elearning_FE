@@ -127,8 +127,6 @@ export const Overview = () => {
         has_replied: false,
       });
 
-      console.log('threads', threads);
-
       setOverviewData(overviewResponse?.data);
       setStudentGrowthData(studentGrowthResponse?.data);
       setCourseCompletionRateData(courseCompletionRateResponse?.data);
@@ -148,7 +146,6 @@ export const Overview = () => {
       setThreadsToReplyAfterCursor(threadsToReply?.pagination.afterCursor);
     } catch (err) {
       setError('Failed to fetch overview data');
-      console.log('Error fetching overview data:', err);
     } finally {
       setIsLoading(false);
     }

@@ -687,7 +687,6 @@ const DropzoneTrigger = forwardRef<HTMLLabelElement, DropzoneTriggerProps>(
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
-              console.log('Picked:', file.name);
               e.target.value = '';
             }
           }}
