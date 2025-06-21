@@ -14,6 +14,7 @@ export type CouponType = {
   revenue: number;
   value: number;
   course: CourseForm;
+  total_revenue: number;
 };
 
 export type CouponQueryType = {

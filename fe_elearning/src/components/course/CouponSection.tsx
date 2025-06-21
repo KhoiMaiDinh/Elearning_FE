@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Clock, Copy, Check, Gift, Sparkles, Tag } from 'lucide-react';
+import { ChevronRight, Clock, Copy, Check, Gift, Sparkles, Tag, Calendar } from 'lucide-react';
 import type { CouponType } from '@/types/couponType';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 interface CouponProps {
   coupon?: CouponType[];
@@ -23,6 +24,42 @@ export default function CouponSection({
   userInfo,
 }: CouponProps) {
   const [copiedCoupons, setCopiedCoupons] = useState<Set<string>>(new Set());
+  const router = useRouter();
+
+  // Helper functions to safely convert text/null to number
+  const safeNumberConvert = (value: any): number => {
+    if (value === null || value === undefined || value === '') {
+      return 0;
+    }
+
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    return 0;
+  };
+
+  const formatRevenue = (revenue: any): string => {
+    const amount = safeNumberConvert(revenue);
+    if (amount === 0) return '0đ';
+
+    // Format with thousands separator
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatUsageCount = (count: any): number => {
+    return safeNumberConvert(count);
+  };
 
   const getDaysUntilExpiry = (expiresAt: Date | string): number => {
     try {
@@ -36,11 +73,45 @@ export default function CouponSection({
     }
   };
 
-  const handleCopyCoupon = async (couponItem: CouponType) => {
+  const getDaysUntilStart = (startsAt: Date | string): number => {
+    try {
+      const startDate = startsAt instanceof Date ? startsAt : new Date(startsAt);
+      const today = new Date();
+      const diffTime = startDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(0, diffDays);
+    } catch {
+      return 0;
+    }
+  };
+
+  const getCouponStatus = (item: CouponType) => {
+    const now = new Date();
+    const startDate = new Date(item.starts_at);
+    const endDate = new Date(item.expires_at);
+
+    if (now < startDate) {
+      return 'not_started';
+    } else if (now > endDate) {
+      return 'expired';
+    } else {
+      return 'active';
+    }
+  };
+
+  const handleCopyCoupon = async (couponItem: CouponType, event: React.MouseEvent) => {
+    event.stopPropagation(); // Ngăn event bubble up để không trigger redirect
+
+    const status = getCouponStatus(couponItem);
+
+    if (status === 'expired') {
+      toast.error('Mã giảm giá đã hết hạn');
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(couponItem.code);
       setCopiedCoupons((prev) => new Set(prev).add(couponItem.code));
-      toast.success('Đã sao chép mã giảm giá!');
 
       setTimeout(() => {
         setCopiedCoupons((prev) => {
@@ -58,10 +129,34 @@ export default function CouponSection({
     return `${coupon.value}%`;
   };
 
-  const getUrgencyColor = (daysLeft: number) => {
-    if (daysLeft <= 1) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
-    if (daysLeft <= 3) return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
-    return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20';
+  const getUrgencyColor = (status: string, daysLeft: number, daysUntilStart: number) => {
+    if (status === 'expired') {
+      return 'text-red-500 bg-red-50 dark:bg-red-900/20';
+    } else if (status === 'not_started') {
+      return 'text-blue-500 bg-blue-50 dark:bg-blue-900/20';
+    } else {
+      // Active coupon
+      if (daysLeft <= 1) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
+      if (daysLeft <= 3) return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+      return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20';
+    }
+  };
+
+  const getStatusText = (status: string, daysLeft: number, daysUntilStart: number) => {
+    if (status === 'expired') {
+      return 'Hết hạn';
+    } else if (status === 'not_started') {
+      return `Sắp tới ${daysUntilStart}D nữa`;
+    } else {
+      return `${daysLeft}D`;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    if (status === 'not_started') {
+      return <Calendar className="w-3 h-3 inline mr-1" />;
+    }
+    return <Clock className="w-3 h-3 inline mr-1" />;
   };
 
   const getCouponColor = (index: number) => {
@@ -140,8 +235,8 @@ export default function CouponSection({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 bg-custom-gradient-button-violet rounded flex items-center justify-center">
-            <Tag className="w-3 h-3 text-white" />
+          <div className="w-5 h-5  rounded flex items-center justify-center">
+            <Tag className="w-3 h-3 text-majorelleBlue" />
           </div>
           <h3 className={sectionTitleClassName}>Mã giảm giá</h3>
         </div>
@@ -154,17 +249,20 @@ export default function CouponSection({
       <div className="relative">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {coupon.map((item, index) => {
+            const status = getCouponStatus(item);
             const daysLeft = getDaysUntilExpiry(item.expires_at);
+            const daysUntilStart = getDaysUntilStart(item.starts_at);
             const isCopied = copiedCoupons.has(item.code);
-            const isExpired = daysLeft <= 0;
             const isOwner = item.creator_username === userInfo?.username;
             const colorTheme = getCouponColor(index);
+            const isExpired = status === 'expired';
 
             return (
               <div
+                onClick={() => router.push(`/profile/lecture?tab=uu-dai`)}
                 key={item.code || index}
-                className={`flex-shrink-0 w-56 relative transition-all duration-200 hover:scale-[1.02] group ${
-                  isExpired ? 'opacity-50' : ''
+                className={`flex-shrink-0 m-2 w-56 relative transition-all duration-200 hover:scale-[1.02] group ${
+                  isExpired ? 'opacity-50 hover:cursor-not-allowed' : 'hover:cursor-pointer'
                 }`}
               >
                 {/* Clean minimal design */}
@@ -182,19 +280,21 @@ export default function CouponSection({
                     </div>
 
                     <div
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(daysLeft)}`}
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(status, daysLeft, daysUntilStart)}`}
                     >
-                      <Clock className="w-3 h-3 inline mr-1" />
-                      {isExpired ? 'Hết hạn' : `${daysLeft}d`}
+                      {getStatusIcon(status)}
+                      {getStatusText(status, daysLeft, daysUntilStart)}
                     </div>
                   </div>
 
                   {/* Code section */}
                   <div
-                    className={`bg-white dark:bg-slate-800 rounded p-2 border-2 border-dashed ${colorTheme.border} cursor-pointer transition-all duration-200 ${
-                      !isExpired ? 'hover:border-solid hover:shadow-sm' : ''
-                    }`}
-                    onClick={() => !isExpired && handleCopyCoupon(item)}
+                    className={`bg-white dark:bg-slate-800 rounded p-2 border-2 border-dashed ${colorTheme.border} ${
+                      !isExpired
+                        ? 'cursor-pointer hover:border-solid hover:shadow-sm'
+                        : 'cursor-not-allowed'
+                    } transition-all duration-200`}
+                    onClick={(e) => handleCopyCoupon(item, e)}
                   >
                     <div className="flex items-center justify-between">
                       <code className={`font-mono font-semibold ${colorTheme.text} tracking-wide`}>
@@ -234,6 +334,16 @@ export default function CouponSection({
 
                     <span className={`font-semibold ${colorTheme.text}`}>x{item.value}</span>
                   </div>
+
+                  {/* Stats row: Usage count + Revenue */}
+                  {(item.usage_count || item.total_revenue) && (
+                    <div className="flex items-center justify-between mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      <span>
+                        Đã dùng: {formatUsageCount(item.usage_count)}/{item.value}
+                      </span>
+                      <span className="font-medium">{formatRevenue(item.total_revenue)}</span>
+                    </div>
+                  )}
 
                   {/* Expired overlay */}
                   {isExpired && (
