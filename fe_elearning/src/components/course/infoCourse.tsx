@@ -30,11 +30,15 @@ import ViewMoreButton from '../button/viewMoreButton';
 
 import { formatDuration } from '@/helpers';
 import { formatPrice } from '../formatPrice';
+import { CouponType } from '@/types/couponType';
+import CouponSection from './CouponSection';
+
 type InfoCourseProps = {
   lecture: string;
   course: CourseForm;
   totalDuration: number;
   totalLessons: number;
+  coupon?: CouponType[];
 };
 
 interface ShowMoreTextProps {
@@ -123,6 +127,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
   lecture,
   course,
   totalDuration,
+  coupon,
   totalLessons,
 }) => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -348,6 +353,14 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
         </CardContent>
       </Card>
 
+      {coupon && (
+        <CouponSection
+          coupon={coupon}
+          userInfo={userInfo}
+          sectionTitleClassName={sectionTitleClassName}
+        />
+      )}
+
       {/* Course Description */}
       <Card className="flex flex-col font-sans">
         <CardHeader className="flex flex-col ">
@@ -427,7 +440,9 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
               </Avatar>
               <div className="flex-1 flex flex-row w-full justify-between ">
                 <div className="flex flex-col">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">{`${course?.instructor?.user.last_name || ''} ${course?.instructor?.user.first_name || ''}`}</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-AntiFlashWhite mb-2">
+                    {`${course?.instructor?.user.last_name || ''} ${course?.instructor?.user.first_name || ''}`}
+                  </h3>
                   <p className={subtitleClassName}>{course?.instructor?.headline}</p>
                 </div>
                 <div className="flex gap-1 flex-row">

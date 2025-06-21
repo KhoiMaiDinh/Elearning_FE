@@ -21,6 +21,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { APIGetCouponByCourse } from '@/utils/coupon';
+import { CouponType } from '@/types/couponType';
 
 const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -32,6 +34,7 @@ const Page = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
+  const [coupon, setCoupon] = useState<CouponType[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -63,11 +66,25 @@ const Page = () => {
     setLoading(false);
   }, [id]);
 
+  const handleGetCouponByCourse = useCallback(async () => {
+    const response = await APIGetCouponByCourse(id || '');
+    console.log('🚀 ~ handleGetCouponByCourse ~ response:', response);
+    if (response && response?.data) {
+      setCoupon(response.data);
+    }
+  }, [id]);
+
   useEffect(() => {
     // handleGetCourseById();
     handleGetDetailCourse();
     handleGetEnrolledCourse();
-  }, [handleGetDetailCourse, handleGetEnrolledCourse]);
+  }, []);
+
+  useEffect(() => {
+    if (isOwner) {
+      handleGetCouponByCourse();
+    }
+  }, [isOwner, handleGetCouponByCourse]);
 
   const handleGetFullCourse = useCallback(async () => {
     setLoading(true);
@@ -150,6 +167,7 @@ const Page = () => {
                 }
                 totalDuration={totalDuration}
                 totalLessons={totalLessons}
+                coupon={coupon}
               />
             )}
           </div>

@@ -14,7 +14,11 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';
 import { Progress } from '@/components/ui/progress';
 
-const CoursesBlock: React.FC<CourseForm> = ({
+type CoursesBlockProps = CourseForm & {
+  show_heart?: boolean;
+};
+
+const CoursesBlock: React.FC<CoursesBlockProps> = ({
   is_favorite,
   id,
   thumbnail,
@@ -26,6 +30,7 @@ const CoursesBlock: React.FC<CourseForm> = ({
   instructor,
   description,
   price,
+  show_heart = true,
 }) => {
   const router = useRouter();
 
@@ -101,14 +106,16 @@ const CoursesBlock: React.FC<CourseForm> = ({
           />
 
           {/* Favorite Button */}
-          <button
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
-            onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
-          >
-            <Heart
-              className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
-            />
-          </button>
+          {show_heart && (
+            <button
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
+              onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+            >
+              <Heart
+                className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
+              />
+            </button>
+          )}
 
           {/* Level Badge */}
           {level && (

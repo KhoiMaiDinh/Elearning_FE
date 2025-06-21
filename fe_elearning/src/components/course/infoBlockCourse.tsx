@@ -122,7 +122,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:scale-110 transition-transform duration-300">
                       <PlayCircle size={32} className="text-white" />
                     </div>
-                    <span className="text-white font-medium text-sm">Xem video giới thiệu</span>
+                    {/* <span className="text-white font-medium text-sm">Xem video giới thiệu</span> */}
                   </div>
                 </div>
               </div>

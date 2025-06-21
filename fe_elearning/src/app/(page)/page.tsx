@@ -380,7 +380,7 @@ export default function Page() {
             {Array.isArray(recommendation) && recommendation.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
                 {recommendation.map((course) => (
-                  <CoursesBlock key={course.id} {...course} />
+                  <CoursesBlock key={course.id} {...course} show_heart={false} />
                 ))}
               </div>
             ) : (
@@ -559,7 +559,7 @@ export default function Page() {
                               initialOpacity={0}
                               className="transform transition-all hover:-translate-y-2 p-2"
                             >
-                              <CoursesBlock {...course} />
+                              <CoursesBlock {...course} show_heart={false} />
                             </FadeContent>
                           </CarouselItem>
                         ))}
