@@ -78,6 +78,23 @@ const APIGetCouponByCourse = async (courseId: string) => {
     throw err;
   }
 };
+
+const APIGetCouponByCode = async (code: string) => {
+  try {
+    const response = await axiosInstance.get(`/coupons/${code}`);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    if (response.status === 404) {
+      return { data: null, status: 404 };
+    }
+    return { data: null, status: response.status };
+  } catch (err) {
+    console.log('Error during get coupon by code:', err);
+    return { data: null, status: 500 };
+  }
+};
+
 export {
   APIGetCouponsFromInstructor,
   APICreateCoupon,
@@ -85,4 +102,5 @@ export {
   APIDeleteCoupon,
   APIUpdateStatusCoupon as APIUpdateCouponStatus,
   APIGetCouponByCourse,
+  APIGetCouponByCode,
 };
