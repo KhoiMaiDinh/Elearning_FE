@@ -33,6 +33,7 @@ import { formatDuration } from '@/helpers';
 import { formatPrice } from '../formatPrice';
 import { CouponType } from '@/types/couponType';
 import CouponSection from './CouponSection';
+import { APIGetEnrolledCourse } from '@/utils/course';
 
 type InfoCourseProps = {
   lecture: string;
@@ -137,6 +138,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
   const router = useRouter();
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const handleFeatureClick = () => {
     if (!userInfo?.id) {
@@ -197,10 +199,22 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
     }
   };
 
+  const handleGetEnrolledCourse = async () => {
+    try {
+      const response = await APIGetEnrolledCourse();
+      if (response && response.data) {
+        setIsRegistered(response.data.some((item: any) => item.id === course.id));
+      }
+    } catch (error) {
+      console.error('Error checking enrollment status:', error);
+    }
+  };
+
   useEffect(() => {
     if (course.id) {
       handleGetReviews(course.id);
       handleGetFavoriteCourse();
+      handleGetEnrolledCourse();
     }
   }, [course.id]);
 
@@ -408,7 +422,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col ">
-            <CourseMain course={course} />
+            <CourseMain course={course} isRegistered={isRegistered} isOwner={isOwner} />
           </div>
         </CardContent>
       </Card>

@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { PriceRangeFilter } from '@/components/filter/priceRangeFilter';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -181,18 +181,18 @@ const Page = () => {
     updateURL({ [key]: value, page: 1, tab: activeTab === 'all' ? undefined : activeTab });
   };
 
-  const handlePriceRangeChange = (values: number[]) => {
-    setPriceRange(values);
+  const handlePriceRangeCommit = (min: number, max: number) => {
+    setPriceRange([min, max]);
     const newParams = {
       ...paramsCourse,
-      min_price: values[0] > 0 ? values[0] : undefined,
-      max_price: values[1] < 5000000 ? values[1] : undefined,
+      min_price: min > 0 ? min : undefined,
+      max_price: max < 5000000 ? max : undefined,
       page: 1,
     };
     setParamsCourse(newParams);
     updateURL({
-      min_price: values[0] > 0 ? values[0] : undefined,
-      max_price: values[1] < 5000000 ? values[1] : undefined,
+      min_price: min > 0 ? min : undefined,
+      max_price: max < 5000000 ? max : undefined,
       page: 1,
       tab: activeTab === 'all' ? undefined : activeTab,
     });
@@ -359,24 +359,11 @@ const Page = () => {
 
         {/* Price Range - Only show for 'all' tab */}
         {activeTab === 'all' && (
-          <div className="space-y-3">
-            <Label>Khoảng giá</Label>
-            <div className="px-2">
-              <Slider
-                value={priceRange}
-                onValueChange={handlePriceRangeChange}
-                onValueCommit={handlePriceRangeChange}
-                max={5000000}
-                min={0}
-                step={1000}
-                className="w-full"
-              />
-            </div>
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{priceRange[0].toLocaleString('vi-VN')}đ</span>
-              <span>{priceRange[1].toLocaleString('vi-VN')}đ</span>
-            </div>
-          </div>
+          <PriceRangeFilter
+            minPrice={priceRange[0]}
+            maxPrice={priceRange[1]}
+            onPriceChange={handlePriceRangeCommit}
+          />
         )}
 
         {/* Rating Filter */}
@@ -551,7 +538,7 @@ const Page = () => {
                           <Badge variant="secondary" className="gap-1">
                             {paramsCourse.min_price?.toLocaleString('vi-VN')}đ -{' '}
                             {paramsCourse.max_price?.toLocaleString('vi-VN')}đ
-                            <button onClick={() => handlePriceRangeChange([0, 5000000])}>×</button>
+                            <button onClick={() => handlePriceRangeCommit(0, 5000000)}>×</button>
                           </Badge>
                         )}
                         {paramsCourse.min_rating && (

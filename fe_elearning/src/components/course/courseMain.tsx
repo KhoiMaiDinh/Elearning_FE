@@ -3,19 +3,27 @@
 import type React from 'react';
 import { useState, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { PlayCircle, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { PlayCircle, CheckCircle, Clock, ChevronRight, Lock } from 'lucide-react';
 import type { CourseForm, CourseItem, Section } from '@/types/courseType';
 import { cn } from '@/lib/utils';
 import { formatDuration } from '@/helpers/durationFormater';
+import { useRouter } from 'next/navigation';
 
 type CourseMainProps = {
   course: CourseForm;
+  isRegistered?: boolean;
+  isOwner?: boolean;
 };
 
 // Component chính
-const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
+const CourseMain: React.FC<CourseMainProps> = ({
+  course,
+  isRegistered = false,
+  isOwner = false,
+}) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     if (course?.sections) {
@@ -44,6 +52,24 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
       return 'completed';
 
     return 'available';
+  };
+
+  const handleLessonClick = (courseItem: CourseItem) => {
+    // Nếu là người đã đăng ký hoặc owner, cho phép truy cập tất cả bài học
+    if (isRegistered || isOwner) {
+      router.push(`/course-details/${course.id}?lecture=${courseItem.id}`);
+      return;
+    }
+
+    // Nếu không phải người đăng ký hoặc owner, chỉ cho phép xem bài học preview
+    if (courseItem.is_preview) {
+      router.push(`/course-details/${course.id}?lecture=${courseItem.id}`);
+      return;
+    }
+  };
+
+  const isLessonAccessible = (courseItem: CourseItem) => {
+    return isRegistered || isOwner || courseItem.is_preview;
   };
 
   return (
@@ -98,12 +124,17 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                         section.items.length > 0 &&
                         section.items.map((lesson, lessonIndex) => {
                           const status = getLessonStatus(lesson);
+                          const isAccessible = isLessonAccessible(lesson);
 
                           return (
                             <div
                               key={lessonIndex}
+                              onClick={() => handleLessonClick(lesson)}
                               className={cn(
-                                'flex items-center p-4 transition-colors    hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer',
+                                'flex items-center p-4 transition-colors',
+                                isAccessible
+                                  ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer'
+                                  : 'cursor-not-allowed opacity-60',
                                 status === 'completed' ? 'bg-green-50/50 dark:bg-green-900/10' : ''
                               )}
                             >
@@ -112,8 +143,10 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                                 <div className="flex-shrink-0">
                                   {status === 'completed' ? (
                                     <CheckCircle size={18} className="text-vividMalachite" />
-                                  ) : (
+                                  ) : isAccessible ? (
                                     <PlayCircle size={18} className="text-majorelleBlue" />
+                                  ) : (
+                                    <Lock size={18} className="text-gray-400" />
                                   )}
                                 </div>
                                 {/* Lesson content */}
@@ -124,7 +157,9 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                                         'text-sm md:text-base font-medium',
                                         status === 'completed'
                                           ? 'text-green-700 dark:text-green-400'
-                                          : 'text-gray-900 dark:text-gray-100'
+                                          : isAccessible
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400'
                                       )}
                                     >
                                       {lesson.title}
@@ -152,8 +187,9 @@ const CourseMain: React.FC<CourseMainProps> = ({ course }) => {
                                   )}
                                 </div>
                                 {/* Action indicator */}
-
-                                <ChevronRight size={16} className="text-gray-400 ml-2" />
+                                {isAccessible && (
+                                  <ChevronRight size={16} className="text-gray-400 ml-2" />
+                                )}
                               </div>
                             </div>
                           );
