@@ -110,7 +110,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, lecture_id, progr
       crossOrigin
       playsInline
       title={title}
-      poster={thumbnailUrl || '/images/logo.png'}
+      poster={thumbnailUrl || '/images/video.png'}
     >
       <MediaProvider>
         <Poster className="vds-poster" />
