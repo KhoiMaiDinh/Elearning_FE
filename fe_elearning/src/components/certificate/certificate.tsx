@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -27,11 +28,14 @@ export default function Certificate({
 }: CertificateProps) {
   const [studentName] = useState(initialStudentName);
   const [courseName] = useState(initialCourseName);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { toast } = useToast();
 
   const handleDownloadPDF = async () => {
     const certificate = document.getElementById('certificate');
     if (!certificate) return;
 
+    setIsDownloading(true);
     try {
       // Đảm bảo ảnh/logo được tải xong
       await new Promise((res) => setTimeout(res, 300));
@@ -51,9 +55,21 @@ export default function Certificate({
 
       pdf.addImage(imgData, 'PNG', 0, 0, 1123, 794);
       pdf.save(`chung-chi-${certificateId}.pdf`);
+
+      toast({
+        title: 'Tải thành công',
+        description: 'Chứng chỉ đã được tải xuống thành công.',
+        variant: 'default',
+      });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Có lỗi xảy ra khi tạo PDF.');
+      toast({
+        title: 'Lỗi tải xuống',
+        description: 'Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -62,10 +78,20 @@ export default function Certificate({
       <div className="flex justify-end mb-4">
         <Button
           onClick={handleDownloadPDF}
+          disabled={isDownloading}
           className="bg-majorelleBlue hover:brightness-110 hover:bg-majorelleBlue shadow-sm shadow-majorelleBlue text-white"
         >
-          <Download className="mr-2 h-4 w-4" />
-          Tải PDF
+          {isDownloading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Đang tạo PDF...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Tải PDF
+            </>
+          )}
         </Button>
       </div>
 

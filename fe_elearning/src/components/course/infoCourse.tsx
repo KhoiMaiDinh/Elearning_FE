@@ -1,6 +1,6 @@
 'use client';
 
-import { Star, Users, Heart, Clock, BookOpen, LibraryBig } from 'lucide-react';
+import { Star, Users, Heart, Clock, BookOpen, LibraryBig, Share2 } from 'lucide-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CourseMain from './courseMain';
 import type { CourseForm } from '@/types/courseType';
@@ -27,6 +27,7 @@ import CourseRequirements from '../courseDetails/courseRequirements';
 import CourseOutcomes from '../courseDetails/courseOutcomes';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ViewMoreButton from '../button/viewMoreButton';
+import { ShareDialog } from './ShareDialog';
 
 import { formatDuration } from '@/helpers';
 import { formatPrice } from '../formatPrice';
@@ -39,6 +40,7 @@ type InfoCourseProps = {
   totalDuration: number;
   totalLessons: number;
   coupon?: CouponType[];
+  isOwner?: boolean;
 };
 
 interface ShowMoreTextProps {
@@ -129,6 +131,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
   totalDuration,
   coupon,
   totalLessons,
+  isOwner,
 }) => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
@@ -327,33 +330,51 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
                 >
                   Xem đánh giá ({reviews.length})
                 </button>
-                <Button
-                  onClick={toggleFavorite}
-                  variant={isFavorite ? 'default' : 'outline'}
-                  size="sm"
-                  className={cn(
-                    'flex items-center font-sans gap-2 transition-all self-start',
-                    isFavorite
-                      ? 'bg-red-500 hover:bg-red-600 border-red-500 text-white'
-                      : 'hover:text-red-500 hover:border-red-500'
-                  )}
-                >
-                  <Heart
-                    size={16}
-                    className={cn(
-                      'transition-all',
-                      isFavorite ? 'fill-white text-white' : 'text-current'
-                    )}
+                <div className="flex gap-2">
+                  <ShareDialog
+                    courseTitle={course.title}
+                    courseSubtitle={course.subtitle}
+                    courseThumbnail={course.thumbnail?.key}
+                    courseId={course.id || ''}
+                    trigger={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center font-sans gap-2 transition-all self-start hover:text-blue-500 hover:border-blue-500"
+                      >
+                        <Share2 size={16} className="text-current" />
+                        Chia sẻ
+                      </Button>
+                    }
                   />
-                  {isFavorite ? 'Đã lưu vào yêu thích' : 'Lưu vào yêu thích'}
-                </Button>
+                  <Button
+                    onClick={toggleFavorite}
+                    variant={isFavorite ? 'default' : 'outline'}
+                    size="sm"
+                    className={cn(
+                      'flex items-center font-sans gap-2 transition-all self-start',
+                      isFavorite
+                        ? 'bg-red-500 hover:bg-red-600 border-red-500 text-white'
+                        : 'hover:text-red-500 hover:border-red-500'
+                    )}
+                  >
+                    <Heart
+                      size={16}
+                      className={cn(
+                        'transition-all',
+                        isFavorite ? 'fill-white text-white' : 'text-current'
+                      )}
+                    />
+                    {isFavorite ? 'Đã lưu vào yêu thích' : 'Lưu vào yêu thích'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {coupon && (
+      {coupon && isOwner && (
         <CouponSection
           coupon={coupon}
           userInfo={userInfo}

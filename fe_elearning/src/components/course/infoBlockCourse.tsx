@@ -10,6 +10,7 @@ import {
   PlayCircle,
   TableIcon as TableOfContents,
   Heart,
+  Share2,
 } from 'lucide-react';
 import PieChartProgress from '../chart/pieChartProgress';
 import { useRouter } from 'next/navigation';
@@ -21,6 +22,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';
 import { formatDuration } from '@/helpers';
 import IconWithText from './iconWithText';
+import { ShareDialog } from './ShareDialog';
 
 type infoBlockCourse = {
   id: string;
@@ -32,6 +34,8 @@ type infoBlockCourse = {
   courseProgress?: number;
   thumbnail?: any;
   totalDuration?: number;
+  courseTitle?: string;
+  courseSubtitle?: string;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -43,6 +47,8 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   courseProgress,
   thumbnail,
   totalDuration,
+  courseTitle,
+  courseSubtitle,
 }) => {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -87,7 +93,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
 
           <Button
             size="lg"
-            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
             onClick={() => router.push(`/course-details/${id}`)}
           >
             {courseProgress !== 0 && courseProgress
@@ -96,6 +102,24 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                 ? 'Đã hoàn thành'
                 : 'Bắt đầu học'}
           </Button>
+
+          {/* Share Button for Registered Users */}
+          <ShareDialog
+            courseTitle={courseTitle}
+            courseSubtitle={courseSubtitle}
+            courseThumbnail={thumbnail}
+            courseId={id}
+            trigger={
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+              >
+                <Share2 className="w-4 h-4" />
+                Chia sẻ khóa học
+              </Button>
+            }
+          />
         </div>
       ) : (
         // Unregistered User Section
@@ -139,7 +163,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
 
             <Button
               size="lg"
-              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-4"
+              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
               onClick={() => {
                 if (userInfo.id) {
                   router.push(`/checkout/${id}`);
@@ -150,6 +174,24 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             >
               Đăng ký ngay
             </Button>
+
+            {/* Share Button for Unregistered Users */}
+            <ShareDialog
+              courseTitle={courseTitle}
+              courseSubtitle={courseSubtitle}
+              courseThumbnail={thumbnail}
+              courseId={id}
+              trigger={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Chia sẻ khóa học
+                </Button>
+              }
+            />
           </CardContent>
         </>
       )}

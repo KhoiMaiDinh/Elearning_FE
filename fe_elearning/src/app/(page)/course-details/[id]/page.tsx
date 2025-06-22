@@ -114,6 +114,26 @@ const LearnPage = () => {
     }
   }, [id]);
 
+  const refreshCourseData = async () => {
+    try {
+      // Ensure id is string before calling API
+      if (typeof id !== 'string') return;
+
+      // Refresh course data to get updated ratings
+      const response = await APIGetCourseById(id, {
+        with_instructor: true,
+        with_category: true,
+        with_sections: false,
+        with_thumbnail: true,
+      });
+      if (response?.status === 200) {
+        setCourseData(response.data);
+      }
+    } catch (error) {
+      console.error('Error refreshing course data:', error);
+    }
+  };
+
   // Initial data fetch
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -316,7 +336,7 @@ const LearnPage = () => {
 
       {courseData?.id && !isOwner && isRegistered && (
         <>
-          <ButtonReview course_id={courseData?.id || ''} />
+          <ButtonReview course_id={courseData?.id || ''} onReviewSuccess={refreshCourseData} />
           <ButtonMore
             course_id={courseData?.id || ''}
             label={`Bài học ${currentCourseItem?.title}, chương ${
