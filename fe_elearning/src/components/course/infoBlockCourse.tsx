@@ -10,6 +10,7 @@ import {
   PlayCircle,
   TableIcon as TableOfContents,
   Heart,
+  Share2,
 } from 'lucide-react';
 import PieChartProgress from '../chart/pieChartProgress';
 import { useRouter } from 'next/navigation';
@@ -21,6 +22,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';
 import { formatDuration } from '@/helpers';
 import IconWithText from './iconWithText';
+import { ShareDialog } from './ShareDialog';
 
 type infoBlockCourse = {
   id: string;
@@ -32,6 +34,8 @@ type infoBlockCourse = {
   courseProgress?: number;
   thumbnail?: any;
   totalDuration?: number;
+  courseTitle?: string;
+  courseSubtitle?: string;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
@@ -43,6 +47,8 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   courseProgress,
   thumbnail,
   totalDuration,
+  courseTitle,
+  courseSubtitle,
 }) => {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -87,7 +93,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
 
           <Button
             size="lg"
-            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-md shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
             onClick={() => router.push(`/course-details/${id}`)}
           >
             {courseProgress !== 0 && courseProgress
@@ -96,6 +102,24 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                 ? 'Đã hoàn thành'
                 : 'Bắt đầu học'}
           </Button>
+
+          {/* Share Button for Registered Users */}
+          <ShareDialog
+            courseTitle={courseTitle}
+            courseSubtitle={courseSubtitle}
+            courseThumbnail={thumbnail}
+            courseId={id}
+            trigger={
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+              >
+                <Share2 className="w-4 h-4" />
+                Chia sẻ khóa học
+              </Button>
+            }
+          />
         </div>
       ) : (
         // Unregistered User Section
@@ -122,7 +146,6 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:scale-110 transition-transform duration-300">
                       <PlayCircle size={32} className="text-white" />
                     </div>
-                    <span className="text-white font-medium text-sm">Xem veideo giới thiệu</span>
                   </div>
                 </div>
               </div>
@@ -139,7 +162,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
 
             <Button
               size="lg"
-              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-4"
+              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
               onClick={() => {
                 if (userInfo.id) {
                   router.push(`/checkout/${id}`);
@@ -150,64 +173,29 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             >
               Đăng ký ngay
             </Button>
+
+            {/* Share Button for Unregistered Users */}
+            <ShareDialog
+              courseTitle={courseTitle}
+              courseSubtitle={courseSubtitle}
+              courseThumbnail={thumbnail}
+              courseId={id}
+              trigger={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Chia sẻ khóa học
+                </Button>
+              }
+            />
           </CardContent>
         </>
       )}
 
       <Separator className="" />
-
-      {/* <CardContent className="pt-6">
-        <h4 className="font-semibold text-gray-900 dark:text-white mb-4 text-center">
-          Thông tin khóa học
-        </h4>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                <Gauge className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Trình độ</span>
-            </div>
-            <Badge className={getLevelColor()}>{levelShow}</Badge>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                <TableOfContents className="w-4 h-4 text-green-600 dark:text-green-400" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Bài học</span>
-            </div>
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              {totalLessons} bài
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                <Clock3 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Thời lượng</span>
-            </div>
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              {formatDuration(totalDuration || 0)}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Infinity className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Truy cập</span>
-            </div>
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              Mọi lúc, mọi nơi
-            </span>
-          </div>
-        </div>
-      </CardContent> */}
     </Card>
   );
 };

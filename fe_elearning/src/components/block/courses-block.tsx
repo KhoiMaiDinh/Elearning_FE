@@ -13,8 +13,13 @@ import { APIAddFavoriteCourse, APIRemoveFavoriteCourse } from '@/utils/course';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';
 import { Progress } from '@/components/ui/progress';
+import CourseLevelBadge from '../badge/courseLevelBadge';
 
-const CoursesBlock: React.FC<CourseForm> = ({
+type CoursesBlockProps = CourseForm & {
+  show_heart?: boolean;
+};
+
+const CoursesBlock: React.FC<CoursesBlockProps> = ({
   is_favorite,
   id,
   thumbnail,
@@ -26,28 +31,12 @@ const CoursesBlock: React.FC<CourseForm> = ({
   instructor,
   description,
   price,
+  show_heart = true,
 }) => {
   const router = useRouter();
 
-  const [levelShow, setLevelShow] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState<boolean>(is_favorite || false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-
-  useEffect(() => {
-    switch (level) {
-      case 'BEGINNER':
-        setLevelShow('Cơ bản');
-        break;
-      case 'INTERMEDIATE':
-        setLevelShow('Trung bình');
-        break;
-      case 'ADVANCED':
-        setLevelShow('Nâng cao');
-        break;
-      default:
-        setLevelShow('Không xác định');
-    }
-  }, [level]);
 
   const handleAddFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,22 +62,9 @@ const CoursesBlock: React.FC<CourseForm> = ({
     }
   };
 
-  const getLevelColor = () => {
-    switch (level) {
-      case 'BEGINNER':
-        return 'bg-green-100 text-green-700 dark:bg-green-900/80 dark:text-green-400';
-      case 'INTERMEDIATE':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/80 dark:text-blue-400';
-      case 'ADVANCED':
-        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/80 dark:text-purple-400';
-      default:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
-    }
-  };
-
   return (
     <Card
-      className="w-full h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-black backdrop-blur-sm"
+      className="w-full h-full overflow-hidden border-0 shadow hover:shadow-md transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-black backdrop-blur-sm"
       onClick={() => router.push(`/course/${id}`)}
     >
       <div className="relative">
@@ -101,19 +77,19 @@ const CoursesBlock: React.FC<CourseForm> = ({
           />
 
           {/* Favorite Button */}
-          <button
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
-            onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
-          >
-            <Heart
-              className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
-            />
-          </button>
+          {show_heart && (
+            <button
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
+              onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+            >
+              <Heart
+                className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
+              />
+            </button>
+          )}
 
           {/* Level Badge */}
-          {level && (
-            <Badge className={`absolute bottom-3 left-3 ${getLevelColor()}`}>{levelShow}</Badge>
-          )}
+          {level && <CourseLevelBadge className={`absolute bottom-3 left-3 `} level={level} />}
         </div>
       </div>
 

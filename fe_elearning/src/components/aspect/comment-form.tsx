@@ -7,13 +7,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ThumbsUp, ThumbsDown, Meh, ChevronsRightLeft } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Meh, ChevronsRightLeft, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { aspects } from './comment-list';
 
 export function CommentForm() {
   const [comment, setComment] = useState('');
   const [selectedAspects, setSelectedAspects] = useState<number[]>([]);
   const [emotion, setEmotion] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleAspectChange = (aspectId: number) => {
     setSelectedAspects((prev: number[]) => {
@@ -25,13 +28,40 @@ export function CommentForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend    // Reset form
-    setComment('');
-    setSelectedAspects([]);
-    setEmotion('');
-    alert('Comment submitted successfully!');
+    setIsSubmitting(true);
+
+    try {
+      // TODO: Implement API call để gửi comment
+      console.log('Comment data:', {
+        comment,
+        selectedAspects,
+        emotion,
+      });
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Reset form
+      setComment('');
+      setSelectedAspects([]);
+      setEmotion('');
+
+      toast({
+        title: 'Thành công',
+        description: 'Bình luận đã được gửi thành công!',
+        variant: 'default',
+      });
+    } catch (error) {
+      toast({
+        title: 'Lỗi',
+        description: 'Có lỗi xảy ra khi gửi bình luận. Vui lòng thử lại.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -50,6 +80,7 @@ export function CommentForm() {
               onChange={(e) => setComment(e.target.value)}
               required
               className="min-h-[120px]"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -66,6 +97,7 @@ export function CommentForm() {
                         id={`aspect-${aspect.id}`}
                         checked={selectedAspects.includes(aspect.id)}
                         onCheckedChange={() => handleAspectChange(aspect.id)}
+                        disabled={isSubmitting}
                       />
                       <div className="grid gap-1.5 leading-none">
                         <Label
@@ -96,30 +128,35 @@ export function CommentForm() {
               value={emotion}
               onValueChange={setEmotion}
               className="grid grid-cols-3 gap-2"
+              disabled={isSubmitting}
             >
               <EmotionOption
                 value="1"
                 icon={ThumbsUp}
                 label="Tích cực"
                 className="bg-green-50 border-green-200 data-[state=checked]:border-green-500"
+                disabled={isSubmitting}
               />
               <EmotionOption
                 value="2"
                 icon={Meh}
                 label="Trung lập"
                 className="bg-blue-50 border-blue-200 data-[state=checked]:border-blue-500"
+                disabled={isSubmitting}
               />
               <EmotionOption
                 value="3"
                 icon={ThumbsDown}
                 label="Tiêu cực"
                 className="bg-red-50 border-red-200 data-[state=checked]:border-red-500"
+                disabled={isSubmitting}
               />
               <EmotionOption
                 value="4"
                 icon={ChevronsRightLeft}
                 label="Xung đột"
                 className="bg-red-50 border-red-200 data-[state=checked]:border-red-500"
+                disabled={isSubmitting}
               />
             </RadioGroup>
           </div>
@@ -128,9 +165,16 @@ export function CommentForm() {
           <Button
             type="submit"
             className="w-full"
-            disabled={!comment || selectedAspects.length === 0 || !emotion}
+            disabled={!comment || selectedAspects.length === 0 || !emotion || isSubmitting}
           >
-            Gửi bình luận
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang gửi...
+              </>
+            ) : (
+              'Gửi bình luận'
+            )}
           </Button>
         </CardFooter>
       </form>
@@ -143,18 +187,25 @@ function EmotionOption({
   icon: Icon,
   label,
   className,
+  disabled,
 }: {
   value: string;
   icon: any;
   label: string;
   className: string;
+  disabled?: boolean;
 }) {
   return (
     <div className="relative">
-      <RadioGroupItem value={value} id={`emotion-${value}`} className="peer sr-only" />
+      <RadioGroupItem
+        value={value}
+        id={`emotion-${value}`}
+        className="peer sr-only"
+        disabled={disabled}
+      />
       <Label
         htmlFor={`emotion-${value}`}
-        className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${className}`}
+        className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <Icon className="mb-2 h-6 w-6" />
         <span className="text-sm">{label}</span>

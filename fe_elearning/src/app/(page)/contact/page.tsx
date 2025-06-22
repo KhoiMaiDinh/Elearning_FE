@@ -49,7 +49,7 @@ const Page = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="bg-custom-gradient-button-violet text-white hover:brightness-110  px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                   >
                     Liên hệ ngay
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -58,6 +58,12 @@ const Page = () => {
                     variant="outline"
                     size="lg"
                     className="border-2 border-blue-200 hover:border-blue-300 px-8 py-3 rounded-xl transition-all duration-300"
+                    onClick={() => {
+                      const contactInfo = document.getElementById('contact-info');
+                      if (contactInfo) {
+                        contactInfo.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
                   >
                     Xem thêm thông tin
                   </Button>
@@ -83,7 +89,7 @@ const Page = () => {
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <AnimateWrapper delay={0.3} direction="up">
-            <div className="grid lg:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-8 " id="contact-info">
               {/* Company Info Card */}
               <Card className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                 <CardContent className="p-8">
@@ -141,23 +147,6 @@ const Page = () => {
               <Card className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                 <CardContent className="p-8">
                   <div className="space-y-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-orange-500 rounded-xl flex items-center justify-center">
-                        <Instagram className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                          Theo dõi chúng tôi
-                        </h2>
-                        <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full mt-1" />
-                      </div>
-                    </div>
-
-                    <p className="text-gray-600 dark:text-gray-300">
-                      Kết nối với chúng tôi trên các nền tảng mạng xã hội để cập nhật những thông
-                      tin mới nhất
-                    </p>
-
                     {/* Using our new custom social media grid component */}
                     <SocialMediaGrid
                       platforms={[

@@ -15,7 +15,7 @@ export enum TABS {
   COURSE = 'khoa-hoc',
   STATISTIC = 'phan-tich-phan-hoi',
   BANK_ACCOUNT = 'tai-khoan-ngan-hang',
-  COUPON_MANAGEMENT = 'ưu đãi',
+  COUPON_MANAGEMENT = 'uu-dai',
   PAYOUT = 'thanh-khoan',
 }
 

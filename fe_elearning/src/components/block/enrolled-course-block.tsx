@@ -11,15 +11,15 @@ import { CourseForm } from '@/types/courseType';
 const EnrolledCourseBlock = ({ course }: { course: CourseForm }) => {
   const router = useRouter();
   return (
-    <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-      <div className="relative">
+    <Card className="overflow-hidden border-0 hover:shadow-md hover:translate-y-[-4px] transition-all duration-300">
+      <div className="relative group">
         <img
           src={
             `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course.thumbnail?.key}` ||
             '/images/logo.png'
           }
           alt={course.title}
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-cover group-hover:scale-105 transition-all duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
           <Badge className="bg-blue-600 hover:bg-blue-700">

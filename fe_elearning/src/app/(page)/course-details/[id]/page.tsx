@@ -115,6 +115,26 @@ const LearnPage = () => {
     }
   }, [id]);
 
+  const refreshCourseData = async () => {
+    try {
+      // Ensure id is string before calling API
+      if (typeof id !== 'string') return;
+
+      // Refresh course data to get updated ratings
+      const response = await APIGetCourseById(id, {
+        with_instructor: true,
+        with_category: true,
+        with_sections: false,
+        with_thumbnail: true,
+      });
+      if (response?.status === 200) {
+        setCourseData(response.data);
+      }
+    } catch (error) {
+      console.error('Error refreshing course data:', error);
+    }
+  };
+
   // Initial data fetch
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -144,18 +164,31 @@ const LearnPage = () => {
     if (!courseData?.sections || !sections || loadingStates.isLoadingRegister) return;
 
     const setInitialCourseItem = () => {
-      if (isOwner) {
-        const firstSection = sections[0];
-        if (!firstSection?.items?.length) return;
+      // PRIORITY 1: If lecture parameter is provided, find and set that specific lecture
+      if (lecture) {
+        let foundLectureItem: CourseItem | undefined;
 
-        if (lecture) {
-          const lectureItem = firstSection.items.find((item) => item.id === lecture);
+        for (const section of sections) {
+          const lectureItem = section.items?.find((item) => item.id === lecture);
           if (lectureItem) {
-            setCurrentCourseItem(lectureItem);
-            return;
+            foundLectureItem = lectureItem;
+            break;
           }
         }
-        setCurrentCourseItem(firstSection.items[0]);
+
+        if (foundLectureItem) {
+          setCurrentCourseItem(foundLectureItem);
+          return;
+        }
+      }
+
+      // PRIORITY 2: Fallback logic when no lecture parameter or lecture not found
+      if (isOwner) {
+        // For owner, set first available lecture from first section
+        const firstSection = sections[0];
+        if (firstSection?.items?.length) {
+          setCurrentCourseItem(firstSection.items[0]);
+        }
       } else if (isRegistered) {
         let lectureToSet: CourseItem | undefined;
 
@@ -344,7 +377,7 @@ const LearnPage = () => {
 
       {courseData?.id && !isOwner && isRegistered && (
         <>
-          <ButtonReview course_id={courseData?.id || ''} />
+          <ButtonReview course_id={courseData?.id || ''} onReviewSuccess={refreshCourseData} />
           <ButtonMore
             course_id={courseData?.id || ''}
             label={`Bài học ${currentCourseItem?.title}, chương ${

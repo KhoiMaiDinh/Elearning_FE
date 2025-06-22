@@ -33,7 +33,7 @@ const LecturersBlock: React.FC<LecturersBlockProps> = ({
 
   return (
     <Card
-      className="w-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-gray-800/90 backdrop-blur-sm cursor-pointer group"
+      className="w-full overflow-hidden border-0 hover:shadow-md hover:translate-y-[-4px] transition-all duration-300 bg-white dark:bg-gray-800/90 backdrop-blur-sm cursor-pointer group"
       onClick={() => router.push(`/lecturer/${username}`)}
     >
       <div className="relative h-28 bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">

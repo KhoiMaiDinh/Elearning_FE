@@ -14,12 +14,14 @@ import type { Lecture } from '@/types/registerLectureFormType';
 import { APIGetFavoriteCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import Link from 'next/link';
+import LecturerProfileSkeleton from '@/components/skeleton/lecturerProfileSkeleton';
 
 const TeacherProfile = () => {
   const { username } = useParams();
   const [teacherData, setTeacherData] = useState<Lecture>();
   const [dataCourse, setDataCourse] = useState<CourseForm[]>([]);
   const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleGetLectureByUserName = async () => {
     try {
@@ -48,17 +50,41 @@ const TeacherProfile = () => {
   };
 
   const handleGetFavoriteCourse = async () => {
-    const response = await APIGetFavoriteCourse();
-    if (response && response.data) {
-      setFavoriteCourse(response.data);
+    try {
+      const response = await APIGetFavoriteCourse();
+      if (response && response.data) {
+        setFavoriteCourse(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching favorite course data:', error);
+    }
+  };
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        handleGetLectureByUserName(),
+        handleGetCourseByLectureUserName(),
+        handleGetFavoriteCourse(),
+      ]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    handleGetLectureByUserName();
-    handleGetCourseByLectureUserName();
-    handleGetFavoriteCourse();
+    if (username) {
+      fetchAllData();
+    }
   }, [username]);
+
+  // Show skeleton while loading
+  if (loading) {
+    return <LecturerProfileSkeleton />;
+  }
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -67,6 +93,13 @@ const TeacherProfile = () => {
         className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
       />
     ));
+  };
+
+  const formatRating = (rating: number | null | undefined) => {
+    if (rating === null || rating === undefined) {
+      return 'N/A';
+    }
+    return rating === 0 ? '0' : rating.toFixed(1);
   };
 
   return (
@@ -130,7 +163,7 @@ const TeacherProfile = () => {
                       <div className="flex items-center justify-center mb-2">
                         <div className="flex mr-2">{renderStars(teacherData?.avg_rating || 0)}</div>
                         <span className="text-lg font-bold text-gray-900 dark:text-white">
-                          {teacherData?.avg_rating?.toFixed(1) || 'N/A'}
+                          {formatRating(teacherData?.avg_rating)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá</p>

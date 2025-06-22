@@ -67,10 +67,22 @@ const APIUpdateStatusCoupon = async (code: string) => {
   }
 };
 
+const APIGetCouponByCourse = async (courseId: string) => {
+  try {
+    const response = await axiosInstance.get(`/coupons/courses/${courseId}`);
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+  } catch (err) {
+    console.log('Error during get coupon by course:', err);
+    throw err;
+  }
+};
 export {
   APIGetCouponsFromInstructor,
   APICreateCoupon,
   APIUpdateCoupon,
   APIDeleteCoupon,
   APIUpdateStatusCoupon as APIUpdateCouponStatus,
+  APIGetCouponByCourse,
 };

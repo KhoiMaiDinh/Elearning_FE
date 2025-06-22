@@ -38,8 +38,8 @@ export function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [total, setTotal] = useState(0);
   const { theme } = useTheme();
-  const [afterCursor, setAfterCursor] = useState(undefined);
-  const [beforeCursor, setBeforeCursor] = useState(undefined);
+  const [afterCursor, setAfterCursor] = useState<string | undefined>(undefined);
+  const [beforeCursor, setBeforeCursor] = useState<string | undefined>(undefined);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   // Use socket hook
 
