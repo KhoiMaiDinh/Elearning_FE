@@ -50,7 +50,7 @@ import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import type { Lecture } from '@/types/registerLectureFormType';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
-import APIGetRecommendation from '@/utils/recommendation';
+import { APIGetRecommendation } from '@/utils/recommendation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 

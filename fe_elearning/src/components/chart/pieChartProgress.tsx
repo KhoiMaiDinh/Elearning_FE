@@ -19,15 +19,20 @@ const chartData = (value: number) => {
 };
 
 export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
-  const data = chartData(percentage);
+  const data = chartData(100);
   const completedPercentage = Math.max(0, Math.min(percentage, 100));
 
   // Dynamic colors based on progress
   const getProgressColor = (percent: number) => {
+    if (percent >= 90) return '#22c55e'; // bright green
     if (percent >= 80) return '#10b981'; // green
+    if (percent >= 70) return '#06b6d4'; // cyan
     if (percent >= 60) return '#3b82f6'; // blue
-    if (percent >= 40) return '#f59e0b'; // amber
-    return '#8b5cf6'; // violet
+    if (percent >= 50) return '#6366f1'; // indigo
+    if (percent >= 40) return '#8b5cf6'; // violet
+    if (percent >= 30) return '#d946ef'; // pink
+    if (percent >= 20) return '#f43f5e'; // rose
+    return '#f59e0b'; // amber
   };
 
   const progressColor = getProgressColor(completedPercentage);
@@ -66,7 +71,7 @@ export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
       </div>
 
       {/* Progress ring animation */}
-      <div
+      {/* <div
         className="absolute inset-0 rounded-full border-2 border-transparent"
         style={{
           background: `conic-gradient(${progressColor} ${completedPercentage * 3.6}deg, transparent 0deg)`,
@@ -74,7 +79,7 @@ export const PercentagePieChart: React.FC<Props> = ({ percentage }) => {
           WebkitMask:
             'radial-gradient(circle, transparent 60px, black 60px, black 85px, transparent 85px)',
         }}
-      />
+      /> */}
     </div>
   );
 };
@@ -87,8 +92,8 @@ const PieChartProgress: React.FC<PieChartProgressProps> = ({ courseProgress }) =
   const getProgressMessage = (progress: number) => {
     if (progress === 0) return 'Chưa bắt đầu';
     if (progress < 25) return 'Mới bắt đầu';
-    if (progress < 50) return 'Đang tiến bộ';
-    if (progress < 75) return 'Sắp hoàn thành';
+    if (progress <= 50) return 'Đang tiến bộ';
+    if (progress <= 75) return 'Sắp hoàn thành';
     if (progress < 100) return 'Gần xong rồi';
     return 'Hoàn thành xuất sắc';
   };

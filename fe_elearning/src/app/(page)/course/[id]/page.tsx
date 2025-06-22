@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { APIGetRecommendationByCourseId } from '@/utils/recommendation';
 
 const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -32,6 +33,7 @@ const Page = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
+
   const router = useRouter();
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import VideoPlayer from '@/components/courseDetails/videoPlayer';
+import VideoPlayer from '@/components/player/videoPlayer';
 import CourseTabs from '@/components/courseDetails/courseTab';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { CourseForm, CourseItem, Section } from '@/types/courseType';
@@ -14,6 +14,7 @@ import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
+import CourseDescriptionTab from '@/components/courseDetails/courseDescriptionTab';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefined => {
@@ -228,21 +229,21 @@ const LearnPage = () => {
         </div>
       ) : (
         <div className="min-h-screen bg-AntiFlashWhite p-4 gap-4 flex flex-col dark:bg-eerieBlack text-richBlack dark:text-AntiFlashWhite ">
-          <div className="flex flex-col lg:flex-row gap-4 ">
+          {/* <div className="flex flex-col lg:flex-row gap-4 ">
             <p className="text-2xl font-bold">{courseData?.title}</p>
-          </div>
-          <div className="flex flex-col lg:flex-row gap-4 ">
+          </div> */}
+          <div className="flex flex-col lg:flex-row gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden mb-4 p-2 bg-majorelleBlue text-white rounded-full"
+              className="lg:hidden p-2  text-white rounded-full "
             >
               {isSidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
             </button>
 
             <div
-              className={`${
-                isSidebarOpen ? 'w-full lg:w-1/4' : 'w-0 lg:w-16'
-              } transition-all duration-300 bg-white dark:bg-richBlack rounded-lg shadow-md overflow-hidden`}
+              className={`transition-all duration-500 ease-in-out overflow-hidden  ${
+                isSidebarOpen ? 'h-[calc(100vh-4rem-2rem)] w-full lg:w-1/4' : 'max-h-0 w-0 lg:w-16'
+              } bg-white dark:bg-richBlack rounded-lg shadow-md`}
             >
               {courseData?.sections && (
                 <CourseItemList
@@ -256,25 +257,51 @@ const LearnPage = () => {
               )}
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 h-[calc(100vh-4rem-2rem)] aspect-video">
               {currentCourseItem &&
               videoUrl &&
               (isRegistered || isOwner || (!isRegistered && currentCourseItem.is_preview)) ? (
                 <VideoPlayer
-                  videoUrl={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoUrl}
+                  src={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoUrl}
                   title={currentCourseItem.title}
-                  coverPhoto={courseData?.thumbnail?.key}
-                  lecture_id={currentCourseItem.id}
                   progress={currentCourseItem.progresses?.[0]?.watch_time_in_percentage}
                   isOwner={isOwner}
+                  lecture_id={currentCourseItem.id}
                 />
               ) : (
-                <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md">
-                  <p className="text-lg font-medium">
+                <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md h-full flex flex-col justify-center items-center space-y-4">
+                  {/* Video placeholder skeleton */}
+                  <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
+                    <svg
+                      className="w-12 h-12 text-gray-300 dark:text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Message with subtle animation */}
+                  <p className="text-lg font-medium animate-fade-in">
                     {!isRegistered && !isOwner
                       ? 'Bạn cần đăng ký khóa học để xem nội dung này'
                       : 'Không có video để phát cho mục này.'}
                   </p>
+
+                  {/* Decorative line */}
+                  <div className="w-16 h-1 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                 </div>
               )}
             </div>
@@ -284,17 +311,18 @@ const LearnPage = () => {
             <div className="">
               <CourseTabs
                 currentCourseItem={currentCourseItem}
-                description={courseData.description || ''}
-                sections={courseData.sections}
-                lecture={courseData.instructor}
-                rating={courseData.avg_rating}
-                enrolledStudents={courseData.total_enrolled}
-                price={courseData.price}
-                priceFinal={courseData.priceFinal}
+                courseData={courseData}
                 isOwner={isOwner}
                 currentCommentItem={currentCommentItem}
               />
             </div>
+          )}
+
+          {courseData && (
+            <CourseDescriptionTab
+              courseData={courseData}
+              showRegister={!isRegistered && !isOwner}
+            />
           )}
 
           {!isRegistered && !isOwner && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { Star, Users, Heart, Clock, BookOpen, LibraryBig } from 'lucide-react';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CourseMain from './courseMain';
 import type { CourseForm } from '@/types/courseType';
 import { APIGetReview } from '@/utils/comment';
@@ -21,103 +21,23 @@ import { useRouter } from 'next/navigation';
 import { LoginRequiredPopup } from '../alert/LoginRequire';
 import { ShineBorder } from '../magicui/shine-border';
 import { Card, CardContent, CardHeader } from '../ui/card';
-import * as Collapsible from '@radix-ui/react-collapsible';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import CourseRequirements from '../courseDetails/courseRequirements';
 import CourseOutcomes from '../courseDetails/courseOutcomes';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ViewMoreButton from '../button/viewMoreButton';
 
-import { formatDuration } from '@/helpers';
 import { formatPrice } from '../formatPrice';
+import { APIGetRecommendationByCourseId } from '@/utils/recommendation';
+import AnimateWrapper from '../animations/animateWrapper';
+import CoursesBlock from '../block/courses-block';
+import ShowMoreText from '../courseDetails/showMoreText';
+
 type InfoCourseProps = {
   lecture: string;
   course: CourseForm;
   totalDuration: number;
   totalLessons: number;
 };
-
-interface ShowMoreTextProps {
-  text: string;
-  collapsedHeight?: number;
-}
-
-interface ShowMoreTextProps {
-  text: string;
-  initialLines?: number;
-}
-
-function ShowMoreText({ text, initialLines = 3 }: ShowMoreTextProps) {
-  const [open, setOpen] = useState(false);
-  const [shouldShowButton, setShouldShowButton] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!contentRef.current) return;
-
-    const el = contentRef.current;
-    const lineHeight = parseFloat(getComputedStyle(el).lineHeight || '20');
-    const maxHeight = lineHeight * initialLines;
-
-    setShouldShowButton(el.scrollHeight > maxHeight + 1);
-  }, [text, initialLines]);
-
-  return (
-    <Collapsible.Root open={open} onOpenChange={setOpen} className="relative w-full">
-      <div className="relative">
-        <Collapsible.Content
-          forceMount
-          className={`relative transition-max-height duration-300 ease-in-out overflow-hidden ${
-            open ? 'max-h-[1000px]' : `line-clamp-${initialLines}`
-          }`}
-        >
-          <div
-            ref={contentRef}
-            className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap"
-            dangerouslySetInnerHTML={{ __html: text }}
-          />
-
-          {/* Gradient overlay on text (only when collapsed) */}
-          {!open && shouldShowButton && (
-            <>
-              {/* Light mode gradient */}
-              <div
-                className="absolute bottom-0 left-0 w-full h-8 pointer-events-none dark:hidden"
-                style={{
-                  backgroundImage: `linear-gradient(to top, white, transparent)`,
-                }}
-              />
-
-              {/* Dark mode gradient */}
-              <div
-                className="absolute bottom-0 left-0 w-full h-8 pointer-events-none hidden dark:block"
-                style={{
-                  backgroundImage: `linear-gradient(to top, #0f0f0f, transparent)`,
-                }}
-              />
-            </>
-          )}
-        </Collapsible.Content>
-      </div>
-
-      {shouldShowButton && (
-        <Collapsible.Trigger asChild>
-          <Button variant="ghost" size="sm" className="mt-2 px-0 text-primary">
-            {open ? (
-              <>
-                Thu gọn <ChevronUp className="ml-1 h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Xem thêm <ChevronDown className="ml-1 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </Collapsible.Trigger>
-      )}
-    </Collapsible.Root>
-  );
-}
 
 const InfoCourse: React.FC<InfoCourseProps> = ({
   lecture,
@@ -146,6 +66,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
   const [showReviews, setShowReviews] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [recommendation, setRecommendation] = useState<CourseForm[]>([]);
 
   const handleGetReviews = async (id: string) => {
     try {
@@ -158,6 +79,17 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
       throw error;
     }
   };
+
+  const handleGetRecommendation = useCallback(async () => {
+    const response = await APIGetRecommendationByCourseId(course.id || '');
+    if (response?.status === 200) {
+      setRecommendation(response?.data || []);
+    }
+  }, [course.id]);
+
+  useEffect(() => {
+    handleGetRecommendation();
+  }, [handleGetRecommendation]);
 
   const toggleFavorite = () => {
     if (isFavorite) {
@@ -271,12 +203,12 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
 
                 {/* Students */}
                 <div className="flex items-center font-sans gap-1 px-3 py-1.5 bg-majorelleBlue20 dark:bg-black50 rounded-full border border-white">
-                  <Users size={14} color="#545ae8" />
+                  <Users size={14} className={'text-majorelleBlue'} />
                   <span className="text-xs font-medium text-majorelleBlue">
                     {course?.total_enrolled
                       ? course?.total_enrolled > 1000
                         ? `${(course?.total_enrolled / 1000).toFixed(1)}k+`
-                        : `${course?.total_enrolled}+`
+                        : `${course?.total_enrolled}`
                       : 'N/A'}
                   </span>
                 </div>
@@ -421,13 +353,13 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
                 />
                 <AvatarFallback>
                   {' '}
-                  {userInfo.last_name?.[0]}
-                  {userInfo.first_name?.[0]}
+                  {course?.instructor?.user.last_name?.[0]}
+                  {course?.instructor?.user.first_name?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 flex flex-row w-full justify-between ">
                 <div className="flex flex-col">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">{`${course?.instructor?.user.last_name || ''} ${course?.instructor?.user.first_name || ''}`}</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">{`${course?.instructor?.user.last_name || ''} ${course?.instructor?.user.first_name || ''}`}</h3>
                   <p className={subtitleClassName}>{course?.instructor?.headline}</p>
                 </div>
                 <div className="flex gap-1 flex-row">
@@ -464,6 +396,56 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      <AnimateWrapper delay={0.3} direction="up">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Khóa học được đề xuất
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Khóa học được đề xuất dựa trên sở thích của bạn
+            </p>
+          </div>
+
+          {/* <Button
+                variant="outline"
+                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                onClick={() => router.push('/my-courses')}
+              >
+                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+              </Button> */}
+        </div>
+
+        {Array.isArray(recommendation) && recommendation.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+            {recommendation.map((course) => (
+              <CoursesBlock key={course.id} {...course} />
+            ))}
+          </div>
+        ) : (
+          <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                Bạn chưa đăng ký khóa học nào
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
+                Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay hôm
+                nay.
+              </p>
+              <Button
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
+                onClick={() => router.push('/course')}
+              >
+                Khám phá khóa học
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </AnimateWrapper>
 
       {/* Reviews Popup */}
       {showReviews && (

@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, Star, Users, Send, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseForm, CourseItem, Section } from '@/types/courseType';
 import { Lecture } from '@/types/registerLectureFormType';
 import { APIPostComment, APIGetComment, APIGetCommentById } from '@/utils/comment';
 import InputWithSendButton from '../inputComponent/inputComment';
@@ -27,28 +27,17 @@ import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
 import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
 import ReplyList from './replyList';
 import ReportButton from './report';
+import CourseDescriptionTab from './courseDescriptionTab';
 
 interface CourseTabsProps {
-  description: string;
-  sections?: Section[];
-  lecture?: Lecture;
-  rating?: number;
-  enrolledStudents?: number;
-  price: number;
-  priceFinal?: number;
+  courseData: CourseForm;
   currentCourseItem?: CourseItem;
   isOwner?: boolean;
   currentCommentItem?: string;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
-  description,
-  // sections,
-  lecture,
-  rating,
-  enrolledStudents,
-  price,
-  priceFinal,
+  courseData,
   currentCourseItem,
   isOwner,
   currentCommentItem,
@@ -226,32 +215,31 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   return (
     <>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full font-sans">
-        <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 dark:bg-majorelleBlue/10">
+        <TabsList className="grid w-full grid-cols-4 bg-majorelleBlue20 rounded-[2px] dark:bg-slate-800/50 border dark:border-slate-700">
           <TabsTrigger
             value="description"
-            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
+            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px]"
           >
             Mô tả
           </TabsTrigger>
           <TabsTrigger
             value="resources"
-            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
+            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px]"
           >
             Tài liệu
           </TabsTrigger>
           <TabsTrigger
             value="community"
-            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
+            className="text-majorelleBlue data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px]"
           >
             Cộng đồng
           </TabsTrigger>
           <TabsTrigger
             value="reviews"
-            // className="text-majorelleBlue data-[state=active]:bg-majorelleBlue data-[state=active]:text-white"
-            className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white"
+            className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px]"
           >
             Feedback
-            <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1 " />{' '}
+            <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1" />{' '}
           </TabsTrigger>
         </TabsList>
 
@@ -259,52 +247,6 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           value="description"
           className="p-4 bg-white dark:bg-richBlack rounded-b-lg shadow-md"
         >
-          <h3 className="text-lg font-semibold text-cosmicCobalt dark:text-AntiFlashWhite mb-2">
-            Mô tả khóa học
-          </h3>
-          <p
-            className="text-darkSilver dark:text-lightSilver ql-content"
-            dangerouslySetInnerHTML={{ __html: description }}
-          />
-          <p className="mt-2 text-darkSilver dark:text-lightSilver">
-            Giảng viên:{' '}
-            <span className="text-majorelleBlue">
-              {lecture?.user.first_name + ' ' + lecture?.user.last_name}
-            </span>
-          </p>
-          <div className="flex gap-4 mt-2 items-center">
-            {rating && (
-              <div className="flex items-center gap-1">
-                <Star size={16} className="text-Sunglow fill-Sunglow" />
-                <span className="text-darkSilver dark:text-lightSilver">
-                  {rating ? (Math.round(rating * 10) / 10).toFixed(1) : 'N/A'}
-                </span>
-              </div>
-            )}
-            {enrolledStudents && (
-              <div className="flex items-center gap-1">
-                <Users size={16} className="text-majorelleBlue" />
-                <span className="text-darkSilver dark:text-lightSilver">
-                  {enrolledStudents > 1000
-                    ? `${(enrolledStudents / 1000).toFixed(1)}k+`
-                    : `${enrolledStudents}+`}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              {priceFinal && priceFinal !== price ? (
-                <>
-                  <span className="text-darkSilver dark:text-lightSilver line-through">
-                    {formatPrice(price)}
-                  </span>
-                  <span className="text-beautyGreen font-semibold">{formatPrice(priceFinal)}</span>
-                </>
-              ) : (
-                <span className="text-beautyGreen font-semibold">{formatPrice(price)}</span>
-              )}
-            </div>
-          </div>
-
           <hr className="my-4" />
           {currentCourseItem && (
             <div>

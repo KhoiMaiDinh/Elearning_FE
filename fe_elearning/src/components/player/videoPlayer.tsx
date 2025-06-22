@@ -7,6 +7,7 @@ import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/l
 import { textTracks } from './tracks';
 import { useEffect, useState, useRef } from 'react';
 import { APIUpsertProgressItemCourse } from '@/utils/course';
+import { debounce } from 'lodash';
 
 type VideoPlayerProps = {
   src: string;
@@ -17,63 +18,103 @@ type VideoPlayerProps = {
   isOwner?: boolean;
 };
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, lecture_id, progress, isOwner }) => {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
-  const playerRef = useRef<any>(null);
+export function useProgressTracker(playerRef: any, lecture_id: string) {
+  const saveProgress = (player: any, lecture_id: string) => {
+    const currentTime = player?.state?.currentTime;
+    const duration = player?.state?.duration;
 
-  // Save progress function
-  const saveProgress = () => {
-    const player = playerRef.current;
-    if (!player || !lecture_id || !player.duration) return;
-    const percent = Math.floor((player.currentTime / player.duration) * 100);
-    if (isOwner) return;
-    APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    if (!currentTime || !duration || !lecture_id) return;
+
+    const watch_time = Math.min((currentTime / duration) * 100, 100);
+    if (!isNaN(watch_time)) {
+      console.log('[saveProgress] Watch time:', watch_time);
+      APIUpsertProgressItemCourse(lecture_id, { watch_time });
+    }
   };
 
-  // Auto-seek based on progress
-  useEffect(() => {
-    const player = playerRef.current;
-    if (!player) return;
-
-    const seekWhenReady = () => {
-      if (typeof progress === 'number' && progress > 0 && progress < 100 && player.duration) {
-        const time = (progress / 100) * player.duration;
-        player.currentTime = time;
-      }
-    };
-
-    player.addEventListener('loadedmetadata', seekWhenReady);
-    return () => {
-      player.removeEventListener('loadedmetadata', seekWhenReady);
-    };
-  }, [progress]);
-
-  // Track pause/ended/tab close
   useEffect(() => {
     const player = playerRef.current;
     if (!player || !lecture_id) return;
 
-    const handlePause = () => saveProgress();
-    const handleEnded = () => APIUpsertProgressItemCourse(lecture_id, { watch_time: 100 });
-    const handleBeforeUnload = () => saveProgress();
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') saveProgress();
+    const debouncedSave = debounce(() => saveProgress(player, lecture_id), 500);
+
+    const unsubPaused = player.subscribe((state: any) => {
+      if (state.paused) {
+        console.log('[Paused] Saving progress...');
+        debouncedSave();
+      }
+    });
+
+    const unsubEnded = player.subscribe((state: any) => {
+      if (state.ended) {
+        console.log('[Ended] Saving 100% progress');
+        APIUpsertProgressItemCourse(lecture_id, { watch_time: 100 });
+      }
+    });
+
+    const handleBeforeUnload = () => {
+      console.log('[BeforeUnload] Saving progress...');
+      saveProgress(player, lecture_id);
     };
 
-    player.addEventListener('pause', handlePause);
-    player.addEventListener('ended', handleEnded);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        console.log('[VisibilityChange] Saving progress...');
+        saveProgress(player, lecture_id);
+      }
+    };
+
     window.addEventListener('beforeunload', handleBeforeUnload);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      player.removeEventListener('pause', handlePause);
-      player.removeEventListener('ended', handleEnded);
+      unsubPaused();
+      unsubEnded();
       window.removeEventListener('beforeunload', handleBeforeUnload);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      // Save progress when unmounting
-      saveProgress();
+      saveProgress(player, lecture_id);
     };
-  }, [lecture_id]);
+  }, [playerRef, lecture_id]);
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  src,
+  title,
+  lecture_id,
+  progress = 0,
+  isOwner,
+  poster,
+}) => {
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
+  const playerRef = useRef<any>(null);
+  if (lecture_id) {
+    useProgressTracker(playerRef, lecture_id);
+  }
+
+  // // Save progress function
+  // const saveProgress = () => {
+  //   const player = playerRef.current;
+  //   if (!player || !lecture_id || !player.duration) return;
+  //   const percent = Math.floor((player.currentTime / player.duration) * 100);
+  //   if (isOwner) return;
+  //   APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+  // };
+
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+
+    const interval = setInterval(() => {
+      const duration = player?.state?.duration;
+      if (duration && !Number.isNaN(duration)) {
+        const targetTime = (progress / 100) * duration;
+        player.currentTime = targetTime;
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [progress]);
 
   useEffect(() => {
     // Tạo một video element tạm thời

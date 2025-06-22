@@ -80,14 +80,14 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
           {courseProgress !== 0 && courseProgress && (
             <>
               <div className="mb-6">
-                <PieChartProgress courseProgress={courseProgress} />
+                <PieChartProgress courseProgress={30} />
               </div>
             </>
           )}
 
           <Button
             size="lg"
-            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-md shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
             onClick={() => router.push(`/course-details/${id}`)}
           >
             {courseProgress !== 0 && courseProgress
@@ -122,7 +122,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:scale-110 transition-transform duration-300">
                       <PlayCircle size={32} className="text-white" />
                     </div>
-                    <span className="text-white font-medium text-sm">Xem video giới thiệu</span>
+                    <span className="text-white font-medium text-sm">Xem veideo giới thiệu</span>
                   </div>
                 </div>
               </div>
