@@ -338,7 +338,7 @@ const Header = () => {
 
             {/* Search Dropdown */}
             {showDropdown && results.length > 0 && (
-              <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-md mt-1 shadow-lg">
+              <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-lg mt-1 shadow-lg">
                 {results &&
                   results.length > 0 &&
                   results.map((course, index) => (

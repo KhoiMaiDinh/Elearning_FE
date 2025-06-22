@@ -80,6 +80,7 @@ const Page = () => {
     with_thumbnail: true,
     is_approved: true,
   });
+  console.log(paramsCourse);
 
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
   const [priceRange, setPriceRange] = useState([
@@ -92,6 +93,11 @@ const Page = () => {
   // API call based on active tab
   const handleGetCourses = async () => {
     try {
+      console.log('🚀 API Call - handleGetCourses triggered:', {
+        activeTab,
+        searchQuery: paramsCourse.q,
+        allParams: paramsCourse,
+      });
       setIsLoadingCourses(true);
       let response;
 
@@ -276,13 +282,51 @@ const Page = () => {
   // Fetch courses when params or tab changes
   useEffect(() => {
     handleGetCourses();
-  }, [paramsCourse, activeTab]);
+  }, [paramsCourse, activeTab, searchParams]);
 
   useEffect(() => {
     handleGetCategory();
     handleGetFavoriteCourse();
     handleGetCourses();
   }, []);
+
+  // Sync params with URL searchParams when they change
+  useEffect(() => {
+    const searchQuery = searchParams.get('search');
+    console.log('🔍 Search params changed:', {
+      searchQuery,
+      allParams: Object.fromEntries(searchParams.entries()),
+    });
+
+    const newParams = {
+      page: Number(searchParams.get('page')) || 1,
+      limit: 12,
+      category_slug: searchParams.get('category_slug') || undefined,
+      level: searchParams.get('level') || undefined,
+      min_price: searchParams.get('min_price')
+        ? Number.parseInt(searchParams.get('min_price')!)
+        : undefined,
+      max_price: searchParams.get('max_price')
+        ? Number.parseInt(searchParams.get('max_price')!)
+        : undefined,
+      min_rating: searchParams.get('min_rating')
+        ? Number.parseInt(searchParams.get('min_rating')!)
+        : undefined,
+      q: searchQuery || undefined,
+      instructor_username: undefined,
+      with_instructor: true,
+      with_category: true,
+      include_disabled: false,
+      with_thumbnail: true,
+      is_approved: true,
+    };
+
+    console.log('📝 Setting new params:', newParams);
+    setParamsCourse(newParams);
+    setCurrentPage(Number(searchParams.get('page')) || 1);
+    setSortBy(searchParams.get('sort') || 'newest');
+    setPriceRange([newParams.min_price || 0, newParams.max_price || 5000000]);
+  }, [searchParams]);
 
   // Update tab from URL on mount and URL changes
   useEffect(() => {
