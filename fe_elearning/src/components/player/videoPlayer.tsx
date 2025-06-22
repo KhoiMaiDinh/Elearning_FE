@@ -16,6 +16,7 @@ type VideoPlayerProps = {
   lecture_id?: string;
   progress?: number; // percent (0 - 100)
   isOwner?: boolean;
+  className?: string;
 };
 
 export function useProgressTracker(playerRef: any, lecture_id: string) {
@@ -84,6 +85,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   progress = 0,
   isOwner,
   poster,
+  className,
 }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const playerRef = useRef<any>(null);
@@ -152,6 +154,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       playsInline
       title={title}
       poster={thumbnailUrl || '/images/video.png'}
+      className={className}
     >
       <MediaProvider>
         <Poster className="vds-poster" />

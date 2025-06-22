@@ -265,7 +265,7 @@ const LearnPage = () => {
           {/* <div className="flex flex-col lg:flex-row gap-4 ">
             <p className="text-2xl font-bold">{courseData?.title}</p>
           </div> */}
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-4rem-2rem)] ">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="lg:hidden p-2  text-white rounded-full "
@@ -274,8 +274,8 @@ const LearnPage = () => {
             </button>
 
             <div
-              className={`transition-all duration-500 ease-in-out overflow-hidden  ${
-                isSidebarOpen ? 'h-[calc(100vh-4rem-2rem)] w-full lg:w-1/4' : 'max-h-0 w-0 lg:w-16'
+              className={`transition-all flex-1 duration-500 ease-in-out overflow-hidden  ${
+                isSidebarOpen ? 'h-[calc(100vh-4rem-2rem)] w-full ' : 'max-h-0 w-0 lg:w-16'
               } bg-white dark:bg-richBlack rounded-lg shadow-md`}
             >
               {courseData?.sections && (
@@ -290,11 +290,12 @@ const LearnPage = () => {
               )}
             </div>
 
-            <div className="flex-1 h-[calc(100vh-4rem-2rem)] aspect-video">
+            <div className="flex-1 h-[calc(100vh-4rem-2rem)] aspect-video relative">
               {currentCourseItem &&
               videoUrl &&
               (isRegistered || isOwner || (!isRegistered && currentCourseItem.is_preview)) ? (
                 <VideoPlayer
+                  className="h-full"
                   src={process.env.NEXT_PUBLIC_BASE_URL_VIDEO + videoUrl}
                   title={currentCourseItem.title}
                   progress={currentCourseItem.progresses?.[0]?.watch_time_in_percentage}
@@ -302,6 +303,7 @@ const LearnPage = () => {
                   lecture_id={currentCourseItem.id}
                 />
               ) : (
+                // <div className="aspect-video h-full bg-blue-500"></div>
                 <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md h-full flex flex-col justify-center items-center space-y-4">
                   {/* Video placeholder skeleton */}
                   <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
