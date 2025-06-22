@@ -17,13 +17,15 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
 }) => {
   const [minValue, setMinValue] = useState(minPrice.toString());
   const [maxValue, setMaxValue] = useState(maxPrice.toString());
+  const [minError, setMinError] = useState(false);
+  const [maxError, setMaxError] = useState(false);
 
   const presetRanges = [
     { label: 'Dưới 100k', min: 0, max: 100000 },
     { label: '100k - 500k', min: 100000, max: 500000 },
     { label: '500k - 1tr', min: 500000, max: 1000000 },
     { label: '1tr - 2tr', min: 1000000, max: 2000000 },
-    { label: 'Trên 2tr', min: 2000000, max: 5000000000000000000 },
+    { label: 'Trên 2tr', min: 2000000, max: undefined },
   ];
 
   useEffect(() => {
@@ -49,9 +51,20 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   );
 
   const handleMinChange = (value: string) => {
-    setMinValue(value);
-    const numValue = parseInt(value.replace(/[^\d]/g, '')) || 0;
-    const maxNum = parseInt(maxValue.replace(/[^\d]/g, '')) || 5000000;
+    // Lấy chỉ các số từ input
+    const rawNumber = value.replace(/[^\d]/g, '');
+
+    // Giới hạn độ dài không quá 9 chữ số (100,000,000)
+    if (rawNumber.length > 9) {
+      setMinError(true);
+      setTimeout(() => setMinError(false), 2000);
+      return;
+    }
+
+    setMinError(false);
+    const numValue = parseInt(rawNumber) || 0;
+    setMinValue(rawNumber);
+    const maxNum = parseInt(maxValue) || 100000000;
 
     if (numValue <= maxNum) {
       debouncedPriceChange(numValue, maxNum);
@@ -59,20 +72,31 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   };
 
   const handleMaxChange = (value: string) => {
-    setMaxValue(value);
-    const numValue = parseInt(value.replace(/[^\d]/g, '')) || 5000000;
-    const minNum = parseInt(minValue.replace(/[^\d]/g, '')) || 0;
+    // Lấy chỉ các số từ input
+    const rawNumber = value.replace(/[^\d]/g, '');
+
+    // Giới hạn độ dài không quá 9 chữ số (100,000,000)
+    if (rawNumber.length > 9) {
+      setMaxError(true);
+      setTimeout(() => setMaxError(false), 2000);
+      return;
+    }
+
+    setMaxError(false);
+    const numValue = parseInt(rawNumber) || 100000000;
+    setMaxValue(rawNumber);
+    const minNum = parseInt(minValue) || 0;
 
     if (numValue >= minNum) {
       debouncedPriceChange(minNum, numValue);
     }
   };
 
-  const handlePresetClick = (min: number, max: number) => {
+  const handlePresetClick = (min: number, max?: number) => {
     setMinValue(min.toString());
-    setMaxValue(max.toString());
+    setMaxValue(max ? max.toString() : '');
     // Preset clicks should trigger immediately, not debounced
-    onPriceChange(min, max);
+    onPriceChange(min, max || 100000000);
   };
 
   const formatCurrency = (value: string) => {
@@ -80,8 +104,8 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
     return number.toLocaleString('vi-VN');
   };
 
-  const currentMinPrice = parseInt(minValue.replace(/[^\d]/g, '')) || 0;
-  const currentMaxPrice = parseInt(maxValue.replace(/[^\d]/g, '')) || 5000000;
+  const currentMinPrice = parseInt(minValue) || 0;
+  const currentMaxPrice = maxValue ? parseInt(maxValue) || 100000000 : null;
 
   return (
     <div className="space-y-4">
@@ -96,7 +120,7 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
               value={formatCurrency(minValue)}
               onChange={(e) => handleMinChange(e.target.value)}
               placeholder="0"
-              className="pr-8"
+              className={`pr-8 ${minError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
               đ
@@ -109,8 +133,8 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
             <Input
               value={formatCurrency(maxValue)}
               onChange={(e) => handleMaxChange(e.target.value)}
-              placeholder="5,000,000"
-              className="pr-8"
+              placeholder="100,000,000"
+              className={`pr-2 ${maxError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
               đ
@@ -118,6 +142,14 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Error Messages */}
+      {(minError || maxError) && (
+        <div className="text-xs text-red-500 mt-1">
+          {minError && <p>Giá tối thiểu không được vượt quá 100,000,000đ</p>}
+          {maxError && <p>Giá tối đa không được vượt quá 100,000,000đ</p>}
+        </div>
+      )}
 
       {/* Preset Buttons */}
       <div className="space-y-2">
@@ -127,7 +159,8 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
             <Button
               key={index}
               variant={
-                currentMinPrice === preset.min && currentMaxPrice === preset.max
+                currentMinPrice === preset.min &&
+                (preset.max ? currentMaxPrice === preset.max : currentMaxPrice === null)
                   ? 'default'
                   : 'outline'
               }
@@ -142,10 +175,13 @@ export const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
       </div>
 
       {/* Current Range Display */}
-      {(currentMinPrice > 0 || currentMaxPrice < 5000000) && (
+      {(currentMinPrice > 0 || (currentMaxPrice && currentMaxPrice < 100000000)) && (
         <div className="pt-2">
           <Badge variant="secondary" className="text-xs">
-            {currentMinPrice.toLocaleString('vi-VN')}đ - {currentMaxPrice.toLocaleString('vi-VN')}đ
+            {currentMinPrice.toLocaleString('vi-VN')}đ -{' '}
+            {currentMaxPrice && currentMaxPrice < 100000000
+              ? `${currentMaxPrice.toLocaleString('vi-VN')}đ`
+              : 'không giới hạn'}
           </Badge>
         </div>
       )}

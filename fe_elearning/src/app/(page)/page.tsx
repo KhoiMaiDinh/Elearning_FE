@@ -355,114 +355,118 @@ export default function Page() {
       </section>
 
       {/* My recommendation Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <AnimateWrapper delay={0.3} direction="up">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Khóa học được đề xuất
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Khóa học được đề xuất dựa trên sở thích của bạn
-                </p>
-              </div>
+      {userInfo.id && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <AnimateWrapper delay={0.3} direction="up">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Khóa học được đề xuất
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Khóa học được đề xuất dựa trên sở thích của bạn
+                  </p>
+                </div>
 
-              {/* <Button
+                {/* <Button
                 variant="outline"
                 className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
                 onClick={() => router.push('/my-courses')}
               >
                 Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
               </Button> */}
-            </div>
-
-            {Array.isArray(recommendation) && recommendation.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
-                {recommendation.map((course) => (
-                  <CoursesBlock key={course.id} {...course} show_heart={false} />
-                ))}
               </div>
-            ) : (
-              <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
-                    <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Bạn chưa đăng ký khóa học nào
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
-                    Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay
-                    hôm nay.
-                  </p>
-                  <Button
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
-                    onClick={() => router.push('/course')}
-                  >
-                    Khám phá khóa học
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </AnimateWrapper>
-        </div>
-      </section>
+
+              {Array.isArray(recommendation) && recommendation.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+                  {recommendation.map((course) => (
+                    <CoursesBlock key={course.id} {...course} show_heart={false} />
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                      <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      Chưa có khóa học nào được đề xuất
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
+                      Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn
+                      ngay hôm nay.
+                    </p>
+                    <Button
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
+                      onClick={() => router.push('/course')}
+                    >
+                      Khám phá khóa học
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </AnimateWrapper>
+          </div>
+        </section>
+      )}
 
       {/* My Courses Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <AnimateWrapper delay={0.3} direction="up">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Khóa học của tôi
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Tiếp tục hành trình học tập của bạn
-                </p>
-              </div>
-
-              <Button
-                variant="outline"
-                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
-                onClick={() => router.push('/my-courses')}
-              >
-                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
-              </Button>
-            </div>
-
-            {Array.isArray(enrolledCourse) && enrolledCourse?.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {enrolledCourse.map((course) => (
-                  <EnrolledCourseBlock key={course.id} course={course} />
-                ))}
-              </div>
-            ) : (
-              <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
-                    <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Bạn chưa đăng ký khóa học nào
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
-                    Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay
-                    hôm nay.
+      {userInfo.id && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <AnimateWrapper delay={0.3} direction="up">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Khóa học của tôi
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Tiếp tục hành trình học tập của bạn
                   </p>
-                  <Button
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
-                    onClick={() => router.push('/course')}
-                  >
-                    Khám phá khóa học
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </AnimateWrapper>
-        </div>
-      </section>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
+                  onClick={() => router.push('/my-courses')}
+                >
+                  Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
+                </Button>
+              </div>
+
+              {Array.isArray(enrolledCourse) && enrolledCourse?.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {enrolledCourse.map((course) => (
+                    <EnrolledCourseBlock key={course.id} course={course} />
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-0 shadow-lg bg-white dark:bg-gray-800">
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                      <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      Bạn chưa đăng ký khóa học nào
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
+                      Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn
+                      ngay hôm nay.
+                    </p>
+                    <Button
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black px-8"
+                      onClick={() => router.push('/course')}
+                    >
+                      Khám phá khóa học
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </AnimateWrapper>
+          </div>
+        </section>
+      )}
 
       {/* Categories Section */}
       <section className="py-16 bg-gray-100 dark:bg-gray-800/50">
@@ -557,7 +561,7 @@ export default function Page() {
                               duration={100}
                               easing="ease-out"
                               initialOpacity={0}
-                              className="transform transition-all hover:-translate-y-2 p-2"
+                              className="transform transition-all hover:-translate-y-2 p-4"
                             >
                               <CoursesBlock {...course} show_heart={false} />
                             </FadeContent>
@@ -619,7 +623,7 @@ export default function Page() {
                           duration={100}
                           easing="ease-out"
                           initialOpacity={0}
-                          className="transform transition-all hover:-translate-y-2 p-2"
+                          className="transform transition-all hover:-translate-y-2 p-4"
                         >
                           <LecturersBlock
                             avatar={lecture?.user?.profile_image?.key}
