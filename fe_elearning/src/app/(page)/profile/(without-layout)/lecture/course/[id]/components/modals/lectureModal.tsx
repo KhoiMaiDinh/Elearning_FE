@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLecture } from '@/hooks/lecture/useLectureForm';
-import { CourseItem, Section, SeriesType } from '@/types/courseType';
+import { CourseItem, SectionType, SeriesType } from '@/types/courseType';
 import { Edit, FileCheck, Trash2Icon } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { Controller } from 'react-hook-form';
@@ -38,7 +38,7 @@ import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
 // TODO: Remove this component
 interface LectureModalProps {
   open: boolean;
-  section: Section;
+  section: SectionType;
   lecture: CourseItem | null;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess: () => void;

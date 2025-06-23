@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { Label } from '@/components/ui/label';
 import Asterisk from '../asterisk/asterisk';
@@ -119,6 +119,14 @@ const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
         }
         .ql-editor tr:hover {
           background-color: #f1f1f1;
+        }
+
+        .ql-editor.ql-blank::before {
+          color: #9ca3af;
+        }
+
+        .dark .ql-editor.ql-blank::before {
+          color: #6b7280;
         }
       `}</style>
 

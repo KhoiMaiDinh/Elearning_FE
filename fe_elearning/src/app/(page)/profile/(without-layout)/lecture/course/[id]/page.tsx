@@ -7,7 +7,7 @@ import { RootState } from '@/constants/store';
 import { APIGetFullCourse } from '@/utils/course';
 import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
 import SectionList from '@/components/uploadCourse/SectionList';
-import { CourseForm, Section } from '@/types/courseType';
+import { CourseForm, SectionType } from '@/types/courseType';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { AlertCircle, Ban, CheckCircle, ChevronRight, Clock, ListEnd, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +32,7 @@ const CourseDetails: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isNewlyCreated, setIsNewlyCreated] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
@@ -53,7 +53,7 @@ const CourseDetails: React.FC = () => {
       });
 
       if (response?.status === 200) {
-        const sortedSections = response.data.sections.sort((a: Section, b: Section) =>
+        const sortedSections = response.data.sections.sort((a: SectionType, b: SectionType) =>
           a.position.localeCompare(b.position)
         );
         setSections(sortedSections);

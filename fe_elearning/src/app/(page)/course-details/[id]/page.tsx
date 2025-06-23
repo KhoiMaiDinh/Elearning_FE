@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import VideoPlayer from '@/components/player/videoPlayer';
 import CourseTabs from '@/components/courseDetails/courseTab';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { CourseForm, CourseItem, Section } from '@/types/courseType';
+import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
 import CourseItemList from '@/components/courseDetails/lessonList';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
@@ -15,9 +15,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
 import CourseDescriptionTab from '@/components/courseDetails/courseDescriptionTab';
+import { UserType } from '@/types/userType';
 
 // Hàm helper để kiểm tra và lấy video URL
-const _getVideoUrl = (item: CourseItem | Section | undefined): string | undefined => {
+const _getVideoUrl = (item: CourseItem | SectionType | undefined): string | undefined => {
   if (!item) return undefined;
 
   // Check if it's a CourseItem with a video
@@ -57,11 +58,12 @@ const LearnPage = () => {
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
   const [isRegistered, setIsRegistered] = useState(false);
   const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>('');
+  const [currentSection, setCurrentSection] = useState<SectionType | undefined>(undefined);
 
   // Derived states using useMemo
   const sections = useMemo(() => {
     if (!courseData?.sections) return [];
-    return courseData.sections.sort((a: Section, b: Section) =>
+    return courseData.sections.sort((a: SectionType, b: SectionType) =>
       a.position.localeCompare(b.position)
     );
   }, [courseData?.sections]);
@@ -167,17 +169,23 @@ const LearnPage = () => {
       // PRIORITY 1: If lecture parameter is provided, find and set that specific lecture
       if (lecture) {
         let foundLectureItem: CourseItem | undefined;
+        let foundSection: SectionType | undefined;
 
         for (const section of sections) {
           const lectureItem = section.items?.find((item) => item.id === lecture);
+
           if (lectureItem) {
             foundLectureItem = lectureItem;
+            foundSection = section;
+
             break;
           }
         }
 
         if (foundLectureItem) {
           setCurrentCourseItem(foundLectureItem);
+          setCurrentSection(foundSection);
+
           return;
         }
       }
@@ -188,17 +196,23 @@ const LearnPage = () => {
         const firstSection = sections[0];
         if (firstSection?.items?.length) {
           setCurrentCourseItem(firstSection.items[0]);
+          setCurrentSection(firstSection);
+          return;
         }
       } else if (isRegistered) {
         let lectureToSet: CourseItem | undefined;
+        let sectionToSet: SectionType | undefined;
 
         // Find first incomplete lecture
         for (const section of sections) {
           const lectureInProgress = section.items?.find(
             (item) => (item.progresses?.[0]?.watch_time_in_percentage ?? 0) < 80
           );
+
           if (lectureInProgress) {
             lectureToSet = lectureInProgress;
+            sectionToSet = section;
+
             break;
           }
         }
@@ -210,11 +224,14 @@ const LearnPage = () => {
             .find((s) => s.items && s.items.length > 0);
           if (lastSectionWithItems) {
             lectureToSet = lastSectionWithItems.items[lastSectionWithItems.items.length - 1];
+            sectionToSet = lastSectionWithItems;
           }
         }
 
         if (lectureToSet) {
           setCurrentCourseItem(lectureToSet);
+          setCurrentSection(sectionToSet);
+          return;
         }
       } else {
         // For unregistered users, find first preview
@@ -222,6 +239,7 @@ const LearnPage = () => {
           const previewItem = section.items?.find((item) => item.is_preview);
           if (previewItem) {
             setCurrentCourseItem(previewItem);
+            setCurrentSection(section);
             break;
           }
         }
@@ -347,6 +365,8 @@ const LearnPage = () => {
                 courseData={courseData}
                 isOwner={isOwner}
                 currentCommentItem={currentCommentItem}
+                currentSection={currentSection}
+                owner={courseData?.instructor?.user as UserType}
               />
             </div>
           )}
@@ -356,21 +376,6 @@ const LearnPage = () => {
               courseData={courseData}
               showRegister={!isRegistered && !isOwner}
             />
-          )}
-
-          {!isRegistered && !isOwner && (
-            <div className="p-4 text-center bg-white dark:bg-richBlack rounded-lg shadow-md">
-              <Button
-                variant="outline"
-                className="bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-125 text-white"
-                onClick={() => {
-                  const path = userInfo.id ? `/checkout/${id}` : '/login';
-                  router.push(path);
-                }}
-              >
-                Đăng ký khóa học
-              </Button>
-            </div>
           )}
         </div>
       )}

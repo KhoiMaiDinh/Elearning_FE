@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseItem, SectionType } from '@/types/courseType';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 interface CourseItemListProps {
-  sections: Section[];
+  sections: SectionType[];
   currentCourseItemId: string;
   onCourseItemSelect: (courseItem: CourseItem) => void;
   isExpanded: boolean;
@@ -33,7 +33,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   };
 
   // Check nếu có bài con đang active thì section cha cũng sáng
-  const isChildActive = (section: Section) =>
+  const isChildActive = (section: SectionType) =>
     section?.items?.some((item) => item?.title === currentCourseItemId) || false;
 
   if (!sections || sections.length === 0) {

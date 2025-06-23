@@ -432,7 +432,7 @@ export const Overview = () => {
                   </div>
                   <Dialog>
                     <DialogTrigger asChild>
-                     <ViewMoreButton />
+                      <ViewMoreButton />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[625px]">
                       <DialogHeader>
@@ -830,11 +830,11 @@ export const Overview = () => {
                                 </span>
                               </div>
                               <span className="text-xs text-muted-foreground flex justify-center">
-                                {comment.lecture.section.course.title}
+                                {comment?.lecture?.section?.course?.title}
                                 <ChevronRight className="w-4 h-4" />
-                                {comment.lecture.section.title}
+                                {comment?.lecture?.section?.title}
                                 <ChevronRight className="w-4 h-4" />
-                                {comment.lecture.title}
+                                {comment.lecture.series[0]?.title ?? ''}
                               </span>
                             </div>
                           </div>

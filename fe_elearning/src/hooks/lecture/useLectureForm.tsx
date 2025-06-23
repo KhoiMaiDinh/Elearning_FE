@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { CourseItem, ResourceType, Section } from '@/types/courseType';
+import { CourseItem, ResourceType, SectionType } from '@/types/courseType';
 import { APIInitCourseItem, APIUpdateCourseItem } from '@/utils/course';
 import { uploadToMinIO } from '@/utils/storage';
 import { MediaType } from '@/types/mediaType';
@@ -54,7 +54,7 @@ const courseItemSchema = yup.object().shape({
 });
 
 export const useLecture = (
-  section: Section,
+  section: SectionType,
   initialValues: CourseItem | null,
   onSave: (successMessage: string) => void,
   onFail: (errorMessage: string) => void

@@ -19,7 +19,7 @@ import {
   TvMinimalPlay,
   X,
 } from 'lucide-react';
-import { CourseItem, Section } from '@/types/courseType';
+import { CourseItem, SectionType } from '@/types/courseType';
 import { formatDuration } from '@/helpers/durationFormater';
 import CourseStatusBadge from '../badge/courseStatusBadge';
 import { APIDeleteDraftLecture, APIHideLecture, APIUnhideLecture } from '@/utils/lecture';
@@ -28,15 +28,15 @@ import { Badge } from '../ui/badge';
 
 type SectionCardProps = {
   mode: 'edit' | 'view';
-  section: Section;
+  section: SectionType;
   sectionIndex: number;
   openSectionIds: Set<string>;
   toggleSection: (sectionId: string) => void;
-  handleAddLecture: (section: Section) => void;
-  handleEditSection: (section: Section) => void;
-  handleEditLecture: (section: Section, lecture: CourseItem) => void;
+  handleAddLecture: (section: SectionType) => void;
+  handleEditSection: (section: SectionType) => void;
+  handleEditLecture: (section: SectionType, lecture: CourseItem) => void;
   handleGetCourseInfo: () => void;
-  handleViewLecture: (section: Section, lecture: CourseItem) => void;
+  handleViewLecture: (section: SectionType, lecture: CourseItem) => void;
 };
 
 const SectionCard: React.FC<SectionCardProps> = ({

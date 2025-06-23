@@ -9,7 +9,7 @@ import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegiste
 import { Button } from '@/components/ui/button';
 import { APIInitCourseItem } from '@/utils/course';
 import { uploadToMinIO } from '@/utils/storage';
-import { CourseItem, Section, VideoType, ResourceType } from '@/types/courseType';
+import { CourseItem, SectionType, VideoType, ResourceType } from '@/types/courseType';
 import VideoPlayer from '@/components/courseDetails/videoPlayer';
 import { Trash2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
@@ -67,7 +67,7 @@ const _CourseItemSchema = z.object({
 
 interface CourseItemFormProps {
   sectionIndex: number;
-  section: Section;
+  section: SectionType;
   onSave: () => void;
   onCancel: () => void;
   initialValues?: CourseItem | null;

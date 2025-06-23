@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Popup from '../courseDetails/popup';
 import ReviewListUser from '../course/reviewListUser';
-import { Section } from '@/types/courseType';
+import { SectionType } from '@/types/courseType';
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const Page = () => {
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showReviews, setShowReviews] = useState(false);
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);
 
   // =============== FUNCTION ===============
   const handleGetCourseMe = async () => {
@@ -75,7 +75,7 @@ const Page = () => {
   useEffect(() => {
     if (course?.sections) {
       // Create a new sorted array instead of sorting in place
-      const sortedSections = [...course.sections].sort((a: Section, b: Section) =>
+      const sortedSections = [...course.sections].sort((a: SectionType, b: SectionType) =>
         a.position.localeCompare(b.position)
       );
       setSections(sortedSections);

@@ -1,31 +1,14 @@
+import { CourseItem } from './courseType';
 import { UserType } from './userType';
 
 export interface CommunityThread {
   id: string;
   title: string;
   content: string;
-  author: {
-    id: string;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    profile_image: {
-      key: string;
-    };
-  };
-  lecture: {
-    id: string;
-    title: string;
-    section: {
-      course: {
-        title: string;
-        id: string;
-      };
-      id: string;
-      title: string;
-    };
-  };
+  author: UserType;
+  lecture?: CourseItem;
+  createdAt: string;
+  replies?: CommunityThreadReply[];
 }
 
 export interface CommunityThreadReply {

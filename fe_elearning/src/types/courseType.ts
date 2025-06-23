@@ -1,5 +1,5 @@
 import { MediaType } from './mediaType';
-import { Lecture } from './registerLectureFormType';
+import { InstructorType } from './registerLectureFormType';
 import { UserType } from './userType';
 
 export interface VideoType {
@@ -49,9 +49,10 @@ export interface CourseItem {
   series: SeriesType[];
   is_hidden?: boolean;
   deletedAt?: string;
+  section?: SectionType;
 }
 
-export interface Section {
+export type SectionType = {
   id: string;
   title: string;
   description: string;
@@ -62,7 +63,8 @@ export interface Section {
   quizzes: any[];
   articles: any[];
   is_expanded?: boolean;
-}
+  course?: CourseForm;
+};
 
 export interface Translation {
   category_translation_id?: string;
@@ -98,13 +100,13 @@ export interface CourseForm {
   is_disabled?: boolean;
   status?: string;
   instructor_id?: string;
-  instructor?: Lecture;
+  instructor?: InstructorType;
   level: string;
   thumbnail: MediaType | null;
   is_approved?: boolean;
   price: number;
   priceFinal?: number;
-  sections?: Section[];
+  sections?: SectionType[];
   avg_rating?: number;
   total_enrolled?: number;
   course_progress?: CourseProgress | null;

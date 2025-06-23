@@ -3,7 +3,7 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { RegisterLectureForm } from '@/types/registerLectureFormType';
+import { RegisterInstructorForm } from '@/types/registerLectureFormType';
 import * as yup from 'yup';
 import { uploadToMinIO } from '@/utils/storage';
 import { APIRegisterInstructor, APIUpdateInstructor } from '@/utils/instructor';
@@ -75,17 +75,17 @@ const schema = yup.object().shape({
       last_name: yup.string().required('Tên không được để trống'),
     })
     .required('Thông tin cá nhân không được để trống'),
-}) as yup.ObjectSchema<RegisterLectureForm>;
+}) as yup.ObjectSchema<RegisterInstructorForm>;
 
 export const useInstructorForm = (
-  initialValues: RegisterLectureForm | null,
+  initialValues: RegisterInstructorForm | null,
   onSave: (successMessage: string) => void,
   onFail: (errorMessage: string) => void
 ) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
-  const initialFormValues: RegisterLectureForm = {
+  const initialFormValues: RegisterInstructorForm = {
     category: userInfo?.instructor_profile?.category || { slug: '' },
     biography: userInfo?.instructor_profile?.biography || '',
     headline: userInfo?.instructor_profile?.headline || '',
@@ -111,7 +111,7 @@ export const useInstructorForm = (
     setValue,
     trigger,
     watch,
-  } = useForm<RegisterLectureForm>({
+  } = useForm<RegisterInstructorForm>({
     resolver: yupResolver(schema),
     defaultValues: initialFormValues,
   });

@@ -1,5 +1,5 @@
 // 'use client'
-import { Lecture } from '@/types/registerLectureFormType';
+import { InstructorType } from '@/types/registerLectureFormType';
 import { FileData, Roles } from '@/types/userType';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -13,7 +13,7 @@ const initialState = {
     createdAt: '',
     first_name: '',
     last_name: '',
-    instructor_profile: <Lecture | null>null,
+    instructor_profile: <InstructorType | null>null,
   },
 };
 

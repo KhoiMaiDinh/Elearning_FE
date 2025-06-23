@@ -10,7 +10,7 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import { Button } from '@/components/ui/button';
 import { APIInitSection, APIUpdateSection, APIGetFullCourse } from '@/utils/course';
-import { Section } from '@/types/courseType';
+import { SectionType } from '@/types/courseType';
 import ToastNotify from '../ToastNotify/toastNotify';
 import { toast, ToastContainer } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
@@ -24,8 +24,8 @@ const sectionSchema = yup.object().shape({
 });
 
 interface SectionFormProps {
-  section: Section;
-  onSave: (data: Section) => void;
+  section: SectionType;
+  onSave: (data: SectionType) => void;
   onCancel: () => void;
   courseId: string;
 }
@@ -35,8 +35,8 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<Section>({
-    resolver: yupResolver(sectionSchema) as unknown as Resolver<Section>,
+  } = useForm<SectionType>({
+    resolver: yupResolver(sectionSchema) as unknown as Resolver<SectionType>,
     defaultValues: {
       title: section.title || '',
       description: section.description || '',
@@ -60,7 +60,7 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
     }
   };
 
-  const handleCreateSection = async (data: Section) => {
+  const handleCreateSection = async (data: SectionType) => {
     try {
       const payload = {
         title: data.title,
@@ -73,7 +73,7 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
       };
       const response = await APIInitSection(payload);
       if (response?.status === 201) {
-        const newSection: Section = {
+        const newSection: SectionType = {
           ...section,
           id: response.data.id,
           title: data.title,
@@ -96,14 +96,14 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
     }
   };
 
-  const handleUpdateSection = async (data: Section) => {
+  const handleUpdateSection = async (data: SectionType) => {
     try {
       const response = await APIUpdateSection(section.id || '', {
         title: data.title,
         description: data.description,
       });
       if (response?.status === 200) {
-        const updatedSection: Section = {
+        const updatedSection: SectionType = {
           ...section,
           title: data.title,
           description: data.description,
@@ -120,7 +120,7 @@ const SectionForm: React.FC<SectionFormProps> = ({ section, onSave, onCancel, co
     }
   };
 
-  const onSubmit = async (data: Section) => {
+  const onSubmit = async (data: SectionType) => {
     if (isNewSection) {
       await handleCreateSection(data);
     } else {

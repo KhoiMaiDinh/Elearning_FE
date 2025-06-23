@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CourseForm, CourseItem, Section } from '@/types/courseType';
+import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
 
 import { Card, CardContent } from '../ui/card';
 import AddButton from '../button/addButton';
@@ -18,10 +18,10 @@ import InformTooltip from '../tooltip/informTooltip';
 import { formatDuration } from '@/helpers';
 interface SectionListProps {
   mode: 'edit' | 'view';
-  sections: Section[];
+  sections: SectionType[];
   course: CourseForm;
   showDeleted: boolean;
-  setSections: (sections: Section[]) => void;
+  setSections: (sections: SectionType[]) => void;
   setShowDeleted: (value: boolean) => void;
   handleGetCourseInfo: () => void;
   handleNextStep: () => void;
@@ -42,7 +42,7 @@ const SectionList: React.FC<SectionListProps> = ({
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
 
-  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+  const [selectedSection, setSelectedSection] = useState<SectionType | null>(null);
   const [selectedLecture, setSelectedLecture] = useState<CourseItem | null>(null);
   const [lectureMode, setLectureMode] = useState<'edit' | 'view' | 'create'>('create');
   const toggleSection = (sectionId: string) => {
@@ -70,14 +70,14 @@ const SectionList: React.FC<SectionListProps> = ({
     }, 0);
   };
 
-  const handleEditLecture = (section: Section, lecture: CourseItem) => {
+  const handleEditLecture = (section: SectionType, lecture: CourseItem) => {
     setSelectedSection(section);
     setSelectedLecture(lecture);
     setIsLectureModalOpen(true);
     setLectureMode('edit');
   };
 
-  const handleViewLecture = (section: Section, lecture: CourseItem) => {
+  const handleViewLecture = (section: SectionType, lecture: CourseItem) => {
     setSelectedSection(section);
     setSelectedLecture(lecture);
     setIsLectureModalOpen(true);
@@ -90,7 +90,7 @@ const SectionList: React.FC<SectionListProps> = ({
     setIsLectureModalOpen(open);
   };
 
-  const handleAddLecture = (section: Section) => {
+  const handleAddLecture = (section: SectionType) => {
     setSelectedSection(section);
     setIsLectureModalOpen(true);
     setLectureMode('create');
@@ -109,7 +109,7 @@ const SectionList: React.FC<SectionListProps> = ({
     setIsSectionModalOpen(open);
   };
 
-  const handleEditSection = (section: Section) => {
+  const handleEditSection = (section: SectionType) => {
     setSelectedSection(section);
     setIsSectionModalOpen(true);
   };

@@ -1,3 +1,6 @@
+import { CourseItem } from "./courseType";
+import { UserType } from "./userType";
+
 export interface CommentAspect {
   comment_aspect_id: string;
   aspect: string;
@@ -21,43 +24,8 @@ export interface LectureComment {
   updatedBy: string;
   deletedAt: null;
   aspects: CommentAspect[];
-  user: {
-    id: string;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    profile_image: {
-      key: string;
-      rejection_reason: null;
-      status: string;
-      bucket: string;
-    };
-  };
-  lecture: {
-    section: {
-      title: string;
-      course: {
-        id: string;
-        title: string;
-        description: string;
-      };
-    };
-    lecture_id: string;
-    id: string;
-    title: string;
-    position: string;
-    is_preview: boolean;
-    section_id: string;
-    status: string;
-    description: string;
-    resource_id: null;
-    createdAt: string;
-    createdBy: string;
-    updatedAt: string;
-    updatedBy: string;
-    deletedAt: null;
-  };
+  user: UserType;
+  lecture: CourseItem;
 }
 
 export interface StatisticsEachItemCourse {

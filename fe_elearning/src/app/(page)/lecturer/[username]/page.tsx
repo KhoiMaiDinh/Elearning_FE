@@ -10,7 +10,7 @@ import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useParams } from 'next/navigation';
 import { APIGetInstructorByUserName } from '@/utils/instructor';
 import { useEffect, useState } from 'react';
-import type { Lecture } from '@/types/registerLectureFormType';
+import type { InstructorType } from '@/types/registerLectureFormType';
 import { APIGetFavoriteCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ import LecturerProfileSkeleton from '@/components/skeleton/lecturerProfileSkelet
 
 const TeacherProfile = () => {
   const { username } = useParams();
-  const [teacherData, setTeacherData] = useState<Lecture>();
+  const [teacherData, setTeacherData] = useState<InstructorType>();
   const [dataCourse, setDataCourse] = useState<CourseForm[]>([]);
   const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
   const [loading, setLoading] = useState(true);

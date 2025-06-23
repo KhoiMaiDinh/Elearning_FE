@@ -1,8 +1,8 @@
-import { Star, Users, Clock, Award, DollarSign } from 'lucide-react';
+import { Users, Clock, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CourseForm, CourseItem } from '@/types/courseType';
+import { CourseForm } from '@/types/courseType';
 import { RatingStars } from '../rating/ratingStars';
 import { formatPrice } from '../formatPrice';
 import CourseLevelBadge from '../badge/courseLevelBadge';
@@ -23,10 +23,10 @@ const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   return (
-    <Card className="bg-gradient-to-r from-slate-800/50 to-purple-900/30 dark:from-slate-800/50 dark:to-purple-900/30 from-white/90 to-indigo-50/90 dark:border-slate-700 border-blue-200 shadow-xl backdrop-blur-sm">
+    <Card className="dark:border-slate-700 border-blue-200 shadow-xl backdrop-blur-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <Badge className="bg-gradient-144 text-white">Mô tả khóa học</Badge>
+          <Badge className="bg-gradient-144 text-white border-none">Mô tả Khóa học</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -93,26 +93,28 @@ const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
             <span className=" dark:text-slate-400 text-slate-600">Cấp độ:</span>
             <CourseLevelBadge level={courseData.level} />
           </div>
-          <div className="flex items-start  space-x-3 flex-col">
+          <div className="flex items-start space-x-3 flex-col">
             <span className=" dark:text-slate-400 text-slate-600">Mô tả</span>
             <ShowMoreText text={courseData.description} initialLines={3} />
           </div>
         </div>
 
-        <div className="flex space-x-3">
-          <Button
-            className="flex-1 bg-custom-gradient-button-violet hover:brightness-105 dark:text-white shadow shadow-majorelleBlue"
-            onClick={() => {
-              if (userInfo.id) {
-                router.push(`/checkout/${courseData.id}`);
-              } else {
-                router.push('/login');
-              }
-            }}
-          >
-            Đăng ký ngay
-          </Button>
-        </div>
+        {showRegister && (
+          <div className="flex space-x-3">
+            <Button
+              className="flex-1 bg-custom-gradient-button-violet hover:brightness-105 dark:text-white shadow shadow-majorelleBlue"
+              onClick={() => {
+                if (userInfo.id) {
+                  router.push(`/checkout/${courseData.id}`);
+                } else {
+                  router.push('/login');
+                }
+              }}
+            >
+              Đăng ký ngay
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

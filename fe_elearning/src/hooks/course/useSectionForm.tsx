@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { APIInitSection, APIUpdateSection } from '@/utils/course';
-import { CourseForm, Section } from '@/types/courseType';
+import { CourseForm, SectionType } from '@/types/courseType';
 import { useEffect, useState } from 'react';
 
 export const sectionSchema = yup.object({
@@ -28,7 +28,7 @@ type SectionForm = {
 
 export const useSectionForm = (
   course: CourseForm,
-  initialValues: Section | null,
+  initialValues: SectionType | null,
   onSave: (successMessage: string) => void,
   onFail: (errorMessage: string) => void
 ) => {

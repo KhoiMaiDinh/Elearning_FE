@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Flag, X } from 'lucide-react';
+import { Flag, Send } from 'lucide-react';
 import { APICreateReport } from '@/utils/report';
 import { useForm, Controller, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,6 +10,16 @@ import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
 import { useTheme } from 'next-themes';
+import { Button } from '../ui/button';
+import {
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+} from '../ui/dialog';
+
 const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
@@ -23,12 +33,7 @@ export default function ReportButton({
   type: string;
   label?: string;
 }) {
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    // formState: { errors },
-  } = useForm<any>({
+  const { control, handleSubmit, setValue, watch } = useForm<any>({
     resolver: yupResolver(schema) as unknown as Resolver<any>,
     defaultValues: {
       content: '',
@@ -36,7 +41,10 @@ export default function ReportButton({
   });
 
   const [showReport, setShowReport] = useState(false);
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const theme = useTheme();
+  const content = watch('content');
+
   const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
     if (response?.status === 201) {
@@ -63,16 +71,17 @@ export default function ReportButton({
 
   const handleClearData = () => {
     setValue('content', '');
+    setSelectedReason(null);
   };
 
-  const _handleCloseReport = () => {
-    setShowReport(false);
+  const handleReasonSelect = (value: string, label: string) => {
+    setSelectedReason(value);
+    setValue('content', value === 'other' ? '' : label);
   };
 
   return (
     <>
       <div className="flex flex-col items-end gap-3">
-        {/* Menu Options */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
@@ -83,6 +92,7 @@ export default function ReportButton({
                 }}
               >
                 <Flag className="w-4 h-4" />
+                {label && <span>{label}</span>}
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -90,54 +100,91 @@ export default function ReportButton({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </div>
-
-      {/* Popup Report Form */}
-      {showReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-[90%] max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-eerieBlack">
-            <button
-              className="absolute right-3 top-3 text-gray-400 hover:text-red-500"
-              onClick={() => setShowReport(false)}
-            >
-              <X size={20} />
-            </button>
-            <h2 className="mb-4 text-lg font-semibold text-eerieBlack dark:text-white">
-              Gửi báo cáo vi phạm
-            </h2>
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="content"
-                  className="text-sm font-medium text-gray-700 dark:text-white"
-                >
-                  {label}
-                </label>
+        <Dialog
+          open={showReport}
+          onOpenChange={(open) => {
+            if (!open) {
+              handleClearData();
+            }
+            setShowReport(open);
+          }}
+        >
+          <DialogContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 w-full max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-gray-900 dark:text-white flex items-center space-x-2">
+                <Flag className="w-5 h-5 text-red-400" />
+                <span>Báo cáo vi phạm</span>
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 dark:text-slate-300 text-sm">
+                Vui lòng chọn lý do báo cáo:
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                {[
+                  { value: 'spam', label: 'Spam hoặc quảng cáo' },
+                  { value: 'inappropriate', label: 'Nội dung không phù hợp' },
+                  { value: 'harassment', label: 'Quấy rối hoặc bắt nạt' },
+                  { value: 'misinformation', label: 'Thông tin sai lệch' },
+                  { value: 'copyright', label: 'Vi phạm bản quyền' },
+                  { value: 'other', label: 'Lý do khác' },
+                ].map((reason) => (
+                  <Button
+                    key={reason.value}
+                    type="button"
+                    variant={selectedReason === reason.value ? 'default' : 'ghost'}
+                    className={`w-full justify-start ${
+                      selectedReason === reason.value
+                        ? 'bg-majorelleBlue text-white'
+                        : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                    onClick={() => handleReasonSelect(reason.value, reason.label)}
+                  >
+                    {reason.label}
+                  </Button>
+                ))}
               </div>
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <Controller
-                control={control}
-                name="content"
-                render={({ field }: { field: any }) => (
-                  <textarea
-                    {...field}
-                    required
-                    placeholder="Nội dung báo cáo..."
-                    className="min-h-[100px] w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-majorelleBlue dark:bg-black dark:text-white"
-                  />
-                )}
-              />
-              <button
-                type="submit"
-                className="self-end rounded bg-majorelleBlue px-4 py-2 text-white hover:bg-opacity-80"
-              >
-                Gửi báo cáo
-              </button>
+
+              {selectedReason === 'other' && (
+                <Controller
+                  control={control}
+                  name="content"
+                  render={({ field }) => (
+                    <textarea
+                      {...field}
+                      required
+                      placeholder="Nhập lý do khác..."
+                      className="min-h-[100px] w-full rounded bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 p-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-majorelleBlue"
+                    />
+                  )}
+                />
+              )}
+
+              <DialogFooter className="border-t border-gray-200 dark:border-slate-700 pt-4 space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700"
+                  onClick={() => {
+                    setShowReport(false);
+                    handleClearData();
+                  }}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-majorelleBlue text-white hover:bg-opacity-80"
+                  disabled={!selectedReason || (selectedReason === 'other' && !content)}
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Gửi báo cáo
+                </Button>
+              </DialogFooter>
             </form>
-          </div>
-        </div>
-      )}
+          </DialogContent>
+        </Dialog>
+      </div>
     </>
   );
 }

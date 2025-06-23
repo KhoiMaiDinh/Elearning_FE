@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CourseForm, Section } from '@/types/courseType';
+import { CourseForm, SectionType } from '@/types/courseType';
 import { useSectionForm } from '@/hooks/course/useSectionForm';
 import { Controller } from 'react-hook-form';
 import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
@@ -23,7 +23,7 @@ import { useTheme } from 'next-themes';
 interface AddSectionDialogProps {
   open: boolean;
   course: CourseForm;
-  section: Section | null;
+  section: SectionType | null;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess: () => void;
 }

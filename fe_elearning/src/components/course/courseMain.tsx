@@ -4,7 +4,7 @@ import type React from 'react';
 import { useState, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { PlayCircle, CheckCircle, Clock, ChevronRight, Lock } from 'lucide-react';
-import type { CourseForm, CourseItem, Section } from '@/types/courseType';
+import type { CourseForm, CourseItem, SectionType } from '@/types/courseType';
 import { cn } from '@/lib/utils';
 import { formatDuration } from '@/helpers/durationFormater';
 import { useRouter } from 'next/navigation';
@@ -21,13 +21,13 @@ const CourseMain: React.FC<CourseMainProps> = ({
   isRegistered = false,
   isOwner = false,
 }) => {
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     if (course?.sections) {
-      const sortedSections = course.sections.sort((a: Section, b: Section) =>
+      const sortedSections = course.sections.sort((a: SectionType, b: SectionType) =>
         a.position.localeCompare(b.position)
       );
       setSections(sortedSections);

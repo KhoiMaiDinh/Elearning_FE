@@ -20,7 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { APIGetListInstructor } from '@/utils/instructor';
 import { Input } from '@/components/ui/input';
 import LecturersBlock from '@/components/block/lecturers-block';
-import { Lecture } from '@/types/registerLectureFormType';
+import { InstructorType } from '@/types/registerLectureFormType';
 import { Category } from '@/types/categoryType';
 import { debounce } from 'lodash';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -33,7 +33,7 @@ const Page = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [listLecture, setListLecture] = useState<Lecture[]>([]);
+  const [listLecture, setListLecture] = useState<InstructorType[]>([]);
   const [isLoadingLecture, setIsLoadingLecture] = useState(false);
   const [category, setCategory] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -230,7 +230,7 @@ const Page = () => {
             <div className="inline-flex animate-marquee space-x-4 md:space-x-6 gap-4 md:gap-10">
               {listLecture &&
                 listLecture.length > 0 &&
-                listLecture.concat(listLecture).map((lecture: Lecture, idx: number) => (
+                listLecture.concat(listLecture).map((lecture: InstructorType, idx: number) => (
                   <div
                     key={idx}
                     className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white dark:border-darkSilver shadow-md"
@@ -371,7 +371,7 @@ const Page = () => {
                 >
                   {listLecture &&
                     listLecture.length > 0 &&
-                    listLecture?.map((lecture: Lecture, index: number) => (
+                    listLecture?.map((lecture: InstructorType, index: number) => (
                       <LecturersBlock
                         key={index}
                         avatar={lecture?.user?.profile_image?.key}

@@ -48,7 +48,7 @@ import {
 import { APIGetListInstructor } from '@/utils/instructor';
 import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
-import type { Lecture } from '@/types/registerLectureFormType';
+import type { InstructorType } from '@/types/registerLectureFormType';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
 import { APIGetRecommendation } from '@/utils/recommendation';
 import { useSelector } from 'react-redux';
@@ -99,7 +99,7 @@ export default function Page() {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
-  const [listLecture, setListLecture] = useState<Lecture[]>([]);
+  const [listLecture, setListLecture] = useState<InstructorType[]>([]);
   const [listCourse, setListCourse] = useState<CourseForm[]>([]);
   const [enrolledCourse, setEnrolledCourse] = useState<CourseForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);

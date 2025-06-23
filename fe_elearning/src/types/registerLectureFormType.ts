@@ -1,6 +1,6 @@
 import { Category } from './categoryType';
 import { MediaType } from './mediaType';
-export type RegisterLectureForm = {
+export type RegisterInstructorForm = {
   user: { first_name: string; last_name: string };
   category: {
     slug: string;
@@ -14,7 +14,7 @@ export type RegisterLectureForm = {
   linkedin_url?: string | null;
 };
 
-export type Lecture = RegisterLectureForm & {
+export type InstructorType = RegisterInstructorForm & {
   category: Category;
   is_approved: boolean;
   disapproval_reason?: string;
@@ -24,7 +24,7 @@ export type Lecture = RegisterLectureForm & {
     email: string;
     first_name: string;
     last_name: string;
-    profile_image: MediaType;
+    profile_image?: MediaType;
     number_course?: number;
     number_student?: number;
     rating?: number;
