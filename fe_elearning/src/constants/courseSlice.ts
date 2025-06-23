@@ -1,6 +1,7 @@
 // 'use client'
+import { InstructorType } from '@/types/instructorType';
+import { CouponType } from '@/types/couponType';
 import { CourseProgress, SectionType } from '@/types/courseType';
-import { InstructorType } from '@/types/registerLectureFormType';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -44,6 +45,7 @@ const initialState = {
     course_progress: <CourseProgress | null>null,
     avg_rating: 0,
     total_enrolled: 0,
+    coupons: <CouponType[]>[],
   },
 };
 

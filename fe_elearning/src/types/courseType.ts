@@ -1,3 +1,4 @@
+import { CouponType } from './couponType';
 import { MediaType } from './mediaType';
 import { InstructorType } from './registerLectureFormType';
 import { UserType } from './userType';
@@ -114,6 +115,7 @@ export interface CourseForm {
   createdAt?: string;
   updatedAt?: string;
   warning?: { reports: { reason: string }[] }[];
+  coupons?: CouponType[];
 }
 
 export interface CourseProgress {

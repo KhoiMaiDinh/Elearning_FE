@@ -561,7 +561,7 @@ export default function Page() {
                               duration={100}
                               easing="ease-out"
                               initialOpacity={0}
-                              className="transform transition-all hover:-translate-y-2 p-4"
+                              className="transform h-full transition-all hover:-translate-y-2 p-4"
                             >
                               <CoursesBlock {...course} show_heart={false} />
                             </FadeContent>
@@ -623,7 +623,7 @@ export default function Page() {
                           duration={100}
                           easing="ease-out"
                           initialOpacity={0}
-                          className="transform transition-all hover:-translate-y-2 p-4"
+                          className="transform transition-all h-full hover:-translate-y-2 p-4"
                         >
                           <LecturersBlock
                             avatar={lecture?.user?.profile_image?.key}

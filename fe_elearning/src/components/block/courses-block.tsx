@@ -32,6 +32,8 @@ const CoursesBlock: React.FC<CoursesBlockProps> = ({
   description,
   price,
   show_heart = true,
+  coupons,
+  subtitle,
 }) => {
   const router = useRouter();
 
@@ -64,45 +66,56 @@ const CoursesBlock: React.FC<CoursesBlockProps> = ({
 
   return (
     <Card
-      className="w-full h-full overflow-hidden border-0 shadow hover:shadow-md transition-all duration-300 hover:translate-y-[-4px] bg-white dark:bg-black backdrop-blur-sm"
+      className="group w-full h-full overflow-hidden border border-gray-200/60 dark:border-gray-800/60 shadow-sm hover:shadow-xl transition-all duration-500 hover:translate-y-[-8px] bg-white dark:bg-gray-900/50 backdrop-blur-sm cursor-pointer"
       onClick={() => router.push(`/course/${id}`)}
     >
       <div className="relative">
         {/* Thumbnail */}
-        <div className="relative h-48 w-full overflow-hidden">
+        <div className="relative  w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
           <img
             src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (thumbnail?.key || '')}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full  object-cover transition-all duration-700 aspect-video group-hover:scale-110"
           />
+
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {/* Favorite Button */}
           {show_heart && (
             <button
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-800 transition-colors"
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white dark:hover:bg-gray-800 hover:scale-110 transition-all duration-300 border border-white/20"
               onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
             >
               <Heart
-                className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
+                className={`w-5 h-5 transition-all duration-300 ${
+                  isFavorite
+                    ? 'fill-red-500 text-red-500 scale-110'
+                    : 'text-gray-600 hover:text-red-500 dark:text-gray-300'
+                }`}
               />
             </button>
           )}
 
           {/* Level Badge */}
-          {level && <CourseLevelBadge className={`absolute bottom-3 left-3 `} level={level} />}
+          {level && (
+            <div className="absolute bottom-4 left-4">
+              <CourseLevelBadge level={level} className="shadow-lg backdrop-blur-sm" />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Content */}
-      <CardContent className="px-5 space-y-2">
+      <CardContent className="p-6 space-y-4">
         {/* Title */}
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 ">
+        <h3 className="font-bold text-xl text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
           {title}
         </h3>
 
         {/* Instructor */}
-        <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8 border-2 border-white dark:border-gray-700">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-700 shadow-sm">
             <AvatarImage
               alt={instructor?.user?.last_name || ''}
               src={
@@ -111,63 +124,95 @@ const CoursesBlock: React.FC<CoursesBlockProps> = ({
               }
               className="object-cover"
             />
-            <AvatarFallback>{instructor?.user?.last_name?.[0]}</AvatarFallback>
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+              {instructor?.user?.last_name?.[0]}
+            </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-gray-600 dark:text-gray-300">
-            {instructor?.user?.first_name} {instructor?.user?.last_name}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+              {instructor?.user?.first_name} {instructor?.user?.last_name}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">Giảng viên</span>
+          </div>
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-yellow-400" />
-            <span className="text-gray-700 dark:text-gray-300">
-              {avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}
-            </span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                {avg_rating ? (Math.round(avg_rating * 10) / 10).toFixed(1) : 'N/A'}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-blue-500" />
-            <span className="text-gray-700 dark:text-gray-300">{total_enrolled || 0}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {total_enrolled || 0} học viên
+            </span>
           </div>
         </div>
 
         {/* Description */}
         <div
-          className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 min-h-[2.5rem]"
-          dangerouslySetInnerHTML={{ __html: description || '' }}
+          className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed h-10 overflow-hidden"
+          dangerouslySetInnerHTML={{ __html: subtitle || '' }}
         />
       </CardContent>
 
-      <CardFooter className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-black">
-        <div className="w-full space-y-3">
+      <CardFooter className="relative px-6 py-5 border-t border-gray-100/80 dark:border-gray-800/80 bg-gradient-to-r from-gray-50/50 to-gray-100/30 dark:from-gray-900/30 dark:to-gray-800/30">
+        <div className="w-full flex flex-col h-full">
           {/* Progress Bar (if applicable) */}
           {course_progress !== undefined && (
-            <div className="space-y-1 w-full">
-              <div className="flex items-center justify-between text-xs mb-1">
-                <div className="flex items-center text-gray-600 dark:text-gray-400">
-                  <Clock className="w-3 h-3 mr-1" />
-                  <span>Tiến độ</span>
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <Clock className="w-4 h-4" />
+                  <span className="font-medium">Tiến độ học tập</span>
                 </div>
-                <span className="font-medium text-blue-600 dark:text-blue-400">
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-full">
                   {course_progress?.progress}%
                 </span>
               </div>
-              <Progress value={course_progress?.progress} className="h-2" />
+              <Progress
+                value={course_progress?.progress}
+                className="h-2 bg-gray-200 dark:bg-gray-700"
+              />
             </div>
           )}
 
-          {/* Price */}
-          <div className="flex justify-between items-center">
-            {price && (
-              <span className="font-bold text-lg text-gray-900 dark:text-white">
-                {formatPrice(price)}
-              </span>
-            )}
-            <Badge className="bg-blue-600 hover:bg-blue-700 hover:brightness-125 hover:cursor-pointer">
-              {course_progress ? 'Tiếp tục học' : 'Xem chi tiết'}
-            </Badge>
+          {/* Spacer to push price to bottom */}
+          <div className="flex-1"></div>
+
+          {/* Price Section */}
+          <div className="flex items-center justify-start mt-auto">
+            <div className="flex items-center gap-3">
+              {price && coupons && coupons[0] && coupons[0].value > 0 ? (
+                <>
+                  <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                    {formatPrice(price - (price * coupons[0].value) / 100)}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                    {formatPrice(price)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  {formatPrice(price)}
+                </span>
+              )}
+            </div>
           </div>
+
+          {/* Discount Badge - Absolute positioning */}
+          {price && coupons && coupons[0] && coupons[0].value > 0 && (
+            <div className="absolute top-3 right-6">
+              <Badge className="bg-vividMalachite/20 text-vividMalachite font-semibold shadow-md">
+                -{coupons[0].value}%
+              </Badge>
+            </div>
+          )}
         </div>
       </CardFooter>
     </Card>
