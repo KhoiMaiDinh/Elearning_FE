@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
-import { InstructorType } from '@/types/registerLectureFormType';
+import { InstructorType } from '@/types/instructorType';
 import { APIPostComment, APIGetComment, APIGetCommentById } from '@/utils/comment';
 import InputWithSendButton from '../inputComponent/inputComment';
 import { LectureComment } from '@/types/commentType';

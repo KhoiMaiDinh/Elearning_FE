@@ -20,7 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { APIGetListInstructor } from '@/utils/instructor';
 import { Input } from '@/components/ui/input';
 import LecturersBlock from '@/components/block/lecturers-block';
-import { InstructorType } from '@/types/registerLectureFormType';
+import { InstructorType } from '@/types/instructorType';
 import { Category } from '@/types/categoryType';
 import { debounce } from 'lodash';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

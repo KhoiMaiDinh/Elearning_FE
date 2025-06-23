@@ -1,5 +1,5 @@
 // 'use client'
-import { InstructorType } from '@/types/registerLectureFormType';
+import { InstructorType } from '@/types/instructorType';
 import { FileData, Roles } from '@/types/userType';
 import { createSlice } from '@reduxjs/toolkit';
 

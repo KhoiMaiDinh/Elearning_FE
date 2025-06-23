@@ -48,7 +48,7 @@ import {
 import { APIGetListInstructor } from '@/utils/instructor';
 import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
-import type { InstructorType } from '@/types/registerLectureFormType';
+import type { InstructorType } from '@/types/instructorType';
 import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
 import { APIGetRecommendation } from '@/utils/recommendation';
 import { useSelector } from 'react-redux';

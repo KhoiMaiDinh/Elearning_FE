@@ -3,7 +3,7 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { RegisterInstructorForm } from '@/types/registerLectureFormType';
+import { RegisterInstructorForm } from '@/types/instructorType';
 import * as yup from 'yup';
 import { uploadToMinIO } from '@/utils/storage';
 import { APIRegisterInstructor, APIUpdateInstructor } from '@/utils/instructor';

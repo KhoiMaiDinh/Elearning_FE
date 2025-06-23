@@ -1,6 +1,6 @@
 import { CouponType } from './couponType';
 import { MediaType } from './mediaType';
-import { InstructorType } from './registerLectureFormType';
+import { InstructorType } from './instructorType';
 import { UserType } from './userType';
 
 export interface VideoType {

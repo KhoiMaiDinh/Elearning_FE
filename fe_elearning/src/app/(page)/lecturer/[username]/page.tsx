@@ -10,7 +10,7 @@ import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useParams } from 'next/navigation';
 import { APIGetInstructorByUserName } from '@/utils/instructor';
 import { useEffect, useState } from 'react';
-import type { InstructorType } from '@/types/registerLectureFormType';
+import type { InstructorType } from '@/types/instructorType';
 import { APIGetFavoriteCourse, APIGetListCourse } from '@/utils/course';
 import type { CourseForm } from '@/types/courseType';
 import Link from 'next/link';
