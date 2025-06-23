@@ -35,16 +35,7 @@ import {
   APIStudentGrowth,
 } from '@/utils/instructorDashboard';
 import { useEffect, useState } from 'react';
-import {
-  CourseCompletionRateType,
-  InstructorOverviewType,
-  CumulativeFeedChartType,
-  FeedChartType,
-  PayoutSummaryType,
-  NextPayoutType,
-  StudentEngagementType,
-  CourseRatingType,
-} from '@/types/instructorType';
+
 import { DashboardSkeleton } from '../skeleton/dashboardSkeleton';
 import {
   Dialog,
@@ -63,8 +54,20 @@ import { APIGetInstructorThreads } from '@/utils/thread';
 import { CommunityThread } from '@/types/communityThreadType';
 import { formatPrice } from '../formatPrice';
 import ViewMoreButton from '../button/viewMoreButton';
+import {
+  CourseCompletionRateType,
+  CourseRatingType,
+  CumulativeFeedChartType,
+  FeedChartType,
+  InstructorOverviewType,
+  NextPayoutType,
+  PayoutSummaryType,
+  StudentEngagementType,
+} from '@/types/instructorType';
+import { useRouter } from 'next/navigation';
 
 export const Overview = () => {
+  const router = useRouter();
   const [overviewData, setOverviewData] = useState<InstructorOverviewType | null>(null);
   const [studentGrowthData, setStudentGrowthData] = useState<CumulativeFeedChartType | null>(null);
   const [courseCompletionRateData, setCourseCompletionRateData] = useState<
@@ -702,12 +705,14 @@ export const Overview = () => {
                   <div className="space-y-3">
                     {nextPayoutData?.breakdown &&
                       nextPayoutData?.breakdown?.length > 0 &&
-                      nextPayoutData?.breakdown?.map((item, index) => (
-                        <div className="flex items-center justify-between text-sm" key={index}>
-                          <span>{item.title}</span>
-                          <span className="font-medium">{formatPrice(item.amount)}</span>
-                        </div>
-                      ))}
+                      nextPayoutData?.breakdown?.map(
+                        (item: { title: string; amount: number }, index: number) => (
+                          <div className="flex items-center justify-between text-sm" key={index}>
+                            <span>{item.title}</span>
+                            <span className="font-medium">{formatPrice(item.amount)}</span>
+                          </div>
+                        )
+                      )}
                   </div>
                 </div>
               </div>
@@ -819,14 +824,14 @@ export const Overview = () => {
                                 alt="Student"
                               />
                               <AvatarFallback>
-                                {comment.user.first_name[0]}
-                                {comment.user.last_name[0]}
+                                {comment?.user?.first_name?.[0] || ''}
+                                {comment?.user?.last_name?.[0] || ''}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">
-                                  {comment.user.first_name} {comment.user.last_name}
+                                  {comment?.user?.first_name} {comment?.user?.last_name}
                                 </span>
                               </div>
                               <span className="text-xs text-muted-foreground flex justify-center">
@@ -834,47 +839,66 @@ export const Overview = () => {
                                 <ChevronRight className="w-4 h-4" />
                                 {comment?.lecture?.section?.title}
                                 <ChevronRight className="w-4 h-4" />
-                                {comment.lecture.series[0]?.title ?? ''}
+                                {comment?.lecture?.series?.[0]?.title ?? ''}
                               </span>
                             </div>
                           </div>
                           <p className="mt-2 text-sm">"{comment.content}"</p>
-                          <div className="flex flex-wrap gap-2 justify-end pr-2">
-                            {comment.aspects &&
-                              comment.aspects.length > 0 &&
-                              comment.aspects.map((aspect) => {
-                                const emotionColor =
-                                  aspect.emotion === 'positive'
-                                    ? 'bg-greenCrayola/10 text-greenCrayola'
-                                    : aspect.emotion === 'neutral'
-                                      ? 'bg-blueberry/10 text-blueberry'
-                                      : 'bg-carminePink/10 text-carminePink';
-                                return (
-                                  <Badge
-                                    key={aspect.comment_aspect_id}
-                                    variant="outline"
-                                    className={`flex items-center gap-1 ${emotionColor}`}
-                                  >
-                                    <span>
-                                      {aspect.aspect === 'instructor_quality'
-                                        ? 'Chất lượng giảng viên'
-                                        : aspect.aspect === 'content_quality'
-                                          ? 'Chất lượng nội dung'
-                                          : aspect.aspect === 'technology'
-                                            ? 'Công nghệ'
-                                            : aspect.aspect === 'teaching_pace'
-                                              ? 'Tốc độ dạy'
-                                              : aspect.aspect === 'study_materials'
-                                                ? 'Tài liệu học tập'
-                                                : aspect.aspect === 'assignments_practice'
-                                                  ? 'Bài tập và thực hành'
-                                                  : aspect.aspect === 'other'
-                                                    ? 'Khác'
-                                                    : aspect.aspect}
-                                    </span>
-                                  </Badge>
-                                );
-                              })}
+                          <div className="flex flex-wrap gap-2 justify-between items-end pr-2">
+                            <div className="flex flex-wrap gap-2">
+                              {comment.aspects &&
+                                comment.aspects.length > 0 &&
+                                comment.aspects.map((aspect) => {
+                                  const emotionColor =
+                                    aspect.emotion === 'positive'
+                                      ? 'bg-greenCrayola/10 text-greenCrayola'
+                                      : aspect.emotion === 'neutral'
+                                        ? 'bg-blueberry/10 text-blueberry'
+                                        : aspect.emotion === 'negative'
+                                          ? 'bg-carminePink/10 text-carminePink'
+                                          : 'bg-amberColor/10 text-amberColor';
+                                  return (
+                                    <Badge
+                                      key={aspect.comment_aspect_id}
+                                      variant="outline"
+                                      className={`flex items-center gap-1 ${emotionColor}`}
+                                    >
+                                      <span>
+                                        {aspect.aspect === 'instructor_quality'
+                                          ? 'Chất lượng giảng viên'
+                                          : aspect.aspect === 'content_quality'
+                                            ? 'Chất lượng nội dung'
+                                            : aspect.aspect === 'technology'
+                                              ? 'Công nghệ'
+                                              : aspect.aspect === 'teaching_pace'
+                                                ? 'Tốc độ dạy'
+                                                : aspect.aspect === 'study_materials'
+                                                  ? 'Tài liệu học tập'
+                                                  : aspect.aspect === 'assignments_practice'
+                                                    ? 'Bài tập và thực hành'
+                                                    : aspect.aspect === 'other'
+                                                      ? 'Khác'
+                                                      : aspect.aspect}
+                                      </span>
+                                    </Badge>
+                                  );
+                                })}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const courseId = comment?.lecture?.section?.course?.id;
+                                const lectureId = comment?.lecture?.id;
+                                if (courseId && lectureId) {
+                                  router.push(
+                                    `/course-details/${courseId}?lecture=${lectureId}&comment=${comment.lecture_comment_id}&tab=reviews`
+                                  );
+                                }
+                              }}
+                            >
+                              Xem chi tiết
+                            </Button>
                           </div>
                         </div>
                       ))
@@ -908,9 +932,25 @@ export const Overview = () => {
                               </span>
                             </div>
                           </div>
-                          <p className="mt-2 text-sm">
-                            {rating.rating_comment ? `"${rating.rating_comment}"` : null}
-                          </p>
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-sm">
+                              {rating.rating_comment
+                                ? `"${rating.rating_comment}"`
+                                : 'Không có bình luận'}
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const courseId = rating?.course_id;
+                                if (courseId) {
+                                  // router.push(`/course/${courseId}?rating=${rating.}`);
+                                }
+                              }}
+                            >
+                              Xem chi tiết
+                            </Button>
+                          </div>
                         </div>
                       ))}
                 </div>
@@ -966,7 +1006,19 @@ export const Overview = () => {
                               </span>
                             </p>
                             <div className="mt-2">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const courseId = thread?.lecture?.section?.course?.id;
+                                  const lectureId = thread?.lecture?.id;
+                                  if (courseId && lectureId) {
+                                    router.push(
+                                      `/course-details/${courseId}?lecture=${lectureId}&thread=${thread.id}&tab=community`
+                                    );
+                                  }
+                                }}
+                              >
                                 Xem chi tiết
                               </Button>
                             </div>
@@ -989,7 +1041,19 @@ export const Overview = () => {
                               </span>
                             </p>
                             <div className="mt-2">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const courseId = thread?.lecture?.section?.course?.id;
+                                  const lectureId = thread?.lecture?.id;
+                                  if (courseId && lectureId) {
+                                    router.push(
+                                      `/course-details/${courseId}?lecture=${lectureId}&thread=${thread.id}&tab=community`
+                                    );
+                                  }
+                                }}
+                              >
                                 Xem chi tiết
                               </Button>
                             </div>

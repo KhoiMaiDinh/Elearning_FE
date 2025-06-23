@@ -12,6 +12,7 @@ import {
   Award,
   Flag,
   MessageCircle,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +56,8 @@ interface CourseTabsProps {
   currentCommentItem?: string;
   currentSection?: SectionType;
   owner?: UserType;
+  currentThreadId?: string | null;
+  defaultTab?: string | null;
 }
 
 const CourseTabs: React.FC<CourseTabsProps> = ({
@@ -63,6 +66,8 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   currentCommentItem,
   currentSection,
   owner,
+  currentThreadId,
+  defaultTab,
 }) => {
   const [activeTab, setActiveTab] = useState('description');
   const [newReview, setNewReview] = useState('');
@@ -81,6 +86,11 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   const [showCommentId, setShowCommentId] = useState<boolean>(false);
   const [comment, setComment] = useState<LectureComment | null>(null);
   const [showAnswerForm, setShowAnswerForm] = useState<string | null>(null);
+  const [showThreadPopup, setShowThreadPopup] = useState<boolean>(false);
+  const [selectedThread, setSelectedThread] = useState<CommunityThread | null>(null);
+  const [replySuccess, setReplySuccess] = useState<boolean>(false);
+  const [showCommentPopup, setShowCommentPopup] = useState<boolean>(false);
+  const [selectedComment, setSelectedComment] = useState<LectureComment | null>(null);
 
   const handlePostThread = async () => {
     const newPostData = {
@@ -144,6 +154,14 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           style: styleSuccess,
         });
         setShowAnswerForm(null);
+        setReplySuccess(true);
+
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setReplySuccess(false);
+        }, 3000);
+
+        // Don't close popup, just refresh data to show new reply
       } else {
         toast.error(<ToastNotify status={-1} message="Lỗi khi trả lời" />, {
           style: styleError,
@@ -233,6 +251,49 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
     }
   };
 
+  const handleGetCommentForPopup = async (commentId: string) => {
+    try {
+      // Tìm trong danh sách comments hiện tại trước
+      const existingComment = comments.find((comment) => comment.lecture_comment_id === commentId);
+      if (existingComment) {
+        setSelectedComment(existingComment);
+        setShowCommentPopup(true);
+        return;
+      }
+
+      // Nếu không tìm thấy, gọi API để lấy detail
+      const response = await APIGetCommentById(commentId);
+      if (response) {
+        setSelectedComment(response);
+        setShowCommentPopup(true);
+      }
+    } catch (error) {
+      console.error('Error fetching comment:', error);
+    }
+  };
+
+  const handleGetThreadById = async (threadId: string) => {
+    try {
+      // Lấy thread details từ danh sách hiện tại trước
+      const existingThread = communityPosts.find((post) => post.id === threadId);
+      if (existingThread) {
+        setSelectedThread(existingThread);
+        setExpandedThreadId(threadId);
+        await handleGetReply(threadId);
+        setShowThreadPopup(true);
+        return;
+      }
+
+      // Nếu không tìm thấy, có thể cần API để lấy thread detail
+      // Tạm thời sử dụng cách này
+      if (currentCourseItem?.id) {
+        await handleGetThread();
+      }
+    } catch (error) {
+      console.error('Error fetching thread:', error);
+    }
+  };
+
   useEffect(() => {
     handleGetComment();
     handleGetThread();
@@ -247,11 +308,26 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   useEffect(() => {
     if (currentCommentItem && currentCommentItem.length > 0) {
       setActiveTab('reviews');
-      handleGetCommentById(currentCommentItem);
+      // Don't show the old comment popup, use the new one instead
+      // handleGetCommentById(currentCommentItem);
+    } else if (defaultTab) {
+      setActiveTab(defaultTab);
     } else {
       setActiveTab('description');
     }
-  }, [currentCommentItem]);
+  }, [currentCommentItem, defaultTab]);
+
+  useEffect(() => {
+    if (currentThreadId && communityPosts.length > 0) {
+      handleGetThreadById(currentThreadId);
+    }
+  }, [currentThreadId, communityPosts]);
+
+  useEffect(() => {
+    if (currentCommentItem && comments.length > 0) {
+      handleGetCommentForPopup(currentCommentItem);
+    }
+  }, [currentCommentItem, comments]);
 
   const tabContentClassName =
     'className=" bg-AntiFlashWhite rounded-b-lg shadow-md dark:bg-slate-800/30 rounded-lg p-6 border border-blue-200 dark:border-slate-700"';
@@ -614,11 +690,264 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           </Popup>
         )}
 
-        {showCommentId && (
-          <Popup onClose={() => setShowCommentId(false)}>
-            <h3 className="text-lg font-semibold">Feedback</h3>
-            <div className="flex flex-col gap-4">
-              <CommentListUser comments={comment as LectureComment} />
+        {/* Comment Detail Popup */}
+        {showCommentPopup && selectedComment && (
+          <Popup
+            onClose={() => {
+              setShowCommentPopup(false);
+              setSelectedComment(null);
+            }}
+          >
+            <div className="max-w-3xl mx-auto">
+              <div className="flex flex-row justify-between h-full items-start">
+                <h3 className="text-xl font-semibold mb-4">Chi tiết Feedback</h3>
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-full w-8 h-8 items-center justify-center flex"
+                      onClick={() => {
+                        setShowCommentPopup(false);
+                        setSelectedComment(null);
+                      }}
+                    >
+                      <X className="w-4 h-4 text-gray-950 dark:text-AntiFlashWhite/80" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comment Content */}
+              <Card className="mb-6 dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="flex space-x-4">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={
+                          `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedComment.user?.profile_image?.key}` ||
+                          '/placeholder.svg'
+                        }
+                      />
+                      <AvatarFallback className="bg-blue-600 text-white">
+                        {selectedComment.user?.first_name?.[0] || ''}
+                        {selectedComment.user?.last_name?.[0] || ''}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-lg dark:text-white text-slate-800">
+                            Feedback từ {selectedComment.user?.first_name}{' '}
+                            {selectedComment.user?.last_name}
+                          </h4>
+                          <p className="text-sm dark:text-slate-400 text-slate-600">
+                            Bài học: {selectedComment.lecture?.title} •{' '}
+                            {new Date(selectedComment.createdAt).toLocaleString('vi-VN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="dark:text-slate-300 text-slate-700 leading-relaxed mb-4">
+                        <p>"{selectedComment.content}"</p>
+                      </div>
+
+                      {/* Aspects */}
+                      {selectedComment.aspects && selectedComment.aspects.length > 0 && (
+                        <div className="space-y-2">
+                          <h5 className="font-medium dark:text-white text-slate-800">
+                            Đánh giá theo khía cạnh:
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedComment.aspects.map((aspect) => {
+                              const emotionColor =
+                                aspect.emotion === 'positive'
+                                  ? 'bg-greenCrayola/10 text-greenCrayola border-greenCrayola/20'
+                                  : aspect.emotion === 'neutral'
+                                    ? 'bg-blueberry/10 text-blueberry border-blueberry/20'
+                                    : aspect.emotion === 'negative'
+                                      ? 'bg-carminePink/10 text-carminePink border-carminePink/20'
+                                      : 'bg-amberColor/10 text-amberColor border-amberColor/20';
+                              return (
+                                <Badge
+                                  key={aspect.comment_aspect_id}
+                                  variant="outline"
+                                  className={`${emotionColor}`}
+                                >
+                                  {aspect.aspect === 'instructor_quality'
+                                    ? 'Chất lượng giảng viên'
+                                    : aspect.aspect === 'content_quality'
+                                      ? 'Chất lượng nội dung'
+                                      : aspect.aspect === 'technology'
+                                        ? 'Công nghệ'
+                                        : aspect.aspect === 'teaching_pace'
+                                          ? 'Tốc độ dạy'
+                                          : aspect.aspect === 'study_materials'
+                                            ? 'Tài liệu học tập'
+                                            : aspect.aspect === 'assignments_practice'
+                                              ? 'Bài tập và thực hành'
+                                              : aspect.aspect === 'other'
+                                                ? 'Khác'
+                                                : aspect.aspect}
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+            </div>
+          </Popup>
+        )}
+
+        {/* Thread Detail Popup */}
+        {showThreadPopup && selectedThread && (
+          <Popup
+            onClose={() => {
+              setShowThreadPopup(false);
+              setSelectedThread(null);
+              setExpandedThreadId(null);
+              setNewReply('');
+              setReplySuccess(false);
+            }}
+          >
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-xl font-semibold mb-4">Chi tiết thảo luận</h3>
+
+              {/* Thread Question */}
+              <Card className="mb-6 dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="flex space-x-4">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={
+                          `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedThread.author?.profile_image.key}` ||
+                          '/placeholder.svg'
+                        }
+                      />
+                      <AvatarFallback className="bg-purple-600 text-white">
+                        {selectedThread.author.first_name[0] + selectedThread.author.last_name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-lg dark:text-white text-slate-800">
+                            {selectedThread.title}
+                          </h4>
+                          <p className="text-sm dark:text-slate-400 text-slate-600">
+                            {selectedThread.author.first_name +
+                              ' ' +
+                              selectedThread.author.last_name}{' '}
+                            •{' '}
+                            {new Date(selectedThread.createdAt).toLocaleString('vi-VN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dark:text-slate-300 text-slate-700 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: selectedThread.content }}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Replies Section */}
+              <div className="space-y-4 mb-6">
+                <h4 className="font-semibold text-lg dark:text-white text-slate-800">
+                  Câu trả lời ({replies.length})
+                </h4>
+
+                {replies.length > 0 &&
+                  replies.map((reply) => (
+                    <ReplyItem key={reply.id} reply={reply} courseOwner={owner!} />
+                  ))}
+              </div>
+
+              {/* Reply Form */}
+              <Card className="dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold dark:text-white text-slate-800">
+                      Viết câu trả lời
+                    </h4>
+                    {replySuccess && (
+                      <div className="flex items-center text-green-600 dark:text-green-400">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span className="text-sm">Đã gửi thành công!</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <InputRegisterLecture
+                      value={newReply}
+                      onChange={(value) => setNewReply(value.target.value)}
+                      placeholder="Nội dung câu trả lời..."
+                      className="min-h-[120px]"
+                    />
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm text-slate-500">
+                        {replySuccess ? (
+                          <span className="text-green-600 dark:text-green-400">
+                            Scroll lên để xem câu trả lời mới ↑
+                          </span>
+                        ) : (
+                          'Bạn có thể tiếp tục thảo luận sau khi gửi câu trả lời'
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowThreadPopup(false);
+                            setSelectedThread(null);
+                            setExpandedThreadId(null);
+                            setNewReply('');
+                          }}
+                        >
+                          Đóng
+                        </Button>
+                        <Button
+                          className="bg-custom-gradient-button-violet text-white hover:brightness-110"
+                          onClick={() => handleReplySubmit(selectedThread.id)}
+                          disabled={!stripHtml(newReply.trim())}
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Gửi câu trả lời
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </Popup>
         )}

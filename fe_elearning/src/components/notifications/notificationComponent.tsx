@@ -222,7 +222,9 @@ function NotificationItem({
                   ? `/profile/lecture?tab=ho-so`
                   : type === 'PROFILE_REJECTED'
                     ? `/profile/lecture?tab=ho-so&rejected=true&reason=${notification?.body}`
-                    : '',
+                    : type === 'NEW_THREAD'
+                      ? `/course-details/${notification?.metadata?.course_id}?lecture=${notification?.metadata?.lecture_id}&thread=${notification?.metadata?.thread_id}&tab=community`
+                      : '',
             '_blank'
           );
           handleReadNotification(notification?.id);
