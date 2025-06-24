@@ -42,6 +42,8 @@ const LearnPage = () => {
   const searchParams = useSearchParams();
   const lecture = searchParams.get('lecture');
   const comment = searchParams.get('comment');
+  const thread = searchParams.get('thread');
+  const tab = searchParams.get('tab');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
 
@@ -266,6 +268,8 @@ const LearnPage = () => {
     const queryParams = new URLSearchParams();
     if (lecture) queryParams.append('lecture', lecture);
     if (comment) queryParams.append('comment', comment);
+    if (thread) queryParams.append('thread', thread);
+    if (tab) queryParams.append('tab', tab);
 
     const url = `/course-details/${id}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     router.push(url);
@@ -369,6 +373,8 @@ const LearnPage = () => {
                 currentCommentItem={currentCommentItem}
                 currentSection={currentSection}
                 owner={courseData?.instructor?.user as UserType}
+                currentThreadId={thread}
+                defaultTab={tab}
               />
             </div>
           )}

@@ -24,11 +24,21 @@ import { Input } from '@/components/ui/input';
 import { APIGetRecommendationByCourseId } from '@/utils/recommendation';
 import { APIGetCouponByCourse } from '@/utils/coupon';
 import { CouponType } from '@/types/couponType';
+import { useSearchParams } from 'next/navigation';
+import { APIGetInstructorRatings } from '@/utils/rating';
+import { ReviewCourseType } from '@/types/reviewCourseType';
+import Popup from '@/components/courseDetails/popup';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { RatingStars } from '@/components/rating/ratingStars';
+import { X } from 'lucide-react';
 
 const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
+  const searchParams = useSearchParams();
+  const ratingParam = searchParams.get('rating');
   const [dataCourse, setDataCourse] = useState<CourseForm>();
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -36,6 +46,9 @@ const Page = () => {
   const [totalDuration, setTotalDuration] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
   const [coupons, setCoupons] = useState<CouponType[]>([]);
+  const [showRatingPopup, setShowRatingPopup] = useState<boolean>(false);
+  const [selectedRating, setSelectedRating] = useState<ReviewCourseType | null>(null);
+  const [allRatings, setAllRatings] = useState<ReviewCourseType[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -74,6 +87,29 @@ const Page = () => {
     }
   }, [id]);
 
+  const handleGetRatings = useCallback(async () => {
+    try {
+      const response = await APIGetInstructorRatings({ limit: 100 }); // Get more ratings
+      if (response && response.data) {
+        setAllRatings(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching ratings:', error);
+    }
+  }, []);
+
+  const handleGetRatingForPopup = useCallback(
+    (userId: string) => {
+      // Find rating by user_id and course_id
+      const rating = allRatings.find((r) => r.user_id === userId && r.course_id === id);
+      if (rating) {
+        setSelectedRating(rating);
+        setShowRatingPopup(true);
+      }
+    },
+    [allRatings, id]
+  );
+
   useEffect(() => {
     // handleGetCourseById();
     handleGetDetailCourse();
@@ -83,8 +119,16 @@ const Page = () => {
   useEffect(() => {
     if (isOwner) {
       handleGetCouponByCourse();
+      handleGetRatings();
     }
-  }, [isOwner, handleGetCouponByCourse]);
+  }, [isOwner, handleGetCouponByCourse, handleGetRatings]);
+
+  // Handle rating parameter from URL
+  useEffect(() => {
+    if (ratingParam && allRatings.length > 0) {
+      handleGetRatingForPopup(ratingParam);
+    }
+  }, [ratingParam, allRatings, handleGetRatingForPopup]);
 
   const handleGetFullCourse = useCallback(async () => {
     setLoading(true);

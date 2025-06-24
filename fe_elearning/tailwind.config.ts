@@ -197,7 +197,7 @@ export default {
 
       PaleViolet: '#B781FF',
       LavenderIndigo: '#8844FF',
-      // amber: '#f59e0b',
+      amberColor: '#f59e0b',
       lightSilver: '#d9d9d9',
       champagne: '#F0F2CB',
       Sunglow: '#FFCD29',

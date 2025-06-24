@@ -11,6 +11,7 @@ export type NotificationType = {
     course_id?: string;
     lecture_id?: string;
     comment_id?: string;
+    thread_id?: string;
   } | null;
   createdAt: string;
   updatedAt: string;
