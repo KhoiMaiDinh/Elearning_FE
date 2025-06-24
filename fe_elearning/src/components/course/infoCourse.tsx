@@ -41,7 +41,7 @@ type InfoCourseProps = {
   course: CourseForm;
   totalDuration: number;
   totalLessons: number;
-  coupon?: CouponType[];
+  coupons?: CouponType[];
   isOwner?: boolean;
 };
 
@@ -49,7 +49,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
   lecture,
   course,
   totalDuration,
-  coupon,
+  coupons,
   totalLessons,
   isOwner,
 }) => {
@@ -319,9 +319,9 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
         </CardContent>
       </Card>
 
-      {coupon && isOwner && (
+      {coupons && isOwner && (
         <CouponSection
-          coupon={coupon}
+          coupons={coupons}
           userInfo={userInfo}
           sectionTitleClassName={sectionTitleClassName}
         />
@@ -448,20 +448,12 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Khóa học được đề xuất
+              Khóa học tương tự
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              Khóa học được đề xuất dựa trên sở thích của bạn
+              Các khóa học tương tự có thể bạn quan tâm
             </p>
           </div>
-
-          {/* <Button
-                variant="outline"
-                className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 dark:text-blue-400"
-                onClick={() => router.push('/my-courses')}
-              >
-                Xem tất cả <ChevronRight className="ml-1 w-4 h-4" />
-              </Button> */}
         </div>
 
         {Array.isArray(recommendation) && recommendation.length > 0 ? (
@@ -477,7 +469,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
                 <BookOpen className="w-10 h-10 text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Bạn chưa đăng ký khóa học nào
+                Không có khóa học tương tự
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6 text-center max-w-md">
                 Khám phá các khóa học chất lượng cao và bắt đầu hành trình học tập của bạn ngay hôm

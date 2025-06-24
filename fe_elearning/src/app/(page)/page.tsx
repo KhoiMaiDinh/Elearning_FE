@@ -242,11 +242,11 @@ export default function Page() {
                 </div>
 
                 <Button
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="transform text-white dark:text-black rounded-full px-8 py-6 font-semibold shadow-md hover:shadow-xl transition-all duration-300 group flex items-center hover:-translate-y-1"
                   onClick={() => router.push('/course')}
                 >
-                  Khám phá ngay
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <span>Khám phá ngay</span>
+                  <ArrowRight className="ml-2 w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-2" />
                 </Button>
               </div>
 
@@ -311,7 +311,7 @@ export default function Page() {
 
       {/* Stats Section */}
       <section className="container mx-auto px-4 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
           <AnimateWrapper direction="up" amount={0.5} delay={0.1}>
             <InfoDashboard
               number={listLecture ? listLecture?.length : 10}
@@ -667,9 +667,9 @@ export default function Page() {
                 testimonials.map((testimonial) => (
                   <Card
                     key={testimonial.id}
-                    className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full"
                   >
-                    <CardContent className="p-8">
+                    <CardContent className="p-8 flex flex-col h-full">
                       <div className="flex items-center mb-6">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
@@ -679,11 +679,11 @@ export default function Page() {
                         ))}
                       </div>
 
-                      <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
+                      <p className="text-gray-700 dark:text-gray-300 mb-6 italic flex-grow">
                         "{testimonial.content}"
                       </p>
 
-                      <div className="flex items-center">
+                      <div className="flex items-center mt-auto">
                         <img
                           src={testimonial.avatar || '/placeholder.svg'}
                           alt={testimonial.name}

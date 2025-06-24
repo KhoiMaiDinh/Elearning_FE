@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, Clock, Copy, Check, Gift, Sparkles, Tag, Calendar } from 'lucide-react';
 import type { CouponType } from '@/types/couponType';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 interface CouponProps {
-  coupon?: CouponType[];
+  coupons?: CouponType[];
   sectionTitleClassName?: string;
   isLoading?: boolean;
   userInfo?: {
@@ -18,13 +19,40 @@ interface CouponProps {
 }
 
 export default function CouponSection({
-  coupon,
+  coupons,
   sectionTitleClassName = 'text-lg font-semibold',
   isLoading = false,
   userInfo,
 }: CouponProps) {
   const [copiedCoupons, setCopiedCoupons] = useState<Set<string>>(new Set());
+  const [showBlur, setShowBlur] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const theme = useTheme().theme;
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+
+    const checkScroll = () => {
+      if (!container) return;
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const hasOverflow = scrollWidth > clientWidth;
+      const atEnd = scrollLeft + clientWidth >= scrollWidth - 1; // slight buffer for float errors
+      setShowBlur(hasOverflow && !atEnd);
+    };
+
+    if (container) {
+      container.addEventListener('scroll', checkScroll);
+    }
+
+    checkScroll(); // initial check
+
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      container?.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [coupons]);
 
   // Helper functions to safely convert text/null to number
   const safeNumberConvert = (value: any): number => {
@@ -209,12 +237,12 @@ export default function CouponSection({
     );
   }
 
-  if (!coupon || coupon.length === 0) {
+  if (!coupons || coupons.length === 0) {
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center">
-            <Gift className="w-3 h-3 text-white" />
+          <div className="w-5 h-5 bg-AntiFlashWhite dark:bg-slate-800 rounded flex items-center justify-center">
+            <Gift className="w-3 h-3 text-black dark:text-white " />
           </div>
           <h3 className={sectionTitleClassName}>Mã giảm giá</h3>
         </div>
@@ -241,14 +269,14 @@ export default function CouponSection({
           <h3 className={sectionTitleClassName}>Mã giảm giá</h3>
         </div>
         <Badge variant="secondary" className="text-xs px-2 py-0.5">
-          {coupon.length}
+          {coupons.length}
         </Badge>
       </div>
 
       {/* Clean Card Design */}
       <div className="relative">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {coupon.map((item, index) => {
+        <div ref={scrollContainerRef} className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {coupons.map((item, index) => {
             const status = getCouponStatus(item);
             const daysLeft = getDaysUntilExpiry(item.expires_at);
             const daysUntilStart = getDaysUntilStart(item.starts_at);
@@ -322,7 +350,7 @@ export default function CouponSection({
                         <span className="font-medium">Của bạn</span>
                       </div>
                     ) : item.creator_username ? (
-                      <span className="text-slate-500 dark:text-slate-400">
+                      <span className="text-slate-500 dark:text-slate-400 dark:text-eerieBlack">
                         @
                         {item.creator_username.length > 8
                           ? item.creator_username.substring(0, 8) + '...'
@@ -357,10 +385,22 @@ export default function CouponSection({
               </div>
             );
           })}
+
+          {/* Gradient overlay when content overflows */}
+          {showBlur && (
+            <div
+              className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white dark:from-slate-900 to-transparent z-10"
+              style={{
+                background: `linear-gradient(to left, ${
+                  theme === 'dark' ? '#080f17' : '#ffffff'
+                } , transparent)`,
+              }}
+            />
+          )}
         </div>
 
         {/* Scroll indicator */}
-        {coupon.length > 4 && (
+        {coupons.length > 4 && (
           <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-slate-700 rounded-full p-1.5 shadow-sm border opacity-60 hover:opacity-100 transition-opacity">
             <ChevronRight className="w-3 h-3 text-slate-500" />
           </div>

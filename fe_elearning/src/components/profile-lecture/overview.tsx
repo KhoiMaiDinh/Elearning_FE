@@ -35,16 +35,15 @@ import {
   APIStudentGrowth,
 } from '@/utils/instructorDashboard';
 import { useEffect, useState } from 'react';
-import {
-  CourseCompletionRateType,
-  InstructorOverviewType,
-  CumulativeFeedChartType,
-  FeedChartType,
-  PayoutSummaryType,
-  NextPayoutType,
-  StudentEngagementType,
-  CourseRatingType,
-} from '@/types/instructorType';
+// import {
+//   InstructorOverviewType,
+//   CumulativeFeedChartType,
+//   FeedChartType,
+//   PayoutSummaryType,
+//   NextPayoutType,
+//   StudentEngagementType,
+//   CourseRatingType,
+// } from '@/type/instructorDashboard';
 import { DashboardSkeleton } from '../skeleton/dashboardSkeleton';
 import {
   Dialog,

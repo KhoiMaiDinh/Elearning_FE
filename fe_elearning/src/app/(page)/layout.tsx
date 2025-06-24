@@ -4,7 +4,6 @@ import '../globals.css';
 
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '@/components/header';
-import { ThemeProvider } from '@/components/theme-provider';
 import { useTheme } from 'next-themes';
 import Footer from '@/components/footer';
 import { connectSocket } from '@/constants/socketSlice';
@@ -25,7 +24,6 @@ export default function RootLayout({
   const [show, setShow] = useState<boolean>(false);
 
   useEffect(() => {
-    // Scroll to top when the component mounts or route changes
     window.scrollTo(0, 0);
   }, []);
 
@@ -45,26 +43,22 @@ export default function RootLayout({
 
   return (
     <body className="bg-AntiFlashWhite dark:bg-eerieBlack">
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        <div className="flex items-start justify-start bg-AntiFlashWhite dark:bg-eerieBlack">
-          <div className="w-full h-full flex flex-col bg-white max-w-[1440px] mx-auto dark:bg-eerieBlack">
-            <Header />
-            <div className="w-full h-full bg-AntiFlashWhite dark:bg-eerieBlack ">
-              {children}
-              {preference?.categories.length === 0 && show && (
-                <CategorySelectionPopup
-                  onClose={() => setShow(false)}
-                  isOpen={show}
-                  initialSelectedCategories={preference?.categories.map(
-                    (category) => category.slug
-                  )}
-                />
-              )}
-            </div>
-            <Footer />
+      <div className="flex items-start justify-start bg-AntiFlashWhite dark:bg-eerieBlack">
+        <div className="w-full h-full flex flex-col bg-white max-w-[1440px] mx-auto dark:bg-eerieBlack">
+          <Header />
+          <div className="w-full h-full bg-AntiFlashWhite dark:bg-eerieBlack ">
+            {children}
+            {preference?.categories.length === 0 && show && (
+              <CategorySelectionPopup
+                onClose={() => setShow(false)}
+                isOpen={show}
+                initialSelectedCategories={preference?.categories.map((category) => category.slug)}
+              />
+            )}
           </div>
+          <Footer />
         </div>
-      </ThemeProvider>
+      </div>
     </body>
   );
 }

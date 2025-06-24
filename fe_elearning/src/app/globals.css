@@ -7,6 +7,14 @@ body {
   background-color: '#EFF1F4';
 }
 
+input::-ms-reveal,
+input::-ms-clear,
+input::-webkit-credentials-auto-fill-button,
+input[type='password']::-webkit-textfield-decoration-container {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 .text-custom-violet-gradient {
   background: linear-gradient(to right, #b781ff, #8844ff);
   -webkit-background-clip: text;
@@ -726,14 +734,14 @@ body {
 
 @theme inline {
   @keyframes shine {
-  0% {
-    background-position: 0% 0%;
+    0% {
+      background-position: 0% 0%;
     }
-  50% {
-    background-position: 100% 100%;
+    50% {
+      background-position: 100% 100%;
     }
-  to {
-    background-position: 0% 0%;
+    to {
+      background-position: 0% 0%;
     }
   }
 }

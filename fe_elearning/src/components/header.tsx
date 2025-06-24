@@ -42,6 +42,9 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const menuItems = [
@@ -363,19 +366,17 @@ const Header = () => {
               {/* Favorites Button */}
 
               {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
-              >
-                {theme === 'light' ? (
-                  <Sun className="h-5 w-5 transition-all" />
-                ) : (
-                  <Moon className="h-5 w-5 transition-all" />
-                )}
-                <span className="sr-only">Toggle theme</span>
-              </Button>
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
+                >
+                  {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              )}
             </>
           }
 

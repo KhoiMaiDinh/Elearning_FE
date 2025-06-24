@@ -35,7 +35,7 @@ const Page = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
-  const [coupon, setCoupon] = useState<CouponType[]>([]);
+  const [coupons, setCoupons] = useState<CouponType[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Page = () => {
   const handleGetCouponByCourse = useCallback(async () => {
     const response = await APIGetCouponByCourse(id || '');
     if (response && response?.data) {
-      setCoupon(response.data);
+      setCoupons(response.data);
     }
   }, [id]);
 
@@ -122,7 +122,7 @@ const Page = () => {
   return !loading ? (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
       <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 relative" style={{ position: 'relative' }}>
           {/* Main Content */}
           <div className="lg:w-3/4">
             {dataCourse && (
@@ -135,17 +135,21 @@ const Page = () => {
                 }
                 totalDuration={totalDuration}
                 totalLessons={totalLessons}
-                coupon={coupon}
+                coupons={coupons}
                 isOwner={isOwner}
               />
             )}
           </div>
           {isOwner && (
-            <div className="lg:w-1/4">
+            <div
+              className="lg:w-1/4 top-24 h-fit sticky"
+              // style={{ position: 'sticky', top, height: 'fit-content' }}
+            >
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-6 space-y-4 mb-0 pb-2">
                   <Button
-                    className="w-full bg-custom-gradient-button-violet flex justify-between"
+                    variant="outline"
+                    className="text-white w-full bg-custom-gradient-button-violet flex justify-between"
                     onClick={() => {
                       router.push(`/profile/lecture/course/${id}`);
                     }}
@@ -184,7 +188,7 @@ const Page = () => {
 
           {/* Sidebar */}
           {!isOwner && (
-            <div className="lg:w-1/4">
+            <div className="lg:w-1/4 top-24 h-fit sticky">
               <InfoBlockCourse
                 thumbnail={dataCourse?.thumbnail?.key}
                 totalDuration={totalDuration}
