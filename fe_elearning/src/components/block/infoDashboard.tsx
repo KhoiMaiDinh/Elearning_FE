@@ -44,7 +44,7 @@ const InfoDashboard: React.FC<InfoDashboardProps> = ({ number, title, Icon, colo
   };
 
   return (
-    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800/90 backdrop-blur-sm">
+    <Card className="border-0 shadow-lg hover:shadow-xl rounded-sm transition-all duration-300 bg-white dark:bg-gray-800/90 backdrop-blur-sm">
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
           <div

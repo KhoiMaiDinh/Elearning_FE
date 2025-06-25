@@ -49,7 +49,7 @@ const Page = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     size="lg"
-                    className="bg-custom-gradient-button-violet text-white hover:brightness-110  px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="transform bg-custom-gradient-button-violet text-white hover:brightness-110  px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 hover:translate-x-1"
                   >
                     Liên hệ ngay
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -57,7 +57,7 @@ const Page = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-2 border-blue-200 hover:border-blue-300 px-8 py-3 rounded-xl transition-all duration-300"
+                    className="transform border-2 border-blue-200 hover:border-blue-300 px-8 py-3 rounded-xl transition-all duration-300 hover:-translate-y-2 hover:translate-x-1"
                     onClick={() => {
                       const contactInfo = document.getElementById('contact-info');
                       if (contactInfo) {
@@ -135,7 +135,7 @@ const Page = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">Email</p>
-                          <p className="text-gray-600 dark:text-gray-300">elearning@gmail.com</p>
+                          <p className="text-gray-600 dark:text-gray-300">support@novalearn.com</p>
                         </div>
                       </div>
                     </div>
@@ -221,7 +221,10 @@ const Page = () => {
                   window.open(gmailUrl, '_blank');
                 }}
               >
-                Soạn email với Gmail
+                <>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Soạn Gmail ngay
+                </>
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>

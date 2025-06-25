@@ -9,29 +9,18 @@ import { APIGetCourseById, APIGetEnrolledCourse, APIGetFullCourse } from '@/util
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Edit, Eye, Loader2, Share2 } from 'lucide-react';
+import { Edit, Eye, Loader2, Share2, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { APIGetRecommendationByCourseId } from '@/utils/recommendation';
 import { APIGetCouponByCourse } from '@/utils/coupon';
 import { CouponType } from '@/types/couponType';
 import { useSearchParams } from 'next/navigation';
 import { APIGetInstructorRatings } from '@/utils/rating';
 import { ReviewCourseType } from '@/types/reviewCourseType';
-import Popup from '@/components/courseDetails/popup';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { RatingStars } from '@/components/rating/ratingStars';
-import { X } from 'lucide-react';
+import Popup from '@/components/courseDetails/popup';
 
 const Page = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -45,7 +34,7 @@ const Page = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
-  const [coupon, setCoupon] = useState<CouponType[]>([]);
+  const [coupons, setCoupons] = useState<CouponType[]>([]);
   const [showRatingPopup, setShowRatingPopup] = useState<boolean>(false);
   const [selectedRating, setSelectedRating] = useState<ReviewCourseType | null>(null);
   const [allRatings, setAllRatings] = useState<ReviewCourseType[]>([]);
@@ -83,7 +72,7 @@ const Page = () => {
   const handleGetCouponByCourse = useCallback(async () => {
     const response = await APIGetCouponByCourse(id || '');
     if (response && response?.data) {
-      setCoupon(response.data);
+      setCoupons(response.data);
     }
   }, [id]);
 
@@ -164,184 +153,186 @@ const Page = () => {
   }, [dataCourse, userInfo]);
 
   return !loading ? (
-    <>
-      <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
-        <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Main Content */}
-            <div className="lg:w-3/4">
-              {dataCourse && (
-                <InfoCourse
-                  course={dataCourse}
-                  lecture={
-                    dataCourse.instructor?.user?.first_name +
-                    ' ' +
-                    dataCourse.instructor?.user?.last_name
-                  }
-                  totalDuration={totalDuration}
-                  totalLessons={totalLessons}
-                  coupon={coupon}
-                  isOwner={isOwner}
-                />
-              )}
+    <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
+      <AnimateWrapper delay={0.2} direction="up" amount={0.01}>
+        <div className="flex flex-col lg:flex-row gap-8 relative" style={{ position: 'relative' }}>
+          {/* Main Content */}
+          <div className="lg:w-3/4">
+            {dataCourse && (
+              <InfoCourse
+                course={dataCourse}
+                lecture={
+                  dataCourse.instructor?.user?.first_name +
+                  ' ' +
+                  dataCourse.instructor?.user?.last_name
+                }
+                totalDuration={totalDuration}
+                totalLessons={totalLessons}
+                coupons={coupons}
+                isOwner={isOwner}
+              />
+            )}
+          </div>
+          {isOwner && (
+            <div
+              className="lg:w-1/4 top-24 h-fit sticky"
+              // style={{ position: 'sticky', top, height: 'fit-content' }}
+            >
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-6 space-y-4 mb-0 pb-2">
+                  <Button
+                    variant="outline"
+                    className="text-white w-full bg-custom-gradient-button-violet flex justify-between"
+                    onClick={() => {
+                      router.push(`/profile/lecture/course/${id}`);
+                    }}
+                  >
+                    Chỉnh sửa khóa học
+                    <Edit className="w-4 h-4 mr-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full flex justify-between"
+                    onClick={() => {
+                      router.push(`/course-details/${id}`);
+                    }}
+                  >
+                    Xem khóa học
+                    <Eye className="w-4 h-4 mr-2" />
+                  </Button>
+                  <Separator />
+                  <div className="flex space-x-2">
+                    <ShareDialog
+                      courseTitle={dataCourse?.title}
+                      courseSubtitle={dataCourse?.subtitle}
+                      courseThumbnail={dataCourse?.thumbnail?.key}
+                      courseId={id || ''}
+                      trigger={
+                        <Button variant="ghost" size="icon" className="flex-1">
+                          <Share2 className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            {isOwner && (
-              <div className="lg:w-1/4">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-6 space-y-4 mb-0 pb-2">
-                    <Button
-                      className="w-full bg-custom-gradient-button-violet flex justify-between"
-                      onClick={() => {
-                        router.push(`/profile/lecture/course/${id}`);
-                      }}
-                    >
-                      Chỉnh sửa khóa học
-                      <Edit className="w-4 h-4 mr-2" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full flex justify-between"
-                      onClick={() => {
-                        router.push(`/course-details/${id}`);
-                      }}
-                    >
-                      Xem khóa học
-                      <Eye className="w-4 h-4 mr-2" />
-                    </Button>
-                    <Separator />
+          )}
+
+          {/* Sidebar */}
+          {!isOwner && (
+            <div className="lg:w-1/4 top-24 h-fit sticky">
+              <InfoBlockCourse
+                thumbnail={dataCourse?.thumbnail?.key}
+                totalDuration={totalDuration}
+                id={id || ''}
+                isRegistered={isRegistered}
+                price={dataCourse?.price}
+                level={dataCourse?.level || ''}
+                totalLessons={totalLessons}
+                courseProgress={dataCourse?.course_progress?.progress}
+                courseTitle={dataCourse?.title}
+                courseSubtitle={dataCourse?.subtitle}
+                // courseProgress={0.00001}
+              />
+            </div>
+          )}
+
+          {/* Rating Detail Popup */}
+          {showRatingPopup && selectedRating && (
+            <Popup
+              onClose={() => {
+                setShowRatingPopup(false);
+                setSelectedRating(null);
+              }}
+            >
+              <div className="max-w-3xl mx-auto">
+                <div className="flex flex-row justify-between h-full items-start">
+                  <h3 className="text-xl font-semibold mb-4">Chi tiết Đánh giá</h3>
+                  <div className="flex justify-between items-center">
                     <div className="flex space-x-2">
-                      <ShareDialog
-                        courseTitle={dataCourse?.title}
-                        courseSubtitle={dataCourse?.subtitle}
-                        courseThumbnail={dataCourse?.thumbnail?.key}
-                        courseId={id || ''}
-                        trigger={
-                          <Button variant="ghost" size="icon" className="flex-1">
-                            <Share2 className="w-4 h-4" />
-                          </Button>
-                        }
-                      />
+                      <Button
+                        variant="outline"
+                        className="rounded-full w-8 h-8 items-center justify-center flex"
+                        onClick={() => {
+                          setShowRatingPopup(false);
+                          setSelectedRating(null);
+                        }}
+                      >
+                        <X className="w-4 h-4 text-gray-950 dark:text-AntiFlashWhite/80" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rating Content */}
+                <Card className="mb-6 dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="flex space-x-4">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage
+                          src={
+                            `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedRating.user?.profile_image?.key}` ||
+                            '/placeholder.svg'
+                          }
+                        />
+                        <AvatarFallback className="bg-orange-600 text-white">
+                          {selectedRating.user?.first_name?.[0] || ''}
+                          {selectedRating.user?.last_name?.[0] || ''}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-lg dark:text-white text-slate-800">
+                              Đánh giá từ {selectedRating.user?.first_name}{' '}
+                              {selectedRating.user?.last_name}
+                            </h4>
+                            <div className="flex items-center gap-2">
+                              <RatingStars rating={selectedRating.rating || 0} />
+                              <span className="text-sm dark:text-slate-400 text-slate-600">
+                                {selectedRating.rating || 0}/5 sao
+                              </span>
+                              <span className="text-sm dark:text-slate-400 text-slate-600">•</span>
+                              <span className="text-sm dark:text-slate-400 text-slate-600">
+                                {new Date(selectedRating.createdAt || '').toLocaleString('vi-VN', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="dark:text-slate-300 text-slate-700 leading-relaxed mb-4">
+                          <p>
+                            {selectedRating.rating_comment
+                              ? `"${selectedRating.rating_comment}"`
+                              : 'Người dùng không để lại bình luận cụ thể.'}
+                          </p>
+                        </div>
+
+                        {/* Course Info */}
+                        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                          <h5 className="font-medium dark:text-white text-slate-800 mb-1">
+                            Khóa học được đánh giá:
+                          </h5>
+                          <p className="text-sm dark:text-slate-300 text-slate-600">
+                            {selectedRating.course?.title || dataCourse?.title}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-            )}
-
-            {/* Sidebar */}
-            {!isOwner && (
-              <div className="lg:w-1/4">
-                <InfoBlockCourse
-                  thumbnail={dataCourse?.thumbnail?.key}
-                  totalDuration={totalDuration}
-                  id={id || ''}
-                  isRegistered={isRegistered}
-                  price={dataCourse?.price}
-                  level={dataCourse?.level || ''}
-                  totalLessons={totalLessons}
-                  courseProgress={dataCourse?.course_progress?.progress}
-                  courseTitle={dataCourse?.title}
-                  courseSubtitle={dataCourse?.subtitle}
-                  // courseProgress={0.00001}
-                />
-              </div>
-            )}
-          </div>
-        </AnimateWrapper>
-      </div>
-
-      {/* Rating Detail Popup */}
-      {showRatingPopup && selectedRating && (
-        <Popup
-          onClose={() => {
-            setShowRatingPopup(false);
-            setSelectedRating(null);
-          }}
-        >
-          <div className="max-w-3xl mx-auto">
-            <div className="flex flex-row justify-between h-full items-start">
-              <h3 className="text-xl font-semibold mb-4">Chi tiết Đánh giá</h3>
-              <div className="flex justify-between items-center">
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    className="rounded-full w-8 h-8 items-center justify-center flex"
-                    onClick={() => {
-                      setShowRatingPopup(false);
-                      setSelectedRating(null);
-                    }}
-                  >
-                    <X className="w-4 h-4 text-gray-950 dark:text-AntiFlashWhite/80" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Rating Content */}
-            <Card className="mb-6 dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200">
-              <CardContent className="p-6">
-                <div className="flex space-x-4">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={
-                        `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedRating.user?.profile_image?.key}` ||
-                        '/placeholder.svg'
-                      }
-                    />
-                    <AvatarFallback className="bg-orange-600 text-white">
-                      {selectedRating.user?.first_name?.[0] || ''}
-                      {selectedRating.user?.last_name?.[0] || ''}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold text-lg dark:text-white text-slate-800">
-                          Đánh giá từ {selectedRating.user?.first_name}{' '}
-                          {selectedRating.user?.last_name}
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <RatingStars rating={selectedRating.rating || 0} />
-                          <span className="text-sm dark:text-slate-400 text-slate-600">
-                            {selectedRating.rating || 0}/5 sao
-                          </span>
-                          <span className="text-sm dark:text-slate-400 text-slate-600">•</span>
-                          <span className="text-sm dark:text-slate-400 text-slate-600">
-                            {new Date(selectedRating.createdAt || '').toLocaleString('vi-VN', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="dark:text-slate-300 text-slate-700 leading-relaxed mb-4">
-                      <p>
-                        {selectedRating.rating_comment
-                          ? `"${selectedRating.rating_comment}"`
-                          : 'Người dùng không để lại bình luận cụ thể.'}
-                      </p>
-                    </div>
-
-                    {/* Course Info */}
-                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-                      <h5 className="font-medium dark:text-white text-slate-800 mb-1">
-                        Khóa học được đánh giá:
-                      </h5>
-                      <p className="text-sm dark:text-slate-300 text-slate-600">
-                        {selectedRating.course?.title || dataCourse?.title}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </Popup>
-      )}
-    </>
+            </Popup>
+          )}
+        </div>
+      </AnimateWrapper>
+    </div>
   ) : (
     <div className="flex justify-center items-center h-screen">
       <Loader2 className="w-10 h-10 animate-spin" />

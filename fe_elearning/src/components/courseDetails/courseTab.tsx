@@ -2,22 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Download,
-  Star,
-  Users,
   Send,
   ChevronDown,
-  ChevronRight,
-  FileText,
   ExternalLink,
-  Award,
-  Flag,
   MessageCircle,
+  FileText,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
-import { InstructorType } from '@/types/instructorType';
 import { APIPostComment, APIGetComment, APIGetCommentById } from '@/utils/comment';
 import InputWithSendButton from '../inputComponent/inputComment';
 import { LectureComment } from '@/types/commentType';
@@ -37,7 +30,6 @@ import {
 import { CommunityThread, CommunityThreadReply } from '@/types/communityThreadType';
 import InputRegisterLecture from '../inputComponent/inputRegisterLecture';
 import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
-import ReplyList from './replyItem';
 import ReportButton from './report';
 import ShowMoreText from './showMoreText';
 import { Badge } from '../ui/badge';
@@ -357,10 +349,13 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           </TabsTrigger>
           <TabsTrigger
             value="reviews"
-            className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px]"
+            className="text-majorelleBlue items-center justify-center data-[state=active]:bg-gradient-144 data-[state=active]:text-white rounded-[2px] group relative"
           >
             Feedback
-            <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1" />{' '}
+            <img src={'/icons/open-gift.gif'} alt="gift" className="w-4 h-4 ml-2 mb-1" />
+            <div className="absolute invisible group-hover:visible bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 p-2 rounded shadow-lg -top-10 left-[60%] transform -translate-x-1/2 whitespace-nowrap border border-slate-200 dark:border-slate-700 z-30">
+              Gửi feedback để nhận quà từ chúng tôi
+            </div>
           </TabsTrigger>
         </TabsList>
 
@@ -629,7 +624,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
         <TabsContent value="reviews" className={`${tabContentClassName}`}>
           {!isOwner && (
-            <div className="flex gap-2 mb-4 items-center mb-3">
+            <div className="flex gap-2  items-center mb-3">
               <InputWithSendButton
                 labelText=""
                 placeholder="Viết feedback của bạn..."
@@ -656,13 +651,14 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
           {isOwner && (
             <SelectFilter
-              placeholder={filterOption === 'all' ? 'Tất cả' : 'Mới nhất'}
+              placeholder={filterOption === 'all' ? 'Tất cả' : 'Chỉ phiên bản mới'}
               // label="Bộ lọc"
               data={[
                 { id: 'all', value: 'Tất cả' },
                 { id: 'latestVersion', value: 'Chỉ phiên bản mới' },
               ]}
               onChange={(value: string) => setFilterOption(value as 'all' | 'latestVersion')}
+              className="w-56"
             />
           )}
           <div className="flex flex-col gap-2 mt-3">

@@ -2,7 +2,7 @@
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Loader2, Filter, Grid, List, SlidersHorizontal, Search } from 'lucide-react';
 import { APIGetCategory } from '@/utils/category';
 import { Button } from '@/components/ui/button';
 import {
@@ -166,7 +166,7 @@ const Page = () => {
       <CardContent className="space-y-6">
         {/* Category Filter */}
         <div className="space-y-2">
-          <Label>Danh mục</Label>
+          <Label>Chuyên ngành</Label>
           <Select
             value={paramsLecture.specialty || 'all'}
             onValueChange={(value) =>
@@ -192,7 +192,15 @@ const Page = () => {
         {/* Rating Filter */}
         <div className="space-y-2">
           <Label>Tìm kiếm</Label>
-          <Input value={searchInput} onChange={handleSearchInput} />
+          <div className="relative">
+            <Input
+              value={searchInput}
+              onChange={handleSearchInput}
+              placeholder="Tìm kiếm giảng viên..."
+              className="pl-6"
+            />
+            <Search className="h-4 w-4 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          </div>
         </div>
 
         <Separator />
@@ -280,7 +288,15 @@ const Page = () => {
                 <div>
                   <h2 className="text-2xl font-bold">Danh sách giảng viên</h2>
                   <p className="text-muted-foreground">
-                    {isLoadingLecture ? 'Đang tải...' : `Tìm thấy ${listLecture.length} giảng viên`}
+                    {isLoadingLecture ? (
+                      'Đang tải...'
+                    ) : (
+                      <span>
+                        Tìm thấy{' '}
+                        <strong className="text-black dark:text-white">{listLecture.length}</strong>{' '}
+                        giảng viên
+                      </span>
+                    )}
                   </p>
                 </div>
 
