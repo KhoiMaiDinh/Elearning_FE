@@ -380,7 +380,7 @@ const Header = () => {
           }
 
           {/* Notifications */}
-          <NotificationCenter />
+          {userInfo.id && <NotificationCenter />}
 
           {/* User Menu or Login Button */}
           {!userInfo.id ? (

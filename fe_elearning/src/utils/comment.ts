@@ -95,6 +95,58 @@ const APIGetCommentById = async (id: string) => {
   }
 };
 
+const APIGetCommentsForInstructorAnalysis = async (start: string, end: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `/instructors/lecture-comments/analytics?start=${start}&end=${end}`
+    );
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+const APIGetCommentsForInstructorAspectDistribution = async (course_id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `/courses/${course_id}/lecture-comments/aspect-summary`
+    );
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+const APIGetAspectSegmentTrendOverTime = async (params?: {
+  unit: string;
+  count: number;
+  course_id?: string;
+}) => {
+  try {
+    const filteredParams = Object.fromEntries(
+      Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
+    );
+    const response = await axiosInstance.get(`/instructors/lecture-comments/emotion-trend`, {
+      params: filteredParams,
+    });
+    if (response.status === 200) {
+      return { data: response.data, status: response.status };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
 export {
   APIPostComment,
   APIGetComment,
@@ -102,4 +154,7 @@ export {
   APIGetReview,
   APIGetCommentsForInstructor,
   APIGetCommentById,
+  APIGetCommentsForInstructorAnalysis,
+  APIGetCommentsForInstructorAspectDistribution,
+  APIGetAspectSegmentTrendOverTime,
 };
