@@ -154,7 +154,7 @@ export function SentimentDistribution({ data }: SentimentDistributionProps) {
                 <h4 className="text-base font-medium text-gray-900 dark:text-white">
                   Tổng quan cảm xúc
                 </h4>
-                <Badge className="text-sm w-fit font-bold bg-vividMalachite/10 text-vividMalachite">
+                <Badge className="text-sm w-fit font-bold bg-greenCrayola/10 text-greenCrayola">
                   {overallStats.positivePercentage}% tích cực
                 </Badge>
               </div>
@@ -170,28 +170,28 @@ export function SentimentDistribution({ data }: SentimentDistributionProps) {
                   {overallStats.overallTotal > 0 && (
                     <>
                       <div
-                        className="bg-vividMalachite hover:bg-vividMalachite/80 transition-colors"
+                        className="bg-greenCrayola/80 hover:bg-greenCrayola transition-colors"
                         style={{
                           width: `${(overallStats.totalPositive / overallStats.overallTotal) * 100}%`,
                         }}
                         onMouseEnter={() => setHoveredSegment('positive')}
                       />
                       <div
-                        className="bg-red-500 hover:bg-red-600 transition-colors"
+                        className="bg-carminePink/80 hover:bg-carminePink transition-colors"
                         style={{
                           width: `${(overallStats.totalNegative / overallStats.overallTotal) * 100}%`,
                         }}
                         onMouseEnter={() => setHoveredSegment('negative')}
                       />
                       <div
-                        className="bg-gray-500 hover:bg-gray-600 transition-colors"
+                        className="bg-blueberry/80 hover:bg-blueberry transition-colors"
                         style={{
                           width: `${(overallStats.totalNeutral / overallStats.overallTotal) * 100}%`,
                         }}
                         onMouseEnter={() => setHoveredSegment('neutral')}
                       />
                       <div
-                        className="bg-amber-500 hover:bg-amber-600 transition-colors"
+                        className="bg-amberColor/80 hover:bg-amberColor transition-colors"
                         style={{
                           width: `${(overallStats.totalConflict / overallStats.overallTotal) * 100}%`,
                         }}
@@ -265,29 +265,29 @@ export function SentimentDistribution({ data }: SentimentDistributionProps) {
               {/* Legend */}
               <div className="flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-vividMalachite rounded-full"></div>
-                  <span className="text-vividMalachite dark:text-vividMalachite">
+                  <div className="w-3 h-3 bg-greenCrayola rounded-full"></div>
+                  <span className="text-greenCrayola dark:text-greenCrayola">
                     Tích cực (
                     {Math.round((overallStats.totalPositive / overallStats.overallTotal) * 100)}%)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-red-500 dark:text-red-500">
+                  <div className="w-3 h-3 bg-carminePink rounded-full"></div>
+                  <span className="text-carminePink dark:text-carminePink">
                     Tiêu cực (
                     {Math.round((overallStats.totalNegative / overallStats.overallTotal) * 100)}%)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                  <span className="text-gray-500 dark:text-gray-500">
+                  <div className="w-3 h-3 bg-blueberry rounded-full"></div>
+                  <span className="text-blueberry dark:text-blueberry">
                     Trung tính (
                     {Math.round((overallStats.totalNeutral / overallStats.overallTotal) * 100)}%)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                  <span className="text-amber-500 dark:text-amber-500">
+                  <div className="w-3 h-3 bg-amberColor rounded-full"></div>
+                  <span className="text-amberColor dark:text-amberColor">
                     Mâu thuẫn (
                     {Math.round((overallStats.totalConflict / overallStats.overallTotal) * 100)}%)
                   </span>
@@ -315,7 +315,7 @@ export function SentimentDistribution({ data }: SentimentDistributionProps) {
                           <h5 className="text-sm font-medium text-gray-900 dark:text-white">
                             Bài {index + 1}: {lecture.lecture_title}
                           </h5>
-                          <Badge className="text-sm w-fit font-bold bg-vividMalachite/5 text-vividMalachite/70">
+                          <Badge className="text-sm w-fit font-bold bg-greenCrayola/5 text-greenCrayola/70">
                             {stats.positive}% tích cực
                           </Badge>
                         </div>
@@ -331,28 +331,28 @@ export function SentimentDistribution({ data }: SentimentDistributionProps) {
                             {stats.total > 0 && (
                               <>
                                 <div
-                                  className="bg-vividMalachite/30 hover:bg-vividMalachite/50 transition-colors"
+                                  className="bg-greenCrayola/50 hover:bg-greenCrayola/80 transition-colors"
                                   style={{ width: `${stats.positive}%` }}
                                   onMouseEnter={() =>
                                     setHoveredSegment(`lecture-${lecture.lecture_id}-positive`)
                                   }
                                 />
                                 <div
-                                  className="bg-red-200 hover:bg-red-300 transition-colors"
+                                  className="bg-carminePink/50 hover:bg-carminePink/80 transition-colors"
                                   style={{ width: `${stats.negative}%` }}
                                   onMouseEnter={() =>
                                     setHoveredSegment(`lecture-${lecture.lecture_id}-negative`)
                                   }
                                 />
                                 <div
-                                  className="bg-gray-200 hover:bg-gray-300 transition-colors"
+                                  className="bg-blueberry/50 hover:bg-blueberry/80 transition-colors"
                                   style={{ width: `${stats.neutral}%` }}
                                   onMouseEnter={() =>
                                     setHoveredSegment(`lecture-${lecture.lecture_id}-neutral`)
                                   }
                                 />
                                 <div
-                                  className="bg-amber-200 hover:bg-amber-300 transition-colors"
+                                  className="bg-amberColor/50 hover:bg-amberColor/80 transition-colors"
                                   style={{ width: `${stats.conflict}%` }}
                                   onMouseEnter={() =>
                                     setHoveredSegment(`lecture-${lecture.lecture_id}-conflict`)

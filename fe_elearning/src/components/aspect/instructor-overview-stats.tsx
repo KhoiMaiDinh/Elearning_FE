@@ -25,8 +25,6 @@ export function InstructorOverviewStats({
   dateRange,
   loading = false,
 }: InstructorOverviewStatsProps) {
-  console.log('🚀 ~ previousData:', previousData);
-  console.log('🚀 ~ data:', data);
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -61,15 +59,15 @@ export function InstructorOverviewStats({
   const getEmotionColor = (emotion: string) => {
     switch (emotion?.toLowerCase()) {
       case 'positive':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-greenCrayola/10 text-greenCrayola border-greenCrayola/20';
       case 'negative':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-carminePink/10 text-carminePink border-carminePink/20';
       case 'neutral':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-blueberry/10 text-blueberry border-blueberry/20';
       case 'conflict':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-amberColor/10 text-amberColor border-amberColor/20';
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blueberry/10 text-blueberry border-blueberry/20';
     }
   };
 
@@ -118,9 +116,9 @@ export function InstructorOverviewStats({
   };
 
   const getChangeColor = (change: number) => {
-    if (change > 0) return 'text-green-600';
-    if (change < 0) return 'text-red-600';
-    return 'text-gray-600';
+    if (change > 0) return 'text-greenCrayola';
+    if (change < 0) return 'text-carminePink';
+    return 'text-blueberry';
   };
 
   return (
@@ -130,7 +128,7 @@ export function InstructorOverviewStats({
           Thống kê từ {new Date(dateRange.startDate).toLocaleDateString('vi-VN')} đến{' '}
           {new Date(dateRange.endDate).toLocaleDateString('vi-VN')}
           {previousData && (
-            <span className="ml-2 text-xs text-blue-600">(So sánh với cùng kỳ trước)</span>
+            <span className="ml-2 text-xs text-blueberry">(So sánh với cùng kỳ trước)</span>
           )}
         </div>
       )}

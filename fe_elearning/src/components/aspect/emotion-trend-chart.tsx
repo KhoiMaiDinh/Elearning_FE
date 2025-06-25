@@ -95,7 +95,7 @@ export function EmotionTrendChart({
             },
             neutral: {
               label: 'Trung tính',
-              color: '#6b7280',
+              color: '#3b82f6',
             },
             conflict: {
               label: 'Xung đột',
@@ -116,8 +116,8 @@ export function EmotionTrendChart({
                   <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
                 </linearGradient>
                 <linearGradient id="colorNeutral" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6b7280" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6b7280" stopOpacity={0.1} />
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
                 </linearGradient>
                 <linearGradient id="colorConflict" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
@@ -150,7 +150,7 @@ export function EmotionTrendChart({
                 type="monotone"
                 dataKey="neutral"
                 stackId="1"
-                stroke="#6b7280"
+                stroke="#3b82f6"
                 fill="url(#colorNeutral)"
                 strokeWidth={2}
                 name="Trung tính"
@@ -248,7 +248,7 @@ export function EmotionTrendLineChart({
             },
             neutral: {
               label: 'Trung tính',
-              color: '#6b7280',
+              color: '#3b82f6',
             },
             conflict: {
               label: 'Xung đột',
@@ -290,9 +290,9 @@ export function EmotionTrendLineChart({
               <Line
                 type="monotone"
                 dataKey="neutral"
-                stroke="#6b7280"
+                stroke="#3b82f6"
                 strokeWidth={3}
-                dot={{ fill: '#6b7280', strokeWidth: 2, r: 4 }}
+                dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                 name="Trung tính"
               />
               <Line
