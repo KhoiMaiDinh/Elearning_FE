@@ -210,7 +210,7 @@ function NotificationItem({
 
   return (
     <div
-      className={`p-4 border-b flex gap-3 ${is_read ? 'bg-gray-300 dark:bg-richBlack' : 'bg-muted/30'} cursor-pointer hover:bg-muted/50 transition-colors`}
+      className={`p-4 border-b flex gap-3 ${is_read ? '' : 'bg-blue-50 dark:bg-DarkBlueGray/20'} cursor-pointer hover:bg-muted/50 transition-colors`}
       onClick={() => {
         if (notification?.metadata && notification?.metadata !== null) {
           window.open(

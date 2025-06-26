@@ -324,7 +324,7 @@ export default function Page() {
 
           <AnimateWrapper direction="up" amount={0.5} delay={0.2}>
             <InfoDashboard
-              number={2000}
+              number={listCourse ? listCourse?.length : 0}
               title={'Bài học'}
               Icon={BookCheck}
               color="#219653"
@@ -344,7 +344,7 @@ export default function Page() {
 
           <AnimateWrapper direction="up" amount={0.5} delay={0.4}>
             <InfoDashboard
-              number={10}
+              number={60}
               title={'Video'}
               Icon={Film}
               color="#FF2E2E"

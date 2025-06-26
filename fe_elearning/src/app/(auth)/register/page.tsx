@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Lock, Mail, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,8 @@ import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifySt
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast, ToastContainer } from 'react-toastify';
 import { useTheme } from 'next-themes';
+import { getVietnameseErrorMessage } from '@/utils/auth';
+import { ApiErrorResponse } from '@/types/apiResponse';
 
 // Use the validation schema from utils
 const formSchema = createRegistrationSchema();
@@ -67,30 +69,45 @@ export default function RegisterPage() {
         password: values.password,
       });
 
-      if (response?.status === 201) {
+      if (response?.status === 201 || response?.status === 200) {
         toast.success(
           <ToastNotify
             status={1}
-            message="Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+            message={
+              response?.data?.message ||
+              'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.'
+            }
           />,
           { style: styleSuccess }
         );
         setTimeout(() => {
           router.push('/login');
         }, 3000);
-      } else {
-        toast.error(<ToastNotify status={-1} message="Đăng ký thất bại. Vui lòng thử lại sau." />, {
-          style: styleError,
-        });
       }
     } catch (err: any) {
-      toast.error(
-        <ToastNotify
-          status={-1}
-          message={err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng ký'}
-        />,
-        { style: styleError }
-      );
+      const errorResponse = err?.response;
+      const statusCode = errorResponse?.status;
+      const errorData: ApiErrorResponse = errorResponse?.data;
+
+      let errorMessage = 'Đã xảy ra lỗi khi đăng ký';
+
+      if (!errorResponse) {
+        errorMessage = 'Lỗi kết nối. Vui lòng kiểm tra lại đường truyền';
+      } else {
+        // Use helper function to get Vietnamese error message
+        errorMessage = getVietnameseErrorMessage(
+          statusCode,
+          errorData?.errorCode,
+          errorData?.message
+        );
+
+        // If there are detailed validation errors, show them instead
+        if (errorData?.details && errorData.details.length > 0) {
+          errorMessage = errorData.details.map((detail) => detail.message).join(', ');
+        }
+      }
+
+      toast.error(<ToastNotify status={-1} message={errorMessage} />, { style: styleError });
     } finally {
       setIsLoading(false);
     }
@@ -293,31 +310,12 @@ export default function RegisterPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black"
+                      className="w-full bg-custom-gradient-button-blue hover:brightness-110 text-white"
                       disabled={isLoading}
                     >
                       {isLoading ? (
                         <div className="flex items-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
+                          <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
                           Đang xử lý...
                         </div>
                       ) : (

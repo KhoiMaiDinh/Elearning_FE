@@ -89,11 +89,36 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // Skip refresh token for authentication endpoints
+    const authEndpoints = [
+      '/auth/email/login',
+      '/auth/email/register',
+      '/auth/google/login',
+      '/auth/google/register',
+      '/auth/forgot-password',
+
+      '/auth/refresh',
+      '/auth/verify/email',
+    ];
+
+    const isAuthEndpoint = authEndpoints.some((endpoint) =>
+      originalRequest.url?.includes(endpoint)
+    );
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
+      !isAuthEndpoint && // Don't refresh for auth endpoints
       typeof window !== 'undefined'
     ) {
+      // Check if we have access token before attempting refresh
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) {
+        // No token to refresh, redirect to login
+        clearLoginData();
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -112,7 +137,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`);
-        console.trace(res);
+        console.log('Token refresh successful');
 
         const newAccessToken = res.data.access_token;
 
@@ -129,10 +154,7 @@ axiosInstance.interceptors.response.use(
         processQueue(err, null);
 
         // Nếu refresh thất bại => logout
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-
-        // window.location.href = "/login";
+        clearLoginData();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

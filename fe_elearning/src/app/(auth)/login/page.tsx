@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -37,6 +37,11 @@ import AlertSuccess from '@/components/alert/AlertSuccess';
 import AlertError from '@/components/alert/AlertError';
 import { APIGetCurrentUser } from '@/utils/user';
 import Image from 'next/image';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { getVietnameseErrorMessage } from '@/utils/auth';
+import { ApiErrorResponse } from '@/types/apiResponse';
 
 // Form schema
 
@@ -91,7 +96,8 @@ export default function LoginPage() {
         const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
-        localStorage.setItem('token_expires', response.data.token_expires);
+        localStorage.setItem('token_expires', response.data.token_expires.toString());
+
         // Check if user is banned
         if (decodedToken.banned_until) {
           clearLoginData();
@@ -106,23 +112,36 @@ export default function LoginPage() {
           return;
         }
 
+        toast.success(<ToastNotify status={1} message="Đăng nhập thành công" />, {
+          style: styleSuccess,
+        });
         handleGetCurrentUser();
-        // Store tokens and proceed with login
-
         router.push('/');
-      } else {
-        setShowAlertError(true);
-        setAlertDescription('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
-        setTimeout(() => {
-          setShowAlertError(false);
-        }, 3000);
       }
     } catch (err: any) {
-      setShowAlertError(true);
-      setAlertDescription(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      const errorResponse = err?.response;
+      const statusCode = errorResponse?.status;
+      const errorData: ApiErrorResponse = errorResponse?.data;
+
+      let errorMessage = 'Đã xảy ra lỗi khi đăng nhập';
+
+      if (!errorResponse) {
+        errorMessage = 'Lỗi kết nối. Vui lòng kiểm tra lại đường truyền';
+      } else {
+        // Use helper function to get Vietnamese error message
+        errorMessage = getVietnameseErrorMessage(
+          statusCode,
+          errorData?.errorCode,
+          errorData?.message
+        );
+
+        // If there are detailed validation errors, show them instead
+        if (errorData?.details && errorData.details.length > 0) {
+          errorMessage = errorData.details.map((detail) => detail.message).join(', ');
+        }
+      }
+
+      toast.error(<ToastNotify status={-1} message={errorMessage} />, { style: styleError });
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +166,7 @@ export default function LoginPage() {
             <div className="flex justify-center items-center">
               <Image src="/images/logo.png" alt="logo" width={50} height={50} />
             </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
+            <CardTitle className="text-3xl font-bold bg-custom-gradient-button-blue bg-clip-text text-black dark:text-white">
               Đăng nhập
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
@@ -239,31 +258,12 @@ export default function LoginPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black"
+                      className="w-full bg-custom-gradient-button-blue hover:brightness-110 text-white "
                       disabled={isLoading}
                     >
                       {isLoading ? (
                         <div className="flex items-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
+                          <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
                           Đang xử lý...
                         </div>
                       ) : (
