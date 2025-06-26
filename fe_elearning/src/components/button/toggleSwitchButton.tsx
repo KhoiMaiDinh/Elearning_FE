@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { APIChangeCourseStatus } from '@/utils/course';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
 import { RootState } from '@/constants/store';
 import { useSelector } from 'react-redux';
-
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast, ToastContainer } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
+import { useTheme } from 'next-themes';
 interface ToggleSwitchProps {
   courseId: string;
   status: string;
@@ -14,11 +16,8 @@ interface ToggleSwitchProps {
 
 const ToggleSwitchButton = ({ courseId, status }: ToggleSwitchProps) => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
-
+  const theme = useTheme();
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [description, setDescription] = useState<string>('');
-  const [showAlertSuccess, setShowAlertSuccess] = useState<boolean>(false);
-  const [showAlertError, setShowAlertError] = useState<boolean>(false);
   const [isLoadingCourseInfo, setIsLoadingCourseInfo] = useState<boolean>(true);
 
   useEffect(() => {
@@ -30,20 +29,6 @@ const ToggleSwitchButton = ({ courseId, status }: ToggleSwitchProps) => {
     }
   }, [courseInfo]);
 
-  useEffect(() => {
-    if (showAlertSuccess) {
-      const timer = setTimeout(() => setShowAlertSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showAlertSuccess]);
-
-  useEffect(() => {
-    if (showAlertError) {
-      const timer = setTimeout(() => setShowAlertError(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showAlertError]);
-
   const handleToggle = async () => {
     if (isLoadingCourseInfo) return; // Nếu đang loading thì không cho toggle
 
@@ -52,14 +37,17 @@ const ToggleSwitchButton = ({ courseId, status }: ToggleSwitchProps) => {
         status: isChecked ? 'DRAFT' : 'PUBLISHED',
       });
       if (response) {
-        setShowAlertSuccess(true);
-        setDescription('Bạn đã cập nhật trạng thái khóa học thành công');
+        toast.success(
+          <ToastNotify status={1} message="Bạn đã cập nhật trạng thái khóa học thành công" />,
+          { style: styleSuccess }
+        );
         setIsChecked(!isChecked);
       }
     } catch (error) {
       console.log(error);
-      setShowAlertError(true);
-      setDescription('Cập nhật trạng thái khóa học thất bại');
+      toast.error(<ToastNotify status={-1} message="Cập nhật trạng thái khóa học thất bại" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -93,8 +81,6 @@ const ToggleSwitchButton = ({ courseId, status }: ToggleSwitchProps) => {
           </Switch>
         </div>
       )}
-      {showAlertSuccess && <AlertSuccess description={description} />}
-      {showAlertError && <AlertError description={description} />}
     </div>
   );
 };

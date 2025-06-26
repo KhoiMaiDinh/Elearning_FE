@@ -1,8 +1,12 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  reactDevOverlay: false,
   reactStrictMode: false,
+  images: {
+    domains: ['localhost', '7f31-115-78-5-112.ngrok-free.app'],
+    dangerouslyAllowSVG: true,
+  },
+
   async rewrites() {
     return [
       {

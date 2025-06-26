@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ThumbsUp, ThumbsDown, Meh } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Meh, ChevronsRightLeft } from 'lucide-react';
 import { LectureComment } from '@/types/commentType';
 
 interface Emotion {
@@ -34,6 +34,13 @@ const emotions: Emotion[] = [
     icon: ThumbsDown,
     color: '#ef4444',
     bgColor: '#ef4444',
+  },
+  {
+    id: 'conflict',
+    name: 'Xung đột',
+    icon: ChevronsRightLeft,
+    color: '#f59e0b',
+    bgColor: '#f59e0b',
   },
 ];
 
@@ -240,18 +247,20 @@ export function AspectEmotionCircles({ comments }: { comments: LectureComment[] 
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex justify-center gap-4">
-          {emotions.map((emotion) => {
-            const EmotionIcon = emotion.icon;
-            return (
-              <div key={emotion.id} className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
-                ></div>
-                <EmotionIcon className={`h-4 w-4 text-${emotion.color}`} color={emotion.color} />
-                <span className="text-sm">{emotion.name}</span>
-              </div>
-            );
-          })}
+          {Array.isArray(emotions) &&
+            emotions.length > 0 &&
+            emotions.map((emotion) => {
+              const EmotionIcon = emotion.icon;
+              return (
+                <div key={emotion.id} className="flex items-center gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full text-${emotion.color} ${emotion.bgColor}`}
+                  ></div>
+                  <EmotionIcon className={`h-4 w-4 text-${emotion.color}`} color={emotion.color} />
+                  <span className="text-sm">{emotion.name}</span>
+                </div>
+              );
+            })}
         </div>
         <div
           ref={containerRef}

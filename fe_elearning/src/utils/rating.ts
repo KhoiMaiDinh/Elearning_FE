@@ -10,6 +10,7 @@ const APIGetRatingsForInstructor = async (params?: { limit?: number; afterCursor
   if (response.status === 200) {
     return response.data;
   }
+  return { data: null, status: response.status };
 };
 
 export { APIGetRatingsForInstructor as APIGetInstructorRatings };

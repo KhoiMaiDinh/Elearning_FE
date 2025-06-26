@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   ColumnDef,
@@ -18,11 +18,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import Pagination from '../pagination/Pagination';
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import Image from 'next/image';
 import SkeletonTable from '../skeleton/SkeletonTable';
+import Pagination from '../pagination/paginations';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,8 +50,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  // filterSearch,
-  titleTable,
+  titleTable: tableTitle,
   totalItems,
   loading,
   itemsPerPage,
@@ -63,12 +62,11 @@ export function DataTable<TData, TValue>({
   // openValue,
   // onClickOpenFilter,
   // filter = true,
-}: // onClickRefresh,
+}: // onClickRefresh
 DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = React.useState<any>({});
-  const [_showAlert, _setShowAlert] = useState(false);
 
   const table = useReactTable({
     data,
@@ -93,30 +91,36 @@ DataTableProps<TData, TValue>) {
   const _totalRows = data ? data.length : 0;
 
   return (
-    <div className="flex w-full flex-col gap-4 rounded-md border border-lightSilver p-4">
-      <div className="flex w-full flex-col items-center justify-between pt-4 md:flex-row">
-        <p className="text-md text-LavenderIndigo dark:text-white font-sans lg:text-[1rem]">
-          {titleTable}
-        </p>
+    <div className="flex w-full flex-col rounded-md overflow-hidden">
+      {tableTitle ||
+        (onClickAddNew && (
+          <div className="flex w-full flex-col items-center justify-between pt-4 md:flex-row">
+            <p className="text-md text-LavenderIndigo dark:text-white font-sans lg:text-[1rem]">
+              {tableTitle}
+            </p>
 
-        <div className="flex flex-row gap-4">
-          {onClickAddNew && (
-            <Button style={{ backgroundColor: '#7152F3', color: 'white' }} onClick={onClickAddNew}>
-              <div className="flex items-center gap-2">
-                <Image src={'/icons/ic_add_white.png'} alt="add" width={12} height={12} />
-                <span>Thêm mới</span>
-              </div>
-            </Button>
-          )}
-        </div>
-      </div>
+            <div className="flex flex-row gap-4">
+              {onClickAddNew && (
+                <Button
+                  style={{ backgroundColor: '#7152F3', color: 'white' }}
+                  onClick={onClickAddNew}
+                >
+                  <div className="flex items-center gap-2">
+                    <Image src={'/icons/ic_add_white.png'} alt="add" width={12} height={12} />
+                    <span>Thêm mới</span>
+                  </div>
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
 
       {loading ? (
         <SkeletonTable />
       ) : (
-        <div className="rounded-md border border-lightSilver">
-          <Table className="overflow-auto shadow-2xl">
-            <TableHeader className="relative bg-majorelleBlue20">
+        <div className="rounded-md border relative w-full">
+          <Table className="overflow-auto shadow-2xl w-full caption-bottom text-sm">
+            <TableHeader className="relative ">
               {table?.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => {

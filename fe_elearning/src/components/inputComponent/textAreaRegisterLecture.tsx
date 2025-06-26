@@ -1,14 +1,70 @@
+'use client';
+
 import React from 'react';
-import { Label } from '@/components/ui/label';
 import dynamic from 'next/dynamic';
-import 'react-quill-new/dist/quill.snow.css'; // Import CSS của react-quill-new
+import { Label } from '@/components/ui/label';
+import Asterisk from '../asterisk/asterisk';
+
+import 'react-quill-new/dist/quill.snow.css';
+
 const ReactQuill = dynamic(() => import('react-quill-new'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>,
 });
 
-type TextAreaRegisterLectureProps = {
-  labelText?: string;
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ color: [] }, { background: [] }],
+    [{ align: ['', 'center', 'right', 'justify'] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+    ['link', 'image', 'video'],
+    ['code-block'],
+    [{ script: 'sub' }, { script: 'super' }],
+    ['clean'],
+  ],
+  clipboard: { matchVisual: true },
+  keyboard: {
+    bindings: {
+      enter: {
+        key: 13,
+        shiftKey: true,
+        handler: () => true,
+      },
+    },
+  },
+};
+
+const formats = [
+  'header',
+  'font',
+  'size',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'align',
+  'color',
+  'background',
+  'blockquote',
+  'list',
+  'bullet',
+  'indent',
+  'link',
+  'image',
+  'video',
+  'code-block',
+  'formula',
+  'script',
+];
+
+type RichTextEditorProps = {
+  label?: string;
+  labelClassName?: string;
   name?: string;
   placeholder?: string;
   value?: string;
@@ -16,10 +72,12 @@ type TextAreaRegisterLectureProps = {
   onChange?: (value: string) => void;
   error?: string;
   disabled?: boolean;
+  isRequired?: boolean;
 };
 
-const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
-  labelText,
+const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
+  label,
+  labelClassName,
   name,
   placeholder,
   value,
@@ -27,93 +85,70 @@ const TextAreaRegisterLecture: React.FC<TextAreaRegisterLectureProps> = ({
   onChange,
   error,
   disabled,
+  isRequired,
 }) => {
   return (
     <div
-      className={`flex flex-col h-auto  w-full gap-1.5 ${className} font-sans font-normal text-black70 dark:text-AntiFlashWhite`}
+      className={`flex flex-col w-full gap-1.5 font-sans font-normal text-black70 dark:text-AntiFlashWhite ${className}`}
     >
-      <Label htmlFor={name}>{labelText}</Label>
-      <ReactQuill
-        // theme="snow"
-        className="max-h-[500px] overflow-auto"
-        value={value}
-        onChange={(content: any) => onChange?.(content)}
-        placeholder={placeholder}
-        readOnly={disabled}
-        modules={{
-          toolbar: [
-            // Headings
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      {label && (
+        <Label htmlFor={name} className={`${labelClassName} ${disabled ? 'opacity-50' : ''}`}>
+          {label} {isRequired && <Asterisk />}
+        </Label>
+      )}
 
-            // Font family & size
-            [{ font: [] }],
-            [{ size: ['small', false, 'large', 'huge'] }],
+      <style jsx global>{`
+        .ql-editor {
+          min-height: 200px;
+          max-height: 500px;
+          overflow: auto;
+        }
 
-            // Text styling
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        .ql-editor td,
+        .ql-editor th {
+          border: 1px solid #ddd;
+          padding: 8px;
+          min-width: 50px;
+        }
+        .ql-editor th {
+          background-color: #f5f5f5;
+          font-weight: bold;
+        }
+        .ql-editor tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+        .ql-editor tr:hover {
+          background-color: #f1f1f1;
+        }
 
-            // Text color & background
-            [{ color: [] }, { background: [] }],
+        .ql-editor.ql-blank::before {
+          color: #9ca3af;
+        }
 
-            // Text alignment
-            [{ align: ['', 'center', 'right', 'justify'] }],
+        .dark .ql-editor.ql-blank::before {
+          color: #6b7280;
+        }
+      `}</style>
 
-            // Lists & Indentation
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            [{ indent: '-1' }, { indent: '+1' }],
+      <div className={`relative ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
+        <ReactQuill
+          preserveWhitespace
+          theme="snow"
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={disabled}
+          modules={modules}
+          formats={formats}
+          className={`max-h-[500px] overflow-auto rounded-sm [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:whitespace-normal ${
+            disabled ? '[&_.ql-editor]:bg-gray-100 dark:[&_.ql-editor]:bg-gray-800' : ''
+          }`}
+        />
+        {disabled && <div className="absolute inset-0 bg-transparent" />}
+      </div>
 
-            // Links & Media
-            ['link', 'image', 'video'],
-
-            // Code & Formula
-            ['code-block', 'formula'],
-
-            // Subscript & Superscript
-            [{ script: 'sub' }, { script: 'super' }],
-
-            // Clean formatting
-            ['clean'],
-          ],
-        }}
-        formats={[
-          // Headings
-          'header',
-
-          // Font styles
-          'font',
-          'size',
-          'bold',
-          'italic',
-          'underline',
-          'strike',
-
-          // Text alignment & color
-          'align',
-          'color',
-          'background',
-
-          // Paragraphs & Lists
-          'blockquote',
-          'list',
-          'bullet',
-          'indent',
-
-          // Links & Media
-          'link',
-          'image',
-          'video',
-
-          // Advanced formatting
-          'code-block',
-          'formula',
-          'script',
-
-          // Clean
-          'clean',
-        ]}
-      />
-      {error && (
-        <div className="mt-10 text-[12px] font-sans font-normal text-redPigment">{error}</div>
+      {error && !disabled && (
+        <span className="mb-1 font-medium text-[9px] text-redPigment h-[9px]">{error}</span>
       )}
     </div>
   );

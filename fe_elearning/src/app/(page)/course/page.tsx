@@ -2,10 +2,19 @@
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import CoursesBlock from '@/components/block/courses-block';
 import type { CourseForm } from '@/types/courseType';
-import { APIGetListCourse } from '@/utils/course';
+import { APIGetEnrolledCourse, APIGetFavoriteCourse, APIGetListCourse } from '@/utils/course';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import {
+  Loader2,
+  Filter,
+  Grid,
+  List,
+  SlidersHorizontal,
+  BookOpen,
+  Heart,
+  User,
+} from 'lucide-react';
 import { APIGetCategory } from '@/utils/category';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,12 +25,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { PriceRangeFilter } from '@/components/filter/priceRangeFilter';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
+
+type TabType = 'all' | 'my-courses' | 'favorites';
 
 const Page = () => {
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -34,10 +50,16 @@ const Page = () => {
   const [category, setCategory] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [favoriteCourse, setFavoriteCourse] = useState<CourseForm[]>([]);
+
+  // Get active tab from URL or default to 'all'
+  const [activeTab, setActiveTab] = useState<TabType>(
+    (searchParams.get('tab') as TabType) || 'all'
+  );
 
   // Initialize params from URL
   const [paramsCourse, setParamsCourse] = useState({
-    page: 1,
+    page: Number(searchParams.get('page')) || 1,
     limit: 12,
     category_slug: searchParams.get('category_slug') || undefined,
     level: searchParams.get('level') || undefined,
@@ -56,7 +78,9 @@ const Page = () => {
     with_category: true,
     include_disabled: false,
     with_thumbnail: true,
+    is_approved: true,
   });
+  console.log(paramsCourse);
 
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
   const [priceRange, setPriceRange] = useState([
@@ -64,17 +88,36 @@ const Page = () => {
     paramsCourse.max_price || 5000000,
   ]);
 
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
 
-  const handleGetListCourse = async () => {
+  // API call based on active tab
+  const handleGetCourses = async () => {
     try {
+      console.log('🚀 API Call - handleGetCourses triggered:', {
+        activeTab,
+        searchQuery: paramsCourse.q,
+        allParams: paramsCourse,
+      });
       setIsLoadingCourses(true);
-      const response = await APIGetListCourse(paramsCourse);
+      let response;
+
+      switch (activeTab) {
+        case 'my-courses':
+          response = await APIGetEnrolledCourse();
+          break;
+        case 'favorites':
+          response = await APIGetFavoriteCourse();
+          break;
+        default:
+          response = await APIGetListCourse(paramsCourse);
+          break;
+      }
+
       if (response && response.data) {
         setListCourse(response.data);
       }
     } catch (err) {
-      console.error('Error during get list course:', err);
+      console.error('Error during get courses:', err);
     } finally {
       setIsLoadingCourses(false);
     }
@@ -125,48 +168,68 @@ const Page = () => {
     router.push(url.pathname + url.search);
   };
 
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+    setParamsCourse((prev) => ({ ...prev, page: 1 }));
+
+    // Clear filters when switching to non-'all' tabs
+    if (tab !== 'all') {
+      clearFilters();
+    }
+
+    updateURL({ tab: tab, page: 1 });
+  };
+
   const handleFilterChange = (key: string, value: any) => {
     const newParams = { ...paramsCourse, [key]: value, page: 1 };
     setParamsCourse(newParams);
-    updateURL({ [key]: value, page: 1 });
+    updateURL({ [key]: value, page: 1, tab: activeTab === 'all' ? undefined : activeTab });
   };
 
-  const handlePriceRangeChange = (values: number[]) => {
-    setPriceRange(values);
+  const handlePriceRangeCommit = (min: number, max: number) => {
+    setPriceRange([min, max]);
     const newParams = {
       ...paramsCourse,
-      min_price: values[0] > 0 ? values[0] : undefined,
-      max_price: values[1] < 5000000 ? values[1] : undefined,
+      min_price: min > 0 ? min : undefined,
+      max_price: max < 5000000 ? max : undefined,
       page: 1,
     };
     setParamsCourse(newParams);
     updateURL({
-      min_price: values[0] > 0 ? values[0] : undefined,
-      max_price: values[1] < 5000000 ? values[1] : undefined,
+      min_price: min > 0 ? min : undefined,
+      max_price: max < 5000000 ? max : undefined,
       page: 1,
+      tab: activeTab === 'all' ? undefined : activeTab,
     });
   };
 
+  const clearedParams = {
+    page: 1,
+    limit: 12,
+    category_slug: undefined,
+    level: undefined,
+    min_price: undefined,
+    max_price: undefined,
+    min_rating: undefined,
+    q: undefined,
+    instructor_username: undefined,
+    with_instructor: true,
+    with_category: true,
+    include_disabled: false,
+    with_thumbnail: true,
+    is_approved: true,
+  };
   const clearFilters = () => {
-    const clearedParams = {
-      page: 1,
-      limit: 12,
-      category_slug: undefined,
-      level: undefined,
-      min_price: undefined,
-      max_price: undefined,
-      min_rating: undefined,
-      q: undefined,
-      instructor_username: undefined,
-      with_instructor: true,
-      with_category: true,
-      include_disabled: false,
-      with_thumbnail: true,
-    };
     setParamsCourse(clearedParams);
     setPriceRange([0, 5000000]);
     setSortBy('newest');
-    router.push('/course');
+    const url = new URL(window.location.href);
+    url.search = '';
+    if (activeTab !== 'all') {
+      url.searchParams.set('tab', activeTab);
+    }
+    router.push(url.pathname + url.search);
   };
 
   const getActiveFiltersCount = () => {
@@ -181,19 +244,100 @@ const Page = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    setParamsCourse((prev) => ({ ...prev, page })); // Update paramsCourse to trigger API call
+    setParamsCourse((prev) => ({ ...prev, page }));
+    updateURL({ page, tab: activeTab === 'all' ? undefined : activeTab });
   };
 
-  // Calculate total pages based on the listCourse length and limit
   const totalPages = Math.ceil(listCourse.length / paramsCourse.limit);
 
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case 'my-courses':
+        return 'Khóa học của tôi';
+      case 'favorites':
+        return 'Khóa học yêu thích';
+      default:
+        return 'Tất cả khóa học';
+    }
+  };
+
+  const getTabDescription = () => {
+    switch (activeTab) {
+      case 'my-courses':
+        return 'Các khóa học bạn đã đăng ký';
+      case 'favorites':
+        return 'Các khóa học bạn đã yêu thích';
+      default:
+        return 'Khám phá tất cả khóa học có sẵn';
+    }
+  };
+
+  const handleGetFavoriteCourse = async () => {
+    const response = await APIGetFavoriteCourse();
+    if (response && response?.data) {
+      setFavoriteCourse(response.data);
+    }
+  };
+
+  // Fetch courses when params or tab changes
   useEffect(() => {
-    handleGetListCourse();
-  }, [paramsCourse]);
+    handleGetCourses();
+  }, [paramsCourse, activeTab, searchParams]);
 
   useEffect(() => {
     handleGetCategory();
+    handleGetFavoriteCourse();
+    handleGetCourses();
   }, []);
+
+  // Sync params with URL searchParams when they change
+  useEffect(() => {
+    const searchQuery = searchParams.get('search');
+    console.log('🔍 Search params changed:', {
+      searchQuery,
+      allParams: Object.fromEntries(searchParams.entries()),
+    });
+
+    const newParams = {
+      page: Number(searchParams.get('page')) || 1,
+      limit: 12,
+      category_slug: searchParams.get('category_slug') || undefined,
+      level: searchParams.get('level') || undefined,
+      min_price: searchParams.get('min_price')
+        ? Number.parseInt(searchParams.get('min_price')!)
+        : undefined,
+      max_price: searchParams.get('max_price')
+        ? Number.parseInt(searchParams.get('max_price')!)
+        : undefined,
+      min_rating: searchParams.get('min_rating')
+        ? Number.parseInt(searchParams.get('min_rating')!)
+        : undefined,
+      q: searchQuery || undefined,
+      instructor_username: undefined,
+      with_instructor: true,
+      with_category: true,
+      include_disabled: false,
+      with_thumbnail: true,
+      is_approved: true,
+    };
+
+    console.log('📝 Setting new params:', newParams);
+    setParamsCourse(newParams);
+    setCurrentPage(Number(searchParams.get('page')) || 1);
+    setSortBy(searchParams.get('sort') || 'newest');
+    setPriceRange([newParams.min_price || 0, newParams.max_price || 5000000]);
+  }, [searchParams]);
+
+  // Update tab from URL on mount and URL changes
+  useEffect(() => {
+    const tabFromUrl = (searchParams.get('tab') as TabType) || 'all';
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+      if (tabFromUrl !== 'all') {
+        clearFilters();
+      }
+    }
+  }, [searchParams]);
 
   const FilterSidebar = ({ className = '' }) => (
     <Card className={`${className}`}>
@@ -209,28 +353,32 @@ const Page = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Category Filter */}
-        <div className="space-y-2">
-          <Label>Danh mục</Label>
-          <Select
-            value={paramsCourse.category_slug || 'all'}
-            onValueChange={(value) =>
-              handleFilterChange('category_slug', value === 'all' ? undefined : value)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn danh mục" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả danh mục</SelectItem>
-              {category.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id}>
-                  {cat.value}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Category Filter - Only show for 'all' tab */}
+        {activeTab === 'all' && (
+          <div className="space-y-2">
+            <Label>Danh mục</Label>
+            <Select
+              value={paramsCourse.category_slug || 'all'}
+              onValueChange={(value) =>
+                handleFilterChange('category_slug', value === 'all' ? undefined : value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn danh mục" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả danh mục</SelectItem>
+                {Array.isArray(category) &&
+                  category.length > 0 &&
+                  category.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.value}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Level Filter */}
         <div className="space-y-2">
@@ -253,25 +401,14 @@ const Page = () => {
           </Select>
         </div>
 
-        {/* Price Range */}
-        <div className="space-y-3">
-          <Label>Khoảng giá</Label>
-          <div className="px-2">
-            <Slider
-              value={priceRange}
-              onValueChange={handlePriceRangeChange}
-              onValueCommit={handlePriceRangeChange}
-              max={5000000}
-              min={0}
-              step={1000}
-              className="w-full"
-            />
-          </div>
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{priceRange[0].toLocaleString('vi-VN')}đ</span>
-            <span>{priceRange[1].toLocaleString('vi-VN')}đ</span>
-          </div>
-        </div>
+        {/* Price Range - Only show for 'all' tab */}
+        {activeTab === 'all' && (
+          <PriceRangeFilter
+            minPrice={priceRange[0]}
+            maxPrice={priceRange[1]}
+            onPriceChange={handlePriceRangeCommit}
+          />
+        )}
 
         {/* Rating Filter */}
         <div className="space-y-2">
@@ -312,218 +449,248 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      {/* <div className="bg-gradient-to-r from-LavenderIndigo to-majorelleBlue text-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <AnimateWrapper delay={0} direction="left">
-                <h1 className="text-4xl font-bold mb-4">Khám phá các khóa học chất lượng cao</h1>
-                <p className="text-lg opacity-90 mb-6">
-                  Học từ những chuyên gia hàng đầu với hàng nghìn khóa học được cập nhật liên tục
-                </p>
-                <div className="flex gap-4">
-                  <Button size="lg" variant="secondary">
-                    Bắt đầu học ngay
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="text-white border-white hover:bg-white hover:text-LavenderIndigo"
-                  >
-                    Tìm hiểu thêm
-                  </Button>
-                </div>
-              </AnimateWrapper>
-            </div>
-            <div className="flex justify-center">
-              <AnimateWrapper delay={0.2} direction="right">
-                <img
-                  src="/images/course_bg.png"
-                  alt="Khóa học"
-                  className="max-w-md w-full rounded-xl shadow-2xl"
-                />
-              </AnimateWrapper>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="flex gap-8">
-          {/* Desktop Filter Sidebar */}
-          <div className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-24">
-              <FilterSidebar />
-            </div>
-          </div>
+        {/* Tabs */}
+        <div className="mb-8">
+          <Tabs value={activeTab} onValueChange={(value) => handleTabChange(value as TabType)}>
+            <TabsList
+              className={`grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3 
+            ${userInfo.id ? '' : 'hidden'}`}
+            >
+              <TabsTrigger value="all" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Tất cả khóa học</span>
+                <span className="sm:hidden">Tất cả</span>
+              </TabsTrigger>
+              <TabsTrigger value="my-courses" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Khóa học của tôi</span>
+                <span className="sm:hidden">Của tôi</span>
+              </TabsTrigger>
+              <TabsTrigger value="favorites" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                <span className="hidden sm:inline">Yêu thích</span>
+                <span className="sm:hidden">Yêu thích</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Main Content Area */}
-          <div className="flex-1 min-w-0">
-            {/* Top Filters and Controls */}
-            <div className="mb-6">
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold">Danh sách khóa học</h2>
-                  <p className="text-muted-foreground">
-                    {isLoadingCourses ? 'Đang tải...' : `Tìm thấy ${listCourse.length} khóa học`}
-                  </p>
-                </div>
+            <TabsContent value={activeTab} className="mt-6">
+              <div className="flex gap-8">
+                {/* Desktop Filter Sidebar */}
+                {activeTab === 'all' && (
+                  <div className="hidden lg:block w-80 flex-shrink-0">
+                    <div className="sticky top-24">
+                      <FilterSidebar />
+                    </div>
+                  </div>
+                )}
 
-                {/* Mobile Filter Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowMobileFilter(true)}
-                  className="lg:hidden"
-                >
-                  <SlidersHorizontal className="h-4 w-4 mr-2" />
-                  Bộ lọc
-                  {getActiveFiltersCount() > 0 && (
-                    <Badge variant="secondary" className="ml-2">
-                      {getActiveFiltersCount()}
-                    </Badge>
+                {/* Main Content Area */}
+                <div className="flex-1 min-w-0">
+                  {/* Top Filters and Controls */}
+                  <div className="mb-6">
+                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
+                      <div>
+                        <h2 className="text-2xl font-bold">{getTabTitle()}</h2>
+                        <p className="text-muted-foreground">
+                          {isLoadingCourses
+                            ? 'Đang tải...'
+                            : `${getTabDescription()} - Tìm thấy ${listCourse.length} khóa học`}
+                        </p>
+                      </div>
+
+                      {/* Mobile Filter Button */}
+                      {activeTab === 'all' && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowMobileFilter(true)}
+                          className="lg:hidden"
+                        >
+                          <SlidersHorizontal className="h-4 w-4 mr-2" />
+                          Bộ lọc
+                          {getActiveFiltersCount() > 0 && (
+                            <Badge variant="secondary" className="ml-2">
+                              {getActiveFiltersCount()}
+                            </Badge>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Top Controls */}
+                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                      <div className="flex gap-2 items-center">
+                        <Label htmlFor="sort">Sắp xếp:</Label>
+                        <Select value={sortBy} onValueChange={setSortBy}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="newest">Mới nhất</SelectItem>
+                            <SelectItem value="oldest">Cũ nhất</SelectItem>
+                            {activeTab === 'all' && (
+                              <>
+                                <SelectItem value="price_low">Giá thấp đến cao</SelectItem>
+                                <SelectItem value="price_high">Giá cao đến thấp</SelectItem>
+                              </>
+                            )}
+                            <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
+                            <SelectItem value="popular">Phổ biến nhất</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          variant={viewMode === 'grid' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setViewMode('grid')}
+                        >
+                          <Grid className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant={viewMode === 'list' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setViewMode('list')}
+                        >
+                          <List className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Active Filters */}
+                    {activeTab === 'all' && getActiveFiltersCount() > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {paramsCourse.category_slug && (
+                          <Badge variant="secondary" className="gap-1">
+                            {category.find((c) => c.id === paramsCourse.category_slug)?.value}
+                            <button onClick={() => handleFilterChange('category_slug', undefined)}>
+                              ×
+                            </button>
+                          </Badge>
+                        )}
+                        {paramsCourse.level && (
+                          <Badge variant="secondary" className="gap-1">
+                            {paramsCourse.level}
+                            <button onClick={() => handleFilterChange('level', undefined)}>
+                              ×
+                            </button>
+                          </Badge>
+                        )}
+                        {(paramsCourse.min_price || paramsCourse.max_price) && (
+                          <Badge variant="secondary" className="gap-1">
+                            {paramsCourse.min_price?.toLocaleString('vi-VN')}đ -{' '}
+                            {paramsCourse.max_price?.toLocaleString('vi-VN')}đ
+                            <button onClick={() => handlePriceRangeCommit(0, 5000000)}>×</button>
+                          </Badge>
+                        )}
+                        {paramsCourse.min_rating && (
+                          <Badge variant="secondary" className="gap-1">
+                            {paramsCourse.min_rating}+ sao
+                            <button onClick={() => handleFilterChange('min_rating', undefined)}>
+                              ×
+                            </button>
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Course Grid/List */}
+                  <AnimateWrapper delay={0} direction="up" amount={0.01}>
+                    {isLoadingCourses ? (
+                      <div className="flex items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                      </div>
+                    ) : listCourse.length > 0 ? (
+                      <div
+                        className={`grid gap-6 ${
+                          viewMode === 'grid'
+                            ? activeTab === 'all'
+                              ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
+                              : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                            : 'grid-cols-1'
+                        }`}
+                      >
+                        {listCourse &&
+                          listCourse.length > 0 &&
+                          listCourse.map((course: CourseForm, index: number) =>
+                            activeTab === 'all' || activeTab === 'favorites' ? (
+                              <CoursesBlock
+                                key={index}
+                                {...course}
+                                is_favorite={
+                                  activeTab === 'favorites' ||
+                                  (activeTab === 'all' &&
+                                    favoriteCourse?.some((favorite) => favorite?.id === course?.id))
+                                }
+                              />
+                            ) : activeTab === 'my-courses' ? (
+                              <EnrolledCourseBlock key={course.id} course={course} />
+                            ) : null
+                          )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <p className="text-muted-foreground">
+                          {activeTab === 'my-courses'
+                            ? 'Bạn chưa đăng ký khóa học nào.'
+                            : activeTab === 'favorites'
+                              ? 'Bạn chưa có khóa học yêu thích nào.'
+                              : 'Không tìm thấy khóa học nào phù hợp với bộ lọc của bạn.'}
+                        </p>
+                        {getActiveFiltersCount() > 0 && activeTab === 'all' && (
+                          <Button onClick={clearFilters} className="mt-4">
+                            Xóa bộ lọc
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </AnimateWrapper>
+
+                  {/* Pagination */}
+                  {listCourse.length > 0 && totalPages > 1 && (
+                    <div className="flex justify-center mt-8">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          Trước
+                        </Button>
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                          const pageNumber = index + 1;
+                          return (
+                            <Button
+                              key={pageNumber}
+                              variant={currentPage === pageNumber ? 'default' : 'outline'}
+                              onClick={() => handlePageChange(pageNumber)}
+                            >
+                              {pageNumber}
+                            </Button>
+                          );
+                        })}
+                        <Button
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        >
+                          Sau
+                        </Button>
+                      </div>
+                    </div>
                   )}
-                </Button>
+                </div>
               </div>
-
-              {/* Top Controls */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <div className="flex gap-2 items-center">
-                  <Label htmlFor="sort">Sắp xếp:</Label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Mới nhất</SelectItem>
-                      <SelectItem value="oldest">Cũ nhất</SelectItem>
-                      <SelectItem value="price_low">Giá thấp đến cao</SelectItem>
-                      <SelectItem value="price_high">Giá cao đến thấp</SelectItem>
-                      <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
-                      <SelectItem value="popular">Phổ biến nhất</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Active Filters */}
-              {getActiveFiltersCount() > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {paramsCourse.category_slug && (
-                    <Badge variant="secondary" className="gap-1">
-                      {category.find((c) => c.id === paramsCourse.category_slug)?.value}
-                      <button onClick={() => handleFilterChange('category_slug', undefined)}>
-                        ×
-                      </button>
-                    </Badge>
-                  )}
-                  {paramsCourse.level && (
-                    <Badge variant="secondary" className="gap-1">
-                      {paramsCourse.level}
-                      <button onClick={() => handleFilterChange('level', undefined)}>×</button>
-                    </Badge>
-                  )}
-                  {(paramsCourse.min_price || paramsCourse.max_price) && (
-                    <Badge variant="secondary" className="gap-1">
-                      {paramsCourse.min_price?.toLocaleString('vi-VN')}đ -{' '}
-                      {paramsCourse.max_price?.toLocaleString('vi-VN')}đ
-                      <button onClick={() => handlePriceRangeChange([0, 5000000])}>×</button>
-                    </Badge>
-                  )}
-                  {paramsCourse.min_rating && (
-                    <Badge variant="secondary" className="gap-1">
-                      {paramsCourse.min_rating}+ sao
-                      <button onClick={() => handleFilterChange('min_rating', undefined)}>×</button>
-                    </Badge>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Course Grid/List */}
-            <AnimateWrapper delay={0} direction="up" amount={0.01}>
-              {isLoadingCourses ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-              ) : listCourse.length > 0 ? (
-                <div
-                  className={`grid gap-6 ${
-                    viewMode === 'grid'
-                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
-                      : 'grid-cols-1'
-                  }`}
-                >
-                  {listCourse.map((course: CourseForm, index: number) => (
-                    <CoursesBlock key={index} {...course} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">
-                    Không tìm thấy khóa học nào phù hợp với bộ lọc của bạn.
-                  </p>
-                  <Button onClick={clearFilters} className="mt-4">
-                    Xóa bộ lọc
-                  </Button>
-                </div>
-              )}
-            </AnimateWrapper>
-
-            {/* Pagination */}
-            {listCourse.length > 0 && (
-              <div className="flex justify-center mt-8">
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Trước
-                  </Button>
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <Button
-                      key={index + 1}
-                      variant={currentPage === index + 1 ? 'default' : 'outline'}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Sau
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
       {/* Mobile Filter Modal */}
-      {showMobileFilter && (
+      {showMobileFilter && activeTab === 'all' && (
         <div className="fixed inset-0 bg-black/50 z-50 lg:hidden">
           <div className="fixed right-0 top-0 h-full w-80 bg-background shadow-xl">
             <div className="p-4 border-b">

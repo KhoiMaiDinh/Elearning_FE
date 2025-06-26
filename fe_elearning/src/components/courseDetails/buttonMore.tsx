@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Flag, Star, X } from 'lucide-react';
 import { APICreateReport } from '@/utils/report';
-import AlertSuccess from '../alert/AlertSuccess';
-import AlertError from '../alert/AlertError';
 import { useForm, Controller, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import ToastNotify from '../ToastNotify/toastNotify';
+import { toast } from 'react-toastify';
+import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
+import { styleError } from '../ToastNotify/toastNotifyStyle';
 
 const schema = yup.object({
   content: yup.string().required('Nội dung báo cáo không được để trống'),
 });
 
-export default function ButtonMore({ course_id }: { course_id: string }) {
+export default function ButtonMore({ course_id, label }: { course_id: string; label: string }) {
   const {
     control,
     handleSubmit,
@@ -26,26 +28,18 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
 
   const [showMore, setShowMore] = useState(false);
   const [showReport, setShowReport] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
-  const [alertDescription, setAlertDescription] = useState('');
-
   const handleCreateReport = async (data: any) => {
     const response = await APICreateReport(data);
     if (response?.status === 201) {
       setShowReport(false);
-      setShowAlertSuccess(true);
-      setAlertDescription('Báo cáo đã được gửi thành công');
       handleClearData();
-      setTimeout(() => {
-        setShowAlertSuccess(false);
-      }, 3000);
+      toast.success(<ToastNotify status={1} message="Báo cáo đã được gửi thành công" />, {
+        style: styleSuccess,
+      });
     } else {
-      setShowAlertError(true);
-      setAlertDescription('Báo cáo không thành công');
-      setTimeout(() => {
-        setShowAlertError(false);
-      }, 3000);
+      toast.error(<ToastNotify status={-1} message="Báo cáo không thành công" />, {
+        style: styleError,
+      });
     }
   };
 
@@ -53,7 +47,7 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
     const dataReport = {
       type: 'COURSE',
       content_id: course_id,
-      reason: data.content,
+      reason: data.content + ' - ' + label,
     };
     await handleCreateReport(dataReport);
   };
@@ -103,16 +97,26 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
       {/* Popup Report Form */}
       {showReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-[90%] max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-eerieBlack">
+          <div className="relative w-[100%] max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-eerieBlack">
             <button
               className="absolute right-3 top-3 text-gray-400 hover:text-red-500"
               onClick={() => setShowReport(false)}
             >
               <X size={20} />
             </button>
-            <h2 className="mb-4 text-lg font-semibold text-eerieBlack dark:text-white">
+            <h2 className="mb-1 text-lg font-semibold text-eerieBlack dark:text-white">
               Gửi báo cáo khóa học
             </h2>
+            <div className="flex flex-col gap-4 mb-4">
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="content"
+                  className="text-sm font-medium text-gray-700 dark:text-white"
+                >
+                  {label}
+                </label>
+              </div>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <Controller
                 control={control}
@@ -136,9 +140,6 @@ export default function ButtonMore({ course_id }: { course_id: string }) {
           </div>
         </div>
       )}
-
-      {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-      {showAlertError && <AlertError description={alertDescription} />}
     </>
   );
 }

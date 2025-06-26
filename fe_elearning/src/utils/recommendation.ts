@@ -21,4 +21,20 @@ const APIGetRecommendation = async (params?: { amount?: number }) => {
   }
 };
 
-export default APIGetRecommendation;
+const APIGetRecommendationByCourseId = async (courseId: string) => {
+  try {
+    const response = await axiosInstance.get(`/recommendations/courses/${courseId}`);
+    if (response.status === 200) {
+      return {
+        status: response.status,
+        data: response.data,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export { APIGetRecommendation, APIGetRecommendationByCourseId };

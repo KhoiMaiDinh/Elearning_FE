@@ -12,6 +12,7 @@ import {
   FileQuestion,
   Star,
   Users,
+  ArrowRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -32,18 +33,8 @@ import {
   APIPayoutSummary,
   APIRevenueByCourse,
   APIStudentGrowth,
-} from '@/utils/instructor-dashboard';
+} from '@/utils/instructorDashboard';
 import { useEffect, useState } from 'react';
-import {
-  CourseCompletionRateType,
-  InstructorOverviewType,
-  CumulativeFeedChartType,
-  FeedChartType,
-  PayoutSummaryType,
-  NextPayoutType,
-  StudentEngagementType,
-  CourseRatingType,
-} from '@/types/instructorType';
 import { DashboardSkeleton } from '../skeleton/dashboardSkeleton';
 import {
   Dialog,
@@ -60,8 +51,22 @@ import { APIGetInstructorRatings } from '@/utils/rating';
 import { ReviewCourseType } from '@/types/reviewCourseType';
 import { APIGetInstructorThreads } from '@/utils/thread';
 import { CommunityThread } from '@/types/communityThreadType';
+import { formatPrice } from '../formatPrice';
+import ViewMoreButton from '../button/viewMoreButton';
+import {
+  CourseCompletionRateType,
+  CourseRatingType,
+  CumulativeFeedChartType,
+  FeedChartType,
+  InstructorOverviewType,
+  NextPayoutType,
+  PayoutSummaryType,
+  StudentEngagementType,
+} from '@/types/instructorType';
+import { useRouter } from 'next/navigation';
 
 export const Overview = () => {
+  const router = useRouter();
   const [overviewData, setOverviewData] = useState<InstructorOverviewType | null>(null);
   const [studentGrowthData, setStudentGrowthData] = useState<CumulativeFeedChartType | null>(null);
   const [courseCompletionRateData, setCourseCompletionRateData] = useState<
@@ -125,8 +130,6 @@ export const Overview = () => {
         has_replied: false,
       });
 
-      console.log('threads', threads);
-
       setOverviewData(overviewResponse?.data);
       setStudentGrowthData(studentGrowthResponse?.data);
       setCourseCompletionRateData(courseCompletionRateResponse?.data);
@@ -136,17 +139,16 @@ export const Overview = () => {
       setNextPayoutData(nextPayoutResponse?.data);
       setAverageStudentEngagementData(avgStudentEngagementResponse?.data);
       setCourseRatingData(avgCourseRatingResponse?.data);
-      setRecentComments(comments?.data);
+      setRecentComments(Array.isArray(comments?.data) ? comments.data : []);
       setCommentsAfterCursor(comments?.pagination.afterCursor);
-      setRecentRatings(ratings?.data);
+      setRecentRatings(Array.isArray(ratings?.data) ? ratings.data : []);
       setRatingsAfterCursor(ratings?.pagination.afterCursor);
-      setRecentThreads(threads?.data);
+      setRecentThreads(Array.isArray(threads?.data) ? threads.data : []);
       setThreadsAfterCursor(threads?.pagination.afterCursor);
-      setRecentThreadsToReply(threadsToReply?.data);
+      setRecentThreadsToReply(Array.isArray(threadsToReply?.data) ? threadsToReply.data : []);
       setThreadsToReplyAfterCursor(threadsToReply?.pagination.afterCursor);
     } catch (err) {
       setError('Failed to fetch overview data');
-      console.log('Error fetching overview data:', err);
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +164,10 @@ export const Overview = () => {
     });
 
     setCommentsAfterCursor(newComments?.pagination.afterCursor);
-    setRecentComments((prev) => [...prev, ...newComments.data]);
+    setRecentComments((prev) => [
+      ...(Array.isArray(prev) ? prev : []),
+      ...(Array.isArray(newComments?.data) ? newComments.data : []),
+    ]);
 
     setIsLoadingComments(false);
   };
@@ -177,7 +182,10 @@ export const Overview = () => {
     });
 
     setRatingsAfterCursor(newRatings?.pagination.afterCursor);
-    setRecentRatings((prev) => [...prev, ...newRatings.data]);
+    setRecentRatings((prev) => [
+      ...(Array.isArray(prev) ? prev : []),
+      ...(Array.isArray(newRatings?.data) ? newRatings.data : []),
+    ]);
 
     setIsLoadingComments(false);
   };
@@ -193,10 +201,16 @@ export const Overview = () => {
     });
     if (has_replied == false) {
       setThreadsToReplyAfterCursor(newThreads?.pagination.afterCursor);
-      setRecentThreadsToReply((prev) => [...prev, ...newThreads.data]);
+      setRecentThreadsToReply((prev) => [
+        ...(Array.isArray(prev) ? prev : []),
+        ...(Array.isArray(newThreads?.data) ? newThreads.data : []),
+      ]);
     } else {
       setThreadsAfterCursor(newThreads?.pagination.afterCursor);
-      setRecentThreads((prev) => [...prev, ...newThreads.data]);
+      setRecentThreads((prev) => [
+        ...(Array.isArray(prev) ? prev : []),
+        ...(Array.isArray(newThreads?.data) ? newThreads.data : []),
+      ]);
     }
 
     setIsLoadingThreads(false);
@@ -249,7 +263,8 @@ export const Overview = () => {
   };
 
   const transformEngagementData = (rawData: StudentEngagementType[]) => {
-    const sortedData = rawData.sort((a, b) => b.avg_engagement - a.avg_engagement);
+    const safeData = Array.isArray(rawData) ? rawData : [];
+    const sortedData = safeData.sort((a, b) => b.avg_engagement - a.avg_engagement);
     return sortedData.map((item) => ({
       name: item.title,
       value: Math.round(item.avg_engagement),
@@ -257,7 +272,8 @@ export const Overview = () => {
   };
 
   const transformCourseRatingData = (rawData: CourseRatingType[]) => {
-    const sortedData = rawData.sort((a, b) => b.average_rating - a.average_rating);
+    const safeData = Array.isArray(rawData) ? rawData : [];
+    const sortedData = safeData.sort((a, b) => b.average_rating - a.average_rating);
     return sortedData.map((item) => ({
       name: item.title,
       value: item.average_rating,
@@ -277,7 +293,7 @@ export const Overview = () => {
       {isLoading ? (
         renderSkeleton()
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 px-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -346,7 +362,9 @@ export const Overview = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{overviewData?.total_payout}₫</div>
+                <div className="text-2xl font-bold">
+                  {formatPrice(overviewData?.total_payout ?? 0)}
+                </div>
                 <div className="mt-1 flex flex-col gap-1 text-xs"></div>
               </CardContent>
             </Card>
@@ -397,7 +415,7 @@ export const Overview = () => {
                     categories={['value']}
                     index="name"
                     colors={['#0ea5e9']}
-                    valueFormatter={(value) => `${value} students`}
+                    valueFormatter={(value) => `${value} học viên`}
                     showLegend={false}
                     showGridLines={false}
                     startEndOnly={false}
@@ -416,10 +434,7 @@ export const Overview = () => {
                   </div>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                        View More
-                        <ChevronRight className="h-3 w-3" />
-                      </Button>
+                      <ViewMoreButton />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[625px]">
                       <DialogHeader>
@@ -493,17 +508,19 @@ export const Overview = () => {
                   </Dialog>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {sortCourseCompletionRateData(courseCompletionRateData ?? [])
-                    .slice(0, 5)
-                    .map((item, index) => (
-                      <div className="space-y-2" key={index}>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">{item.title}</span>
-                          <span className="text-sm font-medium">{item.completion_rate}%</span>
+                  {courseCompletionRateData &&
+                    courseCompletionRateData.length > 0 &&
+                    sortCourseCompletionRateData(courseCompletionRateData)
+                      .slice(0, 5)
+                      .map((item, index) => (
+                        <div className="space-y-2" key={index}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">{item.title}</span>
+                            <span className="text-sm font-medium">{item.completion_rate}%</span>
+                          </div>
+                          <Progress value={item.completion_rate} className="h-2" />
                         </div>
-                        <Progress value={item.completion_rate} className="h-2" />
-                      </div>
-                    ))}
+                      ))}
                 </CardContent>
               </Card>
             </div>
@@ -523,7 +540,7 @@ export const Overview = () => {
                   categories={['value']}
                   index="name"
                   colors={['#10b981']}
-                  valueFormatter={(value) => `$${value}`}
+                  valueFormatter={(value) => `${formatPrice(value)}`}
                   showLegend={false}
                   showGridLines={false}
                   startEndOnly={false}
@@ -543,7 +560,7 @@ export const Overview = () => {
                   data={revenueByCourseData ? transformToChartData(revenueByCourseData) : []}
                   category="value"
                   index="name"
-                  valueFormatter={(value) => `$${value}`}
+                  valueFormatter={(value) => `${formatPrice(value)}`}
                   showLegend={true}
                   showGridLines={false}
                   showXAxis={false}
@@ -570,14 +587,16 @@ export const Overview = () => {
                       {new Date().toLocaleString('en-EN', { month: 'long', year: 'numeric' })}
                     </p>
                   </div>
-                  <div className="text-2xl font-bold">{payoutSummaryData?.total}₫</div>
+                  <div className="text-2xl font-bold">
+                    {formatPrice(payoutSummaryData?.total ?? 0)}
+                  </div>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Số tiền có thể thanh toán</span>
                       <span className="text-sm font-medium text-vividMalachite">
-                        {payoutSummaryData?.available_for_payout}₫ (
+                        {formatPrice(payoutSummaryData?.available_for_payout || 0)} (
                         {payoutSummaryData?.available_percentage}%)
                       </span>
                     </div>
@@ -592,7 +611,7 @@ export const Overview = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Tiền đang giữ (Tháng hiện tại)</span>
                       <span className="text-sm font-medium text-majorelleBlue">
-                        {payoutSummaryData?.in_30_day_holding}₫ (
+                        {formatPrice(payoutSummaryData?.in_30_day_holding || 0)} (
                         {payoutSummaryData?.holding_percentage}%)
                       </span>
                     </div>
@@ -607,7 +626,7 @@ export const Overview = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Tiền đang giữ (Tháng sau)</span>
                       <span className="text-sm font-medium text-amber">
-                        {payoutSummaryData?.next_holding}₫ (
+                        {formatPrice(payoutSummaryData?.next_holding || 0)} (
                         {payoutSummaryData?.next_holding_percentage}%)
                       </span>
                     </div>
@@ -664,7 +683,7 @@ export const Overview = () => {
                     </p>
                   </div>
                   <div className="text-2xl font-bold text-green-500">
-                    {nextPayoutData?.available_to_pay}₫
+                    {formatPrice(nextPayoutData?.available_to_pay ?? 0)}
                   </div>
                 </div>
 
@@ -683,12 +702,16 @@ export const Overview = () => {
                 <div className="space-y-2">
                   <p className="font-medium">Phân tích doanh thu theo khóa học</p>
                   <div className="space-y-3">
-                    {nextPayoutData?.breakdown?.map((item, index) => (
-                      <div className="flex items-center justify-between text-sm" key={index}>
-                        <span>{item.title}</span>
-                        <span className="font-medium">{item.amount}₫</span>
-                      </div>
-                    ))}
+                    {nextPayoutData?.breakdown &&
+                      nextPayoutData?.breakdown?.length > 0 &&
+                      nextPayoutData?.breakdown?.map(
+                        (item: { title: string; amount: number }, index: number) => (
+                          <div className="flex items-center justify-between text-sm" key={index}>
+                            <span>{item.title}</span>
+                            <span className="font-medium">{formatPrice(item.amount)}</span>
+                          </div>
+                        )
+                      )}
                   </div>
                 </div>
               </div>
@@ -786,7 +809,9 @@ export const Overview = () => {
                   onScroll={handleCommentScroll}
                 >
                   {feedbackViewMode == 'feedback'
-                    ? recentComments?.map((comment, index) => (
+                    ? recentComments &&
+                      recentComments.length > 0 &&
+                      recentComments?.map((comment, index) => (
                         <div className="border-b pb-4" key={index}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
@@ -798,64 +823,87 @@ export const Overview = () => {
                                 alt="Student"
                               />
                               <AvatarFallback>
-                                {comment.user.first_name[0]}
-                                {comment.user.last_name[0]}
+                                {comment?.user?.first_name?.[0] || ''}
+                                {comment?.user?.last_name?.[0] || ''}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">
-                                  {comment.user.first_name} {comment.user.last_name}
+                                  {comment?.user?.first_name} {comment?.user?.last_name}
                                 </span>
                               </div>
-                              <span className="text-xs text-muted-foreground">
-                                {comment.lecture.section.course.title}
-                                {'>'}
-                                {comment.lecture.section.title}
-                                {'>'}
-                                {comment.lecture.title}
+                              <span className="text-xs text-muted-foreground flex justify-center">
+                                {comment?.lecture?.section?.course?.title}
+                                <ChevronRight className="w-4 h-4" />
+                                {comment?.lecture?.section?.title}
+                                <ChevronRight className="w-4 h-4" />
+                                {comment?.lecture?.series?.[0]?.title ?? ''}
                               </span>
                             </div>
                           </div>
                           <p className="mt-2 text-sm">"{comment.content}"</p>
-                          <div className="flex flex-wrap gap-2 justify-end pr-2">
-                            {comment.aspects.map((aspect) => {
-                              const emotionColor =
-                                aspect.emotion === 'positive'
-                                  ? 'bg-greenCrayola/10 text-greenCrayola'
-                                  : aspect.emotion === 'neutral'
-                                    ? 'bg-blueberry/10 text-blueberry'
-                                    : 'bg-carminePink/10 text-carminePink';
-                              return (
-                                <Badge
-                                  key={aspect.comment_aspect_id}
-                                  variant="outline"
-                                  className={`flex items-center gap-1 ${emotionColor}`}
-                                >
-                                  <span>
-                                    {aspect.aspect === 'instructor_quality'
-                                      ? 'Chất lượng giảng viên'
-                                      : aspect.aspect === 'content_quality'
-                                        ? 'Chất lượng nội dung'
-                                        : aspect.aspect === 'technology'
-                                          ? 'Công nghệ'
-                                          : aspect.aspect === 'teaching_pace'
-                                            ? 'Tốc độ dạy'
-                                            : aspect.aspect === 'study_materials'
-                                              ? 'Tài liệu học tập'
-                                              : aspect.aspect === 'assignments_practice'
-                                                ? 'Bài tập và thực hành'
-                                                : aspect.aspect === 'other'
-                                                  ? 'Khác'
-                                                  : aspect.aspect}
-                                  </span>
-                                </Badge>
-                              );
-                            })}
+                          <div className="flex flex-wrap gap-2 justify-between items-end pr-2">
+                            <div className="flex flex-wrap gap-2">
+                              {comment.aspects &&
+                                comment.aspects.length > 0 &&
+                                comment.aspects.map((aspect) => {
+                                  const emotionColor =
+                                    aspect.emotion === 'positive'
+                                      ? 'bg-greenCrayola/10 text-greenCrayola'
+                                      : aspect.emotion === 'neutral'
+                                        ? 'bg-blueberry/10 text-blueberry'
+                                        : aspect.emotion === 'negative'
+                                          ? 'bg-carminePink/10 text-carminePink'
+                                          : 'bg-amberColor/10 text-amberColor';
+                                  return (
+                                    <Badge
+                                      key={aspect.comment_aspect_id}
+                                      variant="outline"
+                                      className={`flex items-center gap-1 ${emotionColor}`}
+                                    >
+                                      <span>
+                                        {aspect.aspect === 'instructor_quality'
+                                          ? 'Chất lượng giảng viên'
+                                          : aspect.aspect === 'content_quality'
+                                            ? 'Chất lượng nội dung'
+                                            : aspect.aspect === 'technology'
+                                              ? 'Công nghệ'
+                                              : aspect.aspect === 'teaching_pace'
+                                                ? 'Tốc độ dạy'
+                                                : aspect.aspect === 'study_materials'
+                                                  ? 'Tài liệu học tập'
+                                                  : aspect.aspect === 'assignments_practice'
+                                                    ? 'Bài tập và thực hành'
+                                                    : aspect.aspect === 'other'
+                                                      ? 'Khác'
+                                                      : aspect.aspect}
+                                      </span>
+                                    </Badge>
+                                  );
+                                })}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const courseId = comment?.lecture?.section?.course?.id;
+                                const lectureId = comment?.lecture?.id;
+                                if (courseId && lectureId) {
+                                  router.push(
+                                    `/course-details/${courseId}?lecture=${lectureId}&comment=${comment.lecture_comment_id}&tab=reviews`
+                                  );
+                                }
+                              }}
+                            >
+                              Xem chi tiết
+                            </Button>
                           </div>
                         </div>
                       ))
-                    : recentRatings?.map((rating, index) => (
+                    : recentRatings &&
+                      recentRatings.length > 0 &&
+                      recentRatings?.map((rating, index) => (
                         <div className="border-b pb-4" key={index}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
@@ -883,9 +931,25 @@ export const Overview = () => {
                               </span>
                             </div>
                           </div>
-                          <p className="mt-2 text-sm">
-                            {rating.rating_comment ? `"${rating.rating_comment}"` : null}
-                          </p>
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-sm">
+                              {rating.rating_comment
+                                ? `"${rating.rating_comment}"`
+                                : 'Không có bình luận'}
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const courseId = rating?.course_id;
+                                if (courseId) {
+                                  // router.push(`/course/${courseId}?rating=${rating.}`);
+                                }
+                              }}
+                            >
+                              Xem chi tiết
+                            </Button>
+                          </div>
                         </div>
                       ))}
                 </div>
@@ -925,7 +989,9 @@ export const Overview = () => {
                   onScroll={handleThreadScroll}
                 >
                   {threadViewMode == 'not_replied'
-                    ? recentThreadsToReply.map((thread, index) => (
+                    ? recentThreadsToReply &&
+                      recentThreadsToReply.length > 0 &&
+                      recentThreadsToReply.map((thread, index) => (
                         <div className="flex items-start gap-4 rounded-lg border p-4" key={index}>
                           <FileQuestion className="mt-0.5 h-5 w-5 text-orange-500" />
                           <div>
@@ -933,19 +999,34 @@ export const Overview = () => {
                             <p className="text-sm text-muted-foreground">
                               Học viên {thread.author.first_name} {thread.author.last_name} đã đặt
                               câu hỏi trong khóa{' '}
-                              <span className=" text-black">
-                                "{thread.lecture.section.course.title}"
+                              <span className=" text-black font-semibold">
+                                {thread?.lecture?.section?.course?.title} -{' '}
+                                {thread?.lecture?.section?.title} - {thread?.lecture?.title}
                               </span>
                             </p>
                             <div className="mt-2">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const courseId = thread?.lecture?.section?.course?.id;
+                                  const lectureId = thread?.lecture?.id;
+                                  if (courseId && lectureId) {
+                                    router.push(
+                                      `/course-details/${courseId}?lecture=${lectureId}&thread=${thread.id}&tab=community`
+                                    );
+                                  }
+                                }}
+                              >
                                 Xem chi tiết
                               </Button>
                             </div>
                           </div>
                         </div>
                       ))
-                    : recentThreads.map((thread, index) => (
+                    : recentThreads &&
+                      recentThreads.length > 0 &&
+                      recentThreads.map((thread, index) => (
                         <div className="flex items-start gap-4 rounded-lg border p-4" key={index}>
                           <FileQuestion className="mt-0.5 h-5 w-5 text-orange-500" />
                           <div>
@@ -953,12 +1034,25 @@ export const Overview = () => {
                             <p className="text-sm text-muted-foreground">
                               Học viên {thread.author.first_name} {thread.author.last_name} đã đặt
                               câu hỏi trong khóa{' '}
-                              <span className=" text-black">
-                                "{thread.lecture.section.course.title}"
+                              <span className=" text-black font-semibold">
+                                {thread?.lecture?.section?.course?.title} -{' '}
+                                {thread?.lecture?.section?.title} - {thread?.lecture?.title}
                               </span>
                             </p>
                             <div className="mt-2">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const courseId = thread?.lecture?.section?.course?.id;
+                                  const lectureId = thread?.lecture?.id;
+                                  if (courseId && lectureId) {
+                                    router.push(
+                                      `/course-details/${courseId}?lecture=${lectureId}&thread=${thread.id}&tab=community`
+                                    );
+                                  }
+                                }}
+                              >
                                 Xem chi tiết
                               </Button>
                             </div>
@@ -969,78 +1063,6 @@ export const Overview = () => {
               </CardContent>
             </Card>
           </div>
-
-          {/* Most Viewed Lectures */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Most Viewed Lectures</CardTitle>
-              <CardDescription>Lectures with the highest view counts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Introduction to JavaScript</h4>
-                      <p className="text-sm text-muted-foreground">Web Development</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">1,245 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">UI Design Principles</h4>
-                      <p className="text-sm text-muted-foreground">UI/UX Design</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">1,120 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Data Visualization Techniques</h4>
-                      <p className="text-sm text-muted-foreground">Data Science</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">985 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">React Native Fundamentals</h4>
-                      <p className="text-sm text-muted-foreground">Mobile App Development</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">876 views</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Eye className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">SEO Strategies</h4>
-                      <p className="text-sm text-muted-foreground">Digital Marketing</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">754 views</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       )}
     </AnimateWrapper>

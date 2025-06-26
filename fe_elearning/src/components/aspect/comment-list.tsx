@@ -70,39 +70,43 @@ function CommentCard({ comment }: CommentCardProps) {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-end">
-            {comment.aspects.map((aspect) => {
-              const emotionColor =
-                aspect.emotion === 'positive'
-                  ? 'bg-greenCrayola/10 text-greenCrayola'
-                  : aspect.emotion === 'neutral'
-                    ? 'bg-blueberry/10 text-blueberry'
-                    : 'bg-carminePink/10 text-carminePink';
-              return (
-                <Badge
-                  key={aspect.comment_aspect_id}
-                  variant="outline"
-                  className={`flex items-center gap-1 ${emotionColor}`}
-                >
-                  <span>
-                    {aspect.aspect === 'instructor_quality'
-                      ? 'Chất lượng giảng viên'
-                      : aspect.aspect === 'content_quality'
-                        ? 'Chất lượng nội dung'
-                        : aspect.aspect === 'technology'
-                          ? 'Công nghệ'
-                          : aspect.aspect === 'teaching_pace'
-                            ? 'Tốc độ dạy'
-                            : aspect.aspect === 'study_materials'
-                              ? 'Tài liệu học tập'
-                              : aspect.aspect === 'assignments_practice'
-                                ? 'Bài tập và thực hành'
-                                : aspect.aspect === 'other'
-                                  ? 'Khác'
-                                  : aspect.aspect}
-                  </span>
-                </Badge>
-              );
-            })}
+            {comment.aspects &&
+              comment.aspects.length > 0 &&
+              comment.aspects.map((aspect) => {
+                const emotionColor =
+                  aspect.emotion === 'positive'
+                    ? 'bg-greenCrayola/10 text-greenCrayola'
+                    : aspect.emotion === 'neutral'
+                      ? 'bg-blueberry/10 text-blueberry'
+                      : aspect.emotion === 'conflict'
+                        ? 'bg-[#f59e0b]/10 text-[#f59e0b]'
+                        : 'bg-carminePink/10 text-carminePink';
+                return (
+                  <Badge
+                    key={aspect.comment_aspect_id}
+                    variant="outline"
+                    className={`flex items-center gap-1 ${emotionColor}`}
+                  >
+                    <span>
+                      {aspect.aspect === 'instructor_quality'
+                        ? 'Chất lượng giảng viên'
+                        : aspect.aspect === 'content_quality'
+                          ? 'Chất lượng nội dung'
+                          : aspect.aspect === 'technology'
+                            ? 'Công nghệ'
+                            : aspect.aspect === 'teaching_pace'
+                              ? 'Tốc độ dạy'
+                              : aspect.aspect === 'study_materials'
+                                ? 'Tài liệu học tập'
+                                : aspect.aspect === 'assignments_practice'
+                                  ? 'Bài tập và thực hành'
+                                  : aspect.aspect === 'other'
+                                    ? 'Khác'
+                                    : aspect.aspect}
+                    </span>
+                  </Badge>
+                );
+              })}
           </div>
         </div>
       </CardHeader>
@@ -166,47 +170,67 @@ export function CommentList({ comments }: { comments: LectureComment[] }) {
               <SelectItem value="positive">Tích cực</SelectItem>
               <SelectItem value="neutral">Trung lập</SelectItem>
               <SelectItem value="negative">Tiêu cực</SelectItem>
+              <SelectItem value="conflict">Xung đột</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid grid-cols-4 mb-4">
+        <TabsList className="grid grid-cols-5 mb-4">
           <TabsTrigger value="all">Tất cả</TabsTrigger>
           <TabsTrigger value="positive">Tích cực</TabsTrigger>
           <TabsTrigger value="neutral">Trung lập</TabsTrigger>
           <TabsTrigger value="negative">Tiêu cực</TabsTrigger>
+          <TabsTrigger value="conflict">Xung đột</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
-          {filteredComments.map((comment: LectureComment) => (
-            <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="positive" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'positive'))
-            .map((comment: LectureComment) => (
+        <TabsContent value="all" className="space-y-5">
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments.map((comment: LectureComment) => (
               <CommentCard key={comment?.lecture_comment_id} comment={comment} />
             ))}
         </TabsContent>
 
-        <TabsContent value="neutral" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'neutral'))
-            .map((comment: LectureComment) => (
-              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-            ))}
+        <TabsContent value="positive" className="space-y-5">
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'positive'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
         </TabsContent>
 
-        <TabsContent value="negative" className="space-y-4">
-          {filteredComments
-            .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'negative'))
-            .map((comment: LectureComment) => (
-              <CommentCard key={comment?.lecture_comment_id} comment={comment} />
-            ))}
+        <TabsContent value="neutral" className="space-y-5">
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'neutral'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
+        </TabsContent>
+
+        <TabsContent value="negative" className="space-y-5">
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'negative'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
+        </TabsContent>
+
+        <TabsContent value="conflict" className="space-y-5">
+          {filteredComments &&
+            filteredComments.length > 0 &&
+            filteredComments
+              .filter((c: LectureComment) => c.aspects.some((a) => a.emotion === 'conflict'))
+              .map((comment: LectureComment) => (
+                <CommentCard key={comment?.lecture_comment_id} comment={comment} />
+              ))}
         </TabsContent>
       </Tabs>
     </div>

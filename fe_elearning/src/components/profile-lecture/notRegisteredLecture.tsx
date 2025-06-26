@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import BenefitsBar from './benefitsBar';
-import RegisterLecture from './registerLecture';
+import UpsertInstructor from './upsertLecture';
 import AnimateWrapper from '../animations/animateWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
@@ -62,6 +62,7 @@ const NotRegisteredLecture = () => {
           <AnimateWrapper delay={0.2} direction="up" className="w-full">
             <div className="w-full  flex flex-col gap-3 items-center justify-center p-4">
               {dataBenefit &&
+                dataBenefit.length > 0 &&
                 dataBenefit.map((item, index) => (
                   <BenefitsBar key={index} description={item.description} />
                 ))}
@@ -72,13 +73,8 @@ const NotRegisteredLecture = () => {
 
       {register && (
         <div className="w-full  shadow-md h-full rounded-lg bg-white p-2 dark:bg-eerieBlack">
-          <div className="w-full flex flex-col items-center justify-center ">
-            <text className="font-sans font-bold text-[24px] text-black dark:text-AntiFlashWhite flex-wrap text-center">
-              Hồ sơ
-            </text>
-          </div>
           <div className="flex flex-col gap-3 pt-4">
-            <RegisterLecture />
+            <UpsertInstructor mode="create" />
           </div>
         </div>
       )}

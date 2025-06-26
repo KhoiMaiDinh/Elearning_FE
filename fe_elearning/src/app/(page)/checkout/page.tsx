@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { useToast } from '@/hooks/use-toast';
 
 const VnpayReturnPage = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -20,6 +21,7 @@ const VnpayReturnPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
+  const { toast } = useToast();
 
   const [result, setResult] = useState<'success' | 'fail' | null>(null);
   const [message, setMessage] = useState('Đang xử lý...');
@@ -152,7 +154,11 @@ const VnpayReturnPage = () => {
 
   const _handleDownloadReceipt = () => {
     // Implement receipt download functionality
-    alert('Tính năng tải biên lai sẽ sớm được cập nhật!');
+    toast({
+      title: 'Thông báo',
+      description: 'Tính năng tải biên lai sẽ sớm được cập nhật!',
+      variant: 'default',
+    });
   };
 
   const _handleShareTransaction = () => {
@@ -166,7 +172,11 @@ const VnpayReturnPage = () => {
         url: window.location.href,
       });
     } else {
-      alert('Trình duyệt của bạn không hỗ trợ tính năng chia sẻ!');
+      toast({
+        title: 'Không hỗ trợ',
+        description: 'Trình duyệt của bạn không hỗ trợ tính năng chia sẻ!',
+        variant: 'default',
+      });
     }
   };
 

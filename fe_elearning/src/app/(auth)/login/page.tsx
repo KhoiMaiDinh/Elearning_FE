@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -30,8 +30,18 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { APILoginEmail } from '@/utils/auth';
-import { setUser } from '@/constants/userSlice';
+import { setUser, clearUser } from '@/constants/userSlice';
 import { createLoginSchema } from '@/utils/validation';
+import { CustomModal } from '@/components/modal/custom-modal';
+import AlertSuccess from '@/components/alert/AlertSuccess';
+import AlertError from '@/components/alert/AlertError';
+import { APIGetCurrentUser } from '@/utils/user';
+import Image from 'next/image';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { toast } from 'react-toastify';
+import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { getVietnameseErrorMessage } from '@/utils/auth';
+import { ApiErrorResponse } from '@/types/apiResponse';
 
 // Form schema
 
@@ -43,7 +53,13 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const [alertDescription, setAlertDescription] = useState('');
+  const [showBannedModal, setShowBannedModal] = useState(false);
+  const [bannedUntil, setBannedUntil] = useState('');
+  const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
+  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+  const [showAlertError, setShowAlertError] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -53,10 +69,23 @@ export default function LoginPage() {
     },
   });
 
+  const clearLoginData = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token_expires');
+    dispatch(clearUser());
+  };
+
+  const handleGetCurrentUser = async () => {
+    const response = await APIGetCurrentUser();
+    if (response?.status === 200) {
+      dispatch(setUser(response.data));
+    }
+  };
+
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
-      setError(null);
 
       const response = await APILoginEmail({
         email: values.email,
@@ -64,25 +93,63 @@ export default function LoginPage() {
       });
 
       if (response?.status === 200) {
-        // Store tokens properly
+        const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
-        localStorage.setItem('token_expires', response.data.token_expires);
+        localStorage.setItem('token_expires', response.data.token_expires.toString());
 
-        // Set user info in Redux store
-        dispatch(setUser(response.data.user));
+        // Check if user is banned
+        if (decodedToken.banned_until) {
+          clearLoginData();
+          setBannedUntil(decodedToken.banned_until);
+          setShowBannedModal(true);
+          return;
+        }
 
-        // Redirect to home page
+        // Check if email is verified
+        if (!decodedToken.is_verified) {
+          setShowUnverifiedModal(true);
+          return;
+        }
+
+        toast.success(<ToastNotify status={1} message="Đăng nhập thành công" />, {
+          style: styleSuccess,
+        });
+        handleGetCurrentUser();
         router.push('/');
-      } else {
-        setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       }
     } catch (err: any) {
-      console.error('Login error:', err);
-      setError(err?.response?.data?.message || 'Đã xảy ra lỗi khi đăng nhập');
+      const errorResponse = err?.response;
+      const statusCode = errorResponse?.status;
+      const errorData: ApiErrorResponse = errorResponse?.data;
+
+      let errorMessage = 'Đã xảy ra lỗi khi đăng nhập';
+
+      if (!errorResponse) {
+        errorMessage = 'Lỗi kết nối. Vui lòng kiểm tra lại đường truyền';
+      } else {
+        // Use helper function to get Vietnamese error message
+        errorMessage = getVietnameseErrorMessage(
+          statusCode,
+          errorData?.errorCode,
+          errorData?.message
+        );
+
+        // If there are detailed validation errors, show them instead
+        if (errorData?.details && errorData.details.length > 0) {
+          errorMessage = errorData.details.map((detail) => detail.message).join(', ');
+        }
+      }
+
+      toast.error(<ToastNotify status={-1} message={errorMessage} />, { style: styleError });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleContinueUnverified = () => {
+    setShowUnverifiedModal(false);
+    router.push('/');
   };
 
   return (
@@ -96,7 +163,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md z-10">
         <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
+            <div className="flex justify-center items-center">
+              <Image src="/images/logo.png" alt="logo" width={50} height={50} />
+            </div>
+            <CardTitle className="text-3xl font-bold bg-custom-gradient-button-blue bg-clip-text text-black dark:text-white">
               Đăng nhập
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
@@ -105,15 +175,8 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            {showAlertSuccess && <AlertSuccess description={alertDescription} />}
+            {showAlertError && <AlertError description={alertDescription} />}
 
             <Tabs defaultValue="email" className="w-full">
               <TabsContent value="email">
@@ -195,31 +258,12 @@ export default function LoginPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black"
+                      className="w-full bg-custom-gradient-button-blue hover:brightness-110 text-white "
                       disabled={isLoading}
                     >
                       {isLoading ? (
                         <div className="flex items-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
+                          <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
                           Đang xử lý...
                         </div>
                       ) : (
@@ -298,6 +342,36 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
       </div>
+
+      {/* Banned User Modal */}
+      <CustomModal
+        isOpen={showBannedModal}
+        onClose={() => setShowBannedModal(false)}
+        title="Tài khoản bị khóa"
+        description={`Tài khoản của bạn đã bị khóa đến ${new Date(bannedUntil).toLocaleDateString(
+          'vi-VN',
+          {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }
+        )}. Vui lòng liên hệ admin để biết thêm chi tiết.`}
+        showContactButton={true}
+      />
+
+      {/* Unverified Email Modal */}
+      <CustomModal
+        isOpen={showUnverifiedModal}
+        onClose={() => {
+          setShowUnverifiedModal(false);
+          clearLoginData();
+        }}
+        title="Email chưa xác thực"
+        description="Tài khoản của bạn chưa được xác thực qua email. Bạn có thể tiếp tục sử dụng với các tính năng hạn chế hoặc xác thực email để sử dụng đầy đủ tính năng."
+        showContinueButton={true}
+        onContinue={handleContinueUnverified}
+        showResendEmailVerification={true}
+      />
     </div>
   );
 }

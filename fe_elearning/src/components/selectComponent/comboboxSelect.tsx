@@ -70,32 +70,34 @@ const ComboboxRegister: React.FC<ComboboxProps> = ({
             <CommandInput placeholder="Tìm kiếm..." />
             <CommandEmpty>Không tìm thấy kết quả.</CommandEmpty>
             <CommandGroup>
-              {data.map((item) => (
-                <CommandItem
-                  key={item.id}
-                  value={item.value}
-                  onSelect={() => {
-                    onValueChange?.(item.id);
-                    setOpen(false);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <Check
-                    className={cn(
-                      'h-4 w-4 text-primary',
-                      item.id === value ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  {item.image && (
-                    <Image
-                      src={item.image}
-                      alt={item.value}
-                      className="w-auto md:h-5 h-2 object-contain"
+              {data &&
+                data.length > 0 &&
+                data.map((item) => (
+                  <CommandItem
+                    key={item.id}
+                    value={item.value}
+                    onSelect={() => {
+                      onValueChange?.(item.id);
+                      setOpen(false);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Check
+                      className={cn(
+                        'h-4 w-4 text-primary',
+                        item.id === value ? 'opacity-100' : 'opacity-0'
+                      )}
                     />
-                  )}
-                  {item.value}
-                </CommandItem>
-              ))}
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.value}
+                        className="w-auto md:h-5 h-2 object-contain"
+                      />
+                    )}
+                    {item.value}
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </Command>
         </PopoverContent>

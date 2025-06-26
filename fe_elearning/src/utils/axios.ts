@@ -1,15 +1,49 @@
 'use client';
 import axios from 'axios';
+import { clearUser } from '@/constants/userSlice';
+import store from '@/constants/store';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
+
+const clearLoginData = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('token_expires');
+  store.dispatch(clearUser());
+};
 
 // Gắn access token vào mỗi request
 axiosInstance.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
-    config.headers['authorization'] = `Bearer ${token}`;
+    // Decode token and check status
+    try {
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+
+      // Check if token is expired
+      if (decodedToken.exp * 1000 < Date.now()) {
+        // Let the response interceptor handle token refresh
+        return config;
+      }
+
+      // Check if user is banned
+      if (decodedToken.banned_until) {
+        clearLoginData();
+        window.location.href = '/login?error=banned';
+        return Promise.reject(new Error('Tài khoản đã bị khóa'));
+      }
+
+      // Add token to headers
+      config.headers['authorization'] = `Bearer ${token}`;
+    } catch (error) {
+      console.error('Token decode error:', error);
+      clearLoginData();
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
   }
   return config;
 });
@@ -42,17 +76,49 @@ axiosInstance.interceptors.response.use(
 
       // Check for banned user
       if (status === 401 && data.errorCode === 'auth.error.banned') {
-        // Show a popup or redirect to a banned page
-        window.alert(data.message); // You can replace this with a redirect if needed
+        clearLoginData();
+        window.location.href = '/login?error=banned';
+        return Promise.reject(error);
+      }
+
+      // Handle unverified email
+      if (status === 401 && data.errorCode === 'auth.error.unverified') {
+        clearLoginData();
+        window.location.href = '/login?error=unverified';
         return Promise.reject(error);
       }
     }
 
+    // Skip refresh token for authentication endpoints
+    const authEndpoints = [
+      '/auth/email/login',
+      '/auth/email/register',
+      '/auth/google/login',
+      '/auth/google/register',
+      '/auth/forgot-password',
+
+      '/auth/refresh',
+      '/auth/verify/email',
+    ];
+
+    const isAuthEndpoint = authEndpoints.some((endpoint) =>
+      originalRequest.url?.includes(endpoint)
+    );
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
+      !isAuthEndpoint && // Don't refresh for auth endpoints
       typeof window !== 'undefined'
     ) {
+      // Check if we have access token before attempting refresh
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) {
+        // No token to refresh, redirect to login
+        clearLoginData();
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -70,12 +136,8 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) throw new Error('Missing refresh token');
-
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        });
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`);
+        console.log('Token refresh successful');
 
         const newAccessToken = res.data.access_token;
 
@@ -92,10 +154,7 @@ axiosInstance.interceptors.response.use(
         processQueue(err, null);
 
         // Nếu refresh thất bại => logout
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-
-        // window.location.href = "/login";
+        clearLoginData();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

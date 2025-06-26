@@ -31,7 +31,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!video || !lecture_id || !video.duration) return;
     const percent = Math.floor((video.currentTime / video.duration) * 100);
     if (isOwner) return;
-    APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    else {
+      APIUpsertProgressItemCourse(lecture_id, { watch_time: percent });
+    }
   };
 
   // Load video và HLS
@@ -154,18 +156,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       >
                         Tự động
                       </li>
-                      {qualityLevels.map((level) => (
-                        <li
-                          key={level.id}
-                          onClick={() => handleQualitySelect(level.id)}
-                          className={cn(
-                            'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
-                            selectedQuality === level.id && 'font-semibold text-blue-600'
-                          )}
-                        >
-                          {level.label}
-                        </li>
-                      ))}
+                      {qualityLevels &&
+                        qualityLevels.length > 0 &&
+                        qualityLevels.map((level) => (
+                          <li
+                            key={level.id}
+                            onClick={() => handleQualitySelect(level.id)}
+                            className={cn(
+                              'cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700',
+                              selectedQuality === level.id && 'font-semibold text-blue-600'
+                            )}
+                          >
+                            {level.label}
+                          </li>
+                        ))}
                     </ul>
                   </div>
                 )}

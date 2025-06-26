@@ -1,5 +1,6 @@
+import { CouponType } from './couponType';
 import { MediaType } from './mediaType';
-import { Lecture } from './registerLectureFormType';
+import { InstructorType } from './instructorType';
 import { UserType } from './userType';
 
 export interface VideoType {
@@ -8,7 +9,7 @@ export interface VideoType {
 
   video: {
     key: string;
-    status: 'uploaded' | 'validated' | 'pending' | 'rejected';
+    status?: 'uploaded' | 'validated' | 'pending' | 'rejected';
     bucket: string;
     rejection_reason: string | null;
   };
@@ -20,13 +21,25 @@ export interface ResourceType {
   name: string;
 }
 
+export interface SeriesType {
+  version: number;
+  title: string;
+  is_preview?: boolean;
+  description?: string;
+  duration_in_seconds?: number;
+  status?: string;
+  video: MediaType;
+  resources?: ResourceType[];
+}
+
 export interface CourseItem {
   id: string;
+  is_favorite?: boolean;
   title: string;
   description: string;
-  videos?: VideoType[];
-  video?: VideoType | null;
+  video?: (MediaType & { duration_in_seconds: number }) | null;
   resources: ResourceType[];
+  duration_in_seconds?: number;
   is_preview: boolean;
   position: string;
   section_id: string;
@@ -34,9 +47,13 @@ export interface CourseItem {
   previous_position?: string;
   fileUrl?: string;
   progresses?: ProgressItem[];
+  series: SeriesType[];
+  is_hidden?: boolean;
+  deletedAt?: string;
+  section?: SectionType;
 }
 
-export interface Section {
+export type SectionType = {
   id: string;
   title: string;
   description: string;
@@ -44,10 +61,11 @@ export interface Section {
   status: string;
   course_id: string;
   items: CourseItem[];
-  // lectures: CourseItem[];
   quizzes: any[];
   articles: any[];
-}
+  is_expanded?: boolean;
+  course?: CourseForm;
+};
 
 export interface Translation {
   category_translation_id?: string;
@@ -72,26 +90,32 @@ export interface CourseForm {
     parent?: { slug: string; translations: Translation[] };
     translations: Translation[];
   };
+  published_at: string;
   title: string;
   subtitle: string;
   slug?: string;
-  description?: string;
+  description: string;
   language?: string;
   outcomes?: string[];
   requirements?: string[];
   is_disabled?: boolean;
   status?: string;
   instructor_id?: string;
-  instructor?: Lecture;
+  instructor?: InstructorType;
   level: string;
   thumbnail: MediaType | null;
   is_approved?: boolean;
   price: number;
   priceFinal?: number;
-  sections?: Section[];
+  sections?: SectionType[];
   avg_rating?: number;
   total_enrolled?: number;
   course_progress?: CourseProgress | null;
+  total_revenue?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  warning?: { reports: { reason: string }[] }[];
+  coupons?: CouponType[];
 }
 
 export interface CourseProgress {

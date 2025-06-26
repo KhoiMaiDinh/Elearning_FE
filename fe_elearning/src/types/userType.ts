@@ -1,4 +1,4 @@
-import { Lecture } from './registerLectureFormType';
+import { InstructorType } from './instructorType';
 
 export interface Roles {
   role_name: string;
@@ -23,5 +23,5 @@ export interface UserType {
   last_name: string;
   roles?: Roles[];
   phone_number?: string;
-  instructor_profile?: Lecture;
+  instructor_profile?: InstructorType;
 }

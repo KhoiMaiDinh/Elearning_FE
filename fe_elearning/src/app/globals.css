@@ -7,6 +7,14 @@ body {
   background-color: '#EFF1F4';
 }
 
+input::-ms-reveal,
+input::-ms-clear,
+input::-webkit-credentials-auto-fill-button,
+input[type='password']::-webkit-textfield-decoration-container {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 .text-custom-violet-gradient {
   background: linear-gradient(to right, #b781ff, #8844ff);
   -webkit-background-clip: text;
@@ -30,6 +38,35 @@ body {
 }
 .shadow-blink {
   animation: shadowBlink 1s infinite;
+}
+
+.player {
+  container-name: media-player;
+  container-type: inline-size;
+}
+
+/* The following are example container breakpoints. */
+
+/* X-Small. */
+@container (inline-size < 576px) {
+  .controls {
+  }
+}
+
+/* Small */
+@container (576px <= inline-size < 768px) {
+}
+
+/* Medium */
+@container (768px <= inline-size < 992px) {
+}
+
+/* Large */
+@container (992px <= inline-size < 1200px) {
+}
+
+/* X-Large */
+@container (min-width: 1200px) {
 }
 
 @layer base {
@@ -102,6 +139,13 @@ body {
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  .theme {
+    --animate-shine: shine var(--duration) infinite linear;
+  }
+}
+
+@theme {
+  --text-shadow-xl: 0 35px 35px rgb(0, 0, 0 / 0.25);
 }
 
 @layer base {
@@ -684,6 +728,20 @@ body {
     }
     .ql-indent-9 {
       padding-left: 9em;
+    }
+  }
+}
+
+@theme inline {
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    to {
+      background-position: 0% 0%;
     }
   }
 }

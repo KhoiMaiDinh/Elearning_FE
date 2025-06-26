@@ -83,8 +83,8 @@ function _transformComment(comment: LectureComment): Comment | null {
       profile_image: {
         key: comment.user.profile_image.key,
         rejection_reason: null,
-        status: comment.user.profile_image.status,
-        bucket: comment.user.profile_image.bucket,
+        status: comment.user.profile_image.status || '',
+        bucket: comment.user.profile_image.bucket || '',
       },
     },
   };

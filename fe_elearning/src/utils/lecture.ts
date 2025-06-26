@@ -1,57 +1,39 @@
 import axiosInstance from './axios';
-const APIRegisterLecture = async (data: any) => {
+
+const APIDeleteDraftLecture = async (id: string) => {
   try {
-    const response = await axiosInstance.post('/instructors', data);
+    const response = await axiosInstance.delete(`/lectures/${id}`);
+    if (response.status === 204) {
+      return { status: response.status };
+    }
+    return null;
+  } catch (err) {
+    console.log('Error during deleting draft lecture:', err);
+  }
+};
+
+const APIHideLecture = async (id: string) => {
+  try {
+    const response = await axiosInstance.patch(`/lectures/${id}/hide`);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return null;
   } catch (err) {
-    console.error('Error during register lecture:', err);
-    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    console.log('Error during hiding lecture:', err);
   }
 };
 
-const APIGetLectureByUserName = async (user_name: string) => {
+const APIUnhideLecture = async (id: string) => {
   try {
-    const response = await axiosInstance.get(`/instructors/${user_name}`);
+    const response = await axiosInstance.patch(`/lectures/${id}/unhide`);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return null;
   } catch (err) {
-    console.error('Error during get lecture by id:', err);
-    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    console.log('Error during unhiding lecture:', err);
   }
 };
 
-const APIGetListLecture = async (params: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  order?: string;
-  specialty?: string; // chuyên ngành
-  is_approved?: boolean;
-}) => {
-  try {
-    const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
-    );
-
-    const response = await axiosInstance.get('/instructors', {
-      params: filteredParams,
-    });
-    if (response.status === 200) {
-      return {
-        data: response.data.data,
-        status: response.status,
-        total: response.data.pagination.totalRecords,
-      };
-    }
-    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
-  } catch (err) {
-    console.error('Error during get list lecture:', err);
-    throw err;
-  }
-};
-export { APIRegisterLecture, APIGetLectureByUserName, APIGetListLecture };
+export { APIDeleteDraftLecture, APIHideLecture, APIUnhideLecture };

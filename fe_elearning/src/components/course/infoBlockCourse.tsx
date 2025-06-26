@@ -1,13 +1,29 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { Clock3, Gauge, Infinity, PlayCircle, TableOfContents } from 'lucide-react';
-import IconWithText from './iconWithText';
+import {
+  Clock3,
+  Gauge,
+  Infinity,
+  PlayCircle,
+  TableIcon as TableOfContents,
+  Heart,
+  Share2,
+} from 'lucide-react';
 import PieChartProgress from '../chart/pieChartProgress';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
 import { formatPrice } from '../formatPrice';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/constants/store';
+import type { RootState } from '@/constants/store';
+import { formatDuration } from '@/helpers';
+import IconWithText from './iconWithText';
+import { ShareDialog } from './ShareDialog';
+
 type infoBlockCourse = {
   id: string;
   isRegistered: boolean;
@@ -17,17 +33,22 @@ type infoBlockCourse = {
   totalLessons?: number;
   courseProgress?: number;
   thumbnail?: any;
+  totalDuration?: number;
+  courseTitle?: string;
+  courseSubtitle?: string;
 };
 
 const InfoBlockCourse: React.FC<infoBlockCourse> = ({
   id,
   isRegistered,
-  // progress,
   price,
   level,
   totalLessons,
   courseProgress,
   thumbnail,
+  totalDuration,
+  courseTitle,
+  courseSubtitle,
 }) => {
   const router = useRouter();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -43,65 +64,105 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
       setLevelShow('Nâng cao');
     }
   }, [level]);
-  
+
+  const getLevelColor = () => {
+    switch (level) {
+      case 'BEGINNER':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'INTERMEDIATE':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'ADVANCED':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    }
+  };
 
   return (
-    <Card className="flex flex-col lg:w-80 md:w-72 p-4 w-full items-center justify-center gap-2 md:gap-4 ">
-      {isRegistered && (
-        <div className="flex flex-col w-full">
+    <Card className="w-full max-w-sm mx-auto shadow-lg border-0 bg-white dark:bg-gray-900">
+      {isRegistered ? (
+        // Registered User Section
+        <div className="p-6">
           {courseProgress !== 0 && courseProgress && (
-            <CardHeader>
-              <CardTitle className="font-sans text-center font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
-                Tiến độ
-              </CardTitle>
-            </CardHeader>
-          )}
-          {courseProgress !== 0 && courseProgress && (
-            <PieChartProgress courseProgress={courseProgress} />
-          )}
-        </div>
-      )}
-      {!isRegistered && (
-        <div className="flex flex-col items-center justify-center rounded-md overflow-hidden">
-          <CardHeader>
-            <CardTitle className="font-sans font-bold text-black dark:text-AntiFlashWhite text-[24px] ">
-              Tiến độ
-            </CardTitle>
-          </CardHeader>
-          <div
-            className="relative hover:cursor-pointer hover:shadow-md group overflow-hidden"
-            onClick={() => {
-              router.push(`/course-details/${id}`);
-            }}
-          >
-            <img
-              src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${thumbnail || ''}`}
-              alt="Học thử"
-              className="w-full  relative transition-transform duration-300 ease-in-out group-hover:scale-105"
-            />
-            <div className="absolute top-0 w-full h-full bg-black50 flex flex-col justify-between items-center p-4">
-              {/* Icon ở giữa */}
-              <div className="flex-grow flex justify-center items-center">
-                <PlayCircle size={32} fill="#000000" color="#ffffff" className="" />
+            <>
+              <div className="mb-6">
+                <PieChartProgress courseProgress={30} />
               </div>
+            </>
+          )}
 
-              {/* Chữ ở dưới cùng */}
-              <text className="text-AntiFlashWhite text-[16px] font-sans font-medium">
-                Học thử miễn phí
-              </text>
-            </div>
-          </div>
-          <text className="flex flex-col text-[20px] font-sans font-bold text-black dark:text-AntiFlashWhite ">
-            {formatPrice(Number(price))}
-          </text>
+          <Button
+            size="lg"
+            className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
+            onClick={() => router.push(`/course-details/${id}`)}
+          >
+            {courseProgress !== 0 && courseProgress
+              ? 'Tiếp tục học'
+              : courseProgress === 100 && courseProgress
+                ? 'Đã hoàn thành'
+                : 'Bắt đầu học'}
+          </Button>
+
+          {/* Share Button for Registered Users */}
+          <ShareDialog
+            courseTitle={courseTitle}
+            courseSubtitle={courseSubtitle}
+            courseThumbnail={thumbnail}
+            courseId={id}
+            trigger={
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+              >
+                <Share2 className="w-4 h-4" />
+                Chia sẻ khóa học
+              </Button>
+            }
+          />
         </div>
-      )}
+      ) : (
+        // Unregistered User Section
+        <>
+          <CardHeader className="pb-4">
+            <div className="text-center">
+              <Badge
+                variant="secondary"
+                className="mb-3 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              >
+                Học thử miễn phí
+              </Badge>
+              <div
+                className="relative group cursor-pointer rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                onClick={() => router.push(`/course-details/${id}`)}
+              >
+                <div className="aspect-video relative">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${thumbnail || ''}`}
+                    alt="Học thử"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center group-hover:bg-black/50 transition-colors duration-300">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <PlayCircle size={32} className="text-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
 
-      <div className="flex flex-col ">
-        {!isRegistered && (
-          <div className="grid grid-cols-2 gap-2">
+          <CardContent className="pt-0">
+            <div className="text-center mb-6">
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {formatPrice(Number(price))}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Truy cập trọn đời</p>
+            </div>
+
             <Button
-              className="bg-custom-gradient-button-violet w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
+              size="lg"
+              className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
               onClick={() => {
                 if (userInfo.id) {
                   router.push(`/checkout/${id}`);
@@ -113,34 +174,28 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
               Đăng ký ngay
             </Button>
 
-            <Button className="bg-custom-gradient-button-blue w-full items-center justify-center text-sm px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300">
-              Thêm vào giỏ hàng
-            </Button>
-          </div>
-        )}
+            {/* Share Button for Unregistered Users */}
+            <ShareDialog
+              courseTitle={courseTitle}
+              courseSubtitle={courseSubtitle}
+              courseThumbnail={thumbnail}
+              courseId={id}
+              trigger={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Chia sẻ khóa học
+                </Button>
+              }
+            />
+          </CardContent>
+        </>
+      )}
 
-        {isRegistered && (
-          <Button
-            className="bg-custom-gradient-button-violet w-fit items-center justify-center text-[20px] px-8 rounded-md py-2 font-sans font-bold text-white  hover:shadow-md hover:scale-105 transition-all duration-300"
-            onClick={() => {
-              router.push(`/course-details/${id}`);
-            }}
-          >
-            {courseProgress !== 0 && courseProgress
-              ? 'Tiếp tục'
-              : courseProgress === 100 && courseProgress
-                ? 'Đã hoàn thành'
-                : 'Bắt đầu'}
-          </Button>
-        )}
-      </div>
-
-      <div className="flex flex-col lg:gap-4 md:gap-4 gap-2 w-full">
-        <IconWithText IconComponent={Gauge} title={`Trình độ ${levelShow}`} />
-        <IconWithText IconComponent={TableOfContents} title={`Tổng số ${totalLessons} bài học`} />
-        <IconWithText IconComponent={Clock3} title={`Thời lượng ${'dcc'}`} />
-        <IconWithText IconComponent={Infinity} title={`Học mọi lúc mọi nơi`} />
-      </div>
+      <Separator className="" />
     </Card>
   );
 };

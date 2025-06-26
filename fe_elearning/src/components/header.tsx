@@ -4,18 +4,7 @@ import type React from 'react';
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import {
-  BadgeCheck,
-  Bell,
-  CreditCard,
-  Heart,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  Search,
-  X,
-} from 'lucide-react';
+import { BadgeCheck, CreditCard, Heart, LogOut, Menu, Moon, Sun, Search, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { APIGetCurrentUser } from '@/utils/user';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,6 +25,12 @@ import { NotificationCenter } from './notifications/notificationComponent';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { APIGetListCourse } from '@/utils/course';
 import { debounce } from 'lodash';
+import { clearBankAccount } from '@/constants/bankAccount';
+import { clearComment } from '@/constants/comment';
+import { clearNotifications } from '@/constants/notificationSlice';
+import { clearCourse } from '@/constants/courseSlice';
+import { clearOrders } from '@/constants/orderSlice';
+import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 
 const Header = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -47,35 +42,20 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const menuItems = [
     { label: 'Trang chủ', path: '/' },
     { label: 'Khóa học', path: '/course' },
-    { label: 'Giảng viên', path: '/lecture' },
+    { label: 'Giảng viên', path: '/lecturer' },
     { label: 'Liên hệ', path: '/contact' },
   ];
 
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
-
-  // State cho thông báo
-  const [_notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: 'Khóa học mới đã được thêm!',
-      date: '2025-03-07',
-      link: '/course/new',
-      isRead: false,
-    },
-    {
-      id: 2,
-      message: 'Bạn có một tin nhắn mới.',
-      date: '2025-03-06',
-      link: '/messages',
-      isRead: true,
-    },
-  ]);
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -95,6 +75,17 @@ const Header = () => {
     localStorage.setItem('access_token', '');
     localStorage.setItem('refresh_token', '');
     localStorage.setItem('expires_at', '');
+    dispatch(clearUser());
+    // window.location.reload();
+    router.push('/');
+    dispatch(clearUser());
+    dispatch(clearBankAccount({}));
+    dispatch(clearComment({}));
+    dispatch(clearNotifications());
+    dispatch(clearCourse({}));
+    dispatch(clearOrders({}));
+    dispatch(clearStatisticItemCourse({}));
+
     dispatch(clearUser());
   };
 
@@ -222,24 +213,26 @@ const Header = () => {
                 </SheetHeader>
                 <div className="py-4">
                   <nav className="flex flex-col space-y-4">
-                    {menuItems.map((item) => (
-                      <Button
-                        key={item.path}
-                        variant="ghost"
-                        onClick={() => {
-                          router.push(item.path);
-                          const closeEvent = new Event('close-sheet');
-                          window.dispatchEvent(closeEvent);
-                        }}
-                        className={`justify-start ${
-                          pathname === item.path
-                            ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
-                            : ''
-                        }`}
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
+                    {Array.isArray(menuItems) &&
+                      menuItems.length > 0 &&
+                      menuItems.map((item) => (
+                        <Button
+                          key={item.path}
+                          variant="ghost"
+                          onClick={() => {
+                            router.push(item.path);
+                            const closeEvent = new Event('close-sheet');
+                            window.dispatchEvent(closeEvent);
+                          }}
+                          className={`justify-start ${
+                            pathname === item.path
+                              ? 'bg-muted font-medium text-LavenderIndigo dark:text-PaleViolet'
+                              : ''
+                          }`}
+                        >
+                          {item.label}
+                        </Button>
+                      ))}
                     <Button
                       variant="ghost"
                       onClick={() => {
@@ -264,35 +257,55 @@ const Header = () => {
         )}
 
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center min-w-[40px]">
           <div className="cursor-pointer" onClick={() => router.push('/')}>
-            <img src="/images/logo.png" alt="NovaLearn Logo" className="w-10 h-10" />
+            <img src="/images/logo.png" alt="NovaLearn Logo" className="w-10 h-10 object-contain" />
           </div>
         </div>
-
         {/* Desktop Navigation - Hidden when search is expanded */}
-        {!isSearchExpanded && (
-          <nav className="hidden sm:flex items-center space-x-8 ml-8">
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === item.path
-                    ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+        {
+          <nav
+            className={`sm:flex items-center space-x-8 ml-8 transition-all duration-500 ${
+              isSearchExpanded ? 'opacity-0 w-[0.1px]' : 'w-full opacity-100'
+            }`}
+          >
+            {Array.isArray(menuItems) &&
+              menuItems.length > 0 &&
+              menuItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => router.push(item.path)}
+                  className={`text-sm hidden sm:block font-medium hover:text-primary  ${
+                    pathname === item.path
+                      ? 'text-LavenderIndigo dark:text-PaleViolet font-semibold'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  <p
+                    style={{
+                      textShadow: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.textShadow =
+                        theme === 'light'
+                          ? '3px 3px 6px rgba(0, 0, 0, 0.5)'
+                          : '3px 3px 6px rgba(255, 255, 255, 0.8)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.textShadow = 'none';
+                    }}
+                  >
+                    {item.label}
+                  </p>
+                </button>
+              ))}
           </nav>
-        )}
+        }
 
         {/* Search Section - Expands to fill available space */}
         <div
-          className={`flex items-center transition-all duration-300 ${
-            isSearchExpanded ? 'flex-1 mx-4' : 'ml-auto mr-4 w-48 sm:w-64'
+          className={`flex items-center transition-all duration-500 mx-4 ${
+            isSearchExpanded ? 'w-full ' : ' w-48 sm:w-80'
           }`}
         >
           <div className="relative w-full">
@@ -311,7 +324,7 @@ const Header = () => {
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
                   onKeyDown={handleKeyDown}
-                  className="pl-10 pr-20 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo w-full outline-none"
+                  className="pl-10 pr-5 h-10 rounded-full bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-LavenderIndigo w-full outline-none"
                 />
                 {searchValue && (
                   <button
@@ -328,16 +341,18 @@ const Header = () => {
 
             {/* Search Dropdown */}
             {showDropdown && results.length > 0 && (
-              <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-md mt-1 shadow-lg">
-                {results.map((course, index) => (
-                  <li
-                    key={course}
-                    onMouseDown={() => handleSelectCourse(course)}
-                    className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
-                  >
-                    {course}
-                  </li>
-                ))}
+              <ul className="absolute z-50 w-full max-h-60 overflow-auto bg-background border rounded-lg mt-1 shadow-lg">
+                {results &&
+                  results.length > 0 &&
+                  results.map((course, index) => (
+                    <li
+                      key={course}
+                      onMouseDown={() => handleSelectCourse(course)}
+                      className={`cursor-pointer px-4 py-2 hover:bg-muted ${index === highlightIndex ? 'bg-muted' : ''}`}
+                    >
+                      {course}
+                    </li>
+                  ))}
               </ul>
             )}
           </div>
@@ -346,39 +361,27 @@ const Header = () => {
         {/* Right Side Actions */}
         <div className="flex items-center space-x-3">
           {/* Action Buttons - Hidden when search is expanded on mobile */}
-          {!isSearchExpanded && (
+          {
             <>
               {/* Favorites Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/favorites')}
-                className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
-                title="Khóa học yêu thích"
-              >
-                <Heart className="h-5 w-5 transition-all text-redPigment" fill="red" />
-                <span className="sr-only">Khóa học yêu thích</span>
-              </Button>
 
               {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
-              >
-                {theme === 'light' ? (
-                  <Sun className="h-5 w-5 transition-all" />
-                ) : (
-                  <Moon className="h-5 w-5 transition-all" />
-                )}
-                <span className="sr-only">Toggle theme</span>
-              </Button>
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="rounded-full bg-muted/50 hover:bg-muted hidden sm:flex"
+                >
+                  {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              )}
             </>
-          )}
+          }
 
           {/* Notifications */}
-          <NotificationCenter />
+          {userInfo.id && <NotificationCenter />}
 
           {/* User Menu or Login Button */}
           {!userInfo.id ? (
@@ -426,11 +429,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/billing')}>
                     <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Thanh toán</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell className="mr-2 h-4 w-4" />
-                    <span>Thông báo</span>
+                    <span>Lịch sử mua</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
