@@ -67,6 +67,7 @@ const StudentProfile = () => {
   const [certificate, setCertificate] = useState<CertificateType[]>([]);
   const [show, setShow] = useState(false);
   const [preference, setPreference] = useState<Preference | null>(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const {
     control,
@@ -122,6 +123,7 @@ const StudentProfile = () => {
   // Upload file to MinIO
   const uploadToMinIO = async (file: File): Promise<{ key: string; id: string }> => {
     try {
+      setIsLoadingImage(true);
       const presignedData = await APIGetPresignedUrl({
         filename: file.name,
         entity: 'user',
@@ -145,15 +147,22 @@ const StudentProfile = () => {
       });
 
       if (response.status === 204 || response.status === 200) {
+        setIsLoadingImage(false);
         const key = uploadFormData.get('key');
-        if (!key) throw new Error('Missing key in form data');
+        if (!key) {
+          setIsLoadingImage(false);
+          throw new Error('Missing key in form data');
+        }
         return { key: key.toString(), id };
       } else {
+        setIsLoadingImage(false);
         throw new Error('Upload thất bại');
       }
     } catch (error) {
       console.error('Error uploading to MinIO:', error);
       throw error;
+    } finally {
+      setIsLoadingImage(false);
     }
   };
 

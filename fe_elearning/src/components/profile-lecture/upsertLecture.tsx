@@ -109,24 +109,26 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
           {mode === 'create' ? 'Tạo Hồ sơ' : isViewMode ? 'Hồ sơ' : 'Cập nhật hồ sơ'}
         </h1>
 
-        <div className="w-full items-end justify-end flex py-4">
-          <div
-            className={`h-full w-fit p-2 rounded-full flex  items-center gap-2 px-4 ${userInfo?.instructor_profile?.is_approved === null ? 'bg-Sunglow/20' : userInfo?.instructor_profile?.is_approved === false ? 'bg-redPigment/20' : 'bg-vividMalachite/20'}`}
-          >
-            <Dot
-              className={`w-8 h-8 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
-            />
-            <p
-              className={`text-red-500 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
+        {userInfo?.instructor_profile?.is_approved !== null && (
+          <div className="w-full items-end justify-end flex py-4">
+            <div
+              className={`h-full w-fit p-2 rounded-full flex  items-center gap-2 px-4 ${userInfo?.instructor_profile?.is_approved === null ? 'bg-Sunglow/20' : userInfo?.instructor_profile?.is_approved === false ? 'bg-redPigment/20' : 'bg-vividMalachite/20'}`}
             >
-              {userInfo?.instructor_profile?.is_approved === null
-                ? 'Chưa xét duyệt'
-                : userInfo?.instructor_profile?.is_approved === false
-                  ? 'Bị từ chối: ' + userInfo?.instructor_profile?.disapproval_reason
-                  : 'Đã xét duyệt '}
-            </p>
+              <Dot
+                className={`w-8 h-8 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
+              />
+              <p
+                className={`text-red-500 ${userInfo?.instructor_profile?.is_approved === null ? 'text-Sunglow' : userInfo?.instructor_profile?.is_approved === false ? 'text-redPigment' : 'text-vividMalachite'}`}
+              >
+                {userInfo?.instructor_profile?.is_approved === null
+                  ? 'Chưa xét duyệt'
+                  : userInfo?.instructor_profile?.is_approved === false
+                    ? 'Bị từ chối: ' + userInfo?.instructor_profile?.disapproval_reason
+                    : 'Đã xét duyệt '}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
