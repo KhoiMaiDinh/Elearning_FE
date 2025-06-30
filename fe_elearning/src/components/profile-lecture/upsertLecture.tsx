@@ -109,7 +109,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
           {mode === 'create' ? 'Tạo Hồ sơ' : isViewMode ? 'Hồ sơ' : 'Cập nhật hồ sơ'}
         </h1>
 
-        {userInfo?.instructor_profile?.is_approved !== null && (
+        {userInfo?.instructor_profile !== null && (
           <div className="w-full items-end justify-end flex py-4">
             <div
               className={`h-full w-fit p-2 rounded-full flex  items-center gap-2 px-4 ${userInfo?.instructor_profile?.is_approved === null ? 'bg-Sunglow/20' : userInfo?.instructor_profile?.is_approved === false ? 'bg-redPigment/20' : 'bg-vividMalachite/20'}`}
