@@ -10,15 +10,18 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { useRouter } from 'next/navigation';
 import ShowMoreText from './showMoreText';
+import { formatDuration } from '@/helpers';
 
 type CourseDescriptionTabProps = {
   courseData: CourseForm;
   showRegister: boolean;
+  totalDuration: number;
 };
 
 const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
   courseData,
   showRegister = false,
+  totalDuration,
 }) => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
@@ -58,7 +61,9 @@ const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
           </div>
           <div className="text-center p-3 dark:bg-slate-700/30 rounded-lg border border-blue-100 dark:border-transparent shadow-sm">
             <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <p className=" dark:text-white text-slate-900 font-semibold">12 giờ</p>
+            <p className=" dark:text-white text-slate-900 font-semibold">
+              {formatDuration(totalDuration)}
+            </p>
             <p className=" dark:text-slate-400 text-slate-600 text-sm">Thời lượng</p>
           </div>
 

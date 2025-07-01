@@ -46,6 +46,7 @@ const LearnPage = () => {
   const tab = searchParams.get('tab');
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
+  const [totalDuration, setTotalDuration] = useState(0);
 
   // Combined loading state
   const [loadingStates, setLoadingStates] = useState({
@@ -275,6 +276,18 @@ const LearnPage = () => {
     router.push(url);
   }, [userInfo.id, lecture, comment, id, router]);
 
+  useEffect(() => {
+    if (courseData && userInfo) {
+      const totalDuration =
+        courseData.sections?.reduce(
+          (total, section) =>
+            total + section.items.reduce((sum, item) => sum + (item.duration_in_seconds || 0), 0),
+          0
+        ) || 0;
+      setTotalDuration(totalDuration);
+    }
+  }, [courseData, userInfo]);
+
   return (
     // <AnimateWrapper delay={0.2} direction="up">
     <>
@@ -383,6 +396,7 @@ const LearnPage = () => {
             <CourseDescriptionTab
               courseData={courseData}
               showRegister={!isRegistered && !isOwner}
+              totalDuration={totalDuration}
             />
           )}
         </div>
