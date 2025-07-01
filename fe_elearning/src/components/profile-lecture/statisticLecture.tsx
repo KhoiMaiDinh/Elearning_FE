@@ -37,6 +37,9 @@ import { SentimentDistribution } from '../aspect/sentiment-distribution';
 
 const Page = () => {
   const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))
+    .toISOString()
+    .split('T')[0];
   const monthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
     .toISOString()
     .split('T')[0];
@@ -156,7 +159,7 @@ const Page = () => {
     setStatsLoading(true);
     try {
       // Lấy dữ liệu khoảng thời gian hiện tại
-      const currentResponse = await APIGetCommentsForInstructorAnalysis(monthAgo, today);
+      const currentResponse = await APIGetCommentsForInstructorAnalysis(monthAgo, tomorrow);
 
       // Lấy dữ liệu khoảng thời gian trước đó
       const previousResponse = await APIGetCommentsForInstructorAnalysis(twoMonthAgo, monthAgo);
