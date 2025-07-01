@@ -139,7 +139,7 @@ const MyCourseCard: React.FC<CourseForm> = ({
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between border-t p-4">
-          <div className="flex items-center text-xs text-muted-foreground">
+          <div className="flex items-center text-[8px]  text-muted-foreground">
             <Clock className="mr-1 h-3 w-3" />
             <span className="text-right">
               {createdAt
