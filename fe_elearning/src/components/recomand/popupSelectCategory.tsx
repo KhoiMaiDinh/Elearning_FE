@@ -235,7 +235,7 @@ export function CategorySelectionPopup({
           <Button
             onClick={handleSave}
             disabled={!isValidSelection || isLoading}
-            className="w-full sm:w-auto order-1 sm:order-2 bg-gradient-to-r from-LavenderIndigo to-majorelleBlue hover:brightness-110 text-white"
+            className="w-full sm:w-auto order-1 sm:order-2 bg-custom-gradient-button-violet hover:brightness-110 text-white"
           >
             {isLoading ? (
               <>
