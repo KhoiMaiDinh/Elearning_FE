@@ -224,7 +224,9 @@ function NotificationItem({
                     ? `/profile/lecture?tab=ho-so&rejected=true&reason=${notification?.body}`
                     : type === 'NEW_THREAD'
                       ? `/course-details/${notification?.metadata?.course_id}?lecture=${notification?.metadata?.lecture_id}&thread=${notification?.metadata?.thread_id}&tab=community`
-                      : '',
+                      : type === 'COURSE_UPDATED'
+                        ? `/course-details/${notification?.metadata?.course_id}`
+                        : '',
             '_blank'
           );
           handleReadNotification(notification?.id);
