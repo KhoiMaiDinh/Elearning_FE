@@ -483,17 +483,17 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                 )}
               </div>
             ) : (
-              communityPosts.map((post) => {
+              communityPosts.map((post, index) => {
                 const isExpanded = expandedThreadId === post.id;
 
                 return (
                   <Card
-                    key={post.id}
+                    key={post?.id ?? index}
                     className=" dark:bg-slate-800/30 bg-white/90 dark:border-slate-700 border-blue-200 shadow-lg backdrop-blur-sm"
                   >
                     <CardContent
                       className="p-6"
-                      onClick={() => setExpandedThreadId(isExpanded ? null : post.id)}
+                      onClick={() => setExpandedThreadId(isExpanded ? null : post?.id)}
                     >
                       <div className="flex space-x-4">
                         {/* Question Content */}
@@ -501,7 +501,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                           <div className="flex ">
                             <div className="flex w-full justify-between">
                               <h3 className="text-xl font-semibold dark:text-white text-slate-800 mb-2">
-                                {post.title}
+                                {post?.title}
                               </h3>
                               <div className="text-sm text-cosmicCobalt dark:text-lightSilver underline">
                                 <ChevronDown
@@ -515,22 +515,22 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                               <Avatar className="w-8 h-8">
-                                <AvatarImage
+                                {/* <AvatarImage
                                   src={
                                     `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${post.author?.profile_image.key}` ||
                                     '/placeholder.svg'
                                   }
-                                />
+                                /> */}
                                 <AvatarFallback className="bg-purple-600 text-white text-sm">
-                                  {post.author.first_name[0] + post.author.last_name[0]}
+                                  {post?.author?.first_name[0] + post?.author?.last_name[0]}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="dark:text-slate-300 text-slate-600 text-sm">
-                                  {post.author.first_name + ' ' + post.author.last_name}
+                                  {post?.author?.first_name + ' ' + post?.author?.last_name}
                                 </p>
                                 <p className="dark:text-slate-500 text-slate-500 text-xs">
-                                  {new Date(post.createdAt).toLocaleString('vi-VN', {
+                                  {new Date(post?.createdAt).toLocaleString('vi-VN', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                     day: '2-digit',
@@ -544,7 +544,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                               <div className="flex items-center space-x-1 dark:text-slate-400 text-slate-500">
                                 <MessageCircle className="w-4 h-4" />
                                 <span className="text-sm">
-                                  {post.replies?.length ?? 0} câu trả lời
+                                  {post?.replies?.length ?? 0} câu trả lời
                                 </span>
                               </div>
                               <Button
@@ -553,19 +553,19 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                                 className="dark:border-slate-600 border-blue-200 dark:text-slate-300 text-slate-600 dark:hover:bg-slate-700 hover:bg-blue-50 hover:text-indigo-600 dark:hover:text-white hover:border-indigo-300"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setShowAnswerForm(showAnswerForm === post.id ? null : post.id);
+                                  setShowAnswerForm(showAnswerForm === post?.id ? null : post?.id);
                                 }}
                               >
                                 Trả lời
                               </Button>
                               <div onClick={(e) => e.stopPropagation()}>
-                                <ReportButton course_id={post.id} type="THREAD" />
+                                <ReportButton course_id={post?.id} type="THREAD" />
                               </div>
                             </div>
                           </div>
 
                           {/* Answer Form */}
-                          {showAnswerForm === post.id && (
+                          {showAnswerForm === post?.id && (
                             <div
                               className="mt-4 p-4 dark:bg-slate-700/20 bg-blue-50/50 rounded-lg border dark:border-slate-600 border-blue-200"
                               onClick={(e) => e.stopPropagation()}
@@ -589,7 +589,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                                   <Button
                                     size="sm"
                                     className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700"
-                                    onClick={() => handleReplySubmit(post.id)}
+                                    onClick={() => handleReplySubmit(post?.id)}
                                     disabled={!stripHtml(newReply.trim())}
                                   >
                                     Gửi câu trả lời
@@ -604,7 +604,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                             <div onClick={(e) => e.stopPropagation()}>
                               <p
                                 className=" dark:text-slate-300 text-slate-600 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: post.content }}
+                                dangerouslySetInnerHTML={{ __html: post?.content }}
                               />
                               {replies.length > 0 &&
                                 replies.map((reply) => (
