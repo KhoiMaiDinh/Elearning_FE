@@ -515,12 +515,12 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                               <Avatar className="w-8 h-8">
-                                {/* <AvatarImage
+                                <AvatarImage
                                   src={
                                     `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${post.author?.profile_image.key}` ||
-                                    '/placeholder.svg'
+                                    ''
                                   }
-                                /> */}
+                                />
                                 <AvatarFallback className="bg-purple-600 text-white text-sm">
                                   {post?.author?.first_name[0] + post?.author?.last_name[0]}
                                 </AvatarFallback>
@@ -604,7 +604,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                             <div onClick={(e) => e.stopPropagation()}>
                               <p
                                 className=" dark:text-slate-300 text-slate-600 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: post?.content }}
+                                dangerouslySetInnerHTML={{ __html: post?.content || '' }}
                               />
                               {replies.length > 0 &&
                                 replies.map((reply) => (
@@ -857,7 +857,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                       </div>
                       <div
                         className="dark:text-slate-300 text-slate-700 leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: selectedThread.content }}
+                        dangerouslySetInnerHTML={{ __html: selectedThread.content || '' }}
                       />
                     </div>
                   </div>
@@ -872,7 +872,21 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
 
                 {replies.length > 0 &&
                   replies.map((reply) => (
-                    <ReplyItem key={reply.id} reply={reply} courseOwner={owner!} />
+                    <ReplyItem
+                      key={reply.id}
+                      reply={reply}
+                      courseOwner={
+                        owner || {
+                          id: '',
+                          first_name: '',
+                          last_name: '',
+                          username: '',
+                          email: '',
+                          profile_image: { key: '' },
+                          createdAt: '',
+                        }
+                      }
+                    />
                   ))}
               </div>
 
