@@ -118,7 +118,7 @@ const CourseLecture = () => {
       <div className="w-full h-full flex flex-col gap-3 bg-white dark:bg-eerieBlack font-sans font-medium text-majorelleBlue  overflow-auto  p-4 rounded-b-sm">
         <div className="w-full h-full flex items-center justify-end">
           <AddButton
-            onClick={() => router.push('/profile/lecture/course')}
+            onClick={() => router.push('/profile/lecture/course/new')}
             label="Thêm khóa học"
             size="lg"
             className="bg-custom-gradient-button-violet flex flex-row hover:brightness-125 items-center justify-center dark:bg-custom-gradient-button-blue text-white px-4 py-2 rounded-md border-none"
