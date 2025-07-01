@@ -8,12 +8,13 @@ import { CouponType } from '@/types/couponType';
 import { Check, AlertCircle, Tag, Loader2, Percent } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { CourseForm } from '@/types/courseType';
 
 type Props = {
   discount: string;
   setDiscount: (value: string) => void;
   onDiscountChange: (value: number) => void;
-  course: { id: string; title: string; price: number }[];
+  course: CourseForm[];
 };
 
 export default function DiscountInput({ discount, setDiscount, onDiscountChange, course }: Props) {

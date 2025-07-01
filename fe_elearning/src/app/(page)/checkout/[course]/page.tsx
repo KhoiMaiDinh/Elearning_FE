@@ -39,13 +39,7 @@ export default function CheckoutSinglePage({ params }: { params: Promise<{ cours
   return !loading ? (
     <CheckoutPage
       mode="single"
-      products={[
-        {
-          id: dataCourse?.id || '',
-          title: dataCourse?.title || '',
-          price: dataCourse?.price || 0,
-        },
-      ]}
+      products={dataCourse ? [dataCourse] : []}
       student={userInfo as UserType}
     />
   ) : (

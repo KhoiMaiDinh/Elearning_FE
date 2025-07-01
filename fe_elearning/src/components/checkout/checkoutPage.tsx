@@ -14,10 +14,11 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard, ArrowLeft, Shield } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { CourseForm } from '@/types/courseType';
 
 type Props = {
   mode: 'single' | 'cart';
-  products: { id: string; title: string; price: number }[];
+  products: CourseForm[];
   student: UserType;
 };
 
