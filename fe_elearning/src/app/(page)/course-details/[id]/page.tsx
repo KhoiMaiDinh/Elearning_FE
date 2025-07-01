@@ -302,10 +302,10 @@ const LearnPage = () => {
   }, [courseData, userInfo]);
 
   useEffect(() => {
-    if (courseData?.id) {
-      handleGetReviews(courseData?.id);
+    if (id) {
+      handleGetReviews(id as string);
     }
-  }, [courseData?.id, handleGetReviews]);
+  }, [id]);
 
   return (
     // <AnimateWrapper delay={0.2} direction="up">
