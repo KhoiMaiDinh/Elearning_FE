@@ -16,6 +16,7 @@ import { RootState } from '@/constants/store';
 import { Button } from '@/components/ui/button';
 import CourseDescriptionTab from '@/components/courseDetails/courseDescriptionTab';
 import { UserType } from '@/types/userType';
+import { APIGetReview } from '@/utils/comment';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | SectionType | undefined): string | undefined => {
@@ -62,6 +63,7 @@ const LearnPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [currentCommentItem, setCurrentCommentItem] = useState<string | undefined>('');
   const [currentSection, setCurrentSection] = useState<SectionType | undefined>(undefined);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   // Derived states using useMemo
   const sections = useMemo(() => {
@@ -76,6 +78,17 @@ const LearnPage = () => {
     return userInfo.id === courseData.instructor.user.id;
   }, [userInfo.id, courseData?.instructor?.user?.id]);
 
+  const handleGetReviews = async (id: string) => {
+    try {
+      const response = await APIGetReview(id);
+      if (response?.status === 200) {
+        setReviews(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
   // API calls
   const handleGetCourseData = useCallback(async () => {
     try {
@@ -288,6 +301,12 @@ const LearnPage = () => {
     }
   }, [courseData, userInfo]);
 
+  useEffect(() => {
+    if (courseData?.id) {
+      handleGetReviews(courseData?.id);
+    }
+  }, [courseData?.id, handleGetReviews]);
+
   return (
     // <AnimateWrapper delay={0.2} direction="up">
     <>
@@ -394,6 +413,7 @@ const LearnPage = () => {
 
           {courseData && (
             <CourseDescriptionTab
+              totalReviews={reviews?.length ?? 0}
               courseData={courseData}
               showRegister={!isRegistered && !isOwner}
               totalDuration={totalDuration}

@@ -16,12 +16,14 @@ type CourseDescriptionTabProps = {
   courseData: CourseForm;
   showRegister: boolean;
   totalDuration: number;
+  totalReviews: number;
 };
 
 const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
   courseData,
   showRegister = false,
   totalDuration,
+  totalReviews,
 }) => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
@@ -44,7 +46,7 @@ const CourseDescriptionTab: React.FC<CourseDescriptionTabProps> = ({
           <div className="flex items-center space-x-1">
             <RatingStars rating={courseData.avg_rating ?? 0} />
             <span className=" dark:text-slate-300 text-slate-600 ml-2">
-              {courseData.avg_rating ?? 'N/A'} (128 đánh giá)
+              {courseData.avg_rating ?? 'N/A'} ({totalReviews} đánh giá)
             </span>
           </div>
         </div>
