@@ -517,8 +517,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                               <Avatar className="w-8 h-8">
                                 <AvatarImage
                                   src={
-                                    `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${post.author?.profile_image.key}` ||
-                                    ''
+                                    post?.author?.profile_image?.key
+                                      ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${post?.author?.profile_image?.key}`
+                                      : ''
                                   }
                                 />
                                 <AvatarFallback className="bg-purple-600 text-white text-sm">
