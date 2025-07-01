@@ -37,7 +37,7 @@ const SupportPage = () => {
       title: 'Hotline',
       description: 'Gọi điện để được hỗ trợ ngay lập tức',
       availability: '8:00 - 22:00 hàng ngày',
-      action: '1900-xxx-xxx',
+      action: '1900-000-000',
       color: 'bg-purple-500',
     },
   ];
@@ -124,7 +124,7 @@ const SupportPage = () => {
       <section className="relative py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <AnimateWrapper delay={0.1} direction="up">
-            <div className="text-center mb-16">
+            <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
                 Trung tâm trợ giúp
               </h1>
@@ -316,10 +316,10 @@ const SupportPage = () => {
                   emergency@novallearn.com
                 </a>
                 <a
-                  href="tel:+84-xxx-xxx-xxx"
+                  href="tel:+84090099987"
                   className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
-                  Hotline khẩn cấp: +84-xxx-xxx-xxx
+                  Hotline khẩn cấp: +84 090 099 987
                 </a>
               </div>
             </div>

@@ -125,7 +125,7 @@ const CareersPage = () => {
       <section className="relative py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <AnimateWrapper delay={0.1} direction="up">
-            <div className="text-center mb-16">
+            <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
                 Tuyển dụng tại <span className="text-LavenderIndigo">NovaLearn</span>
               </h1>
@@ -221,7 +221,7 @@ const CareersPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
               <AnimateWrapper key={index} delay={0.2 + index * 0.1} direction="up">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center">
+                <div className="h-fullbg-white dark:bg-gray-800 rounded-lg p-6 text-center">
                   <div className="w-2 h-2 bg-LavenderIndigo rounded-full mx-auto mb-4"></div>
                   <p className="text-gray-700 dark:text-gray-300">{benefit}</p>
                 </div>
