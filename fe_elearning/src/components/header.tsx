@@ -398,9 +398,9 @@ const Header = () => {
                   <Avatar className="h-8 w-8 rounded-full border-2 border-muted">
                     <AvatarImage
                       src={
-                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE + userInfo.profile_image?.key ||
-                        '/placeholder.svg' ||
-                        '/placeholder.svg'
+                        userInfo?.profile_image?.key
+                          ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${userInfo?.profile_image?.key}`
+                          : ''
                       }
                       alt={userInfo.username || 'User'}
                       className="object-cover"

@@ -21,8 +21,9 @@ const CommentListUser = ({ comments }: CommentListProps) => {
             <Avatar>
               <AvatarImage
                 src={
-                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                    (comments.user?.profile_image?.key || 'default-key.jpg') || '/placeholder.svg'
+                  comments?.user?.profile_image?.key
+                    ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${comments?.user?.profile_image?.key}`
+                    : ''
                 }
                 alt={comments.user?.first_name + ' ' + comments.user?.last_name}
               />

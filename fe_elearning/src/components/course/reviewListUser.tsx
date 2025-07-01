@@ -22,8 +22,9 @@ const ReviewListUser = ({ reviews }: ReviewListProps) => {
             <Avatar>
               <AvatarImage
                 src={
-                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                    (reviews.user?.profile_image?.key || 'default-key.jpg') || '/placeholder.svg'
+                  reviews?.user?.profile_image?.key
+                    ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${reviews?.user?.profile_image?.key}`
+                    : ''
                 }
                 alt={reviews.user?.first_name + ' ' + reviews.user?.last_name}
                 className="w-10 h-10 object-cover"

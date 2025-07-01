@@ -396,7 +396,11 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
             <div className="flex items-start space-x-6 mb-3">
               <Avatar className="w-16 h-16">
                 <AvatarImage
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${course?.instructor?.user?.profile_image?.key || ''}`}
+                  src={
+                    course?.instructor?.user?.profile_image?.key
+                      ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${course?.instructor?.user?.profile_image?.key}`
+                      : ''
+                  }
                 />
                 <AvatarFallback>
                   {' '}

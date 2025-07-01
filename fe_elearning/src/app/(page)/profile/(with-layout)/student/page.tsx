@@ -316,7 +316,7 @@ const StudentProfile = () => {
                           <div className="flex flex-col gap-2 items-center">
                             <Avatar className="w-24 h-24 mx-auto">
                               <AvatarImage
-                                src={imagePreview || '/placeholder.svg'}
+                                src={imagePreview || ''}
                                 alt={`${studentData?.first_name} ${studentData?.last_name}`}
                                 className="object-cover"
                               />

@@ -250,7 +250,11 @@ const Page = () => {
                   /> */}
                     <Avatar className="w-full h-full border-4 shadow-lg">
                       <AvatarImage
-                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`}
+                        src={
+                          lecture?.user?.profile_image?.key
+                            ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${lecture?.user?.profile_image?.key}`
+                            : ''
+                        }
                         alt={lecture?.user?.last_name + ' ' + lecture?.user?.first_name || ''}
                         className="object-cover"
                       />

@@ -119,8 +119,9 @@ const CoursesBlock: React.FC<CoursesBlockProps> = ({
             <AvatarImage
               alt={instructor?.user?.last_name || ''}
               src={
-                process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                (instructor?.user?.profile_image?.key || '')
+                instructor?.user?.profile_image?.key
+                  ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${instructor?.user?.profile_image?.key}`
+                  : ''
               }
               className="object-cover"
             />

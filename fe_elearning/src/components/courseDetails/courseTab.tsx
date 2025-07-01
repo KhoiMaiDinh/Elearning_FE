@@ -721,8 +721,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                     <Avatar className="w-10 h-10">
                       <AvatarImage
                         src={
-                          `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedComment.user?.profile_image?.key}` ||
-                          '/placeholder.svg'
+                          selectedComment.user?.profile_image?.key
+                            ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedComment.user?.profile_image?.key}`
+                            : ''
                         }
                       />
                       <AvatarFallback className="bg-blue-600 text-white">
@@ -827,8 +828,9 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                     <Avatar className="w-10 h-10">
                       <AvatarImage
                         src={
-                          `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedThread.author?.profile_image.key}` ||
-                          '/placeholder.svg'
+                          selectedThread.author?.profile_image?.key
+                            ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedThread.author?.profile_image?.key}`
+                            : ''
                         }
                       />
                       <AvatarFallback className="bg-purple-600 text-white">

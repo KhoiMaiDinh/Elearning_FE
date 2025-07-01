@@ -54,13 +54,13 @@ function CommentCard({ comment }: CommentCardProps) {
             <Avatar>
               <AvatarImage
                 src={
-                  comment.user.profile_image?.key
-                    ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${comment.user.profile_image.key}`
-                    : '/placeholder.svg'
+                  comment?.user?.profile_image?.key
+                    ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${comment?.user?.profile_image?.key}`
+                    : ''
                 }
-                alt={`${comment.user.first_name} ${comment.user.last_name}`}
+                alt={`${comment?.user?.first_name} ${comment?.user?.last_name}`}
               />
-              <AvatarFallback>{`${comment.user.first_name[0]}${comment.user.last_name[0]}`}</AvatarFallback>
+              <AvatarFallback>{`${comment?.user?.first_name[0]}${comment?.user?.last_name[0]}`}</AvatarFallback>
             </Avatar>
             <div>
               <div className="font-medium">{`${comment.user.first_name} ${comment.user.last_name}`}</div>

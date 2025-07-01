@@ -18,8 +18,8 @@ export default function StudentInfo({ student }: Props) {
         <Avatar className="w-16 h-16 border-2 border-blue-200 dark:border-blue-800">
           <AvatarImage
             src={
-              student.profile_image?.key
-                ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${student.profile_image?.key}`
+              student?.profile_image?.key
+                ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${student?.profile_image?.key}`
                 : ''
             }
             alt={`${student.first_name} ${student.last_name}`}

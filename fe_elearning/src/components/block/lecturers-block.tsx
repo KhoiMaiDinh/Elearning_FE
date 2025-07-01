@@ -40,7 +40,7 @@ const LecturersBlock: React.FC<LecturersBlockProps> = ({
         <div className="items-center justify-center flex  w-full h-28  ">
           <Avatar className="w-24 h-24 border-4 shadow-lg">
             <AvatarImage
-              src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + (avatar || '')}
+              src={avatar ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${avatar}` : ''}
               alt={name}
               className="object-cover"
             />

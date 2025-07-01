@@ -115,8 +115,9 @@ const TeacherProfile = () => {
                   <Avatar className="w-32 h-32 mb-4">
                     <AvatarImage
                       src={
-                        process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                        (teacherData?.user.profile_image?.key || '')
+                        teacherData?.user?.profile_image?.key
+                          ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${teacherData?.user?.profile_image?.key}`
+                          : ''
                       }
                       alt={teacherData?.user.first_name + ' ' + teacherData?.user.last_name}
                       className="object-cover"

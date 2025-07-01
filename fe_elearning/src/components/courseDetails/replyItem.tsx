@@ -90,7 +90,11 @@ const ReplyItem = ({ reply, courseOwner }: ReplyItemProps) => {
             <div className="flex items-center space-x-3">
               <Avatar className="w-6 h-6">
                 <AvatarImage
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${reply.author?.profile_image?.key || 'default-key.jpg'}`}
+                  src={
+                    reply?.author?.profile_image?.key
+                      ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${reply?.author?.profile_image?.key}`
+                      : ''
+                  }
                 />
                 <AvatarFallback className="dark:bg-cyan-600 dark:text-white text-xs">
                   {reply.author?.first_name?.charAt(0) || '?'}

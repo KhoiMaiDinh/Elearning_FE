@@ -53,7 +53,9 @@ export function NavUser({
               >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={process.env.NEXT_PUBLIC_BASE_URL_IMAGE + user.avatar}
+                    src={
+                      user?.avatar ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${user?.avatar}` : ''
+                    }
                     alt={user.name}
                     className="object-cover"
                   />
@@ -75,7 +77,7 @@ export function NavUser({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={user?.avatar} alt={user.name} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">

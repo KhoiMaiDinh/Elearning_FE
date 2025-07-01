@@ -272,8 +272,9 @@ const Page = () => {
                       <Avatar className="w-10 h-10">
                         <AvatarImage
                           src={
-                            `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedRating.user?.profile_image?.key}` ||
-                            '/placeholder.svg'
+                            selectedRating.user?.profile_image?.key
+                              ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${selectedRating.user?.profile_image?.key}`
+                              : ''
                           }
                         />
                         <AvatarFallback className="bg-orange-600 text-white">

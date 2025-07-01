@@ -16,11 +16,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({ notificati
         {image && image?.entity === 'user' ? (
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={
-                process.env.NEXT_PUBLIC_BASE_URL_IMAGE
-                  ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${image?.key || ''}`
-                  : '/placeholder.svg'
-              }
+              src={image?.key ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${image?.key}` : ''}
               alt={body || ''}
             />
             <AvatarFallback>{body?.slice(0, 2)?.toUpperCase()}</AvatarFallback>

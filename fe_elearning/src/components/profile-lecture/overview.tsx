@@ -817,8 +817,9 @@ export const Overview = () => {
                             <Avatar className="h-8 w-8">
                               <AvatarImage
                                 src={
-                                  process.env.NEXT_PUBLIC_BASE_URL_IMAGE +
-                                  comment.user.profile_image.key
+                                  comment?.user?.profile_image?.key
+                                    ? `${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${comment?.user?.profile_image?.key}`
+                                    : ''
                                 }
                                 alt="Student"
                               />
