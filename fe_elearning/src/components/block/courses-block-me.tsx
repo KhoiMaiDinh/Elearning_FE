@@ -59,7 +59,7 @@ const MyCourseCard: React.FC<CourseForm> = ({
     <>
       <Card
         key={id}
-        className="overflow-hidden hover:cursor-pointer max-w-sm flex flex-col justify-between hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
+        className="overflow-hidden hover:cursor-pointer max-w-sm flex flex-col justify-between h-full hover:shadow-md hover:shadow-cosmicCobalt transition-shadow"
         onClick={() => router.push(`/profile/lecture/course/${id}`)}
       >
         <div className="relative">
