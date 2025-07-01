@@ -105,7 +105,9 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
   return (
     <>
       <div className=" px-6 py-8">
-        <h1 className="text-3xl font-bold text-center  text-majorelleBlue">
+        <h1
+          className={`text-3xl font-bold text-center  text-majorelleBlue ${mode === 'create' ? 'pb-4' : ''}`}
+        >
           {mode === 'create' ? 'Tạo Hồ sơ' : isViewMode ? 'Hồ sơ' : 'Cập nhật hồ sơ'}
         </h1>
 

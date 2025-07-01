@@ -55,11 +55,11 @@ const Footer = () => {
                   <Link href="/courses">Danh sách khóa học</Link>
                 </li>
                 <li>
-                  <Link href="/pricing">Gói học</Link>
+                  <Link href="/lecturer">Danh sách giảng viên</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/blog">Blog học tập</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
 
@@ -87,16 +87,25 @@ const Footer = () => {
             &copy; 2025 NovaLearn. All rights reserved.
           </p>
           <div className="flex space-x-4 text-xl text-muted-foreground">
-            <a href="#" className="dark:hover:text-white hover:text-black transition">
+            <a
+              href="https://www.facebook.com/"
+              className="dark:hover:text-white hover:text-black transition"
+            >
               <Facebook />
             </a>
-            <a href="#" className="dark:hover:text-white hover:text-black transition">
+            <a href="https://x.com" className="dark:hover:text-white hover:text-black transition">
               <Twitter />
             </a>
-            <a href="#" className="dark:hover:text-white hover:text-black transition">
+            <a
+              href="https://www.linkedin.com/"
+              className="dark:hover:text-white hover:text-black transition"
+            >
               <Linkedin />
             </a>
-            <a href="#" className="dark:hover:text-white hover:text-black transition">
+            <a
+              href="https://www.youtube.com/"
+              className="dark:hover:text-white hover:text-black transition"
+            >
               <Youtube />
             </a>
           </div>
