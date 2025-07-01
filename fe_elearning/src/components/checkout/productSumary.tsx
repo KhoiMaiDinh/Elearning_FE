@@ -2,9 +2,10 @@
 import { formatPrice } from '../formatPrice';
 import { BookOpen, Star, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { CourseForm } from '@/types/courseType';
 
 type Props = {
-  products: { id: string; title: string; price: number }[];
+  products: CourseForm[];
 };
 
 export default function ProductSummary({ products }: Props) {
@@ -20,7 +21,15 @@ export default function ProductSummary({ products }: Props) {
             {/* Course Icon */}
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 bg-custom-gradient-button-blue rounded-lg flex items-center justify-center shadow-sm">
-                <BookOpen className="w-6 h-6 text-white" />
+                {product.thumbnail?.key ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE}${product.thumbnail.key}`}
+                    alt={product.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <BookOpen className="w-6 h-6 text-white" />
+                )}
               </div>
 
               {/* Course Details */}
