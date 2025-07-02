@@ -260,7 +260,9 @@ function NotificationItem({
               className="h-full w-full object-cover"
             />
           </div>
-        ) : type === 'PROFILE_APPROVED' || type === 'COURSE_COMPLETED' ? (
+        ) : type === 'PROFILE_APPROVED' ||
+          type === 'COURSE_COMPLETED' ||
+          type === 'UNBAN_APPROVED' ? (
           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
             <Check className="h-4 w-4 text-vividMalachite" />
           </div>
