@@ -228,7 +228,11 @@ function NotificationItem({
                         ? `/course-details/${notification?.metadata?.course_id}`
                         : type === 'COURSE_COMPLETED'
                           ? `/certificate/${notification?.metadata?.course_id}`
-                          : '',
+                          : type === 'COURSE_REVIEW_RECEIVED'
+                            ? `/course/${notification?.metadata?.course_id}`
+                            : type === 'UNBAN_APPROVED'
+                              ? `/profile/lecture/course/${notification?.metadata?.course_id}`
+                              : '/',
             '_self'
           );
           handleReadNotification(notification?.id);
