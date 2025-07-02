@@ -86,7 +86,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
           {courseProgress !== 0 && courseProgress && (
             <>
               <div className="mb-6">
-                <PieChartProgress courseProgress={30} />
+                <PieChartProgress courseProgress={courseProgress || 0} />
               </div>
             </>
           )}
