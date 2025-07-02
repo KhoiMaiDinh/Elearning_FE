@@ -80,7 +80,6 @@ const Page = () => {
     with_thumbnail: true,
     is_approved: true,
   });
-  console.log(paramsCourse);
 
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
   const [priceRange, setPriceRange] = useState([

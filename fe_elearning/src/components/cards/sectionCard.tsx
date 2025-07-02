@@ -265,7 +265,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="hover:bg-white hover:shadow-md"
+                                className="hover:bg-white hover:shadow-md hover:text-black"
                                 onClick={() => handleUnhideLecture(lecture.id)}
                               >
                                 <RefreshCcw className="h-4 w-4" />
@@ -283,7 +283,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                                   </Button>
                                 )}
                                 <Button
-                                  className="hover:bg-white hover:shadow-md"
+                                  className="hover:bg-white hover:shadow-md hover:text-black"
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleViewLecture(section, lecture)}
@@ -291,7 +291,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                                   <Eye className="h-4 w-4" />
                                 </Button>
                                 <Button
-                                  className="hover:bg-white hover:shadow-md"
+                                  className="hover:bg-white hover:shadow-md hover:text-black"
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleEditLecture(section, lecture)}
@@ -302,7 +302,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:bg-white hover:shadow-md"
+                                    className="hover:bg-white hover:shadow-md hover:text-black"
                                     onClick={() => handleHideLecture(lecture.id)}
                                   >
                                     <Trash2 className="h-4 w-4" />
