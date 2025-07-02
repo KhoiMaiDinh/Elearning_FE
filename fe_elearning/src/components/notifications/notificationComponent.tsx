@@ -227,7 +227,7 @@ function NotificationItem({
                       : type === 'COURSE_UPDATED'
                         ? `/course-details/${notification?.metadata?.course_id}`
                         : '',
-            '_blank'
+            '_self'
           );
           handleReadNotification(notification?.id);
         }
