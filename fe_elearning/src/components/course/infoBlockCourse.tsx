@@ -94,11 +94,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
           <Button
             size="lg"
             className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
-            onClick={() =>
-              courseProgress && courseProgress === 100
-                ? router.push(`/certificate/${id}`)
-                : router.push(`/course-details/${id}`)
-            }
+            onClick={() => router.push(`/course-details/${id}`)}
           >
             {courseProgress !== 0 && courseProgress && courseProgress < 100
               ? 'Tiếp tục học'
@@ -106,7 +102,15 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
                 ? 'Đã hoàn thành'
                 : 'Bắt đầu học'}
           </Button>
-
+          {courseProgress === 100 && courseProgress && (
+            <Button
+              size="lg"
+              className="w-full bg-custom-gradient-button-blue dark:bg-custom-gradient-button-violet hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
+              onClick={() => router.push(`/certificate/${id}`)}
+            >
+              Xem chứng chỉ
+            </Button>
+          )}
           {/* Share Button for Registered Users */}
           <ShareDialog
             courseTitle={courseTitle}
