@@ -52,7 +52,7 @@ const Footer = () => {
               <h3 className="text-lg font-semibold mb-3">Khóa học</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/courses">Danh sách khóa học</Link>
+                  <Link href="/course">Danh sách khóa học</Link>
                 </li>
                 <li>
                   <Link href="/lecturer">Danh sách giảng viên</Link>

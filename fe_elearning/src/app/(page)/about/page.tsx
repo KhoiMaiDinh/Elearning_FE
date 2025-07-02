@@ -41,7 +41,7 @@ const AboutPage = () => {
       <section className="relative py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <AnimateWrapper delay={0.1} direction="up">
-            <div className="text-center mb-16">
+            <div className="text-center ">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
                 Về <span className="text-LavenderIndigo">NovaLearn</span>
               </h1>
@@ -161,7 +161,7 @@ const AboutPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <AnimateWrapper key={index} delay={0.2 + index * 0.1} direction="up">
-                <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-center p-6 h-full bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                   <div className="text-LavenderIndigo mb-4 flex justify-center">{value.icon}</div>
                   <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                     {value.title}
@@ -188,12 +188,6 @@ const AboutPage = () => {
               ngay hôm nay
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/register"
-                className="bg-LavenderIndigo hover:bg-LavenderIndigo/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-              >
-                Đăng ký ngay
-              </a>
               <a
                 href="/course"
                 className="border border-LavenderIndigo text-LavenderIndigo hover:bg-LavenderIndigo hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors"

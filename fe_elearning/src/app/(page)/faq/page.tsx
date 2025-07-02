@@ -119,7 +119,7 @@ const FAQPage = () => {
       <section className="relative py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <AnimateWrapper delay={0.1} direction="up">
-            <div className="text-center mb-16">
+            <div className="text-center ">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
                 Câu hỏi thường gặp
               </h1>
