@@ -106,7 +106,10 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             <Button
               size="lg"
               className="w-full bg-custom-gradient-button-blue dark:bg-custom-gradient-button-violet hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
-              onClick={() => router.push(`/certificate/${id}`)}
+              onClick={() =>
+                //  router.push(`/certificate/${id}`)
+                router.push(`/profile/student`)
+              }
             >
               Xem chứng chỉ
             </Button>
