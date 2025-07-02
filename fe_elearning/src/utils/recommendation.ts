@@ -23,7 +23,7 @@ const APIGetRecommendation = async (params?: { amount?: number }) => {
 
 const APIGetRecommendationByCourseId = async (courseId: string) => {
   try {
-    const response = await axiosInstance.get(`/recommendations/courses/${courseId}`);
+    const response = await axiosInstance.get(`/recommendations/courses/${courseId}/similar`);
     if (response.status === 200) {
       return {
         status: response.status,

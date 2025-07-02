@@ -55,6 +55,9 @@ const MyCourseCard: React.FC<CourseForm> = ({
     router.replace(`?tab=phan-tich-phan-hoi&id=${id}`);
   };
 
+  const handleNavigateToViewMode = () => {
+    router.push(`/course/${id}`);
+  };
   return (
     <>
       <Card
@@ -87,20 +90,16 @@ const MyCourseCard: React.FC<CourseForm> = ({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
                   <Edit className="mr-2 h-4 w-4" />
-                  <span>Edit Course</span>
+                  <span>Edit</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateToViewMode();
+                  }}
+                >
                   <Eye className="mr-2 h-4 w-4" />
-                  <span>Preview</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  <span>Analytics</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-500">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
+                  <span>Chế độ xem</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

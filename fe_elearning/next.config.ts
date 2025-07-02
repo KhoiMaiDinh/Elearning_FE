@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ['localhost', '7f31-115-78-5-112.ngrok-free.app'],
+    domains: ['localhost', '7f31-115-78-5-112.ngrok-free.app', 'storage.googleapis.com'],
     dangerouslyAllowSVG: true,
   },
 
