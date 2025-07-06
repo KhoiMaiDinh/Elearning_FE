@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'next/navigation';
 import { ChevronDown, Eye, RefreshCw, Calendar } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { styleSuccess, styleError } from '@/components/ToastNotify/toastNotifyStyle';
 
 // ================== IMPORT COMPONENTS ==================
 import { DataTable } from '@/components/table/DataTable';
@@ -218,7 +220,7 @@ const Page = () => {
     <div className="bg-white dark:bg-eerieBlack min-h-screen w-full space-y-8 rounded-xl p-6 shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className=" text-2xl font-bold text-majorelleBlue">Phân tích phản hồi</h1>
+        <h1 className="text-2xl font-bold text-majorelleBlue">Phân tích phản hồi</h1>
       </div>
 
       {/* Instructor Overview Stats */}

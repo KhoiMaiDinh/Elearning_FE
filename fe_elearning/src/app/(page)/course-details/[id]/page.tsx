@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
 import CourseItemList from '@/components/courseDetails/lessonList';
 import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { notFound, useParams, useRouter, useSearchParams } from 'next/navigation';
 import ButtonReview from '@/components/courseDetails/buttonReview';
 import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
@@ -15,6 +15,7 @@ import { RootState } from '@/constants/store';
 import CourseDescriptionTab from '@/components/courseDetails/courseDescriptionTab';
 import { UserType } from '@/types/userType';
 import { APIGetReview } from '@/utils/comment';
+import { toast } from 'react-toastify';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | SectionType | undefined): string | undefined => {
@@ -46,6 +47,7 @@ const LearnPage = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const router = useRouter();
   const [totalDuration, setTotalDuration] = useState(0);
+  const [notFound, setNotFound] = useState(false);
 
   // Combined loading state
   const [loadingStates, setLoadingStates] = useState({
@@ -94,6 +96,8 @@ const LearnPage = () => {
       const response = await APIGetFullCourse(id as string);
       if (response?.status === 200) {
         setCourseData(response?.data);
+      } else if (response?.status === 404) {
+        setNotFound(true);
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
@@ -123,6 +127,8 @@ const LearnPage = () => {
       });
       if (response?.status === 200) {
         setCourseData(response?.data);
+      } else if (response?.status === 404) {
+        setNotFound(true);
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
@@ -382,9 +388,11 @@ const LearnPage = () => {
 
                   {/* Message with subtle animation */}
                   <p className="text-lg font-medium animate-fade-in">
-                    {!isRegistered && !isOwner
-                      ? 'Bạn cần đăng ký khóa học để xem nội dung này'
-                      : 'Không có video để phát cho mục này.'}
+                    {notFound
+                      ? 'Không tìm thấy khóa học'
+                      : !isRegistered && !isOwner
+                        ? 'Bạn cần đăng ký khóa học để xem nội dung này'
+                        : 'Không có video để phát cho mục này.'}
                   </p>
 
                   {/* Decorative line */}

@@ -89,7 +89,7 @@ const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col w-full gap-1.5 font-sans font-normal text-black70 dark:text-AntiFlashWhite ${className}`}
+      className={`flex flex-col py-2 w-full gap-1.5 font-sans font-normal text-black70 dark:text-AntiFlashWhite ${className}`}
     >
       {label && (
         <Label htmlFor={name} className={`${labelClassName} ${disabled ? 'opacity-50' : ''}`}>

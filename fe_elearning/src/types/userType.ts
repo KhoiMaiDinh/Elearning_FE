@@ -1,3 +1,4 @@
+import { CourseProgress } from './courseType';
 import { InstructorType } from './instructorType';
 
 export interface Roles {
@@ -24,4 +25,9 @@ export interface UserType {
   roles?: Roles[];
   phone_number?: string;
   instructor_profile?: InstructorType;
+}
+
+export interface StudentType {
+  user: UserType;
+  progress: CourseProgress;
 }

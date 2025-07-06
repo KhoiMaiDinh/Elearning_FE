@@ -1,3 +1,4 @@
+import { CourseForm } from './courseType';
 import { MediaType } from './mediaType';
 
 export type NotificationType = {
@@ -20,4 +21,18 @@ export type NotificationType = {
   updatedBy: string;
   user_id: string;
   image?: MediaType;
+};
+
+export type NotificationAllStudentType = {
+  course_notification_id: string;
+  id: string;
+  course_id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+  deletedAt: string | null;
+  course: CourseForm;
 };
