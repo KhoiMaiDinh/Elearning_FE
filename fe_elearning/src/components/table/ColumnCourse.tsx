@@ -9,6 +9,8 @@ import { clearCourse, setCourse } from '@/constants/courseSlice';
 import { APIGetFullCourse } from '@/utils/course';
 import { EyeIcon, FileDown } from 'lucide-react';
 import { formatPrice } from '@/components/formatPrice';
+import ExportReportPopUp from '../exportReport/exportReportPopUp';
+import { useState } from 'react';
 
 const ColumnCourse: ColumnDef<{
   course_id?: string;
@@ -131,7 +133,7 @@ const ColumnCourse: ColumnDef<{
           console.error('Error getting course details:', error);
         }
       };
-
+      const [isOpen, setIsOpen] = useState(false);
       return (
         <div className="flex items-center gap-2">
           <button
@@ -140,6 +142,17 @@ const ColumnCourse: ColumnDef<{
           >
             <EyeIcon className="h-4 w-4" />
           </button>
+          <button
+            className=" text-eerieBlack dark:text-white flex h-7 w-7 items-center justify-center rounded-md shadow-lg hover:brightness-125"
+            onClick={() => setIsOpen(true)}
+          >
+            <FileDown className="h-4 w-4" />
+          </button>
+          <ExportReportPopUp
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            courseId={row.original.id}
+          />
         </div>
       );
     },
