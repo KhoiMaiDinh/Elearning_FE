@@ -110,13 +110,16 @@ const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
           padding: 8px;
           min-width: 50px;
         }
+
         .ql-editor th {
           background-color: #f5f5f5;
           font-weight: bold;
         }
+
         .ql-editor tr:nth-child(even) {
           background-color: #f9f9f9;
         }
+
         .ql-editor tr:hover {
           background-color: #f1f1f1;
         }
@@ -130,7 +133,7 @@ const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
         }
       `}</style>
 
-      <div className={`relative ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
+      <div className={` ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
         <ReactQuill
           preserveWhitespace
           theme="snow"
@@ -140,7 +143,7 @@ const TextAreaRegisterLecture: React.FC<RichTextEditorProps> = ({
           readOnly={disabled}
           modules={modules}
           formats={formats}
-          className={`max-h-[500px] overflow-auto rounded-sm [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:whitespace-normal ${
+          className={`max-h-[500px] overflow-auto pb-1 rounded-sm [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:whitespace-normal ${
             disabled ? '[&_.ql-editor]:bg-gray-100 dark:[&_.ql-editor]:bg-gray-800' : ''
           }`}
         />

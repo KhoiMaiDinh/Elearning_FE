@@ -34,7 +34,6 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   ratio: aspect = 16 / 9,
   previousMedia,
 }) => {
-  // const inputRef = useRef<HTMLInputElement | null>(null);
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
   const dropzone = useDropzone({
     onDropFile: async (file: File) => {
@@ -122,13 +121,15 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
                   <Crop />
                 </Button>
               )}
-              <Button
-                className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-110 dark:text-white"
-                onClick={togglePrevShow}
-              >
-                Xem ảnh cũ
-                {isPrevShow ? <Eye /> : <EyeClosed />}
-              </Button>
+              {previousMedia && (
+                <Button
+                  className="bg-majorelleBlue hover:bg-majorelleBlue hover:brightness-110 dark:text-white"
+                  onClick={togglePrevShow}
+                >
+                  Xem ảnh cũ
+                  {isPrevShow ? <Eye /> : <EyeClosed />}
+                </Button>
+              )}
             </div>
           </div>
           <DropZoneArea className="border-none flex flex-1 relative dark:bg-black">

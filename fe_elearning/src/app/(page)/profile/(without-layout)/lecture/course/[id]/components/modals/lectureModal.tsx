@@ -30,12 +30,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipContent } from '@radix-ui/react-tooltip';
 
-import { MediaType } from '@/types/mediaType';
 import ToastNotify from '@/components/ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
 import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
-// TODO: Remove this component
+
 interface LectureModalProps {
   open: boolean;
   section: SectionType;
@@ -183,6 +182,7 @@ const LectureModal: React.FC<LectureModalProps> = ({
                 <TextAreaRegisterLecture
                   {...field}
                   label="Mô tả bài học"
+                  labelClassName="text-black font-normal dark:text-white"
                   className="text-black font-normal mb-2"
                   error={errors.description?.message}
                   disabled={mode === 'view'}
