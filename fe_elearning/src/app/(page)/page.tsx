@@ -53,6 +53,13 @@ import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
 import { APIGetRecommendation } from '@/utils/recommendation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
+import { APIGetOverview } from '@/utils/overview';
+
+type OverviewType = {
+  course_count: number;
+  instructor_count: number;
+  student_count: number;
+};
 
 // Mock data for categories
 const categories = [
@@ -105,7 +112,11 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [_error, setError] = useState<string | null>(null);
   const [recommendation, setRecommendation] = useState<CourseForm[]>([]);
-
+  const [overview, setOverview] = useState<OverviewType>({
+    course_count: 0,
+    instructor_count: 0,
+    student_count: 0,
+  });
   const [paramsLecture, _setParamsLecture] = useState({
     page: 1,
     limit: 10,
@@ -172,11 +183,19 @@ export default function Page() {
     }
   };
 
+  const handleGetOverview = async () => {
+    const response = await APIGetOverview();
+    if (response?.status === 200) {
+      setOverview(response?.data || []);
+    }
+  };
+
   useEffect(() => {
     handleGetListLecture();
     handleGetListCourse();
     handleGetEnrolledCourse();
     handleGetRecommendation();
+    handleGetOverview();
   }, []);
 
   return isLoading ? (
@@ -314,7 +333,7 @@ export default function Page() {
         <div className="grid grid-cols-1  md:grid-cols-3  gap-6 ">
           <AnimateWrapper direction="up" amount={0.5} delay={0.1}>
             <InfoDashboard
-              number={listLecture ? listLecture?.length : 10}
+              number={overview.instructor_count}
               title={'Giảng viên'}
               Icon={IdCard}
               color="#1568DF"
@@ -324,7 +343,7 @@ export default function Page() {
 
           <AnimateWrapper direction="up" amount={0.5} delay={0.2}>
             <InfoDashboard
-              number={listCourse ? listCourse?.length : 0}
+              number={overview.course_count}
               title={'Bài học'}
               Icon={BookCheck}
               color="#219653"
@@ -334,7 +353,7 @@ export default function Page() {
 
           <AnimateWrapper direction="up" amount={0.5} delay={0.3}>
             <InfoDashboard
-              number={100}
+              number={overview.student_count}
               title={'Sinh viên'}
               Icon={GraduationCap}
               color="#9B51DF"
