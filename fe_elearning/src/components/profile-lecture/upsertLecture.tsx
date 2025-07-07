@@ -253,6 +253,13 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
                           <div
                             className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
                             key={certificate.id}
+                            onClick={() => {
+                              window.open(
+                                `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${certificate.key}` ||
+                                  '#',
+                                '_blank'
+                              );
+                            }}
                           >
                             <div className="flex items-center justify-between w-full rounded-md gap-2 px-3">
                               <div className="flex items-center gap-2">
@@ -389,6 +396,12 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
                         <div
                           className="overflow-hidden rounded-md p-0 shadow-sm w-full flex flex-row items-center border pt-1 gap-2 border-black/40 dark:border-white"
                           key={resume.id}
+                          onClick={() => {
+                            window.open(
+                              `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${resume.key}` || '#',
+                              '_blank'
+                            );
+                          }}
                         >
                           <div className="flex items-center justify-between w-full rounded-md gap-2 px-3 py-2">
                             <div className="flex items-center gap-2">

@@ -3,7 +3,7 @@
 // ================== IMPORT LIBRARY ==================
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { ChevronDown, Eye, RefreshCw, Calendar } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { styleSuccess, styleError } from '@/components/ToastNotify/toastNotifyStyle';
@@ -12,7 +12,7 @@ import { styleSuccess, styleError } from '@/components/ToastNotify/toastNotifySt
 import { DataTable } from '@/components/table/DataTable';
 import SkeletonTable from '@/components/skeleton/SkeletonTable';
 import { RootState } from '@/constants/store';
-import { APIGetMyCourse } from '@/utils/course';
+import { APIGetFullCourse, APIGetMyCourse } from '@/utils/course';
 import {
   APIGetAspectSegmentTrendOverTime,
   APIGetComment,
@@ -21,7 +21,7 @@ import {
   APIGetReview,
 } from '@/utils/comment';
 import ColumnCourse from '../table/ColumnCourse';
-import { clearCourse } from '@/constants/courseSlice';
+import { clearCourse, setCourse } from '@/constants/courseSlice';
 import { setStatisticItemCourse } from '@/constants/statisticItemCourse';
 import { clearStatisticItemCourse } from '@/constants/statisticItemCourse';
 import StaticDetails from './staticDetails';
@@ -49,7 +49,6 @@ const Page = () => {
     .toISOString()
     .split('T')[0];
   const dispatch = useDispatch();
-  const _searchParams = useSearchParams();
   const course = useSelector((state: RootState) => state.course.courseInfo);
   const comments = useSelector((state: RootState) => state.comment.comment);
   const router = useRouter();
@@ -74,6 +73,23 @@ const Page = () => {
     course_id: undefined,
   });
   const [aspectDistributionData, setAspectDistributionData] = useState<any[]>([]);
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') as string;
+  const tab = searchParams.get('tab') as string;
+
+  const handleGetCourse = async (id: string) => {
+    const response = await APIGetFullCourse(id);
+    if (response?.status === 200) {
+      dispatch(setCourse(response?.data));
+    }
+  };
+
+  useEffect(() => {
+    if (tab === 'phan-tich-phan-hoi' && id) {
+      handleGetCourse(id as string);
+    }
+  }, [tab, id]);
+
   // =============== FUNCTION ===============
   const handleGetCourseMe = async () => {
     setLoading(true);
