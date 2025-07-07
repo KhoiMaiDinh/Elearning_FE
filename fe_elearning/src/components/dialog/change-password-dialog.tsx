@@ -93,7 +93,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border-0 shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <DialogTitle className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:text-white">
             <KeySquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Đổi mật khẩu
           </DialogTitle>
@@ -217,7 +217,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               </Button>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-black"
                 disabled={isLoading}
               >
                 {isLoading ? (

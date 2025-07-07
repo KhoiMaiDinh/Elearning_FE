@@ -21,9 +21,9 @@ const APIGetPaymentAccount = async (id: string) => {
         status: response.status,
       };
     }
-    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+    return { data: null, status: response.status };
   } catch (err) {
-    console.error('Error during get payment account:', err);
+    console.log('Error during get payment account:', err);
     throw err;
   }
 };

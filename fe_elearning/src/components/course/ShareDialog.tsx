@@ -173,13 +173,16 @@ export function ShareDialog({
                 className="w-full"
               >
                 <Button
+                  asChild
                   variant="outline"
-                  className="flex items-center justify-center space-x-2 h-12 bg-[#0084ff]/10 border-[#0084ff]/20 hover:bg-[#0084ff]/20 transition-colors duration-200 w-full dark:bg-[#0084ff]/20 dark:border-[#0084ff]/30"
+                  className="flex items-center justify-center space-x-2 h-12 bg-[#0084ff]/10 border-[#0084ff]/20 hover:bg-[#0084ff]/20 transition-colors duration-200 w-full dark:bg-[#0084ff]/20 dark:border-[#0084ff]/30 "
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0084ff">
-                    <path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.913 1.454 5.512 3.726 7.21V22l3.405-1.869c.909.252 1.871.388 2.869.388 5.523 0 10-4.145 10-9.259C22 6.146 17.523 2 12 2zm1.008 12.461l-2.545-2.719-4.97 2.719 5.467-5.804 2.609 2.719 4.906-2.719-5.467 5.804z" />
-                  </svg>
-                  <span className="text-[#0084ff] font-medium">Messenger</span>
+                  <div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0084ff">
+                      <path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.913 1.454 5.512 3.726 7.21V22l3.405-1.869c.909.252 1.871.388 2.869.388 5.523 0 10-4.145 10-9.259C22 6.146 17.523 2 12 2zm1.008 12.461l-2.545-2.719-4.97 2.719 5.467-5.804 2.609 2.719 4.906-2.719-5.467 5.804z" />
+                    </svg>
+                    <span className="text-[#0084ff] font-medium">Messenger</span>
+                  </div>
                 </Button>
               </FacebookMessengerShareButton>
 

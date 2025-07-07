@@ -46,10 +46,10 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [displayValue, setDisplayValue] = useState<string>(value || '');
+  const [displayValue, setDisplayValue] = useState<string>(value ?? '');
 
   const formattedVNDValue = useMemo(() => {
-    if (!formatVND || value === undefined || value === null) return value || '';
+    if (!formatVND || value === undefined || value === null) return value ?? '';
     const raw = value.toString().replace(/[^\d]/g, '');
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -157,7 +157,7 @@ const InputRegisterLecture: React.FC<InputRegisterLectureProps> = ({
             id={name}
             name={name}
             placeholder={placeholder}
-            value={formatVND ? displayValue : value}
+            value={formatVND ? displayValue : (value ?? '')}
             onChange={formatVND ? handleVNDChange : onChange}
             onKeyUp={formatVND ? handleCaretEnforcement : undefined}
             onClick={formatVND ? handleCaretEnforcement : undefined}
