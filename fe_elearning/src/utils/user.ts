@@ -10,7 +10,7 @@ const APIGetCurrentUser = async () => {
       status: response.status,
     }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   } catch (err: any) {
-    console.error('Error during get current user:', err.message);
+    console.log('Error during get current user:', err.message);
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
