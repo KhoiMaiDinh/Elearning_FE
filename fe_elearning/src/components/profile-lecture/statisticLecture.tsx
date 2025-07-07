@@ -49,7 +49,6 @@ const Page = () => {
     .toISOString()
     .split('T')[0];
   const dispatch = useDispatch();
-  const _searchParams = useSearchParams();
   const course = useSelector((state: RootState) => state.course.courseInfo);
   const comments = useSelector((state: RootState) => state.comment.comment);
   const router = useRouter();
@@ -74,9 +73,9 @@ const Page = () => {
     course_id: undefined,
   });
   const [aspectDistributionData, setAspectDistributionData] = useState<any[]>([]);
-
-  const { id } = useParams();
-  const { tab } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') as string;
+  const tab = searchParams.get('tab') as string;
 
   const handleGetCourse = async (id: string) => {
     const response = await APIGetFullCourse(id);
