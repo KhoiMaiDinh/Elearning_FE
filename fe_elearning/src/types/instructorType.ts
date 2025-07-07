@@ -52,7 +52,7 @@ export type StudentEngagementType = {
 export type CourseRatingType = {
   id: string;
   title: string;
-  average_rating: number;
+  average_rating: string;
   rating_count: number;
 };
 

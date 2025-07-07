@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BookCheck,
   ChevronRight,
-  Film,
   GraduationCap,
   Headset,
   BadgeIcon as IdCard,
@@ -18,8 +17,6 @@ import {
   Search,
   Bookmark,
   BarChart3,
-  Calendar,
-  PlayCircle,
 } from 'lucide-react';
 import Autoplay from 'embla-carousel-autoplay';
 
@@ -33,9 +30,7 @@ import FadeContent from '@/components/animations/fadeContent';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import {
   Carousel,
   CarouselContent,
@@ -84,7 +79,7 @@ const testimonials = [
   },
   {
     id: 2,
-    name: 'Trần Thị Hương',
+    name: 'Đinh Văn Mạnh',
     role: 'Nhân viên Marketing',
     avatar: 'images/avt2.jpg',
     content:
@@ -252,13 +247,13 @@ export default function Page() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative">
+                {/* <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     placeholder="Tìm kiếm khóa học..."
                     className="pl-10 pr-4 py-1 rounded-full border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 w-full sm:w-80"
                   />
-                </div>
+                </div> */}
 
                 <Button
                   className="transform text-white dark:text-black rounded-full px-8 py-6 font-semibold shadow-md hover:shadow-xl transition-all duration-300 group flex items-center hover:-translate-y-1"
