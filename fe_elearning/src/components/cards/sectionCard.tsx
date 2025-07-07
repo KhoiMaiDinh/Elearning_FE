@@ -233,7 +233,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
                               </div>
                             </div>
                             <p
-                              className="ql-content text-xs/3 text-muted-foreground truncate text-DarkBlueGray"
+                              className="ql-content w-full flex-wrap flex text-xs/3 text-muted-foreground truncate text-DarkBlueGray"
                               dangerouslySetInnerHTML={{
                                 __html: lecture?.series?.[0]?.description ?? '',
                               }}

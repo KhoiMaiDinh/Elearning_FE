@@ -311,7 +311,7 @@ export default function Page() {
 
       {/* Stats Section */}
       <section className="container mx-auto px-4 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
+        <div className="grid grid-cols-1  md:grid-cols-3  gap-6 ">
           <AnimateWrapper direction="up" amount={0.5} delay={0.1}>
             <InfoDashboard
               number={listLecture ? listLecture?.length : 10}
@@ -339,16 +339,6 @@ export default function Page() {
               Icon={GraduationCap}
               color="#9B51DF"
               bgColor="#9B51DF"
-            />
-          </AnimateWrapper>
-
-          <AnimateWrapper direction="up" amount={0.5} delay={0.4}>
-            <InfoDashboard
-              number={60}
-              title={'Video'}
-              Icon={Film}
-              color="#FF2E2E"
-              bgColor="#FF2E2E"
             />
           </AnimateWrapper>
         </div>

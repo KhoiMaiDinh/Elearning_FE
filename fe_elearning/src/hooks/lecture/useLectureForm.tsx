@@ -16,10 +16,6 @@ const courseItemSchema = yup.object().shape({
     .max(60, 'Tiêu đề không được vượt quá 60 ký tự'),
   description: yup
     .string()
-    .test('min-text-length', 'Nội dung bài học không được để trống', (value) => {
-      const textOnly = stripHtml(value || '');
-      return textOnly.length > 0;
-    })
     .test('max-text-length', 'Nội dung không được vượt quá 1000 ký tự', (value) => {
       const textOnly = stripHtml(value || '');
       return textOnly.length <= 1000;

@@ -226,7 +226,15 @@ function NotificationItem({
                       ? `/course-details/${notification?.metadata?.course_id}?lecture=${notification?.metadata?.lecture_id}&thread=${notification?.metadata?.thread_id}&tab=community`
                       : type === 'COURSE_UPDATED'
                         ? `/course-details/${notification?.metadata?.course_id}`
-                        : '',
+                        : type === 'COURSE_COMPLETED'
+                          ? `/profile/student`
+                          : type === 'COURSE_REVIEW_RECEIVED'
+                            ? `/course/${notification?.metadata?.course_id}`
+                            : type === 'UNBAN_APPROVED'
+                              ? `/profile/lecture/course/${notification?.metadata?.course_id}`
+                              : type === 'COURSE_UNBANNED'
+                                ? `/course-details/${notification?.metadata?.course_id}`
+                                : '/',
             '_self'
           );
           handleReadNotification(notification?.id);
@@ -254,7 +262,10 @@ function NotificationItem({
               className="h-full w-full object-cover"
             />
           </div>
-        ) : type === 'PROFILE_APPROVED' ? (
+        ) : type === 'PROFILE_APPROVED' ||
+          type === 'COURSE_COMPLETED' ||
+          type === 'UNBAN_APPROVED' ||
+          type === 'COURSE_UNBANNED' ? (
           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
             <Check className="h-4 w-4 text-vividMalachite" />
           </div>

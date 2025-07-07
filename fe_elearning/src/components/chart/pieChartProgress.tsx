@@ -132,17 +132,17 @@ const PieChartProgress: React.FC<PieChartProgressProps> = ({ courseProgress }) =
         {/* Achievement badges */}
         {courseProgress > 0 && (
           <div className="mt-4 flex flex-wrap gap-2 justify-center">
-            {courseProgress >= 25 && (
+            {courseProgress >= 25 && courseProgress < 50 && (
               <div className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-xs font-medium">
                 Người học tích cực
               </div>
             )}
-            {courseProgress >= 50 && (
+            {courseProgress >= 50 && courseProgress < 75 && (
               <div className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-xs font-medium">
                 Đã qua nửa chặng
               </div>
             )}
-            {courseProgress >= 75 && (
+            {courseProgress >= 75 && courseProgress < 100 && (
               <div className="px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full text-xs font-medium">
                 Sắp hoàn thành
               </div>

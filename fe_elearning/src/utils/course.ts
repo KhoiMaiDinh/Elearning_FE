@@ -32,8 +32,11 @@ const APIGetCourseById = async (
       return { data: response.data, status: response.status };
     }
     return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
-  } catch (err) {
-    console.error('Error during get course by id:', err);
+  } catch (err: any) {
+    console.log('Error during get course by id:', err);
+    if (err.message === 'Request failed with status code 404') {
+      return { data: null, status: 404 };
+    }
     throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
   }
 };
@@ -78,10 +81,13 @@ const APIGetFullCourse = async (
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     }
-    return { data: null, status: response.status }; // Ném lỗi ra để xử lý ở chỗ gọi hàm
-  } catch (err) {
-    console.log('Error during get full course:', err);
-    throw err; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+
+    return { data: null, status: response.status };
+  } catch (err: any) {
+    if (err.message === 'Request failed with status code 404') {
+      return { data: null, status: 404 };
+    }
+    throw err;
   }
 };
 
@@ -249,6 +255,80 @@ const APIGetFavoriteCourse = async () => {
   }
 };
 
+const APIGetListStudentByCourse = async (
+  course_id: string,
+  params?: {
+    page?: number;
+    limit?: number;
+  }
+) => {
+  try {
+    const filteredParams = Object.fromEntries(
+      Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
+    );
+    const response = await axiosInstance.get(`courses/${course_id}/enrolled`, {
+      params: filteredParams,
+    });
+    if (response.status === 200) {
+      return {
+        data: response?.data?.data,
+        status: response.status,
+        total: response?.data?.pagination?.totalRecords,
+      };
+    }
+    if (response.status === 404) {
+      return { data: null, status: 404 };
+    }
+    return null; // Ném lỗi ra để xử lý ở chỗ gọi hàm
+  } catch (err: any) {
+    if (err.message === 'Request failed with status code 404') {
+      return { data: null, status: 404 };
+    }
+    console.error('Error during get list student by course:', err);
+    throw err;
+  }
+};
+
+const APICreateNotification = async (course_id: string, data: any) => {
+  try {
+    const response = await axiosInstance.post(`/courses/${course_id}/notifications`, data);
+    if (response.status === 201) {
+      return { data: response.data, status: response.status };
+    }
+    return null;
+  } catch (err) {
+    console.error('Error during create notification:', err);
+    throw err;
+  }
+};
+
+const APIGetNotificationByCourse = async (
+  course_id: string,
+  params?: {
+    page?: number;
+    limit?: number;
+  }
+) => {
+  try {
+    const filteredParams = Object.fromEntries(
+      Object.entries(params || {}).filter(([_, value]) => value !== undefined && value !== null)
+    );
+    const response = await axiosInstance.get(`/courses/${course_id}/notifications`, {
+      params: filteredParams,
+    });
+    if (response.status === 200) {
+      return {
+        data: response?.data?.data,
+        status: response.status,
+        total: response?.data?.pagination?.totalRecords,
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error('Error during get notification by course:', err);
+  }
+};
+
 export {
   APIInitCourse,
   APIGetCourseById,
@@ -266,4 +346,7 @@ export {
   APIAddFavoriteCourse,
   APIRemoveFavoriteCourse,
   APIGetFavoriteCourse,
+  APIGetListStudentByCourse,
+  APICreateNotification,
+  APIGetNotificationByCourse,
 };

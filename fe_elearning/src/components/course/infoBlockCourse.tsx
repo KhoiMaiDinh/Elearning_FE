@@ -86,7 +86,7 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
           {courseProgress !== 0 && courseProgress && (
             <>
               <div className="mb-6">
-                <PieChartProgress courseProgress={30} />
+                <PieChartProgress courseProgress={courseProgress || 0} />
               </div>
             </>
           )}
@@ -96,13 +96,24 @@ const InfoBlockCourse: React.FC<infoBlockCourse> = ({
             className="w-full bg-custom-gradient-button-violet dark:bg-custom-gradient-button-blue hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
             onClick={() => router.push(`/course-details/${id}`)}
           >
-            {courseProgress !== 0 && courseProgress
+            {courseProgress !== 0 && courseProgress && courseProgress < 100
               ? 'Tiếp tục học'
               : courseProgress === 100 && courseProgress
                 ? 'Đã hoàn thành'
                 : 'Bắt đầu học'}
           </Button>
-
+          {courseProgress === 100 && courseProgress && (
+            <Button
+              size="lg"
+              className="w-full bg-custom-gradient-button-blue dark:bg-custom-gradient-button-violet hover:brightness-110 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-3"
+              onClick={() =>
+                //  router.push(`/certificate/${id}`)
+                router.push(`/profile/student`)
+              }
+            >
+              Xem chứng chỉ
+            </Button>
+          )}
           {/* Share Button for Registered Users */}
           <ShareDialog
             courseTitle={courseTitle}

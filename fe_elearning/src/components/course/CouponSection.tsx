@@ -93,6 +93,11 @@ export default function CouponSection({
     try {
       const expireDate = expiresAt instanceof Date ? expiresAt : new Date(expiresAt);
       const today = new Date();
+
+      // Chỉ so sánh ngày tháng năm, bỏ qua giờ phút giây
+      expireDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
       const diffTime = expireDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return Math.max(0, diffDays);
@@ -105,6 +110,11 @@ export default function CouponSection({
     try {
       const startDate = startsAt instanceof Date ? startsAt : new Date(startsAt);
       const today = new Date();
+
+      // Chỉ so sánh ngày tháng năm, bỏ qua giờ phút giây
+      startDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
       const diffTime = startDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return Math.max(0, diffDays);
@@ -117,6 +127,11 @@ export default function CouponSection({
     const now = new Date();
     const startDate = new Date(item.starts_at);
     const endDate = new Date(item.expires_at);
+
+    // Chỉ so sánh ngày tháng năm, bỏ qua giờ phút giây
+    now.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
 
     if (now < startDate) {
       return 'not_started';

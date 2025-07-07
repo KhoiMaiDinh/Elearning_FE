@@ -58,6 +58,11 @@ const MyCourseCard: React.FC<CourseForm> = ({
   const handleNavigateToViewMode = () => {
     router.push(`/course/${id}`);
   };
+
+  const handleNavigateToManageStudents = () => {
+    router.push(`/profile/lecture/course/${id}/manage-students`);
+  };
+
   return (
     <>
       <Card
@@ -100,6 +105,15 @@ const MyCourseCard: React.FC<CourseForm> = ({
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   <span>Chế độ xem</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateToManageStudents();
+                  }}
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  <span>Quản lý học viên</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

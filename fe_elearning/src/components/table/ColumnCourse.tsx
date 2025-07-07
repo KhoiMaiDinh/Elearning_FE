@@ -3,12 +3,15 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import { useDispatch } from 'react-redux';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Translation } from '@/types/courseType';
 import { clearCourse, setCourse } from '@/constants/courseSlice';
 import { APIGetFullCourse } from '@/utils/course';
-import { EyeIcon } from 'lucide-react';
+import { EyeIcon, FileDown } from 'lucide-react';
 import { formatPrice } from '@/components/formatPrice';
+import ExportReportPopUp from '../exportReport/exportReportPopUp';
+import { useState } from 'react';
+
 const ColumnCourse: ColumnDef<{
   course_id?: string;
   id?: string;
@@ -114,8 +117,7 @@ const ColumnCourse: ColumnDef<{
   },
 
   {
-    accessorKey: 'action',
-    header: '',
+    id: 'actions',
     cell: ({ row }) => {
       // eslint-disable-next-line
       const dispatch = useDispatch();
@@ -127,28 +129,30 @@ const ColumnCourse: ColumnDef<{
           if (response?.status === 200) {
             dispatch(setCourse(response?.data));
           }
-        } catch (err) {
-          console.error(err);
+        } catch (error) {
+          console.error('Error getting course details:', error);
         }
       };
-
+      const [isOpen, setIsOpen] = useState(false);
       return (
-        <div className="flex w-full flex-wrap items-center justify-center gap-1 lg:w-24">
+        <div className="flex items-center gap-2">
           <button
             className=" text-eerieBlack dark:text-white flex h-7 w-7 items-center justify-center rounded-md shadow-lg hover:brightness-125"
             onClick={() => row.original.id && handleViewMode(row.original.id)}
           >
             <EyeIcon className="h-4 w-4" />
           </button>
-          {/* <Trash2
-            className="h-4 w-4 cursor-pointer text-PersianRed"
-            onClick={() => setDialogOpen(true)}
-          /> */}
-          {/* <AlertOption
-            isOpen={isDialogOpen}
-            onOpenChange={setDialogOpen}
-            onConfirm={() => row.original._id && handleDelete(row.original._id)}
-          /> */}
+          <button
+            className=" text-eerieBlack dark:text-white flex h-7 w-7 items-center justify-center rounded-md shadow-lg hover:brightness-125"
+            onClick={() => setIsOpen(true)}
+          >
+            <FileDown className="h-4 w-4" />
+          </button>
+          <ExportReportPopUp
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            courseId={row.original.id}
+          />
         </div>
       );
     },

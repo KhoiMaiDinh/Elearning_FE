@@ -19,8 +19,10 @@ type VideoPlayerProps = {
   className?: string;
 };
 
-export function useProgressTracker(playerRef: any, lecture_id: string) {
+export function useProgressTracker(playerRef: any, lecture_id: string, isOwner?: boolean) {
   const saveProgress = (player: any, lecture_id: string) => {
+    if (isOwner) return; // Không lưu progress nếu là chủ khóa học
+
     const currentTime = player?.state?.currentTime;
     const duration = player?.state?.duration;
 
@@ -47,7 +49,7 @@ export function useProgressTracker(playerRef: any, lecture_id: string) {
     });
 
     const unsubEnded = player.subscribe((state: any) => {
-      if (state.ended) {
+      if (state.ended && !isOwner) {
         console.log('[Ended] Saving 100% progress');
         APIUpsertProgressItemCourse(lecture_id, { watch_time: 100 });
       }
@@ -75,7 +77,7 @@ export function useProgressTracker(playerRef: any, lecture_id: string) {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       saveProgress(player, lecture_id);
     };
-  }, [playerRef, lecture_id]);
+  }, [playerRef, lecture_id, isOwner]);
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -90,7 +92,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const playerRef = useRef<any>(null);
   if (lecture_id) {
-    useProgressTracker(playerRef, lecture_id);
+    useProgressTracker(playerRef, lecture_id, isOwner);
   }
 
   // // Save progress function
