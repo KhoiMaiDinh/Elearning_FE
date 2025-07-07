@@ -8,7 +8,7 @@ import { differenceInDays } from 'date-fns';
 
 import { ExportReportPopUpProps, ExportFormData } from '@/types/reportTypes';
 import ExportForm from './ExportForm';
-import { generateExcelReport } from './reportGenerator';
+import { generateExcelReport, generatePDFReport } from './reportGenerator';
 import {
   APIGetAspectSegmentTrendOverTime,
   APIGetCommentsForInstructorAnalysis,
@@ -63,42 +63,49 @@ export default function ExportReportDialog({
   const handleExport = async () => {
     setIsLoading(true);
     try {
-      if (formData.fileType === 'excel') {
-        const analysisResponse = await handleGetAnalysisOfMonth(
-          formData.startDate,
-          formData.endDate
+      // Get data for both Excel and PDF
+      const analysisResponse = await handleGetAnalysisOfMonth(formData.startDate, formData.endDate);
+      const trendResponse = await handleGetEmotionTrend(formData.startDate, formData.endDate);
+
+      let aspectSummaryData: any[] = [];
+      if (courseId) {
+        const singleCourseAspect = await handleGetAspectSummary(courseId);
+        aspectSummaryData = [singleCourseAspect];
+      } else if (formData.selectedCourses.length > 0) {
+        const responses = await Promise.all(
+          formData.selectedCourses.map(async (course) => {
+            const response = await handleGetAspectSummary(course);
+            return response;
+          })
         );
-        const trendResponse = await handleGetEmotionTrend(formData.startDate, formData.endDate);
+        aspectSummaryData = responses;
+      }
 
-        let aspectSummaryData: any[] = [];
-        if (courseId) {
-          const singleCourseAspect = await handleGetAspectSummary(courseId);
-          aspectSummaryData = [singleCourseAspect];
-        } else if (formData.selectedCourses.length > 0) {
-          const responses = await Promise.all(
-            formData.selectedCourses.map(async (course) => {
-              const response = await handleGetAspectSummary(course);
-              return response;
-            })
-          );
-          aspectSummaryData = responses;
-        }
+      if (!analysisResponse || !trendResponse || !aspectSummaryData.length) {
+        throw new Error('Không đủ dữ liệu để tạo báo cáo');
+      }
 
-        if (!analysisResponse || !trendResponse || !aspectSummaryData.length) {
-          throw new Error('Không đủ dữ liệu để tạo báo cáo');
-        }
-
-        const success = await generateExcelReport(
+      let success = false;
+      if (formData.fileType === 'excel') {
+        success = await generateExcelReport(
           analysisResponse,
           trendResponse,
           aspectSummaryData,
           formData.startDate,
           formData.endDate
         );
+      } else if (formData.fileType === 'pdf') {
+        success = await generatePDFReport(
+          analysisResponse,
+          trendResponse,
+          aspectSummaryData,
+          formData.startDate,
+          formData.endDate
+        );
+      }
 
-        if (success) {
-          onClose();
-        }
+      if (success) {
+        onClose();
       }
     } catch (error) {
       console.error('Error generating report:', error);

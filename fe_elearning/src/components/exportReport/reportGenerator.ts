@@ -1,8 +1,27 @@
 import { format } from 'date-fns';
 import ExcelJS from 'exceljs';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { EmotionData, AspectData, AnalysisData } from '@/types/reportTypes';
 import { generateCharts } from './chartGenerator';
 import { calculateEmotionTrendPercentages, calculateAspectSummary } from './dataProcessor';
+
+// Configure pdfMake with Vietnamese font support
+(pdfMake as any).vfs = pdfFonts;
+(pdfMake as any).fonts = {
+  Roboto: {
+    normal: 'Roboto-Regular.ttf',
+    bold: 'Roboto-Medium.ttf',
+    italics: 'Roboto-Italic.ttf',
+    bolditalics: 'Roboto-MediumItalic.ttf',
+  },
+  Inter: {
+    normal: 'Inter-Regular.ttf',
+    bold: 'Inter-Medium.ttf',
+    italics: 'Inter-Italic.ttf',
+    bolditalics: 'Inter-MediumItalic.ttf',
+  },
+};
 
 const addOverviewSheet = (workbook: ExcelJS.Workbook, analysis: AnalysisData) => {
   const overviewSheet = workbook.addWorksheet('Tổng quan');
@@ -244,6 +263,318 @@ export const generateExcelReport = async (
     return true;
   } catch (error) {
     console.error('Error saving Excel file:', error);
+    return false;
+  }
+};
+
+export const generatePDFReport = async (
+  analysis: AnalysisData,
+  trend: any[],
+  aspectSummaries: any[],
+  startDate: string,
+  endDate: string
+): Promise<boolean> => {
+  try {
+    // Process data for charts
+    const processedTrend = calculateEmotionTrendPercentages(trend, startDate, endDate);
+    const processedAspects = calculateAspectSummary(aspectSummaries);
+
+    // Generate charts
+    const generatedCharts = await generateCharts(processedTrend, processedAspects);
+
+    // Prepare overview data
+    const overviewData = [
+      ['Tổng số bình luận', (analysis?.total_comments || 0).toString()],
+      ['Cảm xúc chủ đạo', analysis?.leading_emotion || 'N/A'],
+      [
+        'Tỷ lệ cảm xúc chủ đạo',
+        analysis?.leading_emotion_percentage
+          ? `${(Number(analysis.leading_emotion_percentage) * 100).toFixed(2)}%`
+          : '0.00%',
+      ],
+      ['Số khóa học đang hoạt động', (analysis?.active_course_count || 0).toString()],
+    ];
+
+    // Prepare trend data
+    const trendTableData = processedTrend.map((day: EmotionData) => [
+      day.period === 'Tổng' ? 'Tổng' : format(new Date(day.period), 'dd/MM/yyyy'),
+      `${day.positive}%`,
+      `${day.negative}%`,
+      `${day.neutral}%`,
+      `${day.conflict}%`,
+    ]);
+
+    // Prepare aspect data
+    const aspectTableData = processedAspects.map((aspect: AspectData) => [
+      aspect.aspect,
+      `${aspect.positive}%`,
+      `${aspect.negative}%`,
+      `${aspect.neutral}%`,
+      `${aspect.conflict}%`,
+      `${aspect.none}%`,
+    ]);
+
+    // Create PDF document definition
+    const docDefinition: any = {
+      content: [
+        // Title page
+        {
+          text: 'BÁO CÁO PHÂN TÍCH CẢM XÚC KHÓA HỌC',
+          style: 'title',
+          alignment: 'center',
+          margin: [0, 0, 0, 20],
+        },
+        {
+          text: `Thời gian: ${format(new Date(endDate), 'dd/MM/yyyy')} - ${format(new Date(startDate), 'dd/MM/yyyy')}`,
+          style: 'subtitle',
+          alignment: 'center',
+          margin: [0, 0, 0, 30],
+        },
+
+        // Overview section
+        {
+          text: '1. TỔNG QUAN',
+          style: 'sectionHeader',
+          margin: [0, 20, 0, 10],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['60%', '40%'],
+            body: [
+              [
+                { text: 'Chỉ số', style: 'tableHeader' },
+                { text: 'Giá trị', style: 'tableHeader' },
+              ],
+              ...overviewData.map((row) => [
+                { text: row[0], style: 'tableCell' },
+                { text: row[1], style: 'tableCell' },
+              ]),
+            ],
+          },
+          layout: {
+            fillColor: function (rowIndex: number) {
+              return rowIndex === 0 ? '#4F81BD' : rowIndex % 2 === 0 ? '#E6EFF7' : null;
+            },
+          },
+          margin: [0, 0, 0, 20],
+        },
+
+        // Page break
+        { text: '', pageBreak: 'before' },
+
+        // Trend analysis section
+        {
+          text: '2. XU HƯỚNG CẢM XÚC THEO THỜI GIAN',
+          style: 'sectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+
+        // Trend chart
+        ...(generatedCharts.trendChart
+          ? [
+              {
+                image: generatedCharts.trendChart,
+                width: 500,
+                margin: [0, 0, 0, 20],
+              },
+            ]
+          : []),
+
+        // Trend table
+        {
+          table: {
+            headerRows: 1,
+            widths: ['20%', '20%', '20%', '20%', '20%'],
+            body: [
+              [
+                { text: 'Ngày', style: 'tableHeader' },
+                { text: 'Tích cực (%)', style: 'tableHeader' },
+                { text: 'Tiêu cực (%)', style: 'tableHeader' },
+                { text: 'Trung lập (%)', style: 'tableHeader' },
+                { text: 'Mâu thuẫn (%)', style: 'tableHeader' },
+              ],
+              ...trendTableData.map((row, index) =>
+                row.map((cell) => ({
+                  text: cell,
+                  style: index === 0 || index === 1 ? 'tableCellBold' : 'tableCell',
+                }))
+              ),
+            ],
+          },
+          layout: {
+            fillColor: function (rowIndex: number) {
+              return rowIndex === 0
+                ? '#4F81BD'
+                : rowIndex === 1
+                  ? '#7299C9'
+                  : rowIndex % 2 === 0
+                    ? '#E6EFF7'
+                    : null;
+            },
+          },
+          margin: [0, 0, 0, 20],
+        },
+
+        // Page break
+        { text: '', pageBreak: 'before' },
+
+        // Aspect analysis section
+        {
+          text: '3. PHÂN TÍCH KHÍA CẠNH',
+          style: 'sectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+
+        // Sentiment chart subsection
+        {
+          text: '3.1. Phân bố Cảm xúc Tổng quan',
+          style: 'subsectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+
+        // Sentiment chart
+        ...(generatedCharts.sentimentChart
+          ? [
+              {
+                image: generatedCharts.sentimentChart,
+                width: 500,
+                margin: [0, 0, 0, 20],
+              },
+            ]
+          : []),
+
+        // Aspect chart subsection
+        {
+          text: '3.2. Phân bố theo Khía cạnh',
+          style: 'subsectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+
+        // Aspect chart
+        ...(generatedCharts.aspectChart
+          ? [
+              {
+                image: generatedCharts.aspectChart,
+                width: 500,
+                margin: [0, 0, 0, 20],
+              },
+            ]
+          : []),
+
+        // Aspect table
+        {
+          table: {
+            headerRows: 1,
+            widths: ['30%', '14%', '14%', '14%', '14%', '14%'],
+            body: [
+              [
+                { text: 'Khía cạnh', style: 'tableHeader' },
+                { text: 'Tích cực (%)', style: 'tableHeader' },
+                { text: 'Tiêu cực (%)', style: 'tableHeader' },
+                { text: 'Trung lập (%)', style: 'tableHeader' },
+                { text: 'Mâu thuẫn (%)', style: 'tableHeader' },
+                { text: 'Không có (%)', style: 'tableHeader' },
+              ],
+              ...aspectTableData.map((row, index) =>
+                row.map((cell) => ({
+                  text: cell,
+                  style: index === aspectTableData.length - 1 ? 'tableCellBold' : 'tableCell',
+                }))
+              ),
+            ],
+          },
+          layout: {
+            fillColor: function (rowIndex: number) {
+              return rowIndex === 0
+                ? '#4F81BD'
+                : rowIndex === aspectTableData.length
+                  ? '#7299C9'
+                  : rowIndex % 2 === 0
+                    ? '#E6EFF7'
+                    : null;
+            },
+          },
+          margin: [0, 0, 0, 20],
+        },
+      ],
+
+      // Styles
+      styles: {
+        title: {
+          fontSize: 20,
+          bold: true,
+          font: 'Roboto',
+        },
+        subtitle: {
+          fontSize: 12,
+          font: 'Roboto',
+        },
+        sectionHeader: {
+          fontSize: 16,
+          bold: true,
+          font: 'Roboto',
+        },
+        subsectionHeader: {
+          fontSize: 14,
+          bold: true,
+          font: 'Roboto',
+        },
+        tableHeader: {
+          fontSize: 10,
+          bold: true,
+          color: 'white',
+          font: 'Roboto',
+        },
+        tableCell: {
+          fontSize: 9,
+          font: 'Roboto',
+        },
+        tableCellBold: {
+          fontSize: 9,
+          bold: true,
+          font: 'Roboto',
+        },
+      },
+
+      // Default style
+      defaultStyle: {
+        font: 'Roboto',
+        fontSize: 10,
+      },
+
+      // Footer
+      footer: function (currentPage: number, pageCount: number) {
+        return [
+          {
+            columns: [
+              {
+                text: `Trang ${currentPage} / ${pageCount}`,
+                alignment: 'center',
+                font: 'Roboto',
+                fontSize: 9,
+              },
+              {
+                text: `Tạo ngày: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
+                alignment: 'right',
+                font: 'Roboto',
+                fontSize: 9,
+              },
+            ],
+            margin: [20, 0, 20, 0],
+          },
+        ];
+      },
+    };
+
+    // Generate and download PDF
+    pdfMake
+      .createPdf(docDefinition)
+      .download(`Báo cáo khóa học ${format(new Date(), 'dd-MM-yyyy')}.pdf`);
+
+    return true;
+  } catch (error) {
+    console.error('Error generating PDF:', error);
     return false;
   }
 };
