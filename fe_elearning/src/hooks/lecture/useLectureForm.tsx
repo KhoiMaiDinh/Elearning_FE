@@ -185,7 +185,7 @@ export const useLecture = (
               duration_in_seconds: data.video.duration_in_seconds,
             }
           : null,
-        description: data.description,
+        description: data.description === '' ? undefined : data.description,
         resources: data.resources || undefined,
         previous_position: undefined,
         id: initialValues?.id,
