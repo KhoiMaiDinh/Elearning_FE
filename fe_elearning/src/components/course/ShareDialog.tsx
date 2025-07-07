@@ -83,7 +83,7 @@ export function ShareDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md ">
         <DialogHeader>
           <DialogTitle>Chia sẻ khóa học</DialogTitle>
         </DialogHeader>
@@ -91,7 +91,7 @@ export function ShareDialog({
           {/* Course Preview */}
           {(courseTitle || courseThumbnail) && (
             <div className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <div className="h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="h-12 bg-gradient-to-br rounded-lg flex items-center justify-center flex-shrink">
                 {courseThumbnail ? (
                   <img
                     src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${courseThumbnail}`}
@@ -103,11 +103,11 @@ export function ShareDialog({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                <h4 className="font-medium text-slate-800 dark:text-slate-200 break-words line-clamp-1 w-full">
                   {courseTitle || 'Khóa học'}
                 </h4>
                 {courseSubtitle && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 break-words line-clamp-1 w-full">
                     {courseSubtitle}
                   </p>
                 )}
