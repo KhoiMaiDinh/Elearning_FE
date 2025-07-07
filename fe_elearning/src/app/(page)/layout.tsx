@@ -42,7 +42,7 @@ export default function RootLayout({
   }, [token, dispatch, userInfo.id]);
 
   return (
-    <body className="bg-AntiFlashWhite dark:bg-eerieBlack">
+    <div className="bg-AntiFlashWhite dark:bg-eerieBlack">
       <div className="flex items-start justify-start bg-AntiFlashWhite dark:bg-eerieBlack">
         <div className="w-full h-full flex flex-col bg-white max-w-[1440px] mx-auto dark:bg-eerieBlack">
           <Header />
@@ -59,6 +59,6 @@ export default function RootLayout({
           <Footer />
         </div>
       </div>
-    </body>
+    </div>
   );
 }

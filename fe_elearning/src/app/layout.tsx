@@ -4,13 +4,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import store, { persistor } from '@/constants/store';
 import { Provider } from 'react-redux';
 import { metadata } from './metadata';
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { Inter, Manrope } from 'next/font/google';
 import { appWithTranslation } from 'next-i18next';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loader from '@/components/loading/loader';
 import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@/components/theme-provider';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import ScrollToTop from '@/components/scrollToTop';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -24,13 +26,8 @@ const manrope = Manrope({
   // weight: ['400', '500', '700'], // Specify weights you need
 });
 const RootLayout = ({ children }: any) => {
-  useEffect(() => {
-    // Scroll to top when the component mounts or route changes
-    window.scrollTo(0, 0);
-  }, []);
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>{String(metadata.title) ?? 'Default Title'}</title>
         <meta />
@@ -46,28 +43,31 @@ const RootLayout = ({ children }: any) => {
             enableSystem
             disableTransitionOnChange
           >
-            <PersistGate loading={null} persistor={persistor}>
-              <Suspense
-                fallback={
-                  <div className="flex justify-center w-full items-center h-screen">
-                    <Loader />
-                  </div>
-                }
-              >
-                <main className="">{children}</main>
-                <ToastContainer
-                  position="top-right"
-                  autoClose={2000}
-                  hideProgressBar
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme={'light'}
-                />
-              </Suspense>
-            </PersistGate>
+            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+              <PersistGate loading={null} persistor={persistor}>
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center w-full items-center h-screen">
+                      <Loader />
+                    </div>
+                  }
+                >
+                  <ScrollToTop />
+                  <main className="">{children}</main>
+                  <ToastContainer
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme={'light'}
+                  />
+                </Suspense>
+              </PersistGate>
+            </GoogleOAuthProvider>
           </ThemeProvider>
         </Provider>
       </body>

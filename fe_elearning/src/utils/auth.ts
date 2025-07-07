@@ -1,3 +1,4 @@
+import { OAuthToken } from '@/types/oauthToken';
 import axiosInstance from './axios';
 import {
   ApiResponse,
@@ -29,13 +30,12 @@ const APIRegisterEmail = async (data: any): Promise<ApiResponse<RegisterSuccessR
   }
 };
 
-const APILoginGoogle = async (data: any): Promise<ApiResponse<LoginSuccessResponse>> => {
+const APILoginGoogle = async (data: OAuthToken): Promise<ApiResponse<LoginSuccessResponse>> => {
   try {
     const response = await axiosInstance.post('/auth/google/login', data);
     return { data: response.data, status: response.status };
   } catch (err: any) {
-    console.error('Error during login google:', err);
-    // Re-throw the error to be handled by the calling component
+    console.log('Error during login google:', err);
     throw err;
   }
 };

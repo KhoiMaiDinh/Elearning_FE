@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, LogIn, Mail, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,40 +24,33 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { APILoginEmail } from '@/utils/auth';
-import { setUser, clearUser } from '@/constants/userSlice';
 import { createLoginSchema } from '@/utils/validation';
 import { CustomModal } from '@/components/modal/custom-modal';
-import AlertSuccess from '@/components/alert/AlertSuccess';
-import AlertError from '@/components/alert/AlertError';
-import { APIGetCurrentUser } from '@/utils/user';
 import Image from 'next/image';
-import ToastNotify from '@/components/ToastNotify/toastNotify';
-import { toast } from 'react-toastify';
-import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
-import { getVietnameseErrorMessage } from '@/utils/auth';
-import { ApiErrorResponse } from '@/types/apiResponse';
-
-// Form schema
+import GoogleAuthButton from '@/components/button/googleAuthButton';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 const formSchema = createLoginSchema();
 type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [alertDescription, setAlertDescription] = useState('');
-  const [showBannedModal, setShowBannedModal] = useState(false);
-  const [bannedUntil, setBannedUntil] = useState('');
-  const [showUnverifiedModal, setShowUnverifiedModal] = useState(false);
-  const [showAlertSuccess, setShowAlertSuccess] = useState(false);
-  const [showAlertError, setShowAlertError] = useState(false);
+  const {
+    handleSuccess,
+    handleError,
+    setShowUnverifiedModal,
+    clearLoginData,
+    showBannedModal,
+    setShowBannedModal,
+    showUnverifiedModal,
+    bannedUntil,
+  } = useAuth();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -68,20 +59,6 @@ export default function LoginPage() {
       password: '',
     },
   });
-
-  const clearLoginData = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('token_expires');
-    dispatch(clearUser());
-  };
-
-  const handleGetCurrentUser = async () => {
-    const response = await APIGetCurrentUser();
-    if (response?.status === 200) {
-      dispatch(setUser(response.data));
-    }
-  };
 
   const onSubmit = async (values: FormData) => {
     try {
@@ -93,55 +70,10 @@ export default function LoginPage() {
       });
 
       if (response?.status === 200) {
-        const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token);
-        localStorage.setItem('token_expires', response.data.token_expires.toString());
-
-        // Check if user is banned
-        if (decodedToken.banned_until) {
-          clearLoginData();
-          setBannedUntil(decodedToken.banned_until);
-          setShowBannedModal(true);
-          return;
-        }
-
-        // Check if email is verified
-        if (!decodedToken.is_verified) {
-          setShowUnverifiedModal(true);
-          return;
-        }
-
-        toast.success(<ToastNotify status={1} message="Đăng nhập thành công" />, {
-          style: styleSuccess,
-        });
-        handleGetCurrentUser();
-        router.push('/');
+        await handleSuccess(response);
       }
     } catch (err: any) {
-      const errorResponse = err?.response;
-      const statusCode = errorResponse?.status;
-      const errorData: ApiErrorResponse = errorResponse?.data;
-
-      let errorMessage = 'Đã xảy ra lỗi khi đăng nhập';
-
-      if (!errorResponse) {
-        errorMessage = 'Lỗi kết nối. Vui lòng kiểm tra lại đường truyền';
-      } else {
-        // Use helper function to get Vietnamese error message
-        errorMessage = getVietnameseErrorMessage(
-          statusCode,
-          errorData?.errorCode,
-          errorData?.message
-        );
-
-        // If there are detailed validation errors, show them instead
-        if (errorData?.details && errorData.details.length > 0) {
-          errorMessage = errorData.details.map((detail) => detail.message).join(', ');
-        }
-      }
-
-      toast.error(<ToastNotify status={-1} message={errorMessage} />, { style: styleError });
+      handleError(err);
     } finally {
       setIsLoading(false);
     }
@@ -175,9 +107,6 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {showAlertSuccess && <AlertSuccess description={alertDescription} />}
-            {showAlertError && <AlertError description={alertDescription} />}
-
             <Tabs defaultValue="email" className="w-full">
               <TabsContent value="email">
                 <Form {...form}>
@@ -289,30 +218,7 @@ export default function LoginPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant="outline"
-                className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-                Google
-              </Button>
+              <GoogleAuthButton onSuccess={handleSuccess} onError={handleError} />
               <Button
                 variant="outline"
                 className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"

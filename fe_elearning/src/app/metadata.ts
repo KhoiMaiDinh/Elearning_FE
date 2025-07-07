@@ -1,4 +1,4 @@
 export const metadata = {
-  title: 'E-Learning',
+  title: 'Nova Learn',
   description: 'E-Learning',
 };
