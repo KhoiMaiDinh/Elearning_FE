@@ -191,6 +191,7 @@ const SectionList: React.FC<SectionListProps> = ({
             sections.length > 0 &&
             sections.map((section, sectionIndex) => (
               <SectionCard
+                key={sectionIndex}
                 mode={mode}
                 section={section}
                 sectionIndex={sectionIndex}

@@ -352,7 +352,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                       limit={1}
                       ratio={16 / 9}
                       className="w-full"
-                      previousMedia={courseInfo?.thumbnail || undefined}
+                      previousMedia={
+                        mode === 'edit' && courseInfo?.thumbnail ? courseInfo.thumbnail : undefined
+                      }
                       onChange={(file) => {
                         setValue('thumbnail', file);
                       }}

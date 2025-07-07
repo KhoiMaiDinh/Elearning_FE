@@ -298,15 +298,21 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   }, [expandedThreadId]);
 
   useEffect(() => {
-    if (currentCommentItem && currentCommentItem.length > 0) {
-      setActiveTab('reviews');
-      // Don't show the old comment popup, use the new one instead
-      // handleGetCommentById(currentCommentItem);
-    } else if (defaultTab) {
-      setActiveTab(defaultTab);
-    } else {
-      setActiveTab('description');
+    let mounted = true;
+
+    if (mounted) {
+      if (currentCommentItem && currentCommentItem.length > 0) {
+        setActiveTab('reviews');
+      } else if (defaultTab) {
+        setActiveTab(defaultTab);
+      } else {
+        setActiveTab('description');
+      }
     }
+
+    return () => {
+      mounted = false;
+    };
   }, [currentCommentItem, defaultTab]);
 
   useEffect(() => {
@@ -368,7 +374,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
           {currentSection?.description && (
             <>
               <Separator className={'my-3'} />
-              <h3 className="text-white text-xl font-bold mb-4">
+              <h3 className="text-black dark:text-white text-xl font-bold mb-4">
                 Mô tả chương {currentSection.title ?? ''}
               </h3>
               <ShowMoreText text={currentSection.description} />
@@ -401,7 +407,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-slate-300 hover:text-white"
+                      className="dark:text-slate-300 dark:hover:text-white text-black hover:text-black50"
                       onClick={() =>
                         window.open(
                           `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${item.resource_file.key}`,
@@ -409,12 +415,12 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
                         )
                       }
                     >
-                      <ExternalLink className="w-4 h-4" />
+                      <ExternalLink className="w-4 h-4 " />
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-slate-300 hover:text-white"
+                      className="dark:text-slate-300 dark:hover:text-white text-black hover:text-black50"
                       onClick={() =>
                         handleDownload(
                           `${process.env.NEXT_PUBLIC_BASE_URL_DOCUMENT}${item.resource_file.key}`,

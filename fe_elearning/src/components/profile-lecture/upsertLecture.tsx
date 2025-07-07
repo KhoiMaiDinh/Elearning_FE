@@ -6,23 +6,19 @@ import TextAreaRegisterLecture from '../inputComponent/textAreaRegisterLecture';
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
-import { AlertTriangle, Dot, Facebook, FileCheck, Globe, Linkedin, Trash2Icon } from 'lucide-react';
+import { Dot, Facebook, FileCheck, Globe, Linkedin, Trash2Icon } from 'lucide-react';
 import { APIGetCategory } from '@/utils/category';
 import { Category } from '@/types/categoryType';
 import SelectRegister from '../selectComponent/selectRegister';
-import RegisteredLecture, { TABS } from './registeredLecture';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import FilesPicker from '../inputComponent/filesPicker';
 import Asterisk from '../asterisk/asterisk';
 import { useInstructorForm } from '@/hooks/instructor/useInstructorForm';
 import ToastNotify from '../ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
 import { styleError } from '../ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import Popup from '../courseDetails/popup';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   mode: 'create' | 'update';
@@ -143,7 +139,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
               <CardContent>
                 <InputRegisterLecture
                   labelText="Email"
-                  value={userInfo?.email}
+                  value={userInfo?.email ?? undefined}
                   disabled={true}
                   inputClassName={inputClassName}
                 />

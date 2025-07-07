@@ -273,7 +273,7 @@ export const Overview = () => {
 
   const transformCourseRatingData = (rawData: CourseRatingType[]) => {
     const safeData = Array.isArray(rawData) ? rawData : [];
-    const sortedData = safeData.sort((a, b) => b.average_rating - a.average_rating);
+    const sortedData = safeData.sort((a, b) => Number(b.average_rating) - Number(a.average_rating));
     return sortedData.map((item) => ({
       name: item.title,
       value: item.average_rating,
@@ -732,7 +732,7 @@ export const Overview = () => {
                   categories={['value']}
                   index="name"
                   colors={['#f59e0b']}
-                  valueFormatter={(value) => `${value} ★`}
+                  valueFormatter={(value) => `${Number(value).toFixed(1)} ★`}
                   showLegend={false}
                   showGridLines={false}
                   startEndOnly={false}
@@ -839,7 +839,7 @@ export const Overview = () => {
                                 <ChevronRight className="w-4 h-4" />
                                 {comment?.lecture?.section?.title}
                                 <ChevronRight className="w-4 h-4" />
-                                {comment?.lecture?.series?.[0]?.title ?? ''}
+                                {comment?.lecture?.title ?? ''}
                               </span>
                             </div>
                           </div>

@@ -83,7 +83,7 @@ export function ShareDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md ">
         <DialogHeader>
           <DialogTitle>Chia sẻ khóa học</DialogTitle>
         </DialogHeader>
@@ -91,7 +91,7 @@ export function ShareDialog({
           {/* Course Preview */}
           {(courseTitle || courseThumbnail) && (
             <div className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <div className="h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="h-12 bg-gradient-to-br rounded-lg flex items-center justify-center flex-shrink">
                 {courseThumbnail ? (
                   <img
                     src={`${process.env.NEXT_PUBLIC_BASE_URL_IMAGE || ''}${courseThumbnail}`}
@@ -103,11 +103,11 @@ export function ShareDialog({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                <h4 className="font-medium text-slate-800 dark:text-slate-200 break-words line-clamp-1 w-full">
                   {courseTitle || 'Khóa học'}
                 </h4>
                 {courseSubtitle && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 break-words line-clamp-1 w-full">
                     {courseSubtitle}
                   </p>
                 )}
@@ -173,13 +173,16 @@ export function ShareDialog({
                 className="w-full"
               >
                 <Button
+                  asChild
                   variant="outline"
-                  className="flex items-center justify-center space-x-2 h-12 bg-[#0084ff]/10 border-[#0084ff]/20 hover:bg-[#0084ff]/20 transition-colors duration-200 w-full dark:bg-[#0084ff]/20 dark:border-[#0084ff]/30"
+                  className="flex items-center justify-center space-x-2 h-12 bg-[#0084ff]/10 border-[#0084ff]/20 hover:bg-[#0084ff]/20 transition-colors duration-200 w-full dark:bg-[#0084ff]/20 dark:border-[#0084ff]/30 "
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0084ff">
-                    <path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.913 1.454 5.512 3.726 7.21V22l3.405-1.869c.909.252 1.871.388 2.869.388 5.523 0 10-4.145 10-9.259C22 6.146 17.523 2 12 2zm1.008 12.461l-2.545-2.719-4.97 2.719 5.467-5.804 2.609 2.719 4.906-2.719-5.467 5.804z" />
-                  </svg>
-                  <span className="text-[#0084ff] font-medium">Messenger</span>
+                  <div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0084ff">
+                      <path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.913 1.454 5.512 3.726 7.21V22l3.405-1.869c.909.252 1.871.388 2.869.388 5.523 0 10-4.145 10-9.259C22 6.146 17.523 2 12 2zm1.008 12.461l-2.545-2.719-4.97 2.719 5.467-5.804 2.609 2.719 4.906-2.719-5.467 5.804z" />
+                    </svg>
+                    <span className="text-[#0084ff] font-medium">Messenger</span>
+                  </div>
                 </Button>
               </FacebookMessengerShareButton>
 
