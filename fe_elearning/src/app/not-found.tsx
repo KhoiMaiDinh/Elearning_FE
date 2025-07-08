@@ -151,7 +151,7 @@ export default function NotFound() {
                 repeat: Infinity,
                 ease: 'linear',
               }}
-              className="text-gradient via-purple-600 to-pink-600 bg-300% bg-gradient-to-r from-blue-600 bg-clip-text text-transparent"
+              className="text-yellow-500 "
             >
               404
             </motion.span>
@@ -188,11 +188,11 @@ export default function NotFound() {
             <Button
               asChild
               size="lg"
-              className="to-purple-600 hover:to-purple-700 group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:shadow-xl"
+              className=" group relative overflow-hidden text-black dark:text-white border-gray-200 dark:bg-eerieBlack hover:border-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900 group rounded-xl border-2 bg-white/80 px-8 py-3 font-semibold backdrop-blur-sm transition-all duration-300"
             >
               <Link href="/">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                  className="absolute inset-0 text-black dark:text-white bg-white"
                   initial={{ x: '-100%' }}
                   whileHover={{ x: '100%' }}
                   transition={{ duration: 0.6 }}
@@ -205,7 +205,7 @@ export default function NotFound() {
             <Button
               variant="outline"
               size="lg"
-              className="border-gray-200 hover:border-purple-300 hover:bg-purple-50 group rounded-xl border-2 bg-white/80 px-8 py-3 font-semibold backdrop-blur-sm transition-all duration-300"
+              className="border-gray-200 dark:bg-eerieBlack hover:border-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900 group rounded-xl border-2 bg-white/80 px-8 py-3 font-semibold backdrop-blur-sm transition-all duration-300"
               onClick={() => window.history.back()}
             >
               <RefreshCw className="mr-2 h-5 w-5 transition-transform duration-500 group-hover:rotate-180" />
@@ -221,7 +221,7 @@ export default function NotFound() {
             transition={{ duration: 0.6, delay: 1.2 }}
           >
             <div className="text-gray-600 flex items-center justify-center">
-              <Search className="text-purple-500 mr-2 h-5 w-5" />
+              <Search className="text-yellow-500 mr-2 h-5 w-5" />
               <span className="text-sm">Hoặc thử tìm kiếm nội dung bạn cần trong trang chủ</span>
             </div>
           </motion.div>
@@ -234,7 +234,7 @@ export default function NotFound() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.4 }}
         >
-          <p className="text-gray-500 border-gray-200 rounded-full border bg-white/50 px-6 py-3 text-sm backdrop-blur-sm">
+          <p className="text-gray-500 border-gray-200 rounded-full border dark:text-white bg-white/50 px-6 py-3 text-sm backdrop-blur-sm">
             Nếu bạn cho rằng đây là lỗi, vui lòng liên hệ với quản trị viên hệ thống.
           </p>
         </motion.div>
