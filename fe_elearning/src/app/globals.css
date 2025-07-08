@@ -745,3 +745,7 @@ input[type='password']::-webkit-textfield-decoration-container {
     }
   }
 }
+
+.text-gradient {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}

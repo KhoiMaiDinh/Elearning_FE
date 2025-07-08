@@ -151,7 +151,7 @@ export default function NotFound() {
                 repeat: Infinity,
                 ease: 'linear',
               }}
-              className="via-purple-600 to-pink-600 bg-300% bg-gradient-to-r from-blue-600 bg-clip-text text-transparent"
+              className="text-gradient via-purple-600 to-pink-600 bg-300% bg-gradient-to-r from-blue-600 bg-clip-text text-transparent"
             >
               404
             </motion.span>
