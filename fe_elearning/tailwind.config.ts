@@ -232,8 +232,7 @@ export default {
       russianViolet: '#2D1E4A',
       persianIndigo: '#371D73',
       yankeesBlue: '#152A43',
-      transparent: 'transparent',
-
+      transparent: 'rgba(0, 0, 0, 0)',
       greenCrayola: '#10b981',
       blueberry: '#3b82f6',
       carminePink: '#ef4444',
