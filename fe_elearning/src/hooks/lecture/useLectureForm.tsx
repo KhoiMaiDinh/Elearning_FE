@@ -141,7 +141,7 @@ export const useLecture = (
               duration_in_seconds: data.video.duration_in_seconds,
             }
           : null,
-        description: data.description,
+        description: data.description === '' ? undefined : data.description,
         resources: data.resources || [],
         previous_position: section.items?.length
           ? section.items[section.items.length - 1].position
@@ -152,7 +152,18 @@ export const useLecture = (
       const response = await APIInitCourseItem(payload);
       if (response?.status === 201 || response?.status === 200) {
         onSave(`Bài giảng "${data.title}" đã được thêm thành công!`);
-        // setCreatedItem(response.data);
+        reset({
+          title: '',
+          description: '',
+          video: null,
+          resources: [],
+          is_preview: false,
+          position: '',
+          section_id: section.id,
+          id: '',
+          status: 'ACTIVE',
+          previous_position: undefined,
+        });
       }
     } catch (error) {
       onFail('Không thể thêm bài giảng');
@@ -180,7 +191,7 @@ export const useLecture = (
               duration_in_seconds: data.video.duration_in_seconds,
             }
           : null,
-        description: data.description,
+        description: data.description === '' ? undefined : data.description,
         resources: data.resources || undefined,
         previous_position: undefined,
         id: initialValues?.id,
@@ -189,7 +200,18 @@ export const useLecture = (
       const response = await APIUpdateCourseItem(data.id, payload);
       if (response?.status === 200) {
         onSave(`Bài giảng "${data.title}" đã được cập nhật thành công!`);
-        // setCreatedItem(response.data);
+        reset({
+          title: '',
+          description: '',
+          video: null,
+          resources: [],
+          is_preview: false,
+          position: '',
+          section_id: section.id,
+          id: '',
+          status: 'ACTIVE',
+          previous_position: undefined,
+        });
       }
     } catch (error) {
       onFail('Không thể cập nhật bài giảng');
