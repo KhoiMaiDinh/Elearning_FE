@@ -162,6 +162,12 @@ export const useLecture = (
   };
 
   const handleUpdateCourseItem = async (data: CourseItem) => {
+    // Check if there are any changes before submitting
+    if (!isDirty) {
+      onFail('Chưa có thay đổi nào để lưu');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload = {
@@ -231,7 +237,7 @@ export const useLecture = (
         shouldDirty: true,
       });
     } catch (error) {
-      console.log('🚀 ~ handleUploadAndTrack ~ error:', error);
+      console.log(error);
     } finally {
       setUploadProgress((prev) => {
         const newProgress = { ...prev };

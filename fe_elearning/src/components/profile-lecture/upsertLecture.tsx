@@ -100,7 +100,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
 
   return (
     <>
-      <div className=" px-6 py-8">
+      <div className="px-6 py-8 relative z-0">
         <h1
           className={`text-3xl font-bold text-center  text-majorelleBlue ${mode === 'create' ? 'pb-4' : ''}`}
         >
@@ -128,7 +128,7 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-0">
           {/* Left Column */}
           <div className="space-y-6 ">
             {/* Personal Information */}
@@ -420,18 +420,24 @@ const UpsertInstructor: React.FC<Props> = ({ mode }) => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-center mt-8 gap-2">
+        <div className="flex justify-center mt-8 gap-2 relative z-0">
           {mode == 'update' && (
             <Button
               disabled={loading}
-              onClick={handdlePresssView}
-              className={` shadow-majorelleBlue50 shadow-md text-white hover:brightness-110 rounded-md font-sans font-medium text-[13px] px-8 py-2.5 transition-all duration-300 w-32 ${
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Edit button clicked');
+                handdlePresssView();
+              }}
+              className={`shadow-majorelleBlue50 shadow-md text-white hover:brightness-110 rounded-md font-sans font-medium text-[13px] px-8 py-2.5 transition-all duration-300 w-32 relative z-0 ${
                 isViewMode
                   ? loading
                     ? 'translate-x-[calc(50%+16px)] bg-custom-gradient-button-violet hover:bg-custom-gradient-button-violet shadow-majorelleBlue50'
                     : 'translate-x-[calc(50%+16px)] bg-majorelleBlue hover:bg-majorelleBlue shadow-majorelleBlue50'
                   : 'bg-redPigment hover:bg-redPigment shadow-redPigment/50'
               }`}
+              type="button"
             >
               {isViewMode ? (loading ? 'Đang lưu ...' : 'Chỉnh sửa') : 'Hủy'}
             </Button>

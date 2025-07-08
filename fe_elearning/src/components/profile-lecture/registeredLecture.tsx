@@ -52,17 +52,20 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20">
+      <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20 relative z-50">
         {tabs &&
           tabs.length > 0 &&
           tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`Clicking tab: ${tab.id}`);
                 router.replace(`/profile/lecture?tab=${tab.id}`);
               }}
               className={`
-              md:px-8 md:py-3 px-2 py-1 md:text-sm text-xs font-medium transition-all duration-200
+              md:px-8 md:py-3 px-2 py-1 md:text-sm text-xs font-medium transition-all duration-200 cursor-pointer relative z-50 pointer-events-auto
               ${
                 activeTab === tab.id
                   ? 'bg-white dark:bg-black50 text-majorelleBlue dark:text-white border-b-2 border-majorelleBlue'
@@ -72,6 +75,7 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
             `}
               style={{
                 textShadow: 'none',
+                pointerEvents: 'auto',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.textShadow =
@@ -82,39 +86,40 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
               onMouseLeave={(e) => {
                 e.currentTarget.style.textShadow = 'none';
               }}
+              type="button"
             >
               {tab.label}
             </button>
           ))}
       </div>
 
-      <div className="w-full flex-1 mt-6">
+      <div className="w-full flex-1 mt-6 relative z-0">
         {isApproved ? (
           <>
-            <div className={activeTab === TABS.OVERVIEW ? '' : 'hidden'}>
+            <div className={activeTab === TABS.OVERVIEW ? 'relative z-0' : 'hidden'}>
               <Overview />
             </div>
-            <div className={activeTab === TABS.PROFILE ? '' : 'hidden'}>
+            <div className={activeTab === TABS.PROFILE ? 'relative z-0' : 'hidden'}>
               <ProfileLecture />
             </div>
-            <div className={activeTab === TABS.COURSE ? '' : 'hidden'}>
+            <div className={activeTab === TABS.COURSE ? 'relative z-0' : 'hidden'}>
               <CourseLecture />
             </div>
-            <div className={activeTab === TABS.STATISTIC ? '' : 'hidden'}>
+            <div className={activeTab === TABS.STATISTIC ? 'relative z-0' : 'hidden'}>
               <StatisticLecture />
             </div>
-            <div className={activeTab === TABS.BANK_ACCOUNT ? '' : 'hidden'}>
+            <div className={activeTab === TABS.BANK_ACCOUNT ? 'relative z-0' : 'hidden'}>
               <BankAccountLecture />
             </div>
-            <div className={activeTab === TABS.COUPON_MANAGEMENT ? '' : 'hidden'}>
+            <div className={activeTab === TABS.COUPON_MANAGEMENT ? 'relative z-0' : 'hidden'}>
               <CouponManagement />
             </div>
-            <div className={activeTab === TABS.PAYOUT ? '' : 'hidden'}>
+            <div className={activeTab === TABS.PAYOUT ? 'relative z-0' : 'hidden'}>
               <Payout />
             </div>
           </>
         ) : (
-          <div className={activeTab === TABS.PROFILE ? '' : 'hidden'}>
+          <div className={activeTab === TABS.PROFILE ? 'relative z-0' : 'hidden'}>
             <ProfileLecture />
           </div>
         )}

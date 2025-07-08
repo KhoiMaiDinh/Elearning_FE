@@ -5,6 +5,7 @@ import InputRegisterLecture from '@/components/inputComponent/inputRegisterLectu
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
 import VideoPicker from '@/components/inputComponent/videoPicker';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -27,8 +28,6 @@ import { useEffect, useState, useRef } from 'react';
 import { Controller } from 'react-hook-form';
 import Asterisk from '@/components/asterisk/asterisk';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TooltipContent } from '@radix-ui/react-tooltip';
 
 import ToastNotify from '@/components/ToastNotify/toastNotify';
 import { toast } from 'react-toastify';
@@ -156,20 +155,33 @@ const LectureModal: React.FC<LectureModalProps> = ({
                   : ''}
           </DialogDescription>
         </DialogHeader>
-        <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto p-2">
+        <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto p-2 relative z-0">
           <div>
             <Controller
               name="title"
               control={control}
               render={({ field }) => (
-                <InputRegisterLecture
-                  {...field}
-                  labelText="Tiêu đề"
-                  isRequired={true}
-                  error={errors.title?.message}
-                  maxLength={60}
-                  disabled={mode === 'view'}
-                />
+                <>
+                  {mode === 'view' ? (
+                    <div className="w-full flex flex-col text-black dark:text-lightSilver relative h-full mb-0 gap-1">
+                      <Label className="flex gap-1">
+                        Tiêu đề
+                        <Asterisk />
+                      </Label>
+                      <p className="p-3 bg-gray-50 dark:bg-gray-800 rounded-md border text-sm select-text">
+                        {field.value || 'Chưa có tiêu đề'}
+                      </p>
+                    </div>
+                  ) : (
+                    <InputRegisterLecture
+                      {...field}
+                      labelText="Tiêu đề"
+                      isRequired={true}
+                      error={errors.title?.message}
+                      maxLength={60}
+                    />
+                  )}
+                </>
               )}
             />
           </div>
@@ -179,14 +191,30 @@ const LectureModal: React.FC<LectureModalProps> = ({
               name="description"
               control={control}
               render={({ field }) => (
-                <TextAreaRegisterLecture
-                  {...field}
-                  label="Mô tả bài học"
-                  labelClassName="text-black font-normal dark:text-white"
-                  className="text-black font-normal mb-2"
-                  error={errors.description?.message}
-                  disabled={mode === 'view'}
-                />
+                <>
+                  {mode === 'view' ? (
+                    <div className="w-full flex flex-col text-black dark:text-lightSilver relative h-full mb-2 gap-1">
+                      <Label className="text-black font-normal dark:text-white">
+                        Mô tả bài học
+                      </Label>
+                      <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-md border text-sm select-text min-h-20">
+                        {field.value ? (
+                          <div dangerouslySetInnerHTML={{ __html: field.value }} />
+                        ) : (
+                          <span className="text-gray-500">Chưa có mô tả</span>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <TextAreaRegisterLecture
+                      {...field}
+                      label="Mô tả bài học"
+                      labelClassName="text-black font-normal dark:text-white"
+                      className="text-black font-normal mb-2"
+                      error={errors.description?.message}
+                    />
+                  )}
+                </>
               )}
             />
           </div>
@@ -435,35 +463,26 @@ const LectureModal: React.FC<LectureModalProps> = ({
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="relative z-10 pointer-events-auto">
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={submitting}>
             {mode === 'view' ? 'Đóng' : 'Hủy'}
           </Button>
           {mode === 'edit' && isEditing ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild disabled={isDirty}>
-                  <div>
-                    <AddButton
-                      label="Sửa bài học"
-                      disabled={submitting || !isDirty}
-                      loading={submitting}
-                      onClick={handleSubmit(handleUpdateCourseItem)}
-                      icon={Edit}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  className={`bg-black70 text-AntiFlashWhite px-2 py-1 rounded-full text-sm ${isDirty ? 'hidden' : ''}`}
-                >
-                  <p>Chưa có chỉnh sửa</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <AddButton
+              label="Sửa bài học"
+              disabled={submitting}
+              loading={submitting}
+              onClick={handleSubmit(handleUpdateCourseItem)}
+              icon={Edit}
+            />
           ) : mode === 'view' ? (
             <Button
-              className={`bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white shadow-md shadow-majorelleBlue/40  `}
-              onClick={() => setMode('edit')}
+              className={`bg-majorelleBlue text-white hover:bg-majorelleBlue hover:brightness-110 hover:text-white shadow-md shadow-majorelleBlue/40 relative z-10 cursor-pointer`}
+              onClick={() => {
+                console.log('Chuyển sang edit mode');
+                setMode('edit');
+              }}
+              type="button"
             >
               Chỉnh sửa bài học
             </Button>
