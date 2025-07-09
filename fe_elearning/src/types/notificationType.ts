@@ -13,6 +13,7 @@ export type NotificationType = {
     lecture_id?: string;
     comment_id?: string;
     thread_id?: string;
+    payout_id?: string;
   } | null;
   createdAt: string;
   updatedAt: string;

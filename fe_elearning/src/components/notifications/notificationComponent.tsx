@@ -234,7 +234,9 @@ function NotificationItem({
                               ? `/profile/lecture/course/${notification?.metadata?.course_id}`
                               : type === 'COURSE_UNBANNED'
                                 ? `/course-details/${notification?.metadata?.course_id}`
-                                : '/',
+                                : type === 'PAYOUT_PROCESSED'
+                                  ? `/profile/lecture?tab=thanh-khoan&payout=${notification?.metadata?.payout_id}`
+                                  : '/',
             '_self'
           );
           handleReadNotification(notification?.id);

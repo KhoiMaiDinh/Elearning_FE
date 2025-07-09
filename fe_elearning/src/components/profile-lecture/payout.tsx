@@ -53,6 +53,7 @@ import Pagination from '../pagination/paginations';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
+import { useSearchParams } from 'next/navigation';
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -105,6 +106,8 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function InstructorPayouts() {
+  const searchParams = useSearchParams();
+  const payoutId = searchParams.get('payout');
   const [selectedPayout, setSelectedPayout] = useState<PayoutType | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -133,7 +136,7 @@ export default function InstructorPayouts() {
 
   useEffect(() => {
     handleGetPayout();
-  }, [filter]);
+  }, [filter, payoutId]);
 
   useEffect(() => {
     setFilter((prev) => ({
