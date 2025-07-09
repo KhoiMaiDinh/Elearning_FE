@@ -125,10 +125,6 @@ export default function Certificate({
               <p className="font-semibold">Ngày hoàn thành</p>
               <p className="text-lg">{completionDate}</p>
             </div>
-            <div className="text-center">
-              <p className="font-semibold">Thời lượng</p>
-              <p className="text-lg">{duration}</p>
-            </div>
           </div>
         </div>
 

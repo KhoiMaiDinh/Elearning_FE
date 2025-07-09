@@ -43,7 +43,10 @@ export default function ProductSummary({ products }: Props) {
                     {/* Course Features */}
                     <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                       <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-current text-yellow-400" />
+                        <Star
+                          className="w-3 h-3 fill-current text-yellow-400"
+                          fill="currentColor"
+                        />
                         <span>4.8</span>
                       </div>
                       <div className="flex items-center gap-1">
