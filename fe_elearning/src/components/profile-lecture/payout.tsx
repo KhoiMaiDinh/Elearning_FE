@@ -139,6 +139,12 @@ export default function InstructorPayouts() {
   }, [filter, payoutId]);
 
   useEffect(() => {
+    if (payoutId) {
+      setSelectedPayout(dataPayout.find((payout) => payout.id === payoutId) || null);
+    }
+  }, [payoutId]);
+
+  useEffect(() => {
     setFilter((prev) => ({
       ...prev,
       page: currentPage,
