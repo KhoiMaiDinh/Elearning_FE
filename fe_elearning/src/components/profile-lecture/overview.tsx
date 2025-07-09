@@ -377,11 +377,11 @@ export const Overview = () => {
                 <CardHeader className="flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>Số Lượng Học Viên Theo Thời Gian</CardTitle>
+                      <CardTitle>Số Lượng Đăng Ký Mới Theo Thời Gian</CardTitle>
                       <CardDescription>
                         {registrationViewMode === 'monthly'
-                          ? 'Số lượng học viên đăng ký mỗi tháng'
-                          : 'Tổng Số Lượng Đăng Ký Học Viên'}
+                          ? 'Số Lượt Đăng Ký Khóa Học Mỗi Tháng'
+                          : 'Tổng Số Lượt Đăng Ký Học Viên'}
                       </CardDescription>
                     </div>
                     <div className="flex items-center space-x-1 rounded-md border p-1">

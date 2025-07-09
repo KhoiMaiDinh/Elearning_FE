@@ -28,7 +28,7 @@ const Page = () => {
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // Ensure `id` is a string
   const searchParams = useSearchParams();
   const ratingParam = searchParams.get('rating');
-  const [dataCourse, setDataCourse] = useState<CourseForm>();
+  const [courseData, setCourseData] = useState<CourseForm>();
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -42,11 +42,11 @@ const Page = () => {
 
   useEffect(() => {
     if (userInfo.id) {
-      if (userInfo.id === dataCourse?.instructor?.user?.id) {
+      if (userInfo.id === courseData?.instructor?.user?.id) {
         setIsOwner(true);
       }
     }
-  }, [userInfo, dataCourse]);
+  }, [userInfo, courseData]);
 
   const handleGetDetailCourse = useCallback(async () => {
     setLoading(true);
@@ -55,7 +55,7 @@ const Page = () => {
       with_thumbnail: true,
     });
     if (response && response.data) {
-      setDataCourse(response.data);
+      setCourseData(response.data);
     }
     setLoading(false);
   }, [id]);
@@ -123,7 +123,7 @@ const Page = () => {
     setLoading(true);
     const response = await APIGetFullCourse(id || '');
     if (response && response.data) {
-      setDataCourse(response.data);
+      setCourseData(response.data);
     }
     // setLoading(false); // Don't forget to stop loading
   }, [id]);
@@ -135,22 +135,22 @@ const Page = () => {
   }, [isRegistered, handleGetFullCourse]);
 
   useEffect(() => {
-    if (dataCourse && userInfo) {
+    if (courseData && userInfo) {
       const totalDuration =
-        dataCourse.sections?.reduce(
+        courseData.sections?.reduce(
           (total, section) =>
             total + section.items.reduce((sum, item) => sum + (item.duration_in_seconds || 0), 0),
           0
         ) || 0;
       const totalLessons =
-        dataCourse.sections?.reduce((total, section) => total + section.items.length, 0) || 0;
+        courseData.sections?.reduce((total, section) => total + section.items.length, 0) || 0;
       setTotalDuration(totalDuration);
       setTotalLessons(totalLessons);
       setLoading(false);
     } else {
       setLoading(true);
     }
-  }, [dataCourse, userInfo]);
+  }, [courseData, userInfo]);
 
   return !loading ? (
     <div className="container mx-auto py-8 bg-AntiFlashWhite dark:bg-eerieBlack min-h-screen text-richBlack dark:text-AntiFlashWhite">
@@ -158,13 +158,13 @@ const Page = () => {
         <div className="flex flex-col lg:flex-row gap-8 relative" style={{ position: 'relative' }}>
           {/* Main Content */}
           <div className="lg:w-3/4">
-            {dataCourse && (
+            {courseData && (
               <InfoCourse
-                course={dataCourse}
+                course={courseData}
                 lecture={
-                  dataCourse.instructor?.user?.first_name +
+                  courseData.instructor?.user?.first_name +
                   ' ' +
-                  dataCourse.instructor?.user?.last_name
+                  courseData.instructor?.user?.last_name
                 }
                 totalDuration={totalDuration}
                 totalLessons={totalLessons}
@@ -203,9 +203,9 @@ const Page = () => {
                   <Separator />
                   <div className="flex space-x-2">
                     <ShareDialog
-                      courseTitle={dataCourse?.title}
-                      courseSubtitle={dataCourse?.subtitle}
-                      courseThumbnail={dataCourse?.thumbnail?.key}
+                      courseTitle={courseData?.title}
+                      courseSubtitle={courseData?.subtitle}
+                      courseThumbnail={courseData?.thumbnail?.key}
                       courseId={id || ''}
                       trigger={
                         <Button variant="ghost" size="icon" className="flex-1">
@@ -223,16 +223,16 @@ const Page = () => {
           {!isOwner && (
             <div className="lg:w-1/4 top-24 h-fit sticky">
               <InfoBlockCourse
-                thumbnail={dataCourse?.thumbnail?.key}
+                thumbnail={courseData?.thumbnail?.key}
                 totalDuration={totalDuration}
                 id={id || ''}
                 isRegistered={isRegistered}
-                price={dataCourse?.price}
-                level={dataCourse?.level || ''}
+                price={courseData?.price}
+                level={courseData?.level || ''}
                 totalLessons={totalLessons}
-                courseProgress={dataCourse?.course_progress?.progress}
-                courseTitle={dataCourse?.title}
-                courseSubtitle={dataCourse?.subtitle}
+                courseProgress={courseData?.course_progress?.progress}
+                courseTitle={courseData?.title}
+                courseSubtitle={courseData?.subtitle}
                 // courseProgress={0.00001}
               />
             </div>
@@ -321,7 +321,7 @@ const Page = () => {
                             Khóa học được đánh giá:
                           </h5>
                           <p className="text-sm dark:text-slate-300 text-slate-600">
-                            {selectedRating.course?.title || dataCourse?.title}
+                            {selectedRating.course?.title || courseData?.title}
                           </p>
                         </div>
                       </div>

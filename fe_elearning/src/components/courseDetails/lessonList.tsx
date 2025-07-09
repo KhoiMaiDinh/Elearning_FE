@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
+
 import { CourseItem, SectionType } from '@/types/courseType';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/constants/store';
+
+import { PlayCircle, ChevronDown, ChevronRight, CheckCircle, Lock } from 'lucide-react';
+
 interface CourseItemListProps {
   sections: SectionType[];
   currentCourseItemId: string;
@@ -23,7 +24,6 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
   isOwner,
 }) => {
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
-  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({
@@ -60,7 +60,8 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
         {sections &&
           sections.length > 0 &&
           sections.map((section, sectionIndex) => {
-            if (!section) return null;
+            const hasChild = section?.items?.some((item) => item?.video) || false;
+            if (!section || !hasChild) return null;
 
             const isOpen = openSections[sectionIndex] ?? true;
             const sectionActive = isChildActive(section);
@@ -92,7 +93,7 @@ const CourseItemList: React.FC<CourseItemListProps> = ({
                     {section.items &&
                       section.items.length > 0 &&
                       section.items.map((courseItem) => {
-                        if (!courseItem) return null;
+                        if (!courseItem || !courseItem.video) return null;
 
                         const isActive = courseItem.title === currentCourseItemId;
                         const isLocked = !isRegistered && !courseItem.is_preview && !isOwner;

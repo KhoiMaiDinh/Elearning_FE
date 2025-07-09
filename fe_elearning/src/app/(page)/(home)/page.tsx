@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/constants/store';
+
 import {
   ArrowRight,
   BookCheck,
@@ -14,23 +17,26 @@ import {
   TrendingUp,
   Star,
   BookOpen,
-  Search,
   Bookmark,
   BarChart3,
 } from 'lucide-react';
-import Autoplay from 'embla-carousel-autoplay';
 
 // Components
 import CoursesBlock from '@/components/block/courses-block';
 import InfoDashboard from '@/components/block/infoDashboard';
 import LecturersBlock from '@/components/block/lecturers-block';
-import { Button } from '@/components/ui/button';
+import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
+
 import SplitText from '@/components/text/splitText';
+
 import FadeContent from '@/components/animations/fadeContent';
 import AnimateWrapper from '@/components/animations/animateWrapper';
-import { Input } from '@/components/ui/input';
+
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
+
+import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
   CarouselContent,
@@ -42,13 +48,11 @@ import {
 // API and Types
 import { APIGetListInstructor } from '@/utils/instructor';
 import { APIGetEnrolledCourse, APIGetListCourse } from '@/utils/course';
+import { APIGetRecommendation } from '@/utils/recommendation';
+import { APIGetOverview } from '@/utils/overview';
+
 import type { CourseForm } from '@/types/courseType';
 import type { InstructorType } from '@/types/instructorType';
-import EnrolledCourseBlock from '@/components/block/enrolled-course-block';
-import { APIGetRecommendation } from '@/utils/recommendation';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/constants/store';
-import { APIGetOverview } from '@/utils/overview';
 
 type OverviewType = {
   course_count: number;
@@ -56,17 +60,15 @@ type OverviewType = {
   student_count: number;
 };
 
-// Mock data for categories
 const categories = [
-  { id: 1, name: 'Lập trình web', icon: '💻', count: 24 },
-  { id: 2, name: 'Khoa học dữ liệu', icon: '📊', count: 18 },
-  { id: 3, name: 'Thiết kế UI/UX', icon: '🎨', count: 15 },
-  { id: 4, name: 'Marketing số', icon: '📱', count: 12 },
-  { id: 5, name: 'Phát triển cá nhân', icon: '🚀', count: 10 },
-  { id: 6, name: 'Ngoại ngữ', icon: '🌎', count: 20 },
+  { id: 'web-dev', name: 'Phát triển Web', icon: '💻' },
+  { id: 'data-engineering', name: 'Kỹ thuật dữ liệu', icon: '📊' },
+  { id: 'ui-ux-design', name: 'Thiết kế UI/UX', icon: '🎨' },
+  { id: 'digital-marketing', name: 'Tiếp thị kỹ thuật số', icon: '📱' },
+  { id: 'emotional-intelligence', name: 'Trí tuệ cảm xúc', icon: '🧘‍♂️' },
+  { id: 'foreign-language', name: 'Ngoại ngữ', icon: '🌎' },
 ];
 
-// Mock data for testimonials
 const testimonials = [
   {
     id: 1,
@@ -493,7 +495,7 @@ export default function Page() {
                   <Card
                     key={category.id}
                     className="border-0 shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer"
-                    onClick={() => router.push(`/course?category=${category.id}`)}
+                    onClick={() => router.push(`/course?category_slug=${category.id}`)}
                   >
                     <CardContent className="p-6 text-center">
                       <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -502,9 +504,9 @@ export default function Page() {
                       <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                         {category.name}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {/* <p className="text-sm text-gray-500 dark:text-gray-400">
                         {category.count} khóa học
-                      </p>
+                      </p> */}
                     </CardContent>
                   </Card>
                 ))}

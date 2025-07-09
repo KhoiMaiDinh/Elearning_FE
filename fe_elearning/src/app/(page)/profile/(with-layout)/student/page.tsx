@@ -1,39 +1,42 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Mail, Phone, Calendar, Edit, BookOpen, Users, KeySquare } from 'lucide-react';
+import { Mail, Calendar, Edit, BookOpen, Users, KeySquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import AnimateWrapper from '@/components/animations/animateWrapper';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
 import { useForm, Controller, FieldValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
 import { setUser } from '@/constants/userSlice';
+
 import { UserType } from '@/types/userType';
 import { Preference } from '@/types/preferenceType';
 import { CourseForm } from '@/types/courseType';
 
 import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
+import { CategorySelectionPopup } from '@/components/recomand/popupSelectCategory';
+
 import axios from 'axios';
 import { APIGetCurrentUser, APIUpdateCurrentUser } from '@/utils/user';
 import { APIGetPreference } from '@/utils/preference';
 import { APIGetEnrolledCourse, APIGetFavoriteCourse } from '@/utils/course';
 import { APIGetPresignedUrl } from '@/utils/storage';
-import { Badge } from '@/components/ui/badge';
-import { ChangePasswordDialog } from '@/components/dialog/change-password-dialog';
 import { APIGetCertificate } from '@/utils/certificate';
+
 import { CertificateType } from '@/types/certificateType';
 import ToastNotify from '@/components/ToastNotify/toastNotify';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { styleError, styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
-import { useTheme } from 'next-themes';
 import CourseLevelBadge from '@/components/badge/courseLevelBadge';
-import { CategorySelectionPopup } from '@/components/recomand/popupSelectCategory';
 
 // Yup schema for form validation
 const schema = yup.object().shape({
@@ -181,7 +184,7 @@ const StudentProfile = () => {
       } else {
         toast.error(<ToastNotify status={-1} message="Cập nhật thất bại" />, { style: styleError });
       }
-    } catch (err) {
+    } catch {
       toast.error(<ToastNotify status={-1} message="Cập nhật thất bại" />, { style: styleError });
     }
   };
@@ -320,6 +323,10 @@ const StudentProfile = () => {
                                 alt={`${studentData?.first_name} ${studentData?.last_name}`}
                                 className="object-cover"
                               />
+                              <AvatarFallback className="bg-PaleViolet/50 text-white text-xl">
+                                {studentData?.first_name?.[0] || ''}
+                                {studentData?.last_name?.[0] || ''}
+                              </AvatarFallback>
                             </Avatar>
                             {!disable && (
                               <div className="flex flex-col  gap-2 items-center">

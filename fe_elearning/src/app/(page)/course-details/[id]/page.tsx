@@ -1,21 +1,25 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import VideoPlayer from '@/components/player/videoPlayer';
-import CourseTabs from '@/components/courseDetails/courseTab';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
-import CourseItemList from '@/components/courseDetails/lessonList';
-import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
-import { notFound, useParams, useRouter, useSearchParams } from 'next/navigation';
-import ButtonReview from '@/components/courseDetails/buttonReview';
-import ButtonMore from '@/components/courseDetails/buttonMore';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { notFound, useParams, useRouter, useSearchParams } from 'next/navigation';
+
+import VideoPlayer from '@/components/player/videoPlayer';
+
+import CourseTabs from '@/components/courseDetails/courseTab';
+import ButtonMore from '@/components/courseDetails/buttonMore';
+import ButtonReview from '@/components/courseDetails/buttonReview';
+import CourseItemList from '@/components/courseDetails/lessonList';
 import CourseDescriptionTab from '@/components/courseDetails/courseDescriptionTab';
+
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+
 import { UserType } from '@/types/userType';
+import { CourseForm, CourseItem, SectionType } from '@/types/courseType';
+
 import { APIGetReview } from '@/utils/comment';
-import { toast } from 'react-toastify';
+import { APIGetFullCourse, APIGetEnrolledCourse, APIGetCourseById } from '@/utils/course';
 
 // Hàm helper để kiểm tra và lấy video URL
 const _getVideoUrl = (item: CourseItem | SectionType | undefined): string | undefined => {
