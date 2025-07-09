@@ -1,34 +1,44 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCourse } from '@/constants/courseSlice';
 import { RootState } from '@/constants/store';
-import { APIGetFullCourse } from '@/utils/course';
-import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
-import SectionList from '@/components/uploadCourse/SectionList';
-import { CourseForm, SectionType } from '@/types/courseType';
-import AnimateWrapper from '@/components/animations/animateWrapper';
-import { AlertCircle, Ban, CheckCircle, ChevronRight, Clock, ListEnd, X } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import ProgressBar from './components/progressBar';
-import { Button } from '@/components/ui/button';
-import { steps } from '@/helpers/step';
-import ToastNotify from '@/components/ToastNotify/toastNotify';
-import { toast } from 'react-toastify';
-import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
-import AddButton from '@/components/button/addButton';
-import { APIGetCourseUnbanRequests } from '@/utils/unbanRequest';
-import { UnbanRequestType } from '@/types/unbanRequestType';
+
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+
 import { Badge } from '@/components/ui/badge';
-import { formatDate } from '@/helpers';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import SectionList from '@/components/uploadCourse/SectionList';
+import BasicInfoForm from '@/components/uploadCourse/BasicInfoForm';
+
+import AddButton from '@/components/button/addButton';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+
+import { toast } from 'react-toastify';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+
+import ProgressBar from './components/progressBar';
 import UnbanRequestModal from './components/modals/unbanRequestModal';
-import { Noto_Sans_Anatolian_Hieroglyphs } from 'next/font/google';
+
+import { AlertCircle, Ban, CheckCircle, ChevronRight, Clock, ListEnd, X } from 'lucide-react';
+
+import { APIGetFullCourse } from '@/utils/course';
+import { APIGetCourseUnbanRequests } from '@/utils/unbanRequest';
+
+import { UnbanRequestType } from '@/types/unbanRequestType';
+import { CourseForm, SectionType } from '@/types/courseType';
+
+import { steps } from '@/helpers/step';
+import { formatDate } from '@/helpers';
 
 const CourseDetails: React.FC = () => {
   const courseInfo = useSelector((state: RootState) => state.course.courseInfo);
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
@@ -41,6 +51,23 @@ const CourseDetails: React.FC = () => {
   const [unbanRequests, setUnbanRequests] = useState<UnbanRequestType[]>([]);
   const previousShowDeletedRef = useRef(showDeleted);
   const mode: 'create' | 'edit' = courseId === 'new' ? 'create' : 'edit';
+
+  useEffect(() => {
+    const stepParam = searchParams.get('step');
+    if (stepParam) {
+      const step = parseInt(stepParam, 10);
+      if (!isNaN(step)) setCurrentStep(step);
+    }
+  }, [searchParams]);
+
+  // Optional: clean up the `?step=2` from the URL
+  useEffect(() => {
+    if (searchParams.get('step')) {
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete('step');
+      router.replace(`?${newParams.toString()}`, { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const handleGetCourseInfo = async () => {
     try {
@@ -131,7 +158,7 @@ const CourseDetails: React.FC = () => {
   const handleCreateSuccess = (course: CourseForm | null) => {
     if (course) {
       setIsNewlyCreated(true);
-      router.replace(`./${course.id}`);
+      router.replace(`./${course.id}?step=2`);
     }
   };
 

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { OrderResponse } from '@/types/billType';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 interface BillDetailsProps {
   bill: OrderResponse;
 }

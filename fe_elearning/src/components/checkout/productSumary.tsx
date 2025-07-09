@@ -1,5 +1,5 @@
 // components/ProductSummary.tsx
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import { BookOpen, Star, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CourseForm } from '@/types/courseType';

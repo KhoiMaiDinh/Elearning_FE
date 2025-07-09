@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, Star, Users, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { CourseForm } from '@/types/courseType';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import { APIAddFavoriteCourse, APIRemoveFavoriteCourse } from '@/utils/course';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';

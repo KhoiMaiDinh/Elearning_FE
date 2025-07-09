@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CourseForm } from '@/types/courseType';
 import { RatingStars } from '../rating/ratingStars';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import CourseLevelBadge from '../badge/courseLevelBadge';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/constants/store';
