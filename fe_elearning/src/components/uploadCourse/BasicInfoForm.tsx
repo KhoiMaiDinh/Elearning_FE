@@ -2,18 +2,38 @@
 import React, { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 
-import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+import Asterisk from '@/components/asterisk/asterisk';
+import AddButton from '@/components/button/addButton';
+import { ConfirmDialog } from '@/components/alert/AlertConfirm';
 import SelectRegister from '@/components/selectComponent/selectRegister';
+import CourseLevelBadge from '@/components/badge/courseLevelBadge';
+
+import ImagePicker from '@/components/inputComponent/imagePicker';
+import InputRegisterLecture from '@/components/inputComponent/inputRegisterLecture';
 import TextAreaRegisterLecture from '@/components/inputComponent/textAreaRegisterLecture';
+
+import EmptyInfoBox from '@/components/courseDetails/emptyInfoBox';
+import CourseOutcomes from '@/components/courseDetails/courseOutcomes';
+import CourseRequirements from '@/components/courseDetails/courseRequirements';
+
+import { toast } from 'react-toastify';
+import ToastNotify from '@/components/ToastNotify/toastNotify';
+import { styleSuccess } from '@/components/ToastNotify/toastNotifyStyle';
+import { styleError } from '@/components/ToastNotify/toastNotifyStyle';
+
 import { APIInitCourse, APIUpdateCourse } from '@/utils/course';
 import { CourseForm } from '@/types/courseType';
-import Image from 'next/image';
+
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
-  CircleDot,
   DiamondPlus,
   DollarSign,
   LayoutGrid,
@@ -22,24 +42,11 @@ import {
   Trash2,
   Type,
 } from 'lucide-react';
-import CourseLevelBadge from '../badge/courseLevelBadge';
-import { Badge } from '../ui/badge';
-import { formatPrice } from '../formatPrice';
-import ImagePicker from '../inputComponent/imagePicker';
-import { useRouter } from 'next/navigation';
-import Asterisk from '../asterisk/asterisk';
+
+import { formatPrice } from '@/helpers/formatPrice';
+
 import { useCourseForm } from '@/hooks/course/useCourseForm';
 import { useCategoryFetcher } from '@/hooks/course/useCategoryFetcher';
-import { Spinner } from '../ui/spinner';
-import AddButton from '../button/addButton';
-import { ConfirmDialog } from '../alert/AlertConfirm';
-import ToastNotify from '../ToastNotify/toastNotify';
-import { toast } from 'react-toastify';
-import { styleSuccess } from '../ToastNotify/toastNotifyStyle';
-import { styleError } from '../ToastNotify/toastNotifyStyle';
-import EmptyInfoBox from '../courseDetails/emptyInfoBox';
-import CourseOutcomes from '../courseDetails/courseOutcomes';
-import CourseRequirements from '../courseDetails/courseRequirements';
 
 const data = [
   { id: 'BEGINNER', value: 'Sơ cấp' },

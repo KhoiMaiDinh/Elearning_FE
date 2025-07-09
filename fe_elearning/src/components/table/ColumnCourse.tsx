@@ -8,7 +8,7 @@ import { Translation } from '@/types/courseType';
 import { clearCourse, setCourse } from '@/constants/courseSlice';
 import { APIGetFullCourse } from '@/utils/course';
 import { EyeIcon, FileDown } from 'lucide-react';
-import { formatPrice } from '@/components/formatPrice';
+import { formatPrice } from '@/helpers/formatPrice';
 import ExportReportPopUp from '../exportReport/exportReportPopUp';
 import { useState } from 'react';
 

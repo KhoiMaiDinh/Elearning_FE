@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CourseForm } from '@/types/courseType';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import {
   DropdownMenu,
   DropdownMenuContent,

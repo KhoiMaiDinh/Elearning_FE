@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserType } from '@/types/userType';
 import { APICreateOrder } from '@/utils/order';
 import { Button } from '../ui/button';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard, ArrowLeft, Shield } from 'lucide-react';

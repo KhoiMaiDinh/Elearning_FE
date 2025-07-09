@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Search, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 import BillDetails from './billDetails';
 import { OrderResponse } from '@/types/billType';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 interface BillsTableProps {
   bills: OrderResponse[];
   searchTerm: string;

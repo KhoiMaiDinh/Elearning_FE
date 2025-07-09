@@ -27,7 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ViewMoreButton from '../button/viewMoreButton';
 import { ShareDialog } from './ShareDialog';
 
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import { APIGetRecommendationByCourseId } from '@/utils/recommendation';
 import AnimateWrapper from '../animations/animateWrapper';
 import CoursesBlock from '../block/courses-block';

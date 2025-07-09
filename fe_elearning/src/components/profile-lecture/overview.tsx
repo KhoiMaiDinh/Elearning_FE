@@ -1,28 +1,39 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import {
-  AlertCircle,
   ArrowDown,
   ArrowUp,
   Calendar,
   ChevronRight,
-  Clock,
   DollarSign,
-  Eye,
   FileQuestion,
   Star,
   Users,
-  ArrowRight,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Chart } from '../ui/dashboard-chart';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import AnimateWrapper from '../animations/animateWrapper';
-import { RatingStars } from '../rating/ratingStars';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { Progress } from '@/components/ui/progress';
+import { Chart } from '@/components/ui/dashboard-chart';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { RatingStars } from '@/components/rating/ratingStars';
+import ViewMoreButton from '@/components/button/viewMoreButton';
+import AnimateWrapper from '@/components/animations/animateWrapper';
+import { DashboardSkeleton } from '@/components/skeleton/dashboardSkeleton';
+
 import {
   APIAverageCourseRating,
   APIAverageStudentEngagement,
@@ -34,25 +45,10 @@ import {
   APIRevenueByCourse,
   APIStudentGrowth,
 } from '@/utils/instructorDashboard';
-import { useEffect, useState } from 'react';
-import { DashboardSkeleton } from '../skeleton/dashboardSkeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog';
-import { APIGetCommentsForInstructor } from '@/utils/comment';
-import { LectureComment } from '@/types/commentType';
-import { Spinner } from '../ui/spinner';
-import { APIGetInstructorRatings } from '@/utils/rating';
-import { ReviewCourseType } from '@/types/reviewCourseType';
 import { APIGetInstructorThreads } from '@/utils/thread';
-import { CommunityThread } from '@/types/communityThreadType';
-import { formatPrice } from '../formatPrice';
-import ViewMoreButton from '../button/viewMoreButton';
+import { APIGetInstructorRatings } from '@/utils/rating';
+import { APIGetCommentsForInstructor } from '@/utils/comment';
+
 import {
   CourseCompletionRateType,
   CourseRatingType,
@@ -63,7 +59,11 @@ import {
   PayoutSummaryType,
   StudentEngagementType,
 } from '@/types/instructorType';
-import { useRouter } from 'next/navigation';
+import { LectureComment } from '@/types/commentType';
+import { ReviewCourseType } from '@/types/reviewCourseType';
+import { CommunityThread } from '@/types/communityThreadType';
+
+import { formatPrice } from '@/helpers/formatPrice';
 
 export const Overview = () => {
   const router = useRouter();

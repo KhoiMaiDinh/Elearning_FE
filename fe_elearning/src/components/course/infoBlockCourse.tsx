@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
-import { formatPrice } from '../formatPrice';
+import { formatPrice } from '../../helpers/formatPrice';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/constants/store';
 import { formatDuration } from '@/helpers';
