@@ -52,7 +52,7 @@ const RegisteredLecture = ({ tab, isApproved }: { tab: TABS; isApproved: boolean
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20 relative z-50">
+      <div className="flex w-full border-b border-gray/20 dark:border-darkSilver/20 relative z-10">
         {tabs &&
           tabs.length > 0 &&
           tabs.map((tab) => (
