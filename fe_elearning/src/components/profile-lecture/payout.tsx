@@ -420,11 +420,13 @@ export default function InstructorPayouts() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {new Date(payout.issued_at).toLocaleDateString('vi-VN', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })}
+                          {payout.issued_at
+                            ? new Date(payout.issued_at).toLocaleDateString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                            : ''}
                         </TableCell>
                         <TableCell>
                           {payout.month}/{payout.year}
