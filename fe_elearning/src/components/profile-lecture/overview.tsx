@@ -570,7 +570,7 @@ export const Overview = () => {
             </Card>
           </div>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>
                 Trạng Thái Doanh Thu (
@@ -663,7 +663,7 @@ export const Overview = () => {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
           <Card>
             <CardHeader>
               <CardTitle>Đợt Thanh Toán Tiếp Theo</CardTitle>
