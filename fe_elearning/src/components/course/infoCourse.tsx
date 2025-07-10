@@ -319,7 +319,7 @@ const InfoCourse: React.FC<InfoCourseProps> = ({
         </CardContent>
       </Card>
 
-      {coupons && isOwner && (
+      {coupons && (
         <CouponSection
           coupons={coupons}
           userInfo={userInfo}

@@ -410,49 +410,56 @@ const Page = () => {
               {sections?.length > 0 ? (
                 sections &&
                 sections.length > 0 &&
-                sections.map((section) => (
-                  <div key={section.id} className="space-y-4">
-                    <h2 className="text-lg font-bold text-persianIndigo/80 dark:text-white/80">
-                      {section.title}
-                    </h2>
-                    <div className="space-y-2">
-                      {section.items?.length > 0 ? (
-                        section.items &&
-                        section.items.length > 0 &&
-                        section.items.map((item) => (
-                          <div key={item.id} className="border rounded-md p-4 space-y-2">
-                            <div
-                              className="flex items-center justify-between cursor-pointer"
-                              onClick={() => toggleItem(item.id)}
-                            >
-                              <span className="font-medium">{item.title}</span>
-                              <div className="flex items-center gap-1 text-sm text-blueberry dark:text-lightSilver">
-                                <span>Chi tiết</span>
-                                <ChevronDown
-                                  className={`w-4 h-4 transition-transform ${
-                                    openItemId === item.id ? 'rotate-180' : ''
-                                  }`}
-                                />
-                              </div>
-                            </div>
+                sections.map((section) => {
+                  const hasChild = section?.items?.some((item) => item?.video) || false;
+                  if (!section || !hasChild) return null;
+                  return (
+                    <div key={section.id} className="space-y-4">
+                      <h2 className="text-lg font-bold text-persianIndigo/80 dark:text-white/80">
+                        {section.title}
+                      </h2>
+                      <div className="space-y-2">
+                        {section.items?.length > 0 ? (
+                          section.items &&
+                          section.items.length > 0 &&
+                          section.items.map((item) => {
+                            if (!item || !item?.video) return null;
+                            return (
+                              <div key={item.id} className="border rounded-md p-4 space-y-2">
+                                <div
+                                  className="flex items-center justify-between cursor-pointer"
+                                  onClick={() => toggleItem(item.id)}
+                                >
+                                  <span className="font-medium">{item.title}</span>
+                                  <div className="flex items-center gap-1 text-sm text-blueberry dark:text-lightSilver">
+                                    <span>Chi tiết</span>
+                                    <ChevronDown
+                                      className={`w-4 h-4 transition-transform ${
+                                        openItemId === item.id ? 'rotate-180' : ''
+                                      }`}
+                                    />
+                                  </div>
+                                </div>
 
-                            {openItemId === item.id && (
-                              <div className="bg-gray/5 p-3 rounded-md text-sm text-darkSilver dark:text-lightSilver">
-                                {comments?.length > 0 ? (
-                                  <StaticDetails />
-                                ) : (
-                                  <p>Không có bình luận.</p>
+                                {openItemId === item.id && (
+                                  <div className="bg-gray/5 p-3 rounded-md text-sm text-darkSilver dark:text-lightSilver">
+                                    {comments?.length > 0 ? (
+                                      <StaticDetails />
+                                    ) : (
+                                      <p>Không có bình luận.</p>
+                                    )}
+                                  </div>
                                 )}
                               </div>
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-gray-500 italic">Chưa có bài học nào.</div>
-                      )}
+                            );
+                          })
+                        ) : (
+                          <div className="text-gray-500 italic">Chưa có bài học nào.</div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-gray-500 italic">Chưa có phần học nào.</div>
               )}

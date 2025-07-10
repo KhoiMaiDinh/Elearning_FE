@@ -100,14 +100,14 @@ export function InstructorOverviewStats({
     if (change > 0) {
       return (
         <span className="flex items-center gap-1">
-          <ArrowUp className="h-3 w-3" />+{change}% so với kỳ trước {unit}
+          <ArrowUp className="h-3 w-3" />+{Math.abs(change)}% so với kỳ trước {unit}
         </span>
       );
     } else if (change < 0) {
       return (
         <span className="flex items-center gap-1">
           <ArrowDown className="h-3 w-3" />
-          {change}% so với kỳ trước {unit}
+          {Math.abs(change)}% so với kỳ trước {unit}
         </span>
       );
     } else {
@@ -166,7 +166,7 @@ export function InstructorOverviewStats({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatPercentage(data.leading_emotion_percentage)}%
+              {Math.abs(data.leading_emotion_percentage * 100)}%
             </div>
 
             {previousData && (
@@ -181,7 +181,7 @@ export function InstructorOverviewStats({
                           className={`${getEmotionColor(previousData.leading_emotion)} text-[8px] px-1 py-0`}
                         >
                           {getEmotionText(previousData.leading_emotion)}{' '}
-                          {previousData.leading_emotion_percentage}%
+                          {Math.abs(previousData.leading_emotion_percentage)}%
                         </Badge>
                       </div>
                     </div>

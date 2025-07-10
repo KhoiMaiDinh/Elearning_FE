@@ -107,7 +107,6 @@ const Page = () => {
 
   useEffect(() => {
     if (isOwner) {
-      handleGetCouponByCourse();
       handleGetRatings();
     }
   }, [isOwner, handleGetCouponByCourse, handleGetRatings]);
@@ -133,6 +132,10 @@ const Page = () => {
       handleGetFullCourse();
     }
   }, [isRegistered, handleGetFullCourse]);
+
+  useEffect(() => {
+    handleGetCouponByCourse();
+  }, []);
 
   useEffect(() => {
     if (courseData && userInfo) {
