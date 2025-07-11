@@ -349,7 +349,9 @@ export const Overview = () => {
                 <Star className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{overviewData?.avg_rating ?? 0}</div>
+                <div className="text-2xl font-bold">
+                  {Number(overviewData?.avg_rating ?? 0).toFixed(1)}
+                </div>
                 <RatingStars rating={overviewData?.avg_rating ?? 0} />
                 <p className="text-xs text-muted-foreground">
                   {overviewData?.total_ratings_made ?? 0} học viên đã đánh giá
