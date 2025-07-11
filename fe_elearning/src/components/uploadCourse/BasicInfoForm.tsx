@@ -377,7 +377,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                       previousMedia={
                         mode === 'edit' && courseInfo?.thumbnail ? courseInfo.thumbnail : undefined
                       }
-                      error={errors.thumbnail?.message}
                       onChange={(file) => {
                         setValue('thumbnail', file);
                       }}
