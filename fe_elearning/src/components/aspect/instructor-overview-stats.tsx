@@ -166,7 +166,7 @@ export function InstructorOverviewStats({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.abs(Number(data.leading_emotion_percentage) * 100)}%
+              {(Number(data.leading_emotion_percentage) * 100).toFixed(1)}%
             </div>
 
             {previousData && (
