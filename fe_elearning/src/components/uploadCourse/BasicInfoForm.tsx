@@ -204,7 +204,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   <Controller
                     name="title"
                     control={control}
-                    render={({ field }) => <InputRegisterLecture {...field} maxLength={60} />}
+                    render={({ field }) => (
+                      <InputRegisterLecture
+                        {...field}
+                        maxLength={60}
+                        error={errors.title?.message}
+                      />
+                    )}
                   />
                 )}
               </div>
@@ -221,7 +227,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   <Controller
                     name="subtitle"
                     control={control}
-                    render={({ field }) => <InputRegisterLecture {...field} maxLength={120} />}
+                    render={({ field }) => (
+                      <InputRegisterLecture
+                        {...field}
+                        maxLength={120}
+                        error={errors.subtitle?.message}
+                      />
+                    )}
                   />
                 )}
               </div>
@@ -252,6 +264,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                         className="w-full"
                         placeholder="--Lựa chọn cấp độ--"
                         value={field.value}
+                        error={errors.level?.message}
                         onValueChange={(value) => {
                           field.onChange(value);
                         }}
@@ -294,6 +307,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                           label="Lĩnh vực"
                           data={childCategories}
                           value={field.value}
+                          error={errors.category?.slug?.message}
                           onValueChange={(value) => {
                             field.onChange(value);
                             handleChildCategoryChange(value);
@@ -329,6 +343,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                         type="string"
                         placeholder="Nhập giá khóa học"
                         formatVND={true}
+                        error={errors.price?.message}
                       />
                     )}
                   />
@@ -362,6 +377,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                       previousMedia={
                         mode === 'edit' && courseInfo?.thumbnail ? courseInfo.thumbnail : undefined
                       }
+                      error={errors.thumbnail?.message}
                       onChange={(file) => {
                         setValue('thumbnail', file);
                       }}
@@ -411,6 +427,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
                   <TextAreaRegisterLecture
                     {...field}
                     placeholder="Nhập mô tả chi tiết khóa học..."
+                    error={errors.description?.message}
                   />
                 )}
               />

@@ -23,7 +23,8 @@ export const courseBasicSchema = yup.object().shape({
       id: yup.string().required(),
       key: yup.string().required(),
     })
-    .nullable(),
+    .nullable()
+    .required('Ảnh bìa khóa học không được để trống'),
   category: yup.object().shape({
     slug: yup.string().required('Lĩnh vực không được để trống'),
   }),
@@ -61,6 +62,8 @@ export function useCourseForm(courseInfo?: CourseForm) {
   } = useForm<CourseForm>({
     resolver: yupResolver(courseBasicSchema) as unknown as Resolver<CourseForm>,
     defaultValues: initValues,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   const {
