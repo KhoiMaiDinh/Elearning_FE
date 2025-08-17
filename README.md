@@ -1,70 +1,85 @@
-# AI-powered E-learning Platform (Vietnamese ABSA-integrated)
+AI-powered E-learning Platform (with Integrated Vietnamese ABSA)
+🧠 Introduction
 
-## 🧠 Giới thiệu đề tài
+As education continues to shift toward online environments, the demand for flexible, high-quality, and affordable learning platforms is growing rapidly. However, existing platforms such as Udemy, Coursera, and Edumall still have notable limitations in terms of cost, content quality, and personalization capabilities.
 
-Trong bối cảnh giáo dục ngày càng chuyển dịch sang môi trường trực tuyến, nhu cầu xây dựng một nền tảng học tập linh hoạt, chất lượng cao, và chi phí hợp lý ngày càng tăng. Tuy nhiên, các nền tảng hiện có như Udemy, Coursera, Edumall vẫn còn tồn tại nhiều hạn chế về giá thành, chất lượng nội dung, và khả năng cá nhân hóa. 
+This project aims to build a modern E-learning system that leverages Artificial Intelligence (AI), specifically Aspect-Based Sentiment Analysis (ABSA), to analyze learner feedback. The goal is to enhance course content and improve the overall learning experience.
 
-Dự án này xây dựng một hệ thống E-learning hiện đại, sử dụng **trí tuệ nhân tạo (AI)** để **phân tích phản hồi học viên** bằng phương pháp **Aspect-Based Sentiment Analysis (ABSA)**, nhằm cải tiến nội dung khóa học và nâng cao trải nghiệm học tập.
+🎯 Objectives
+General Goals
 
-## 🎯 Mục tiêu
+Develop an online learning platform that enables:
 
-### Tổng quát
-Phát triển một nền tảng học trực tuyến cho phép:
-- Giảng viên tạo nội dung và giảng dạy qua video, tài liệu.
-- Học viên học tập linh hoạt, đánh giá khóa học.
-- Hệ thống sử dụng AI để phân tích phản hồi và gợi ý cải tiến.
+Instructors to create content and teach via video and documents.
 
-### Cụ thể
-- Cho phép học viên theo dõi tiến độ, gửi đánh giá.
-- Ứng dụng ABSA để trích xuất cảm xúc theo từng thành phần khóa học (video, tài liệu, bài tập).
-- Cung cấp thống kê giúp giảng viên cải tiến chất lượng giảng dạy.
-- Thiết kế chi phí thấp, giao diện thân thiện người Việt.
+Learners to study flexibly and leave course feedback.
 
-## 📦 Phạm vi
+An AI-powered system to analyze feedback and suggest improvements.
 
-### Môi trường triển khai
-- **Development**: localhost cho phát triển và thử nghiệm ban đầu.
-- **Testing/Staging**: kiểm thử trước khi release.
-- **Production**: triển khai chính thức cho người dùng thực tế.
+Specific Goals
 
-### Chức năng chính
-- Quản lý khóa học, người học, giảng viên.
-- Đánh giá và phân tích phản hồi học viên (AI ABSA).
-- Hệ thống thanh toán và mã giảm giá.
-- Gửi thông báo và nhắc nhở.
+Allow learners to track progress and submit detailed reviews.
 
-## 👥 Đối tượng sử dụng
+Apply ABSA to extract sentiment for each course component (videos, materials, exercises).
 
-- **Người học**: Học sinh, sinh viên, người đi làm.
-- **Giảng viên**: Tạo và quản lý nội dung giảng dạy.
-- **Quản trị viên**: Duyệt nội dung, tài khoản, chương trình khuyến mãi, theo dõi hệ thống.
+Provide instructors with analytics to improve teaching quality.
 
-## ⚙️ Phương pháp thực hiện
+Offer a low-cost solution with a user-friendly interface tailored for Vietnamese users.
 
-- Phân tích thị trường E-learning hiện tại (Udemy, Coursera…)
-- Triển khai nền tảng web bằng ReactJS, NextJS (frontend) và NestJS (backend).
-- Tích hợp mô hình phân tích cảm xúc ABSA trên phản hồi người học.
-- Nghiên cứu hệ thống gợi ý khóa học thông minh.
+📦 Scope
+Deployment Environments
 
-## 🧰 Nền tảng công nghệ
+Development: Localhost for initial development and testing.
 
-| Hạng mục         | Công nghệ sử dụng                |
-|------------------|----------------------------------|
-| Frontend         | ReactJS, NextJS                  |
-| Backend          | NestJS, ExpressJS, NodeJS        |
-| Database         | PostgreSQL, MongoDB              |
-| AI & NLP         | ABSA - Aspect-Based Sentiment Analysis |
-| API Doc          | Swagger                          |
-| Deploy           | Vercel                           |
-| Source Control   | GitHub                           |
+Testing/Staging: Pre-release quality assurance.
 
-## 📈 Kết quả mong đợi
+Production: Full deployment for real users.
 
-- Một hệ thống E-learning hoàn chỉnh.
-- Có khả năng đánh giá phản hồi học viên tự động bằng AI.
-- Giao diện thân thiện, phù hợp người Việt.
-- Mở rộng tiềm năng nghiên cứu trong lĩnh vực phân tích cảm xúc tiếng Việt.
+Core Features
 
----
+Course, student, and instructor management.
 
-> © 2025 - Đề tài nghiên cứu khoa học sinh viên. Mọi quyền được bảo lưu.
+Learner feedback analysis using AI (ABSA).
+
+Payment system and discount management.
+
+Notifications and reminders.
+
+👥 Target Users
+
+Learners: Students, professionals, and lifelong learners.
+
+Instructors: Create and manage teaching content.
+
+Administrators: Review content, manage users, promotions, and monitor the system.
+
+⚙️ Methodology
+
+Analyze the current E-learning market (Udemy, Coursera, etc.).
+
+Develop a web platform using ReactJS, NextJS (frontend) and NestJS (backend).
+
+Integrate ABSA models to analyze learner feedback.
+
+Research and implement intelligent course recommendation systems.
+
+🧰 Technology Stack
+Category	Technologies Used
+Frontend	ReactJS, NextJS
+Backend	NestJS, ExpressJS, NodeJS
+Database	PostgreSQL, MongoDB
+AI & NLP	ABSA - Aspect-Based Sentiment Analysis
+API Documentation	Swagger
+Deployment	Vercel
+Source Control	GitHub
+📈 Expected Outcomes
+
+A fully functional E-learning system.
+
+AI-powered learner feedback analysis.
+
+User-friendly interface tailored for Vietnamese learners.
+
+Opportunities for further research in Vietnamese sentiment analysis.
+
+© 2025 - Student Research Project. All rights reserved.
