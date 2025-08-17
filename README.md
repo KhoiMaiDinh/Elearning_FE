@@ -6,6 +6,8 @@ As education continues to shift toward online environments, the demand for flexi
 
 This project aims to build a modern E-learning system that leverages **Artificial Intelligence (AI)**, specifically **Aspect-Based Sentiment Analysis (ABSA)**, to **analyze learner feedback**. The goal is to enhance course content and improve the overall learning experience.
 
+![App Visuallization](homepage.jpeg)
+
 ## 🎯 Objectives
 
 ### General Goals
