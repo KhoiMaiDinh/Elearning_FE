@@ -1,85 +1,75 @@
-AI-powered E-learning Platform (with Integrated Vietnamese ABSA)
-🧠 Introduction
+# AI-powered E-learning Platform (with Integrated Vietnamese ABSA)
+
+## 🧠 Introduction
 
 As education continues to shift toward online environments, the demand for flexible, high-quality, and affordable learning platforms is growing rapidly. However, existing platforms such as Udemy, Coursera, and Edumall still have notable limitations in terms of cost, content quality, and personalization capabilities.
 
-This project aims to build a modern E-learning system that leverages Artificial Intelligence (AI), specifically Aspect-Based Sentiment Analysis (ABSA), to analyze learner feedback. The goal is to enhance course content and improve the overall learning experience.
+This project aims to build a modern E-learning system that leverages **Artificial Intelligence (AI)**, specifically **Aspect-Based Sentiment Analysis (ABSA)**, to **analyze learner feedback**. The goal is to enhance course content and improve the overall learning experience.
 
-🎯 Objectives
-General Goals
+## 🎯 Objectives
+
+### General Goals
 
 Develop an online learning platform that enables:
 
-Instructors to create content and teach via video and documents.
+* Instructors to create content and teach via video and documents.
+* Learners to study flexibly and leave course feedback.
+* An AI-powered system to analyze feedback and suggest improvements.
 
-Learners to study flexibly and leave course feedback.
+### Specific Goals
 
-An AI-powered system to analyze feedback and suggest improvements.
+* Allow learners to track progress and submit detailed reviews.
+* Apply ABSA to extract sentiment for each course component (videos, materials, exercises).
+* Provide instructors with analytics to improve teaching quality.
+* Offer a low-cost solution with a user-friendly interface tailored for Vietnamese users.
 
-Specific Goals
+## 📦 Scope
 
-Allow learners to track progress and submit detailed reviews.
+### Deployment Environments
 
-Apply ABSA to extract sentiment for each course component (videos, materials, exercises).
+* **Development**: Localhost for initial development and testing.
+* **Testing/Staging**: Pre-release quality assurance.
+* **Production**: Full deployment for real users.
 
-Provide instructors with analytics to improve teaching quality.
+### Core Features
 
-Offer a low-cost solution with a user-friendly interface tailored for Vietnamese users.
+* Course, student, and instructor management.
+* Learner feedback analysis using AI (ABSA).
+* Payment system and discount management.
+* Notifications and reminders.
 
-📦 Scope
-Deployment Environments
+## 👥 Target Users
 
-Development: Localhost for initial development and testing.
+* **Learners**: Students, professionals, and lifelong learners.
+* **Instructors**: Create and manage teaching content.
+* **Administrators**: Review content, manage users, promotions, and monitor the system.
 
-Testing/Staging: Pre-release quality assurance.
+## ⚙️ Methodology
 
-Production: Full deployment for real users.
+* Analyze the current E-learning market (Udemy, Coursera, etc.).
+* Develop a web platform using ReactJS, NextJS (frontend) and NestJS (backend).
+* Integrate ABSA models to analyze learner feedback.
+* Research and implement intelligent course recommendation systems.
 
-Core Features
+## 🧰 Technology Stack
 
-Course, student, and instructor management.
+| Category          | Technologies Used                      |
+| ----------------- | -------------------------------------- |
+| Frontend          | ReactJS, NextJS                        |
+| Backend           | NestJS, ExpressJS, NodeJS              |
+| Database          | PostgreSQL, MongoDB                    |
+| AI & NLP          | ABSA - Aspect-Based Sentiment Analysis |
+| API Documentation | Swagger                                |
+| Deployment        | Vercel                                 |
+| Source Control    | GitHub                                 |
 
-Learner feedback analysis using AI (ABSA).
+## 📈 Expected Outcomes
 
-Payment system and discount management.
+* A fully functional E-learning system.
+* AI-powered learner feedback analysis.
+* User-friendly interface tailored for Vietnamese learners.
+* Opportunities for further research in Vietnamese sentiment analysis.
 
-Notifications and reminders.
+---
 
-👥 Target Users
-
-Learners: Students, professionals, and lifelong learners.
-
-Instructors: Create and manage teaching content.
-
-Administrators: Review content, manage users, promotions, and monitor the system.
-
-⚙️ Methodology
-
-Analyze the current E-learning market (Udemy, Coursera, etc.).
-
-Develop a web platform using ReactJS, NextJS (frontend) and NestJS (backend).
-
-Integrate ABSA models to analyze learner feedback.
-
-Research and implement intelligent course recommendation systems.
-
-🧰 Technology Stack
-Category	Technologies Used
-Frontend	ReactJS, NextJS
-Backend	NestJS, ExpressJS, NodeJS
-Database	PostgreSQL, MongoDB
-AI & NLP	ABSA - Aspect-Based Sentiment Analysis
-API Documentation	Swagger
-Deployment	Vercel
-Source Control	GitHub
-📈 Expected Outcomes
-
-A fully functional E-learning system.
-
-AI-powered learner feedback analysis.
-
-User-friendly interface tailored for Vietnamese learners.
-
-Opportunities for further research in Vietnamese sentiment analysis.
-
-© 2025 - Student Research Project. All rights reserved.
+> © 2025 - Student Research Project. All rights reserved.
